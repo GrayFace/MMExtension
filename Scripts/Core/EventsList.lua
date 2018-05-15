@@ -10,8 +10,8 @@ local setmetatable = setmetatable
 local d_getinfo = debug.getinfo
 local FunctionFile = debug.FunctionFile
 local pcall2 = pcall2
-local coroutine_create = coroutine.create
-local coroutine_resume2 = coroutine.resume2
+local co_create = coroutine.create
+local co_resume2 = coroutine.resume2
 local cocall2 = cocall2
 
 ----------- No globals from this point ------------
@@ -57,46 +57,59 @@ local function ProcessReloc(f, index, to)
 	return f.Next, from1, to1
 end
 
-local function docall(f, from, to, ...)
+local function docall(f, i, to, ...)
 	local ret
-	for i = from, to do
+	while i <= to do
 		local v = f[i]
+		i = i + 1
 		if v then
 			local tmp = v(...)
 			if tmp ~= nil then
 				ret = tmp
 			end
 		elseif v == false then
-			f, from, to = ProcessReloc(f, i, to)
-			local tmp = docall(f, from, to, ...)
-			if tmp ~= nil then
-				return tmp
-			end
-			return ret
+			f, i, to = ProcessReloc(f, i - 1, to)
 		end
 	end
 	return ret
 end
 
-local function speccall(call, f, from, to, ...)
+local function speccall(call, f, i, to, ...)
 	local ret
-	for i = from, to do
+	while i <= to do
 		local v = f[i]
+		i = i + 1
 		if v then
 			local ok, tmp = call(v, ...)
 			if tmp ~= nil and ok then
 				ret = tmp
 			end
 		elseif v == false then
-			f, from, to = ProcessReloc(f, i, to)
-			local tmp = speccall(call, f, from, to, ...)
-			if tmp ~= nil then
-				return tmp
-			end
-			return ret
+			f, i, to = ProcessReloc(f, i - 1, to)
 		end
 	end
 	return ret
+end
+
+-- try using 1 coroutine for all event handlers. If yeild is used, create another.
+local function cocallPart(ret, f, i, to, ...)
+	local ok = cocall2(function(...)
+		while i <= to do
+			local v = f[i]
+			i = i + 1
+			if v then
+				local tmp = v(...)
+				if tmp ~= nil then
+					ret = tmp
+				end
+			elseif v == false then
+				f, i, to = ProcessReloc(f, i - 1, to)
+			end
+		end
+	end, ...)
+	local i2 = i
+	i = to
+	return ret, f, i2, to, ok
 end
 
 local function make_events(evt)
@@ -109,18 +122,14 @@ local function make_events(evt)
 	end
 	evt.call, evt.Call = call, call
 
+	-- pcall for each event handler
 	local function pcalls(a, ...)
 		local f = t[a]
 		return f and speccall(pcall2, f, f.from, f.to, ...)
 	end
 	evt.pcalls = pcalls
 
-	local function cocalls(a, ...)
-		local f = t[a]
-		return f and speccall(cocall2, f, f.from, f.to, ...)
-	end
-	evt.cocalls = cocalls
-	
+	-- process all event handlers in a single pcall
 	local function _pcall(a, ...)
 		local f = t[a]
 		if f then
@@ -132,13 +141,28 @@ local function make_events(evt)
 	end
 	evt.pcall = _pcall
 	
+	-- if some event handler fails, continues execution of other handlers
+	local function cocalls(a, ...)
+		local f = t[a]
+		if f then
+			local ret, i, to = nil, f.from, f.to
+			repeat
+				ret, f, i, to = cocallPart(ret, f, i, to, ...)
+			until i >= to
+			return ret
+		end
+	end
+	evt.cocalls = cocalls
+
+	-- if some event handler fails, execution stops
 	local function cocall(a, ...)
 		local f = t[a]
 		if f then
-			local ok, tmp = coroutine_resume2(coroutine_create(docall), f, f.from, f.to, ...)
-			if ok then
-				return tmp
-			end
+			local ret, i, to, ok = nil, f.from, f.to, true
+			repeat
+				ret, f, i, to, ok = cocallPart(ret, f, i, to, ...)
+			until i >= to or not ok
+			return ret
 		end
 	end
 	evt.cocall = cocall
@@ -177,7 +201,7 @@ local function make_events(evt)
 		local d = f.to - f.from
 		if d < 0 then
 			t[a] = nil
-		elseif (f.gaps or 0)*2 + abs(f.from - 1) > d then  -- allow 1/2 to be filled with gaps
+		elseif (f.gaps or 0)*3 + abs(f.from - 1)*1.5 > d then  -- allow 1/3 to be filled with gaps
 			t[a] = remake_list(f)
 		end
 	end
@@ -224,7 +248,7 @@ local function make_events(evt)
 	evt.replace, evt.Replace, evt.remove, evt.Remove = replace, replace, replace, replace
 
 	local function clear(a)
-		-- stop currently running handlers
+		-- stop currently running handler enumerators
 		local f = t[a]
 		if f then
 			for i = f.from, f.to do
