@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMExtension", "MMExtension\MMExtension.vcproj", "{C4DCFEF4-E8F5-4FFB-899F-850793A18486}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{66E3CE14-884D-4AEA-9F20-15A0BEAF8C5A} = {66E3CE14-884D-4AEA-9F20-15A0BEAF8C5A}
+		{D6E68D9A-EBB8-4ED2-BA45-ED12A3DE16B2} = {D6E68D9A-EBB8-4ED2-BA45-ED12A3DE16B2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "socket", "MMExtension\luasocket\socket.vcproj", "{66E3CE14-884D-4AEA-9F20-15A0BEAF8C5A}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaIntelliSense", "MMExtension\LuaJIT\LuaIntelliSense\LuaIntelliSense.vcproj", "{EF45C786-B1ED-41C4-9703-DFC8FF00C780}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HDetour", "MMExtension\HDetour\Project\HDetour.vcproj", "{D6E68D9A-EBB8-4ED2-BA45-ED12A3DE16B2}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C4DCFEF4-E8F5-4FFB-899F-850793A18486}.Release|Win32.ActiveCfg = Release|Win32
+		{C4DCFEF4-E8F5-4FFB-899F-850793A18486}.Release|Win32.Build.0 = Release|Win32
+		{66E3CE14-884D-4AEA-9F20-15A0BEAF8C5A}.Release|Win32.ActiveCfg = Release|Win32
+		{66E3CE14-884D-4AEA-9F20-15A0BEAF8C5A}.Release|Win32.Build.0 = Release|Win32
+		{EF45C786-B1ED-41C4-9703-DFC8FF00C780}.Release|Win32.ActiveCfg = Release|Win32
+		{EF45C786-B1ED-41C4-9703-DFC8FF00C780}.Release|Win32.Build.0 = Release|Win32
+		{D6E68D9A-EBB8-4ED2-BA45-ED12A3DE16B2}.Release|Win32.ActiveCfg = Release|Win32
+		{D6E68D9A-EBB8-4ED2-BA45-ED12A3DE16B2}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
