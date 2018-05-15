@@ -474,6 +474,9 @@ local function CheckStr(fstr, chunk)
 	globals = setmetatable({}, {__index = globals})
 	locals = {["nil"] = true, ["false"] = true, ["true"] = true}
 	E = {Locals = {}}
+	function E.End()
+		Error("NoGlobals parser failure near %q", C.Token)
+	end
 	if Lua52 then
 		locals._ENV = true
 	end
