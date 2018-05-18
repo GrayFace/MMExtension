@@ -10,7 +10,7 @@ do
 	end
 end
 
--- Mostly for debugging and experiments. Shows 't', expanding all tables in it up to the 'depth' level. In 'exact' = 'true' mode outputs proper Lua code.
+-- Useful for debugging and experiments. Shows 't', expanding all tables in it up to the 'depth' level. In 'exact' = 'true' mode outputs proper Lua code.
 function dump(t, depth, exact)
 	local buf = {}
 	local bufn = 0

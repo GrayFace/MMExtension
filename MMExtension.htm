@@ -194,12 +194,10 @@
 		user-select: none;
 	}
 	#toc-check:checked ~ #toc-trigger {
-		transition: opacity 0.1s;
+		transition: opacity 0.25s;
 		opacity: 0;
 		background-color: white;
 		box-shadow: 0px 0px 5px 3px rgba(0,0,0,0.33), 1px 0px 2px 10px rgba(255,255,255,0.33);
-		
-		/* background: linear-gradient(90deg, rgba(0,30,100,0.2) 50%, rgba(0,30,100,0.7) 80%, rgba(0,30,100,0) 100%); */
 	}
 	#toc-check:checked ~ #toc-trigger:hover {
 		opacity: 0.6;
@@ -229,6 +227,7 @@
 @media (max-width: 550px) {
 	.width-500 {
 		width: 100%;
+		max-width: 500px;
 	}
 }
 @media (max-width: 500px) {
@@ -692,7 +691,7 @@ A: Pass any coordinates in call to <a href="#XYZ">XYZ</a> and set any <a href="#
 Changing starting map (similar to previous example):
 <div class="pre-outer"><div class="pre">Game.NewGameMap <B><font color="#00D">=</font></B> <font color="#90A">&quot;out05.odm&quot;</font><br><B><font color="Black">function</font></B> events.NewGameMap()<br><span style="display: inline-block; width: 2ch;">&#9;</span>XYZ(Party, <B><font color="#079">0</font></B>, <B><font color="#079">0</font></B>, <B><font color="#079">0</font></B>)<br><span style="display: inline-block; width: 2ch;">&#9;</span>Party.Direction <B><font color="#00D">=</font></B> <B><font color="#079">0</font></B><br><span style="display: inline-block; width: 2ch;">&#9;</span>Party.LookAngle <B><font color="#00D">=</font></B> <B><font color="#079">0</font></B><br><B><font color="Black">end</font></B></div></div>
 <br>
-Q: How to run a method when a user press a specific key?<br>
+Q: How to run a method when a user presses a specific key?<br>
 Method #1 (preferred):
 <div class="pre-outer"><div class="pre"><B><font color="Black">function</font></B> events.KeyDown(t)<br><span style="display: inline-block; width: 2ch;">&#9;</span><B><font color="Black">if</font></B> t.Key <B><font color="#333">==</font></B> const.Keys.F2 <B><font color="Black">then</font></B><br><span style="display: inline-block; width: 2ch;">&#9;</span><span style="display: inline-block; width: 2ch;">&#9;</span>Message(<font color="#90A">&quot;F2 pressed&quot;</font>)<br><span style="display: inline-block; width: 2ch;">&#9;</span><B><font color="Black">end</font></B><br><B><font color="Black">end</font></B></div></div>
 Method #2 (doesn't repeat when holding the key):
@@ -1685,7 +1684,7 @@ CheckType
 <td class="def-left">
 Id
 </td><td class="def-right">
- 0 &ndash; not used, 1 &ndash; group id, 2 &ndash; monster type minus 1, 3 &ndash; monster id, 4 &ndash; id in placemon.txt (MM8 only)
+ Depending on <b class="def-param">CheckType</b>: 0 &ndash; not used, 1 &ndash; group id, 2 &ndash; monster type minus 1, 3 &ndash; monster id, 4 &ndash; id in placemon.txt (MM8 only)
 </td>
 </tr><tr>
 <td class="def-left">
@@ -1697,7 +1696,7 @@ Count
 <td class="def-left">
 InvisibleAsDead
 </td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  a monster can be invisible, like pirates in Ravenshore in MM8 before you enter Regna
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  1 (default) &ndash; treat invisible (that is, currently disabled, like pirates in Ravenshore before you enter Regna) monsters as dead when counting, 0 &ndash; include invisible monsters
 </td>
 </tr><tr>
 <td colspan="2" class="def-caption">
@@ -2152,7 +2151,7 @@ Id
 <td class="def-left">
 <a name="events.CalcStatBonusByItems" class="abs"></a><h4 class="def-h4">CalcStatBonusByItems</h4> <span class="def-nbsp"> </span><b>{</b> <br><span class="def-nbsp">  </span>ArtifactBonus <span class="def-ver">[MM7+]</span><br><span class="def-nbsp">  </span>IgnoreExtraHand<br><span class="def-nbsp">  </span>MagicBonus <span class="def-ver">[MM7+]</span><br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>PlayerIndex<br><span class="def-nbsp">  </span>Result<br><span class="def-nbsp">  </span>SetArtifactBonus<br><span class="def-nbsp">  </span>SetMagicBonus<br><span class="def-nbsp">  </span><a href="#const.Stats">Stat</a><br> <b>}</b>
 </td><td class="def-right">
- Here's how <b class="def-param">SetArtifactBonus</b> works:<br><span class="def-nbsp">  </span><span class="def-ver">[MM7+]</span> If the given value is bigger than <b class="def-param">ArtifactBonus</b>, modifies <b class="def-param">ArtifactBonus</b> and increases <b class="def-param">Result</b>.<br><span class="def-nbsp">  </span><span class="def-ver">[MM6]</span> Just adds the value to <b class="def-param">Rusult</b>.<br><br><b class="def-param">SetMagicBonus</b> does the same to <b class="def-param">MagicBonus</b>.
+ Here's how <b class="def-param">SetArtifactBonus</b> works:<br><span class="def-nbsp">  </span><span class="def-ver">[MM7+]</span> If given value is bigger than <b class="def-param">ArtifactBonus</b>, modifies <b class="def-param">ArtifactBonus</b> and increases <b class="def-param">Result</b>.<br><span class="def-nbsp">  </span><span class="def-ver">[MM6]</span> Just adds the value to <b class="def-param">Rusult</b>.<br><br><b class="def-param">SetMagicBonus</b> does the same to <b class="def-param">MagicBonus</b>.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -2377,7 +2376,7 @@ Id
 <td class="def-left">
 <a name="LocalFile" class="abs"></a><h5 class="def-h5">LocalFile</h5> <span class="def-nbsp"> </span><b>(</b> t <b>)</b>
 </td><td class="def-right">
- Pass any table from Game.* to this function to make it restore its original state after the player exits the map.
+ Pass any table from <a href="#structs.GameStructure">Game.*</a> to this function to make it restore its original state after the player exits the map.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -2495,25 +2494,25 @@ Id
 <td class="def-left">
 <a name="TakeItemFromParty" class="abs"></a><h5 class="def-h5">TakeItemFromParty</h5> <span class="def-nbsp"> </span><b>(</b> id, keep <b>)</b>
 </td><td class="def-right">
- <b class="def-param">id</b> can also be a table or a table of tables. See "Quest Alchemy.lua" from quest examples
+ <b class="def-param">id</b> can also be a table or a table of tables. See <b class="def-param">Quest Alchemy.lua</b> from <a href="#Quests">quest examples</a>
 </td>
 </tr><tr>
 <td class="def-left">
 <a name="CheckMonstersKilled" class="abs"></a><h5 class="def-h5">CheckMonstersKilled</h5> <span class="def-nbsp"> </span><b>{</b> <br><span class="def-nbsp">  </span>Group<br><span class="def-nbsp">  </span>Monster<br><span class="def-nbsp">  </span>MonsterIndex<br><span class="def-nbsp">  </span>NameId<br><span class="def-nbsp">  </span>Count<br><span class="def-nbsp">  </span>InvisibleAsDead<br> <b>}</b>
 </td><td class="def-right">
- See "Quest Kill Monsters.lua" from quest examples
+ See <b class="def-param">Quest Kill Monsters.lua</b> from <a href="#Quests">quest examples</a>
 </td>
 </tr><tr>
 <td class="def-left">
 <a name="EnumAvailableSkills" class="abs"></a><h5 class="def-h5">EnumAvailableSkills</h5> <span class="def-nbsp"> </span><b>(</b> class <b>)</b>
 </td><td class="def-right">
- Returns <a href="#const.Skills">Skill</a>, MaxMastery:const
+ Returns <a href="#const.Skills">Skill</a>, <a href="#const">MaxMastery</a>
 </td>
 </tr><tr>
 <td class="def-left">
 <a name="SummonMonster" class="abs"></a><h5 class="def-h5">SummonMonster</h5> <span class="def-nbsp"> </span><b>(</b> id, x, y, z, treasure, place <b>)</b>
 </td><td class="def-right">
- Unless <b class="def-param">treasure</b> is <b class="def-param">true</b> , the monster doesn't have any items or gold.<br><b class="def-param">place</b> defines monster index in Map.Monsters array if specified.
+ Unless <b class="def-param">treasure</b> is <b class="def-param">true</b>, the monster doesn't have any items or gold.<br><b class="def-param">place</b> defines monster index in <a href="#structs.GameMap.Monsters">Map.Monsters</a> array if specified.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -2592,13 +2591,13 @@ Id
 <td class="def-left">
 <a name="LocalizeAll" class="abs"></a><h5 class="def-h5">LocalizeAll</h5> <span class="def-nbsp"> </span><b>(</b> t, over <b>)</b>
 </td><td class="def-right">
- Possible values of <b class="def-param">over</b>:<br><span class="def-nbsp">  </span>true: <span class="def-nbsp"> </span>permanent setup &ndash; overwrite all (used in Localization scripts only)<br><span class="def-nbsp">  </span>false: <span class="def-nbsp"> </span>temporary setup &ndash; overwrite temporary setup only<br><span class="def-nbsp">  </span>"update": <span class="def-nbsp"> </span>remove all previous temporary setup, overwrite temporary setup only
+ Possible values of <b class="def-param">over</b>:<br><span class="def-nbsp">  </span>true: <span class="def-nbsp"> </span>permanent setup &ndash; overwrite all (used in <b>Localization</b> scripts only)<br><span class="def-nbsp">  </span>false: <span class="def-nbsp"> </span>temporary setup &ndash; overwrite temporary setup only<br><span class="def-nbsp">  </span>"update": <span class="def-nbsp"> </span>remove all previous temporary setup, overwrite temporary setup only
 </td>
 </tr><tr>
 <td class="def-left">
 <a name="Localize" class="abs"></a><h5 class="def-h5">Localize</h5> <span class="def-nbsp"> </span><b>(</b> t, over, lev = 1 <b>)</b>
 </td><td class="def-right">
- Possible values of <b class="def-param">over</b>:<br><span class="def-nbsp">  </span>true: <span class="def-nbsp"> </span>permanent setup &ndash; overwrite all (used in Localization scripts only)<br><span class="def-nbsp">  </span>false: <span class="def-nbsp"> </span>temporary setup &ndash; overwrite temporary setup only<br><span class="def-nbsp">  </span>"update": <span class="def-nbsp"> </span>remove all previous temporary setup, overwrite temporary setup only
+ Possible values of <b class="def-param">over</b>:<br><span class="def-nbsp">  </span>true: <span class="def-nbsp"> </span>permanent setup &ndash; overwrite all (used in <b>Localization</b> scripts only)<br><span class="def-nbsp">  </span>false: <span class="def-nbsp"> </span>temporary setup &ndash; overwrite temporary setup only<br><span class="def-nbsp">  </span>"update": <span class="def-nbsp"> </span>remove all previous temporary setup, overwrite temporary setup only
 </td>
 </tr><tr>
 <td class="def-left">
@@ -2884,7 +2883,7 @@ Id
 <td class="def-left">
 <a name="table.swap" class="abs"></a><h5 class="def-h5">table.swap</h5> <span class="def-nbsp"> </span><b>(</b> t, min, max <b>)</b>
 </td><td class="def-right">
- Swaps order of the array. <b class="def-param">min</b> and <b class="def-param">max</b> default to 1 and <b class="def-param">#t</b> respecably
+ Swaps order of the array. <b class="def-param">min</b> and <b class="def-param">max</b> default to 1 and <b class="def-param">#t</b> respectively
 </td>
 </tr><tr>
 <td class="def-left">
@@ -2902,13 +2901,13 @@ Id
 <td class="def-left">
 <a name="table.find" class="abs"></a><h5 class="def-h5">table.find</h5> <span class="def-nbsp"> </span><b>(</b> t, v <b>)</b>
 </td><td class="def-right">
- Finds <b class="def-param">v</b> value, returns corresponding key
+ Finds value <b class="def-param">v</b>, returns corresponding key
 </td>
 </tr><tr>
 <td class="def-left">
 <a name="table.ifind" class="abs"></a><h5 class="def-h5">table.ifind</h5> <span class="def-nbsp"> </span><b>(</b> t, v, start <b>)</b>
 </td><td class="def-right">
- Finds <b class="def-param">v</b> value in array part of the table, returns first match. Uses raw access (<b class="def-param">rawget</b>)
+ Finds value <b class="def-param">v</b> in array part of the table, returns first match. Uses raw access (<b class="def-param">rawget</b>)
 </td>
 </tr><tr>
 <td class="def-left">
@@ -3010,7 +3009,7 @@ Id
 <td class="def-left">
 <a name="debug.upvalues" class="abs"></a><h5 class="def-h5">debug.upvalues</h5> <span class="def-nbsp"> </span><b>(</b> f, cache <b>)</b>
 </td><td class="def-right">
- If <b class="def-param">cache</b> = <b class="def-param">true</b>, upvalue indexes are cached.<br>Usage:<br>1) <span class="def-code">v <B><font color="#00D">=</font></B> <font color="Brown">debug</font>.upvalues(f).name</span><br>2) <span class="def-code"><font color="Brown">debug</font>.upvalues(f).name <B><font color="#00D">=</font></B> v</span><br>3) <span class="def-code"><B><font color="Black">for</font></B> k, v <B><font color="Black">in</font></B> <font color="Brown">debug</font>.upvalues(f) <B><font color="Black">do</font></B> <span> </span><font color="Brown">print</font>(k, v) <span> </span><B><font color="Black">end</font></B></span>
+ If <b class="def-param">cache</b> = <b class="def-param">true</b>, upvalue indexes are cached.<br>Usage:<br>1) <span class="def-code">v <B><font color="#00D">=</font></B> <font color="Brown">debug</font>.upvalues(f).upvalue_name</span><br>2) <span class="def-code"><font color="Brown">debug</font>.upvalues(f).upvalue_name <B><font color="#00D">=</font></B> v</span><br>3) <span class="def-code"><B><font color="Black">for</font></B> k, v <B><font color="Black">in</font></B> <font color="Brown">debug</font>.upvalues(f) <B><font color="Black">do</font></B> <span> </span><font color="Brown">print</font>(k, v) <span> </span><B><font color="Black">end</font></B></span>
 </td>
 </tr></tbody>
 </table>
@@ -3304,7 +3303,7 @@ Id
 <td class="def-left">
 <a name="dump" class="abs"></a><h5 class="def-h5">dump</h5> <span class="def-nbsp"> </span><b>(</b> t, depth, exact <b>)</b>
 </td><td class="def-right">
- Mostly for debugging and experiments. Shows <b class="def-param">t</b>, expanding all tables in it up to the <b class="def-param">depth</b> level. In <b class="def-param">exact</b> = <b class="def-param">true</b> mode outputs proper Lua code.
+ Useful for debugging and experiments. Shows <b class="def-param">t</b>, expanding all tables in it up to the <b class="def-param">depth</b> level. In <b class="def-param">exact</b> = <b class="def-param">true</b> mode outputs proper Lua code.
 </td>
 </tr></tbody>
 </table>
@@ -3367,7 +3366,7 @@ Id
 <td class="def-left">
 <a name="vars" class="abs"></a><h5 class="def-h5">vars</h5>
 </td><td class="def-right">
- Variables that are stored in save game
+ Variables that are stored in saved game
 </td>
 </tr><tr>
 <td class="def-left">
@@ -3379,13 +3378,13 @@ Id
 <td class="def-left">
 <a name="evt.CanShowTopic" class="abs"></a><h5 class="def-h5">evt.CanShowTopic</h5>[]
 </td><td class="def-right">
- <span class="def-ver">[MM7+]</span> <span class="def-nbsp"> </span>Functions that can return true or false to change topic visibility
+ <span class="def-ver">[MM7+]</span> <span class="def-nbsp"> </span>Functions that can return <b class="def-param">true</b> or <b class="def-param">false</b> to change topic visibility
 </td>
 </tr><tr>
 <td class="def-left">
 <a name="evt.map" class="abs"></a><h5 class="def-h5">evt.map</h5>[]
 </td><td class="def-right">
- Event handlers<br><br>Event indexes convention:<br>Indexes 20000 &ndash; 22999 are for sprite events, so that event (20000 + i) corresponds to Map.Sprites[i].
+ Event handlers<br><br>Event indexes convention:<br>Indexes 20000 &ndash; 22999 are for sprite events, so that event (20000 + i) corresponds to <a href="#structs.GameMap.Sprites">Map.Sprites</a>[i].
 </td>
 </tr><tr>
 <td class="def-left">

@@ -46,7 +46,7 @@ local _KNOWNGLOBALS_F = nil, path
 
 --------- table
 
--- Swaps order of the array. 'min' and 'max' default to 1 and !'[[#t]] respecably
+-- Swaps order of the array. 'min' and 'max' default to 1 and !'[[#t]] respectively
 local function table_swap(t, min, max)
 	min = min or 1
 	max = max or #t
@@ -90,7 +90,7 @@ function table.copy(src, dest, overwrite)
 	return dest
 end
 
--- Finds 'v' value, returns corresponding key
+-- Finds value 'v', returns corresponding key
 function table.find(t, v)
 	for k, v1 in pairs(t) do
 		if v1 == v then
@@ -99,7 +99,7 @@ function table.find(t, v)
 	end
 end
 
--- Finds 'v' value in array part of the table, returns first match. Uses raw access ('rawget')
+-- Finds value 'v' in array part of the table, returns first match. Uses raw access ('rawget')
 function table.ifind(t, v, start)
 	local k = start or 1
 	while true do
@@ -356,8 +356,8 @@ end
 
 -- If 'cache' = 'true', upvalue indexes are cached.
 -- Usage:
--- 1) !Lua[[v = debug.upvalues(f).name]]
--- 2) !Lua[[debug.upvalues(f).name = v]]
+-- 1) !Lua[[v = debug.upvalues(f).upvalue_name]]
+-- 2) !Lua[[debug.upvalues(f).upvalue_name = v]]
 -- 3) !Lua[[for k, v in debug.upvalues(f) do  print(k, v)  end]]
 function debug.upvalues(f, cache)
 	local t, last, lastN = cache and {}, nil, nil

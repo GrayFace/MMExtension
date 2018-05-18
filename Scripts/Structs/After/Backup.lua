@@ -38,7 +38,7 @@ local function LocalFileProc(t)
 	return f
 end
 
--- Pass any table from Game.* to this function to make it restore its original state after the player exits the map.
+-- Pass any table from #Game.*:Game# to this function to make it restore its original state after the player exits the map.
 function LocalFile(t)
 	return (LocalFiles[t] or LocalFileProc(t))()
 end

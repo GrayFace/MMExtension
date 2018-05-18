@@ -141,7 +141,7 @@ function ShowQuestEffect()
 	Party.QBits[id] = old
 end
 
--- 'id' can also be a table or a table of tables. See "Quest Alchemy.lua" from quest examples
+-- 'id' can also be a table or a table of tables. See !'[[Quest Alchemy.lua]] from #quest examples:Quests#
 function TakeItemFromParty(id, keep)
 	if type(id) ~= "table" then  -- take 1 item
 		
@@ -194,7 +194,7 @@ local CheckDelta = {0, -1, 0, 0}
   Monster
   MonsterIndex
   NameId
-} See "Quest Kill Monsters.lua" from quest examples]]
+} See !'[=[Quest Kill Monsters.lua]=] from #quest examples:Quests#]]
 function CheckMonstersKilled(t)
 	for i = #CheckType, 0, -1 do
 		local id = t[CheckType[i]]
@@ -231,7 +231,7 @@ local function NextAvailableSkill(t, i)
 	end
 end
 
--- Returns Skill:const.Skills, MaxMastery:const
+-- Returns Skill:const.Skills, #MaxMastery:const#
 function EnumAvailableSkills(class)
 	if mmver == 6 then
 		return NextAvailableSkillMM6, Game.ClassKinds.StartingSkills[class:div(3)]
@@ -252,8 +252,8 @@ local MonTxtProps = {
 	Item = true,
 }
 
--- Unless 'treasure' is 'true' , the monster doesn't have any items or gold.
--- 'place' defines monster index in Map.Monsters array if specified.
+-- Unless 'treasure' is 'true', the monster doesn't have any items or gold.
+-- 'place' defines monster index in #Map.Monsters:# array if specified.
 function SummonMonster(id, x, y, z, treasure, place)
 	local n = Map.Monsters.Count
 	mem.call(offsets.SummonMonster, 2, id, x, y, z)

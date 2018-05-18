@@ -109,7 +109,7 @@ end
 function internal.BeforeMapLoad()
 	MayShow = 0
 	local sgd = tget(internal, "SaveGameData")
-	--!v Variables that are stored in save game
+	--!v Variables that are stored in saved game
 	vars = tget(sgd, "Vars")
 	Vars = vars
 	if mmver == 6 then
@@ -126,7 +126,7 @@ function internal.BeforeMapLoad()
 		evt.Global = MakeEventsTable()
 		evt.global = evt.Global
 		if mmver > 6 then
-			--!v([]) [MM7+]  Functions that can return true or false to change topic visibility
+			--!v([]) [MM7+]  Functions that can return 'true' or 'false' to change topic visibility
 			evt.CanShowTopic = events.new()
 		end
 		LoadScripts("Scripts/Global/*.lua", GlobalScripts)
@@ -148,7 +148,7 @@ function internal.OnLoadMap()
 	--!v([]) Event handlers
 	--
 	-- Event indexes convention:
-	-- Indexes 20000 - 22999 are for sprite events, so that event (20000 + i) corresponds to Map.Sprites[i].
+	-- Indexes 20000 - 22999 are for sprite events, so that event (20000 + i) corresponds to #Map.Sprites:#[i].
 	evt.map = MakeEventsTable()
 	evt.Map = evt.map
 	--!v([])
@@ -1113,12 +1113,12 @@ Usually a better approach is to specify player after 'evt', this way it only eff
 		.u1  'CheckType'
 		 .Info "0 - any monster, 1 - in group, 2 - of type, 3 - specific monster, 4 - specific monster by name (MM8)"
 		.u4  'Id'
-		 .Info "0 - not used, 1 - group id, 2 - monster type minus 1, 3 - monster id, 4 - id in placemon.txt (MM8 only)"
+		 .Info "Depending on 'CheckType': 0 - not used, 1 - group id, 2 - monster type minus 1, 3 - monster id, 4 - id in placemon.txt (MM8 only)"
 		.u1  'Count'
 		 .Info "0 - all must be killed, else a number of monsters that must be killed"
 		if mmver == 8 then
 			define.u1  'InvisibleAsDead'
-			 .Info "a monster can be invisible, like pirates in Ravenshore in MM8 before you enter Regna"
+			 .Info "1 (default) - treat invisible (that is, currently disabled, like pirates in Ravenshore before you enter Regna) monsters as dead when counting, 0 - include invisible monsters"
 		end
 		YJump  '  jump(>=)'
 		CurInfo.CanEmit = true

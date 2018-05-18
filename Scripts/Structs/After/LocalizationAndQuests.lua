@@ -76,13 +76,13 @@ local function NewLoc(t)
 end
 
 --!vt(function)(t, over) Possible values of 'over':
---   true:  permanent setup - overwrite all (used in Localization scripts only)
+--   true:  permanent setup - overwrite all (used in !b[[Localization]] scripts only)
 --   false:  temporary setup - overwrite temporary setup only
 --   "update":  remove all previous temporary setup, overwrite temporary setup only
 LocalizeAll = NewLoc(TXT)
 
 --!(t, over, lev = 1) Possible values of 'over':
---   true:  permanent setup - overwrite all (used in Localization scripts only)
+--   true:  permanent setup - overwrite all (used in !b[[Localization]] scripts only)
 --   false:  temporary setup - overwrite temporary setup only
 --   "update":  remove all previous temporary setup, overwrite temporary setup only
 function Localize(t, over, lev)
