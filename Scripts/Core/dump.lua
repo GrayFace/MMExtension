@@ -143,7 +143,7 @@ function dump(t, depth, exact)
 			return Write(space.."  ...")
 		end
 		ShowN = bufn
-		space = space.."  "
+		space = space.."\t"
 		if not structs or not pcall(ShowStruct, t, space) and not pcall(ShowArray, t, space) then  -- !!!
 			local i = 1
 			for k, v in sortpairs(t) do
