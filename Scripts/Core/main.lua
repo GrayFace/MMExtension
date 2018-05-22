@@ -1,4 +1,4 @@
--- shared by MMExtension and GameExtension
+-- shared by MMExtension, LuaConsole and GameExtension
 
 -- dofile(CoreScriptsPath.."RSFunctions.lua")
 -- PrintToFile("InternalLog.txt")  -- temporary
@@ -56,12 +56,15 @@ local AppPath = internal.AppPath
 DevPath = GitPath or AppPath
 local CoreScriptsPath = DevPath.."Scripts/Core/"
 internal.CoreScriptsPath = CoreScriptsPath
+local CoreGamePath = internal.CoreGamePath and internal.CoreGamePath.."Scripts/Core/" or CoreScriptsPath  -- for game-specific core files (used by LuaConsole)
+local GamePath = internal.AllowForeignDir and AppPath or ""
 
-dofile(CoreScriptsPath.."offsets.lua")
+dofile(CoreGamePath.."offsets.lua")
 offsets = offsets or {}
 dofile(CoreScriptsPath.."Common.lua")
 internal.NoGlobals.Options.NameCharCodes[("?"):byte()] = true
 package.path = AppPath.."Scripts\\Modules\\?.lua"..(GitPath and ";"..GitPath.."Scripts\\Modules\\?.lua" or "")
+GitPath = internal.GitPath  -- allow changing GitPath by offsets.lua
 
 local error = error
 local offsets = offsets
@@ -262,7 +265,6 @@ if isMM then
 else
 	_G.PrintToFile(AppPath..(offsets.LogFileName or "GameExtensionLog.txt"), true)
 end
-_G.PrintToFile = nil
 
 --------- debug
 
@@ -435,8 +437,8 @@ mem.structs.types.m = definer
 
 dofile(CoreScriptsPath.."Debug.lua")
 d_debug = _G.debug.debug
-dofile(CoreScriptsPath.."ConstAndBits.lua")
-dofile(CoreScriptsPath.."events.lua")
+dofile(CoreGamePath.."ConstAndBits.lua")
+dofile(CoreGamePath.."events.lua")
 if isMM then
 	dofile(CoreScriptsPath.."timers.lua")
 	dofile(CoreScriptsPath.."evt.lua")
@@ -450,7 +452,7 @@ local function RunFiles(path, func)
 			dofile(s)
 		end
 	end
-	for s in _G.path.find(path) do
+	for s in _G.path.find(GamePath..path) do
 		(func or dofile)(s)
 	end
 end
@@ -495,7 +497,7 @@ function _G.ReloadLocalization()
 		_G.LoadTextTable(f, _G.LocalizeAll{})
 		-- _G.LocalizeAll(_G.LoadTextTable(f), true)
 	end
-	for f in _G.path.find("Scripts/Localization/*.lua") do
+	for f in _G.path.find(GamePath.."Scripts/Localization/*.lua") do
 		dofile(f)
 	end
 end

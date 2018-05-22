@@ -1,4 +1,4 @@
--- shared by WoG, MMExtension and GameExtension
+-- shared by WoG and MMExtension (with its decendants)
 
 local type = type
 local unpack = unpack
@@ -91,8 +91,15 @@ dofile(CoreScriptsPath.."RSFunctions.lua")
 local table_swap = table.swap
 local table_move = table.move
 local PrintToFileStd = PrintToFile
-function PrintToFile(fname)
-	internal.LogFileInfo = PrintToFileStd(fname, true)
+local function PrintToFileRet(f, info, ...)
+	internal.LogFileInfo = info
+	return f, info, ...
+end
+function PrintToFile(fname, _, preserve, ...)
+	if preserve then
+		return PrintToFileStd(fname, true, preserve, ...)
+	end
+	return PrintToFileRet(PrintToFileStd(fname, true, preserve, ...))
 end
 PrintToFile("InternalLog.txt")  -- temporary
 math.randomseed(os.time())
@@ -733,6 +740,65 @@ function _G.path.GetRelativePath(from, to, isDir)
 end
 
 _G.AppPath = _G.AppPath or _G.path.addslash(GetCurrentDirectory())
+
+
+--------- string
+
+ffi.cdef[[
+int MultiByteToWideChar(
+	uint32_t   CodePage,
+	uint32_t  dwFlags,
+	const char * lpMultiByteStr,
+	int    cbMultiByte,
+	char* lpWideCharStr,
+	int    cchWideChar
+);
+
+int WideCharToMultiByte(
+	uint32_t    CodePage,
+	uint32_t   dwFlags,
+	const char * lpWideCharStr,
+	int     cchWideChar,
+	char*   lpMultiByteStr,
+	int     cbMultiByte,
+	const char*  lpDefaultChar,
+	bool*  lpUsedDefaultChar
+);
+]]
+
+local encPredef = {
+	utf8 = 65001,
+	utf16 = 1200,
+	default = 0,
+}
+
+-- Converts between encodings
+-- Here's the list of them: https://msdn.microsoft.com/ru-ru/library/windows/desktop/dd317756(v=vs.85).aspx
+-- Default system encoding is assumed if not specified otherwise
+local usedDefault = ffi.new("bool[1]")
+function _G.string.convert(s, encFrom, encTo, defChar)
+	encTo = encPredef[encTo] or 0
+	encFrom = encPredef[encFrom] or 0
+	if s == "" or encFrom == encTo then
+		return s
+	end
+	local buf, n = s, #s
+	if encFrom ~= 1200 then  -- not utf16
+		n = ffi.C.MultiByteToWideChar(encFrom, 0, buf, n, nil, 0);
+		buf = ffi.new("char[?]", n*2)
+		ffi.C.MultiByteToWideChar(encFrom, 0, s, #s, buf, n)
+	else
+		n = n/2
+	end
+	if encTo ~= 1200 then  -- not utf16
+		local n2 = ffi.C.WideCharToMultiByte(encTo, 0, buf, n, nil, 0, nil, nil);
+		local buf2 = ffi.new("char[?]", n)
+		defChar = (encTo ~= 65000 and encTo ~= 65001 and defChar or nil)
+		ffi.C.WideCharToMultiByte(encTo, 0, buf, n, buf2, n2, defChar, defChar and usedDefault);
+		return ffi.string(buf2, n2), defChar and usedDefault[0]
+	end
+	return ffi.string(buf, n*2)
+end
 
 --------- debug, events
 
