@@ -1703,7 +1703,7 @@ begin
   r:= TRSWnd(MainWnd).BoundsRect;
   Top:= r.Top;
   Height:= r.Bottom - r.Top;
-  if GetWindowLong(MainWnd, GWL_EXSTYLE) and WS_EX_TOPMOST <> 0 then
+  if GetWindowLong(MainWnd, GWL_STYLE) and WS_BORDER = 0 then
   begin
     p.X:= 0;
     p.Y:= 0;
@@ -1719,22 +1719,6 @@ begin
     h:= Canvas.TextHeight('W')*20 + 10 + PanelChests.Height - Height;
   end;
   PanelChests.Height:= min(h, ClientHeight - PanelChests.Top);
-{  if TRSWnd(MainWnd).ExStyle and WS_EX_TOPMOST <> 0 then
-  begin
-    if WindowFromPoint(Point(10, 100)) = MainWnd then
-    begin
-      SetWindowPos(Handle, HWND_TOPMOST, r.Top, r.Left + 640, 0, 0, SWP_NOSIZE or SWP_NOACTIVATE);
-      //if Mouse.CursorPos.X < Width then
-      BringWindowToTop(Handle);
-    end;
-  end else
-    SetWindowPos(Handle, HWND_NOTOPMOST, r.Top, r.Left - Width, 0, 0, SWP_NOSIZE or SWP_NOACTIVATE);
-{
-  if TRSWnd(MainWnd).ExStyle and WS_EX_TOPMOST <> 0 then
-    SetWindowPos(Handle, HWND_TOPMOST, r.Top, r.Left, 0, 0, SWP_NOSIZE or SWP_NOACTIVATE)
-  else
-    SetWindowPos(Handle, HWND_NOTOPMOST, r.Top, r.Left - Width, 0, 0, SWP_NOSIZE or SWP_NOACTIVATE);
-}
 end;
 
 procedure TForm1.WMPaint(var m: TMessage);
