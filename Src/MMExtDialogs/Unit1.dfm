@@ -1,7 +1,6 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'MMExtension Debug Console'
   ClientHeight = 530
   ClientWidth = 769
   Color = clBtnFace

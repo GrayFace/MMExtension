@@ -211,6 +211,7 @@ char * (__stdcall *DebugDialog)(HWND wnd, const char * text, long top);
 void (__stdcall *DebugDialogAnswer)(const char * text, long selpos);
 void (__stdcall *DebugDialogBranch)(const char * text);
 int (__stdcall *DebugDialogCharsInLine)(HWND wnd);
+const char * (__stdcall *DebugDialogLastResult)(const char * text);
 
 static int DebugConsole(lua_State *L)
 {
@@ -226,9 +227,7 @@ static int DebugConsole(lua_State *L)
 	{
 		s = 0;
 	}
-	s = DebugDialog(*MainWindow, s, lua_toboolean(L, 2));
-	lua_settop(L, 0);
-	lua_pushstring(L, s);
+	lua_pushstring(L, DebugDialog(*MainWindow, s, lua_toboolean(L, 2)));
 	return 1;
 }
 
@@ -241,6 +240,14 @@ static int DebugConsoleAnswer(lua_State *L)
 static int DebugConsoleCharsInLine(lua_State *L)
 {
 	lua_pushnumber(L, DebugDialogCharsInLine(*MainWindow));
+	return 1;
+}
+
+static int DebugConsoleLastResult(lua_State *L)
+{
+	lua_pushstring(L, DebugDialogLastResult(0));
+	if (lua_gettop(L) > 1 && lua_isstring(L, 1))
+		DebugDialogLastResult(lua_tostring(L, 1));
 	return 1;
 }
 
@@ -546,6 +553,7 @@ static const struct luaL_reg LuaLib_internal [] =
 	{"DebugConsole", DebugConsole},
 	{"DebugConsoleAnswer", DebugConsoleAnswer},
 	{"DebugConsoleCharsInLine", DebugConsoleCharsInLine},
+	{"DebugConsoleLastResult", DebugConsoleLastResult},	
 	{"CompileAsm", CompileAsm},
 	{0, 0}
 };
@@ -557,6 +565,7 @@ void InitLua()
 	*(PROC*)&DebugDialogAnswer = DllImport(RelPath("ExeMods\\MMExtension\\MMExtDialogs.dll"), "DebugDialogAnswer", true);
 	*(PROC*)&DebugDialogBranch = DllImport(RelPath("ExeMods\\MMExtension\\MMExtDialogs.dll"), "DebugDialogBranch", true);
 	*(PROC*)&DebugDialogCharsInLine = DllImport(RelPath("ExeMods\\MMExtension\\MMExtDialogs.dll"), "DebugDialogCharsInLine", true);
+	*(PROC*)&DebugDialogLastResult = DllImport(RelPath("ExeMods\\MMExtension\\MMExtDialogs.dll"), "DebugDialogLastResult", true);
 	*(PROC*)&fasm_Assemble = DllImport(RelPath("ExeMods\\MMExtension\\FASM.DLL"), "fasm_Assemble", true);
 
 	lua_State* L = Lua = luaL_newstate();

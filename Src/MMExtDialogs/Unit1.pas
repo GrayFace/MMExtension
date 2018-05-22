@@ -38,6 +38,8 @@ procedure DebugDialogAnswer(text: PChar; pos: int4); stdcall;
 procedure DebugDialogResize(w, h: int); stdcall;
 function DebugDialogCharsInLine(parentWnd: HWND): int; stdcall;
 procedure DebugDialogBranch(p: PChar); stdcall;
+procedure DebugDialogCaption(p: PChar); stdcall;
+function DebugDialogLastResult(p: PChar): PChar; stdcall;
 
 implementation
 
@@ -52,6 +54,7 @@ var
   AnswerSelPos: int;
   DlgW: int = 620;
   DlgH: int = 460;
+  DlgCaption: string = 'MMExtension Debug Console';
   CharsInLine: int;
   Running: Boolean;
 
@@ -74,6 +77,7 @@ begin
     Application.CreateForm(TForm1, Form1);
     Form1.Width:= DlgW;
     Form1.Height:= DlgH;
+    Form1.Caption:= DlgCaption;
     CalcCharsInLine;
     Form1.RSMemo1.Perform(EM_SETTABSTOPS, 1, int(@TabSize));
     //TForm((@Application.MainForm)^):= Form1;
@@ -217,6 +221,25 @@ function DebugDialogCharsInLine(parentWnd: HWND): int; stdcall;
 begin
   NeedForm(parentWnd);
   Result:= CharsInLine;
+end;
+
+procedure DebugDialogCaption(p: PChar); stdcall;
+begin
+  DlgCaption:= p;
+end;
+
+function DebugDialogLastResult(p: PChar): PChar; stdcall;
+begin
+  if p <> nil then
+  begin
+    DlgResult:= p;
+    OldResult:= '';
+    Result:= p;
+    exit;
+  end;
+  Result:= ptr(DlgResult);
+  if Result = nil then
+    Result:= ptr(oldResult);
 end;
 
 { DebugDialogBranch }
@@ -438,5 +461,7 @@ exports
   DebugDialogResize,
   DebugDialogCharsInLine,
   DebugDialogAnswer,
-  DebugDialogBranch;
+  DebugDialogBranch,
+  DebugDialogCaption,
+  DebugDialogLastResult;
 end.
