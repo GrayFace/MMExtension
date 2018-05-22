@@ -200,7 +200,7 @@ function io.load(path, translate)
 end
 
 -- Makes 'print' function write into a file specified by 'fname'. Specifying 'Windows = true' forces use of \r\n and speeds it up a bit on Windows. Returns a function that returns current state of the log when called: 'SomethingWritten', 'fname'
-function PrintToFile(fname, Windows)
+function PrintToFile(fname, Windows, preserve)
 
 	local opened
 	
@@ -214,8 +214,8 @@ function PrintToFile(fname, Windows)
 		end
 	end
 	
-	function print(...)
-		local f = io_open(fname, (opened and "a" or "w")..(Windows and "b" or "t"))
+	local function doprint(...)
+		local f = assert(io_open(fname, (opened and "a" or "w")..(Windows and "b" or "t")))
 		opened = true
 		local t = {}
 		print1(t, select('#', ...), ...)
@@ -223,8 +223,11 @@ function PrintToFile(fname, Windows)
 		f:write((string_gsub(table_concat(t), "\r?\n", Windows and "\r\n" or "\n")))
 		f:close()
 	end
+	if not preserve then
+		print = doprint
+	end
 	
-	return function()
+	return doprint, function()
 		return opened, fname
 	end
 end
