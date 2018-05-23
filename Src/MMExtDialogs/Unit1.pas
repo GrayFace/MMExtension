@@ -24,6 +24,7 @@ type
     FInUndo: Boolean;
     procedure CreateParams(var Params: TCreateParams); override;
     procedure WMActivateApp(var Msg:TWMActivateApp); message WM_ActivateApp;
+    procedure WMSysCommand(var m: TWMSysCommand); message WM_SysCommand;
     procedure AcceptResult;
     procedure CancelInput;
   public
@@ -52,8 +53,8 @@ const
 var
   DlgResult, OldResult, Answer: string;
   AnswerSelPos: int;
-  DlgW: int = 620;
-  DlgH: int = 460;
+  DlgW: int = 0;
+  DlgH: int = 0;
   DlgCaption: string = 'MMExtension Debug Console';
   CharsInLine: int;
   Running: Boolean;
@@ -70,13 +71,26 @@ begin
 end;
 
 function NeedForm(parentWnd: HWND): TForm1;
+var
+  r: TRect;
 begin
   if Form1 = nil then
   begin
-    Application.Handle:= parentWnd;
+    if parentWnd <> 0 then
+      Application.Handle:= parentWnd
+    else
+      Application.Initialize;
     Application.CreateForm(TForm1, Form1);
-    Form1.Width:= DlgW;
-    Form1.Height:= DlgH;
+    if (DlgW = 0) and (parentWnd <> 0) then
+    begin
+      GetClientRect(parentWnd, r);
+      DlgW:= r.Right - 20;
+      DlgH:= r.Bottom - 20;
+    end;
+    if DlgW > 0 then
+      Form1.Width:= DlgW;
+    if DlgH > 0 then
+      Form1.Height:= DlgH;
     Form1.Caption:= DlgCaption;
     CalcCharsInLine;
     Form1.RSMemo1.Perform(EM_SETTABSTOPS, 1, int(@TabSize));
@@ -90,8 +104,10 @@ function DebugDialog(parentWnd: HWND; question: PChar; topmost: BOOL): PChar; st
 
   procedure HideForm;
   begin
-    EnableWindow(parentWnd, true);
-    SetForegroundWindow(parentWnd);
+    {if parentWnd <> 0 then
+      EnableWindow(parentWnd, true);
+    if parentWnd <> 0 then
+      SetForegroundWindow(parentWnd);}
     if Form1 <> nil then
       Form1.Hide;
   end;
@@ -161,12 +177,11 @@ begin
       if topmost then
       begin
         BorderIcons:= [biSystemMenu];
-        //topmost:= HWND_NOTOPMOST;
       end else
-      begin
-        BorderIcons:= [biMaximize, biSystemMenu];
-        //topmost:= HWND_TOPMOST;
-      end;
+        if parentWnd <> 0 then
+          BorderIcons:= [biMaximize, biSystemMenu]
+        else
+          BorderIcons:= [biMaximize, biSystemMenu, biMinimize];
 
       //SetWindowPos(Handle, topmost, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE + SWP_NOACTIVATE);
       RSMemo1.SelStart:= MaxInt;
@@ -185,17 +200,21 @@ begin
         RSMemo1.SelLength:= MaxInt;
       PostMessage(RSMemo1.Handle, EM_SCROLLCARET, 0, 0);
     end;
-    EnableWindow(parentWnd, false);
+    if parentWnd <> 0 then
+      EnableWindow(parentWnd, false);
     Running:= true;
     Application.Run;
     Running:= false;
     PBoolean(@Application.Terminated)^:= false;
-    EnableWindow(parentWnd, true);
-    if IsIconic(parentWnd) then
-      SendMessage(parentWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-    SetForegroundWindow(parentWnd);
-    if Form1.FWasDeactivated then
-      SendMessage(parentWnd, WM_ACTIVATEAPP, 1, 0);
+    if parentWnd <> 0 then
+    begin
+      EnableWindow(parentWnd, true);
+      if IsIconic(parentWnd) then
+        SendMessage(parentWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+      SetForegroundWindow(parentWnd);
+      if Form1.FWasDeactivated then
+        SendMessage(parentWnd, WM_ACTIVATEAPP, 1, 0);
+    end;
     if DlgResult = '' then
       HideForm;
     Result:= ptr(DlgResult);
@@ -454,6 +473,15 @@ begin
   if Visible and not Msg.Active then
     FWasDeactivated:= true;
   inherited;
+end;
+
+procedure TForm1.WMSysCommand(var m: TWMSysCommand);
+begin
+  // no idea why this problem occurs
+  if (m.CmdType and $fff0 = SC_MINIMIZE) and (Application.MainForm = self) then
+    DefWindowProc(Handle, WM_SYSCOMMAND, TMessage(m).WParam, TMessage(m).LParam)
+  else
+    inherited;
 end;
 
 exports

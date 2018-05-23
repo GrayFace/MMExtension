@@ -131,10 +131,10 @@
 		</Directories>
 		<Parameters>
 			<Parameters Name="RunParams"></Parameters>
-			<Parameters Name="HostApplication">C:\Games\mm8\mm8.exe</Parameters>
+			<Parameters Name="HostApplication">C:\CppProjects\LuaConsole\LuaConsole.exe</Parameters>
 			<Parameters Name="Launcher"></Parameters>
 			<Parameters Name="UseLauncher">False</Parameters>
-			<Parameters Name="DebugCWD">C:\Games\mm8\</Parameters>
+			<Parameters Name="DebugCWD">C:\CppProjects\LuaConsole\</Parameters>
 			<Parameters Name="Debug Symbols Search Path"></Parameters>
 			<Parameters Name="LoadAllSymbols">True</Parameters>
 			<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
