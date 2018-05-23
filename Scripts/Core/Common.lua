@@ -769,12 +769,12 @@ int WideCharToMultiByte(
 local encPredef = {
 	utf8 = 65001,
 	utf16 = 1200,
-	default = 0,
 }
 
 -- Converts between encodings
 -- Here's the list of them: https://msdn.microsoft.com/ru-ru/library/windows/desktop/dd317756(v=vs.85).aspx
--- Default system encoding is assumed if not specified otherwise
+-- Default system encoding (0) is assumed if not specified otherwise
+-- Strings "utf8" and "utf16" are also supported.
 local usedDefault = ffi.new("bool[1]")
 function _G.string.convert(s, encFrom, encTo, defChar)
 	encTo = encPredef[encTo] or 0
