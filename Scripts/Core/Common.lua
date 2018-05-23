@@ -459,7 +459,6 @@ typedef enum {
   FORMAT_MESSAGE_FROM_HMODULE    = 0x800,
   FORMAT_MESSAGE_FROM_SYSTEM     = 0x1000,
   FORMAT_MESSAGE_ARGUMENT_ARRAY  = 0x2000,
-	__FORMAT_MESSAGE_size          = 0xFFFFFFFF
 } FORMAT_MESSAGE_FLAGS;
 
 uint32_t __stdcall FormatMessageA(FORMAT_MESSAGE_FLAGS dwFlags, const void *lpSource, uint32_t dwMessageId, uint32_t dwLanguageId, const char * lpBuffer, uint32_t nSize, void *Arguments);
@@ -606,7 +605,6 @@ typedef enum {
 	FO_COPY                   = 0x0002,
 	FO_DELETE                 = 0x0003,
 	FO_RENAME                 = 0x0004,
-	__FILEOP_FUNC_size        = 0xFFFFFFFF
 } FILEOP_FUNC;
 
 typedef enum {
@@ -624,18 +622,18 @@ typedef enum {
 	FOF_NOERRORUI             = 0x0400,  // don't put up error UI
 	FOF_NOCOPYSECURITYATTRIBS = 0x0800,  // dont copy NT file Security Attributes
 	FOF_NORECURSION           = 0x1000  // don't recurse into directories.
-} FILEOP_FLAGS;
+} __attribute__ ((packed)) FILEOP_FLAGS;
 
 typedef struct {
 	void *          hwnd;
 	FILEOP_FUNC     wFunc;
 	const char *    pFrom;
 	const char *    pTo;
-	FILEOP_FLAGS    fFlags;
-	bool            fAnyOperationsAborted;
+	short           fFlags;
+	int             fAnyOperationsAborted;
 	void *          hNameMappings;
 	const char *    lpszProgressTitle; // only used if FOF_SIMPLEPROGRESS
-} SHFILEOPSTRUCTA, *LPSHFILEOPSTRUCTA;
+} __attribute__ ((packed)) SHFILEOPSTRUCTA, *LPSHFILEOPSTRUCTA;
 
 int __stdcall SHFileOperationA(LPSHFILEOPSTRUCTA lpFileOp);
 bool __stdcall DeleteFileA(const char *lpFileName);
@@ -672,7 +670,7 @@ local SHErrors = {  -- MSDN says these shouldn't be taken for granted
 }
 
 -- Make os.remove utilize Recycle Bin by default
-local SHFileOperation = ffi.load("Shell32", true).SHFileOperationA
+-- local SHFileOperation = ffi.load("Shell32", true).SHFileOperationA
 local SHDeleteFlags = ffi.C.FOF_NOCONFIRMATION + ffi.C.FOF_NOERRORUI + ffi.C.FOF_SILENT
 -- local DeleteFileA = ffi.C.DeleteFileA
 
@@ -684,7 +682,9 @@ function _G.os.remove(fname, NoRecycle)
 		local from = path_noslash(fname).."\000"
 		fos.pFrom = from
 		fos.fFlags = SHDeleteFlags + (NoRecycle and 0 or ffi.C.FOF_ALLOWUNDO)
-		local code = SHFileOperation(fos)
+		local p = tonumber(ffi.cast('intptr_t', ffi.cast('void *', fos)))
+		local code = mem.dll.shell32.SHFileOperationA(p)
+		-- local code = SHFileOperation(fos)  -- ffi function calls are buggy garbage
 		if code ~= 0 then
 			return nil, fname..": "..(SHErrors[code] or GetErrorText(code)), code
 		end
@@ -720,7 +720,6 @@ typedef enum {
 	FILE_ATTRIBUTE_OFFLINE             = 0x00001000,
 	FILE_ATTRIBUTE_NOT_CONTENT_INDEXED = 0x00002000,
 	FILE_ATTRIBUTE_ENCRYPTED           = 0x00004000,
-	__FILE_ATTRIBUTES_size             = 0xFFFFFFFF
 } FILE_ATTRIBUTES;
 
 bool __stdcall PathRelativePathToA(char *outPath, const char *pszFrom, FILE_ATTRIBUTES dwAttrFrom, const char *pszTo, FILE_ATTRIBUTES dwAttrTo);
@@ -739,7 +738,24 @@ function _G.path.GetRelativePath(from, to, isDir)
 	return nil, GetErrorText()
 end
 
-_G.AppPath = _G.AppPath or _G.path.addslash(GetCurrentDirectory())
+-- os.execute
+-- ffi.cdef[[
+-- bool CreateProcess(
+--   const char * lpApplicationName,
+--   char * lpCommandLine,
+--   void * lpProcessAttributes,
+--   void * lpThreadAttributes,
+--   bool bInheritHandles,
+--   uint32_t dwCreationFlags,
+--   void * lpEnvironment,
+--   _In_opt_    LPCTSTR               lpCurrentDirectory,
+--   _In_        LPSTARTUPINFO         lpStartupInfo,
+--   _Out_       LPPROCESS_INFORMATION lpProcessInformation
+-- );]]
+
+
+
+-- _G.AppPath = _G.AppPath or _G.path.addslash(GetCurrentDirectory())
 
 
 --------- string
@@ -775,7 +791,7 @@ local encPredef = {
 -- Here's the list of them: https://msdn.microsoft.com/ru-ru/library/windows/desktop/dd317756(v=vs.85).aspx
 -- Default system encoding (0) is assumed if not specified otherwise
 -- Strings "utf8" and "utf16" are also supported.
-local usedDefault = ffi.new("bool[1]")
+local usedDefault = ffi.new("bool[4]")
 function _G.string.convert(s, encFrom, encTo, defChar)
 	encTo = encPredef[encTo] or 0
 	encFrom = encPredef[encFrom] or 0
