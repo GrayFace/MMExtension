@@ -379,7 +379,8 @@ type
     FSFT: TMemoryStream;
     FSFTNotFound: Boolean;
     FSFTKind: int;
-    FMyTempPath, FCopyStr: string;
+    FMyTempPath: string;
+    FCopyStr: WideString;
     FDragFilesList: TStringList;
     Ini: TIniFile;
     FilterItemVisible: array of Boolean;
@@ -2192,7 +2193,8 @@ begin
   if FMyTempPath <> '' then
   begin
     // remove temp folder
-    RSFileOperation(ExcludeTrailingPathDelimiter(FMyTempPath), '', FO_DELETE);
+    //RSFileOperation(ExcludeTrailingPathDelimiter(FMyTempPath), '', FO_DELETE);
+    RSDeleteAll(ExcludeTrailingPathDelimiter(FMyTempPath), true);
     // check if clipboard contains files from the archive, clear it
     try
       with Clipboard do

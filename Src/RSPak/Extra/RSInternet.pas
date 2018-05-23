@@ -17,7 +17,7 @@ uses
   SysUtils, Windows, Classes, WinInet, Math, RSQ, RSSysUtils;
 
 function RSDownloadFile(URL: string; a: TStream; Timeout: DWORD = 0; Limit: int64 = $7fffffffffffffff): Boolean; overload;
-function RSDownloadFile(URL: string; fname: string; Timeout: DWORD = 0; Limit: int64 = $7fffffffffffffff): Boolean; overload;
+function RSDownloadFile(URL: string; const fname: string; Timeout: DWORD = 0; Limit: int64 = $7fffffffffffffff): Boolean; overload;
 //function RSInternetGetLastResponseInfo():string;
 
 implementation
@@ -64,13 +64,14 @@ begin
   Result:= (LastError = ERROR_SUCCESS);
 end;
 
-function RSDownloadFile(URL: string; fname: string; Timeout: DWORD = 0; Limit: int64 = $7fffffffffffffff): Boolean; overload;
+function RSDownloadFile(URL: string; const fname: string; Timeout: DWORD = 0; Limit: int64 = $7fffffffffffffff): Boolean; overload;
 var
   LastError: DWORD;
-  a: TStream;
+  a: TRSFileStreamProxy;
 begin
   a:= TRSFileStreamProxy.Create(fname, fmCreate);
   try
+    a.CreateDir:= true;
     Result:= RSDownloadFile(URL, a, Timeout, Limit);
     LastError:= GetLastError;
   finally

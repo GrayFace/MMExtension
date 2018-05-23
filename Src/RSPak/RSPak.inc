@@ -142,4 +142,5 @@
 {$T-} { Typed @ operator }
 {$X+} { Extended syntax }
 {$H+} { Use long strings }
+{$D+} { Enable breakpoints (should always be on everywhere!) }
 

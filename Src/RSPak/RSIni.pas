@@ -37,13 +37,14 @@ type
     FileName: string;
     CurrentSection: string;
     CurrentForm: TObject;
-    constructor Create(const fname: string; section: string = ''; form: TObject = nil);
+    constructor Create(const fname: string; section: string = 'Options'; form: TObject = nil);
     procedure Add(const Name, FormOption: string); overload;
     procedure Add(const Name: string; var Option: string; Default: string); overload;
     procedure Add(const Name: string; var Option: int; Default: int); overload;
     procedure Add(const Name: string; var Option: Boolean; Default: Boolean); overload;
     procedure Read(EnsureExist: Boolean = false);
     procedure Write(WhenDifferent: Boolean = true);
+    procedure Clear;
   end;
 
 implementation
@@ -99,6 +100,11 @@ begin
   end;
 end;
 
+procedure TRSIniOptions.Clear;
+begin
+  FOptions:= nil;
+end;
+
 constructor TRSIniOptions.Create(const fname: string; section: string; form: TObject);
 begin
   FileName:= fname;
@@ -144,8 +150,8 @@ var
   begin
     if EnsureExist then
     begin
-      Result:= ini.ReadString(Section, Ident, '_');
-      if (Result = '_') and (ini.ReadString(Section, Ident, '') = '') then
+      Result:= ini.ReadString(Section, Ident, #13#10);
+      if Result = #13#10 then
       begin
         ini.WriteString(Section, Ident, Default);
         Result:= Default;

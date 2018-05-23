@@ -73,6 +73,7 @@ contains
   RSIni in 'RSIni.pas',
   RSTreeView in 'RSTreeView.pas',
   RSForm in 'RSForm.pas',
-  RSTrayIcon in 'RSTrayIcon.pas';
+  RSTrayIcon in 'RSTrayIcon.pas',
+  RSClipboard in 'RSClipboard.pas';
 
 end.

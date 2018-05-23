@@ -93,6 +93,7 @@ type
     procedure SetSize(NewSize: Longint); override;
     procedure SetSize(const NewSize: Int64); override;
   public
+    CreateDir: Boolean;
     function Read(var Buffer; Count: Longint): Longint; override;
     function Write(const Buffer; Count: Longint): Longint; override;
     function Seek(const Offset: Int64; Origin: TSeekOrigin): Int64; override;
@@ -451,6 +452,15 @@ function RSCreateFile(const FileName:string;
            dwFlagsAndAttributes:DWord = FILE_ATTRIBUTE_NORMAL;
            hTemplateFile:HFile=0):HFile;
 
+const
+  REPLACEFILE_IGNORE_MERGE_ERRORS = 2;
+  REPLACEFILE_IGNORE_ACL_ERRORS = 4;
+  ERROR_UNABLE_TO_MOVE_REPLACEMENT = 1176;
+  ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 = 1177;
+  ERROR_UNABLE_TO_REMOVE_REPLACED = 1175;
+
+function RSReplaceFile(const Replaced, Replacement: string; const Backup: string = ''; Flags: int = REPLACEFILE_IGNORE_MERGE_ERRORS): Boolean;
+
 function RSLoadFile(FileName:string):TRSByteArray;
 procedure RSSaveFile(FileName:string; Data: ptr; L: int); overload;
 procedure RSSaveFile(FileName:string; Data:TRSByteArray); overload;
@@ -471,7 +481,8 @@ function RSCreateDirectory(const PathName:string;
 function RSCreateDirectoryEx(const lpTemplateDirectory, NewDirectory:string;
            lpSecurityAttributes:PSecurityAttributes = nil):boolean;
 
-function RSRemoveDir(const Dir:string):boolean;
+function RSRemoveDir(const Dir: string):boolean; deprecated;
+function RSDeleteAll(const Mask: string; Folders: boolean): boolean;
 
 const
   FO_MOVE = ShellAPI.FO_MOVE;
@@ -907,6 +918,8 @@ end;
 
 procedure TRSFileStreamProxy.Check;
 begin
+  if (Handle < 0) and CreateDir then
+    RSCreateDir(ExtractFilePath(FileName));
   if Handle < 0 then
 {$IFDEF MSWINDOWS}
     if FMode = fmCreate then
@@ -2297,7 +2310,17 @@ begin
   Result:= RSQ.FileExists(FileName);
 end;
 
+function TmpName(const s: string): string;
+begin
+  repeat
+    Result:= s + IntToHex(Random($FFFF), 4);
+  until not FileExists(Result);
+end;
+
 function RSMoveFile(const OldName, NewName: string; FailIfExists: Boolean): Bool;
+var
+  er: DWORD;
+  tmp: string;
 begin
   if not FailIfExists and FileExists(OldName) then
   begin
@@ -2305,6 +2328,32 @@ begin
     DeleteFile(ptr(NewName));
   end;
   Result:= MoveFile(ptr(OldName), ptr(NewName));
+{  if FailIfExists then
+    Result:= MoveFile(PChar(OldName), PChar(NewName))
+  else
+    Result:=
+  if not FailIfExists and FileExists(OldName) then
+  begin
+    tmp:= TmpName(NewName);
+    Result:= MoveFile(PChar(NewName), ptr(tmp));
+    if not Result then  exit;
+    //FileSetReadOnly(NewName, false);
+    //DeleteFile(ptr(NewName));
+  end;
+  if tmp <> '' then
+    if Result then
+      if not DeleteFile(ptr(tmp)) then
+      begin
+        // roll back
+        MoveFile(ptr(tmp), ptr(NewName))
+        MoveFile(ptr(tmp), ptr(NewName))
+      end else
+    begin
+
+    end else
+    begin
+
+    end;}
 end;
 
 function RSCreateFile(const FileName:string; dwDesiredAccess:DWord;
@@ -2313,7 +2362,7 @@ function RSCreateFile(const FileName:string; dwDesiredAccess:DWord;
            dwCreationDistribution, dwFlagsAndAttributes:DWord;
            hTemplateFile:HFile):HFile;
 begin
-  if ((dwCreationDistribution =CREATE_ALWAYS)
+  if ((dwCreationDistribution = CREATE_ALWAYS)
      or (dwCreationDistribution = CREATE_NEW)
      or (dwCreationDistribution = OPEN_ALWAYS))
      and not RSCreateDir(ExtractFilePath(FileName)) then
@@ -2323,6 +2372,44 @@ begin
     Result:=CreateFile(PChar(FileName), dwDesiredAccess, dwShareMode,
      lpSecurityAttributes, dwCreationDistribution, dwFlagsAndAttributes,
      hTemplateFile);
+end;
+
+var
+  ReplaceFileLoaded: Boolean;
+  ReplaceFile: function(Replaced, Replacement, Backup: PChar; Flags: int; u1: ptr = nil; u2: ptr = nil): Bool; stdcall;
+
+function RSReplaceFile(const Replaced, Replacement: string; const Backup: string = ''; Flags: int = REPLACEFILE_IGNORE_MERGE_ERRORS): Boolean;
+var
+  tmp, tmp2: string;
+  er: DWORD;
+begin
+  if not ReplaceFileLoaded then
+    RSLoadProc(@ReplaceFile, kernel32, 'ReplaceFileA', false, false);
+  ReplaceFileLoaded:= true;
+  {if @ReplaceFile = nil then
+  begin
+    tmp:= TmpName(Replaced);
+    Result:= RSMoveFile MoveFile(Replacement)
+  end;
+    if Backup <> '' then
+    begin
+
+      Result:= MoveFile()
+      SetLastError(ERROR_UNABLE_TO_MOVE_REPLACEMENT)
+    end else
+    begin
+
+    end;
+  begin
+    if
+    repeat
+      tmp:= Replaced + IntToHex(Random($FFFF), 4);
+    until not FileExists(tmp);
+    Result:= MoveFile(PChar(Replaced), ptr(tmp));
+    if not Result then  exit;
+    Result:= MoveFile()
+  end else}
+    Result:= ReplaceFile(PChar(Replaced), PChar(Replacement), ptr(Backup), Flags);
 end;
 
 function RSLoadFile(FileName:string):TRSByteArray;
@@ -2456,9 +2543,27 @@ begin
               ptr(NewDirectory), lpSecurityAttributes);
 end;
 
-function RSRemoveDir(const Dir:string):boolean;
+function RSRemoveDir(const Dir:string):boolean; deprecated;
 begin
   Result:=RSFileOperation(Dir, '', FO_DELETE);
+end;
+
+function RSDeleteAll(const Mask: string; Folders: boolean): boolean;
+begin
+  Result:= true;
+  with TRSFindFile.Create(Mask) do
+    try
+      while FindNextAttributes(0, 0) do // Only files
+        if Data.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY = 0 then
+          Result:= DeleteFile(ptr(FileName)) and Result
+        else if Folders then
+        begin
+          Result:= RSDeleteAll(FileName + '\*', true) and Result;
+          Result:= RemoveDirectory(ptr(FileName)) and Result;
+        end;
+    finally
+      Free;
+    end;
 end;
 
 function DoubleNull(const s:string):string;

@@ -91,6 +91,8 @@ type
 function RSDisableVisibleControls(c: TWinControl): TRSControlArray;
 procedure RSEnableControls(List: TRSControlArray; Enable: Boolean = true);
 
+function SortedStringList(CaseSensitive: Boolean = false; Duplicates: TDuplicates = dupIgnore): TStringList;
+
 {function RSMessageBox(AText:string; ACaption:string='';
                                         AType:integer=0); overload;
 
@@ -827,6 +829,14 @@ var
 begin
   for i := 0 to high(List) do
     List[i].Enabled:= Enable;
+end;
+
+function SortedStringList(CaseSensitive: Boolean = false; Duplicates: TDuplicates = dupIgnore): TStringList;
+begin
+  Result:= TStringList.Create;
+  Result.CaseSensitive:= CaseSensitive;
+  Result.Duplicates:= Duplicates;
+  Result.Sorted:= true;
 end;
 
 {

@@ -48,7 +48,7 @@ end;
 
 procedure TRSClipboard.SetText(const v: WideString);
 begin
-  SetBuffer(CF_UNICODETEXT, PWideChar(v)^, 2*(Length(v) + 1));
+  inherited SetBuffer(CF_UNICODETEXT, PWideChar(v)^, 2*(Length(v) + 1));
 end;
 
 end.

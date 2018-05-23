@@ -75,9 +75,10 @@ var
 procedure msgz(const s:string); overload;
 procedure msgz(const s1, s2:string); overload;
 procedure msgz(i:integer); overload;
-procedure msgz(i,j:int); overload;
+procedure msgz(i:int64); overload;
 procedure msgz(a:ext); overload;
 procedure msgz(b:Boolean); overload;
+procedure msgz(i,j:int); overload;
 procedure msgH(a:pointer); overload;
 procedure msgH(a,b:pointer); overload;
 procedure msgH(i:int); overload;
@@ -92,6 +93,7 @@ procedure zM(const s1, s2:string); overload;
 procedure zM(i:integer); overload;
 procedure zM(i,j:int); overload;
 procedure zM(a:ext); overload;
+procedure zM(a,b:ext); overload;
 procedure zM(b:Boolean); overload;
 procedure zMH(a:pointer); overload;
 procedure zMH(a,b:pointer); overload;
@@ -165,6 +167,11 @@ begin
   MessageBox(0,pchar(IntToStr(i)),'',0);
 end;
 
+procedure msgz(i:int64); overload;
+begin
+  MessageBox(0,pchar(IntToStr(i)),'',0);
+end;
+
 procedure msgz(a:ext); overload;
 begin
   MessageBox(0,pchar(FloatToStr(a)),'',0);
@@ -220,6 +227,11 @@ end;
 procedure zM(a:ext); overload;
 begin
   OutputDebugString(pchar(FloatToStr(a)));
+end;
+
+procedure zM(a,b:ext); overload;
+begin
+  OutputDebugString(pchar(FloatToStr(a)+' '+FloatToStr(b)));
 end;
 
 procedure zM(b:Boolean); overload;

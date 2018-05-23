@@ -191,7 +191,7 @@ function RSParseTokens(const ps:TRSParsedString; IndexFrom,IndexTo:int;
    const Separators:array of string; Limit: int = MaxInt):TRSParsedString;
 begin
   IndexFrom:= IndexFrom*2;
-  IndexTo:= min(IndexTo*2, length(ps)) - 1;
+  IndexTo:= min(min(IndexTo, MaxInt div 2)*2, length(ps)) - 1;
   if IndexTo > IndexFrom then
     Result:=DoParse(ps[IndexFrom], ps[IndexTo], Separators, Limit)
   else

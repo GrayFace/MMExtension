@@ -180,7 +180,6 @@ type
     procedure CreateParams(var Params: TCreateParams); override;
     procedure CreateWnd; override;
     procedure DoChanged; virtual; abstract;
-    procedure IncrementValue(delta: int); virtual; abstract;
     procedure DoDown(SpinnedBy:integer; Clicked:boolean=false); virtual;
     procedure DoUp(SpinnedBy:integer; Clicked:boolean=false); virtual;
     procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
@@ -197,6 +196,7 @@ type
     procedure WndProc(var Msg: TMessage); override;
   public
     constructor Create(AOwner: TComponent); override;
+    procedure IncrementValue(mul: int); virtual; abstract;
     procedure GetSelection(var Start, Caret: Integer);
     procedure PlaceButton;
     procedure SetSelection(Start, Caret:int);
@@ -290,10 +290,10 @@ type
     function CheckValue(NewValue: LongInt): LongInt;
     procedure Validate; override;
     procedure DoChanged; override;
-    procedure IncrementValue(delta: int); override;
     function IsValidInputChar(c: Char): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
+    procedure IncrementValue(mul: int); override;
   published
     property Base: Integer read FBase write SetBase default 0;
     property Thousands: Boolean read FThous write SetThous default false;
@@ -328,10 +328,10 @@ type
     function CheckValue(NewValue: ext): ext;
     procedure Validate; override;
     procedure DoChanged; override;
-    procedure IncrementValue(delta: int); override;
     function IsValidInputChar(c: Char): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
+    procedure IncrementValue(mul: int); override;
   published
     property Thousands: Boolean read FThous write SetThous default false;
     property DotAsSeparator: Boolean read FDotAsSeparator write SetDotAsSeparator default false;
@@ -1404,20 +1404,20 @@ begin
     Result:=CheckValue(Result);
 end;
 
-procedure TRSSpinEdit.IncrementValue(delta: int);
+procedure TRSSpinEdit.IncrementValue(mul: int);
 var
   v: Integer;
 begin
   v:= Value;
-  delta:= delta*FIncrement;
-  if delta < 0 then
-    if v > low(int) - delta then
-      Value:= v + delta
+  mul:= mul*FIncrement;
+  if mul < 0 then
+    if v > low(int) - mul then
+      Value:= v + mul
     else
       Value:= low(int)
   else
-    if v < MaxInt - delta then
-      Value:= v + delta
+    if v < MaxInt - mul then
+      Value:= v + mul
     else
       Value:= MaxInt;
 end;
@@ -1581,9 +1581,16 @@ begin
   Result:= CheckValue(StrToFloatDef(s, FValue));
 end;
 
-procedure TRSFloatSpinEdit.IncrementValue(delta: int);
+procedure TRSFloatSpinEdit.IncrementValue(mul: int);
+const
+  prec = 1E-16;
+var
+  v: ext;
 begin
-  Value:= Value + delta*FIncrement;
+  v:= Value + mul*FIncrement;
+  if abs(v) < FIncrement*prec then
+    v:= 0;
+  Value:= v;
 end;
 
 function TRSFloatSpinEdit.IsMaxValueStored: Boolean;
