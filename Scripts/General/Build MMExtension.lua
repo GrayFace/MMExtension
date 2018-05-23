@@ -65,27 +65,6 @@ rmdir MMEditor /S /Q
 del pack.bat
 ]]
 
-local function DoPack(dir)
-	local cd, r, mkdir = os.chdir, os.execute, os.mkdir
-	local old = cd(dir)
-	r'xcopy ..\\KillAbsolete "MMExtension" /E /I'
-
-	cd(dir.."MMExtension")
-	mkdir"Scripts/Global"
-	mkdir"Scripts/Modules"
-	mkdir"Scripts/Maps"
-	r'"c:/Program Files/WinRAR/Rar.exe" a -m5 -r ../MMExtension.rar *'
-	
-	cd(dir.."MMEditor")
-	r'"c:/Program Files/WinRAR/Rar.exe" a -m5 -r ../MMEditor.rar *'
-	
-	cd(dir)
-	r'rmdir MMExtension /S /Q'
-	r'rmdir MMEditor /S /Q'
-	
-	cd(old)
-end
-
 -- Copy and pack files
 function Build(...)
 	local list = UpdateList()
@@ -102,7 +81,6 @@ function Build(...)
 		end
 	end
 	
-	-- DoPack(DevPath.."Build/")
 	io.save(DevPath.."Build/pack.bat", PackBat)
 	os.execute('"'..DevPath..'Build/pack.bat"')
 
