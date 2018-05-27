@@ -808,7 +808,7 @@ function _G.string.convert(s, encFrom, encTo, defChar)
 	end
 	if encTo ~= 1200 then  -- not utf16
 		local n2 = ffi.C.WideCharToMultiByte(encTo, 0, buf, n, nil, 0, nil, nil);
-		local buf2 = ffi.new("char[?]", n)
+		local buf2 = ffi.new("char[?]", n2)
 		defChar = (encTo ~= 65000 and encTo ~= 65001 and defChar or nil)
 		ffi.C.WideCharToMultiByte(encTo, 0, buf, n, buf2, n2, defChar, defChar and usedDefault);
 		return ffi.string(buf2, n2), defChar and usedDefault[0]
