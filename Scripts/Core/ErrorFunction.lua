@@ -69,12 +69,20 @@ _G.ErrorInfo = _G.errorinfo
 
 -- tostring2
 
+local function FixStr(s)
+	return s:gsub("\\.0?0?9?", function(s)
+		if s == "\\009" or s == "\\t" then
+			return "\t"
+		end
+	end)
+end
+
 local function ShortenStr(s, lim)
 	if not lim or #s <= lim then
-		return format("%q", s)
+		return FixStr(format("%q", s))
 	end
 	local L = (lim - lim % 2)/2
-	return format("%q..[%d symbols cut]..%q", sub(s, 1, L), #s - lim, sub(s, L - lim))
+	return FixStr(format("%q..[%d symbols cut]..%q", sub(s, 1, L), #s - lim, sub(s, L - lim)))
 end
 
 local function tostring2(v, lim)

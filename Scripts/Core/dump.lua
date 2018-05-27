@@ -41,7 +41,7 @@ function dump(t, depth, exact)
 	local function Key(v)
 		if type(v) == "string" then
 			if not v:match("^[%a_][%w_]*$") or exact and Keywords[v] then
-				v = ("[%q]"):format(v)
+				v = ("[%s]"):format(tostring2(v))
 			end
 			return v..' = '
 		elseif v == nil then
@@ -55,7 +55,7 @@ function dump(t, depth, exact)
 	local function Val(v)
 		if type(v) == "string" then
 			if exact then
-				return ("%q"):format(v)
+				return tostring2(v)
 			end
 			return '"'..v..'"'
 		else
