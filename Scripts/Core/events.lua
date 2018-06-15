@@ -975,9 +975,9 @@ mem.hookfunction(mmv(0x482E80, 0x48EAA6, 0x48E213), 1, mmv(1, 2, 2), function(d,
 	-- [MM7+]
 	t.MagicBonus = ArtifactBonus and i4[ArtifactBonus + 4]
 	--!k{Player :structs.Player}
-	-- Here's how 'SetArtifactBonus' works:
-	--   [MM7+] If given value is bigger than 'ArtifactBonus', modifies 'ArtifactBonus' and increases 'Result'.
-	--   [MM6] Just adds the value to 'Rusult'.
+	-- Here's how 'SetArtifactBonus'('value') method works:
+	--   [MM7+] If 'value' is bigger than 'ArtifactBonus', it modifies 'ArtifactBonus' and increases 'Result'.
+	--   [MM6] It just adds the 'value' to 'Result'.
 	--
 	-- 'SetMagicBonus' does the same to 'MagicBonus'.
 	events.cocall("CalcStatBonusByItems", t)
