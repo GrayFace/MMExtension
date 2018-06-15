@@ -97,7 +97,7 @@ local function DoDebug(str)
 	if ret[1] then
 		str = ""
 		for i = 2, ret[1] + 1 do
-			str = str..'  '..tostring2(ret[i])..'\n'
+			str = str..'  '..tostring2(ret[i], nil, true)..'\n'
 		end
 	else
 		str = ret[2].."\n"

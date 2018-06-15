@@ -69,23 +69,24 @@ _G.ErrorInfo = _G.errorinfo
 
 -- tostring2
 
-local function FixStr(s)
-	return s:gsub("\\.0?0?9?", function(s)
-		if s == "\\009" or s == "\\t" then
+local function ShortenStr(s, lim)
+	if not lim or #s <= lim then
+		return format("%q", s)
+	end
+	local L = (lim - lim % 2)/2
+	return format("%q..[%d symbols cut]..%q", sub(s, 1, L), #s - lim, sub(s, L - lim))
+end
+
+local function FixTabs(...)
+	return ShortenStr(...):gsub("\\0?0?.", function(s)
+		if s == "\\009" or s == "\\09" or s == "\\9" or s == "\\t" then
 			return "\t"
 		end
 	end)
 end
 
-local function ShortenStr(s, lim)
-	if not lim or #s <= lim then
-		return FixStr(format("%q", s))
-	end
-	local L = (lim - lim % 2)/2
-	return FixStr(format("%q..[%d symbols cut]..%q", sub(s, 1, L), #s - lim, sub(s, L - lim)))
-end
-
-local function tostring2(v, lim)
+local function tostring2(v, lim, tabs)
+	local ShortenStr = tabs and FixTabs or ShortenStr
 	local t = type(v)
 	if v == nil or t == "number" or t == "boolean" then
 		return tostring(v)
@@ -131,14 +132,14 @@ local function OutputVars(text, co, lev)
 		text[#text + 1] = funcname and format("\n\narguments of '%s':", funcname) or '\n\narguments:'
 		for i = 1, d.nparams do
 			local a, v = getlocal(co, lev, i)
-			text[#text + 1] = "\n\t"..a.." = "..tostring2(v, 1000)
+			text[#text + 1] = "\n\t"..a.." = "..tostring2(v, 1000, true)
 		end
 		for i = 1, 1000 do
 			local a, v = getlocal(co, lev, -i)
 			if not a then
 				break
 			end
-			text[#text + 1] = "\n\t... = "..tostring2(v, 1000)
+			text[#text + 1] = "\n\t... = "..tostring2(v, 1000, true)
 		end
 	end
 	i = d.nparams + 1
@@ -146,7 +147,7 @@ local function OutputVars(text, co, lev)
 	if a then
 		text[#text + 1] = funcname and format("\n\nlocal variables of '%s':", funcname) or '\n\nlocal variables:'
 		repeat
-			text[#text + 1] = "\n\t"..a.." = "..tostring2(v, 1000)
+			text[#text + 1] = "\n\t"..a.." = "..tostring2(v, 1000, true)
 			i = i + 1
 			a, v = getlocal(co, lev, i)
 		until a == nil
@@ -157,7 +158,7 @@ local function OutputVars(text, co, lev)
 	if a then
 		text[#text + 1] = funcname and format("\n\nupvalues of '%s':", funcname) or '\n\nupvalues:'
 		repeat
-			text[#text + 1] = "\n\t"..a.." = "..tostring2(v, 1000)
+			text[#text + 1] = "\n\t"..a.." = "..tostring2(v, 1000, true)
 			i = i + 1
 			a, v = getupvalue(func, i)
 		until a == nil
