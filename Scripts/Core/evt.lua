@@ -1439,7 +1439,7 @@ do
 			-- print("\t"..name.." = "..p..",")
 		end
 		if name2 then
-			evt.VarNum[name] = p
+			evt.VarNum[name2] = p
 		end
 		p = p + 1
 	end
