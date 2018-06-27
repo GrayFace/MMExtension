@@ -65,7 +65,7 @@ Version 1.2:
 [-] Inability to load some bitmaps
 
 Version 1.2.1:
-[-] Previous version was crashing on Winwos XP
+[-] Previous version was crashing on Windows XP
 [-] Clipboard-related crash on exit
 [-] Crash when loading another archive while in Compare To mode
 [-] After drag-drop of the same archive, files list wasn't updated after operations
