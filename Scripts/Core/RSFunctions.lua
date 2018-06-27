@@ -172,13 +172,14 @@ function path.addslash(s)
 	return s.."/"
 end
 
--- Removes trailing slash
+-- Removes trailing slash (or multiple slashes)
 function path.noslash(s)
-	local c = string_byte(s, #s)
-	if c == slash1 or c == slash2 then
-		return string_sub(s, 1, -2)
+	for i = #s, 0, -1 do
+		local c = string_byte(s, i)
+		if c ~= slash1 and c ~= slash2 then
+			return string_sub(s, 1, i)
+		end
 	end
-	return s
 end
 
 --------- io
