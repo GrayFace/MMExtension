@@ -164,7 +164,7 @@
 			<VersionInfoKeys Name="FileDescription">MMExtension Dialogs</VersionInfoKeys>
 			<VersionInfoKeys Name="FileVersion">1.2.2.0</VersionInfoKeys>
 			<VersionInfoKeys Name="InternalName"></VersionInfoKeys>
-			<VersionInfoKeys Name="LegalCopyright">Sergey Rozhenko (sergroj@mail.ru)</VersionInfoKeys>
+			<VersionInfoKeys Name="LegalCopyright">Sergey Rozhenko (http://grayface.github.io)</VersionInfoKeys>
 			<VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
 			<VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys>
 			<VersionInfoKeys Name="ProductName">MMExtension</VersionInfoKeys>

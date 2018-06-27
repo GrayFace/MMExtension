@@ -1695,23 +1695,33 @@ end;
 
 procedure TForm1.UpdatePosition;
 var
-  r: TRect;
-  p: TPoint;
-  h: int;
+  r, r2: TRect;
+  p: TPoint absolute r2;
+  w, h, y: int;
 begin
   //if not Visible then  exit;
-  r:= TRSWnd(MainWnd).BoundsRect;
-  Top:= r.Top;
-  Height:= r.Bottom - r.Top;
+  with TRSWnd(Handle) do
+  begin
+    r:= ExtendedBoundsRect;
+    r2:= AbsoluteRect;
+    w:= r.Right - r2.Left;
+  end;
   if GetWindowLong(MainWnd, GWL_STYLE) and WS_BORDER = 0 then
   begin
-    p.X:= 0;
-    p.Y:= 0;
+    y:= r2.Top - r.Top;
+    Windows.GetClientRect(MainWnd, r2);
+    ClientHeight:= r2.Bottom - r.Bottom - r.Top + GetClientRect.Bottom;
     Windows.ClientToScreen(MainWnd, p);
-    Left:= p.X - Width;
+    Left:= p.X - w;
+    Top:= p.Y + y;
     ClipCursor(nil);
   end else
-    Left:= r.Left - Width;
+  begin
+    r:= TRSWnd(MainWnd).AbsoluteRect;
+    Left:= r.Left - w;
+    Top:= r.Top;
+    Height:= r.Bottom - r.Top;
+  end;
 
   with ListChests do
   begin
