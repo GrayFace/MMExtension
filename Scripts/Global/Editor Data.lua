@@ -664,14 +664,14 @@ local function WriteOutlines()
 	end
 	
 	-- need to sort in case there's too many of them
-	local sorted = {}
+	local sorted, lim = {}, Map.Outlines.Limit
 	for _, o in pairs(out) do
 		if IsOutline(o.f1, o.f2 or o.f1) then
 			sorted[#sorted + 1] = o
 		end
 	end
-	if #sorted > 7000 and not Editor.LastError then
-		Editor.LastError = ("Too many outlines (%s/7000)"):format(#sorted)
+	if #sorted > lim and not Editor.LastError then
+		Editor.LastError = ("Too many outlines (%s/"..lim..")"):format(#sorted)
 		Editor.LastErrorFacets = {}
 	end
 	table.sort(sorted, function(o1, o2)
@@ -688,7 +688,7 @@ local function WriteOutlines()
 		o.f1, o.f2 = nil, nil
 		o.v1, o.v2 = nil, nil
 		local n = mo.count
-		if n == 7000 then
+		if n == lim then
 			break
 		end
 		mo.count = n + 1

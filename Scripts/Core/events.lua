@@ -1130,15 +1130,33 @@ end
 
 
 
+local AddFields_damageMonsterFromParty
+do
+	local x1, x2 = unpack((mmv({0x430E50, 0x431B0B}, {0x439463, 0x439E16}, {0x436E26, 0x4378CD})))
+	function AddFields_damageMonsterFromParty(d, t)
+		local r = u4[d.esp]
+		if r >= x1 and r < x2 then
+			t.MonsterIndex, t.Monster = GetMonster(d.esi)
+			if mmver ~= 6 or r < 0x431337 or r == 0x4315D9 then
+				t.PlayerIndex, t.Player = GetPlayer(mmver == 6 and d.ebx or mmver == 7 and d.edi or mmver == 8 and u4[d.ebp - 8])
+			end
+		end
+	end
+end
+
+
 -- MonsterKilled
 mem.hookfunction(mmv(0x403050, 0x402D6E, 0x402E78), 1, 0, function(d, def, index)
 	local function callDef()
 		def = def and def(index) and nil
 	end
-	--!(mon:structs.MapMonster, monIndex, defaultHandler)
-	events.cocall("MonsterKilled", Map.Monsters[index], index, callDef)
+	local t = {}
+	AddFields_damageMonsterFromParty(d, t)
+	--!(mon:structs.MapMonster, monIndex, defaultHandler, player:structs.Player, playerIndex) 'player' and 'playerIndex' parameters are only passed in some cases
+	events.cocall("MonsterKilled", Map.Monsters[index], index, callDef, t.Player, t.PlayerIndex)
 	callDef()
 end)
+
 
 if mmver > 6 then
 	-- IsMonsterOfKind
@@ -1182,15 +1200,19 @@ if mmver > 6 then
 	@std:
 	]])
 	
+	local ItemAdditionalDamage_ret = table.invert(mm78({0x439930, 0x4399C1}, {0x437336, 0x437449}))
+	
 	-- ItemAdditionalDamage
 	mem.hookfunction(mm78(0x439E16, 0x4378CD), 2, 1, function(d, def, item, kind, vampiric)
 		local t = {
 			Item = structs.Item:new(item),
 			Result = def(item, kind, vampiric),
 		}
+		AddFields_damageMonsterFromParty(d, t)
 		-- :const.Damage
 		t.DamageKind = i4[kind]
 		t.Vampiric = (i4[vampiric] ~= 0)
+		--!k{Monster :structs.MapMonster, Player :structs.Player} 'Monster', 'MonsterIndex', 'Player' and 'PlayerIndex' fields are only set if the function is called by the game itself and not a script
 		events.cocall("ItemAdditionalDamage", t)
 		i4[kind] = t.DamageKind
 		i4[vampiric] = (t.Vampiric and 1 or 0)
@@ -1209,6 +1231,8 @@ if mmver > 6 then
 	-- end)
 end
 
+local CalcDamageToMonster_PlayerProc = mmv()
+
 -- CalcDamageToMonster
 mem.hookfunction(mmv(0x421DC0, 0x427522, 0x425951), 0, 3, function(d, def, mon, kind, dmg)
 	local t = {
@@ -1217,8 +1241,9 @@ mem.hookfunction(mmv(0x421DC0, 0x427522, 0x425951), 0, 3, function(d, def, mon, 
 		Damage = dmg,
 		Result = def(mon, kind, dmg),
 	}
+	AddFields_damageMonsterFromParty(d, t)
 	t.MonsterIndex, t.Monster = GetMonster(mon)
-	--!k{Monster :structs.MapMonster}
+	--!k{Monster :structs.MapMonster, Player :structs.Player} 'Player' and 'PlayerIndex' fields are only set in some cases. For example, in MM6 they're not set when bonus elemental damage of weapons is applied
 	events.cocall("CalcDamageToMonster", t)
 	return t.Result
 end)

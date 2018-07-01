@@ -99,11 +99,28 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 			{0x4340CD},
 			4
 		)
-		Process({0x453FEC, 0x454752, 0x4547D9, 0x4547FE, 0x497F8A}, (NewCount - OldCount)*0x44)
+		Process({0x453FEC, 0x454752, 0x4547D9, 0x4547FE}, (NewCount - OldCount)*0x44)
 		d.esi = ptr
+		mem.asmpatch(0x497F88, ([[
+			cmp eax, %s
+			jge absolute 0x497F84
+		]]):format(NewCount))
 		
-		local p = Extend(0x73A594, 64, {0x476B62, 0x476BD9, 0x476C22, 0x4774F1, 0x47750A})  -- NPCDist.txt
-		Process({0x476BC3, 0x476C01, 0x476C1F}, NewCount - OldCount)
+		-- NPCDist.txt
+		local p = Extend(0x73A594, 64, {0x476B62, 0x476BD9, 0x476C22, 0x4774F1, 0x47750A})
+		
+		mem.asmpatch(0x476BC1, ([[
+			cmp ebx, %s
+			jge absolute 0x476BDF
+		]]):format(NewCount))
+		
+		mem.asmhook2(0x476BFC, ([[
+			cmp ecx, %s
+		]]):format(NewCount))
+
+		mem.asmhook2(0x476C20, ([[
+			mov [esp], %s
+		]]):format(NewCount))
 		
 		-- NPCDist.txt - make caring of it unaccessory
 		mem.asmhook(0x4774FB, [[
@@ -136,7 +153,13 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 			{0x4319C5},
 			4
 		)
-		Process({0x451756, 0x451EBD, 0x451F43, 0x451F68, 0x4949A2}, (NewCount - OldCount)*0x44)
+
+		Process({0x451756, 0x451EBD, 0x451F43, 0x451F68}, (NewCount - OldCount)*0x44)
+		-- fix by Rodril
+		mem.asmpatch(0x4949a0, ([[
+			cmp eax, %s
+			jge absolute 0x49499c
+		]]):format(NewCount))
 		d.esi = ptr
 	end
 	mem.IgnoreProtection(false)
