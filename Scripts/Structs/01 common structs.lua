@@ -139,7 +139,7 @@ function structs.f.GameMap(define)
 	 
 	local d = mmv(393184, 0, 12)
 	define
-	[base + d + 1264].struct(structs.OutdoorExtra)  'OutdoorExtra'
+	[base + d + 1264].struct(structs.MapExtra)  'OutdoorExtra'
 	[base + d + 1264].i8  'OutdoorLastVisitTime'
 	[base + d + 1320].array(88).array(88).abit  'VisibleMap1'
 	[base + d + 2288].array(88).array(88).abit  'VisibleMap2'
@@ -177,6 +177,7 @@ function structs.f.GameMap(define)
 	[base + 704].parray{lenA = i4, lenP = base + 700}.struct(structs.SpawnPoint)  'IndoorSpawns'
 	[base + 708].i4  'IndoorRefillCount'
 	[base + 712].i4  'IndoorLastRefillDay'
+	[base + mmv(716, 748, 748)].struct(structs.MapExtra)  'IndoorExtra'
 	[base + mmv(716, 748, 748)].i8  'IndoorLastVisitTime'
 	[base + mmv(772, 804, 804)].array(7000).abit  'VisibileOutlines'
 	if mmver >= 7 then
@@ -325,7 +326,7 @@ function structs.f.OdmHeader(define)
 	end
 end
 
-function structs.f.OutdoorExtra(define)
+function structs.f.MapExtra(define)
 	define
 	.i8  'LastVisitTime'
 	.string(12, mmver == 8)  'SkyBitmap'
@@ -345,7 +346,16 @@ function structs.f.OutdoorExtra(define)
 		.bit('RedFog', 0x80)  .Info "elemf.odm"
 		.u4  'Bits'
 		.i4  'Ceiling'
+	else
+		define
+		.skip(8)
 	end
+	-- added in v2.1 of my patches, was unused before:
+	define
+	.u4  'LastWeeklyTimer'
+	.u4  'LastMonthlyTimer'
+	.u4  'LastYearlyTimer'
+	.u4  'LastDailyTimer'
 	define.size = 0x38
 end
 

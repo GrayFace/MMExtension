@@ -114,14 +114,13 @@ local function NextRefillExact(time, period, LastTick, IsInit)
 	return IsInit and time or NextExact(time, period, LastTick)
 end
 
---!(f, Period = const.Day, Start = 0)
+--!(f, Period = const.Day, Start)
 -- 'f' = !LUA[[function(TriggerTime, Period, LastTick, Tick)]]:
 --   Called when the timer is triggered.
--- Acts like exact Timer, but also fires at map refills.
--- If 'Start' = 'true', triggers when 'Period' passes since last time it was triggered, and on map refill.
+-- If 'Start' is not specified, triggers when 'Period' passes since last time it was triggered and on map refill.
+-- If 'Start' is specified, acts like exact Timer, but also fires at map refills.
 function RefillTimer(f, period, start)
-	start = start or 0
-	if start == true then
+	if not start or start == true then  -- check 'true' for backward compatibility and similarity with Timer
 		Timer(f, period, not Map.Refilled and GetRefills()[period] or Game.Time, NextRefill)
 	elseif Map.Refilled and start < period then
 		Timer(f, period, start - period, NextRefillExact)

@@ -928,11 +928,11 @@ Message("Hi!")]]]=]
 				s1 = table.concat(t, " + ")
 			end
 			if cmd == 0x1F and s1 then
-				return Timer..s..", 0, false)"
+				return Timer..s..", "..s1..", false)"
 			elseif cmd == 0x1F then
 				return Timer..s..")"
 			end
-			return "Refill"..Timer..s..", "..(s1 or "0")..")"
+			return "Refill"..Timer..s..")"
 		end
 	end
 	

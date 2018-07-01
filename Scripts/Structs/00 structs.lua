@@ -1014,6 +1014,12 @@ function structs.f.PatchOptions(define)
 	local function single(name)
 		def('r4', name)
 	end
+	local function i8(name)
+		def('i8', name)
+	end
+	local function u8(name)
+		def('u8', name)
+	end
 	local Info = define.Info
 	
 	int  'Size'
@@ -1061,6 +1067,10 @@ function structs.f.PatchOptions(define)
 	bool  'CompatibleMovieRender'
 	bool  'SmoothMovieScaling'
 	bool  'SupportTrueColor'
+	int  'RenderRectLeft'
+	int  'RenderRectTop'
+	int  'RenderRectRight'
+	int  'RenderRectBottom'
 	
 	function define.f.Present(name)
 		return present[name]
