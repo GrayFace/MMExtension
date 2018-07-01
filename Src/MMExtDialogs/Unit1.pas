@@ -73,6 +73,7 @@ end;
 function NeedForm(parentWnd: HWND): TForm1;
 var
   r: TRect;
+  bo: int;
 begin
   if Form1 = nil then
   begin
@@ -84,8 +85,9 @@ begin
     if (DlgW = 0) and (parentWnd <> 0) then
     begin
       GetClientRect(parentWnd, r);
-      DlgW:= r.Right - 20;
-      DlgH:= r.Bottom - 20;
+      bo:= max(20, min(r.Right, r.Bottom) div 30);
+      DlgW:= r.Right - bo;
+      DlgH:= r.Bottom - bo;
     end;
     if DlgW > 0 then
       Form1.Width:= DlgW;
@@ -94,20 +96,28 @@ begin
     Form1.Caption:= DlgCaption;
     CalcCharsInLine;
     Form1.RSMemo1.Perform(EM_SETTABSTOPS, 1, int(@TabSize));
-    //TForm((@Application.MainForm)^):= Form1;
-    //Form1.ParentWindow:= parentWnd;
   end;
   Result:= Form1;
 end;
 
 function DebugDialog(parentWnd: HWND; question: PChar; topmost: BOOL): PChar; stdcall;
 
+  procedure BackToApp;
+  begin
+    if parentWnd <> 0 then
+    begin
+      EnableWindow(parentWnd, true);
+      if IsIconic(parentWnd) then
+        SendMessage(parentWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+      SetForegroundWindow(parentWnd);
+      if Form1.FWasDeactivated then
+        SendMessage(parentWnd, WM_ACTIVATEAPP, 1, 0);
+    end;
+  end;
+
   procedure HideForm;
   begin
-    {if parentWnd <> 0 then
-      EnableWindow(parentWnd, true);
-    if parentWnd <> 0 then
-      SetForegroundWindow(parentWnd);}
+    BackToApp;
     if Form1 <> nil then
       Form1.Hide;
   end;
@@ -206,17 +216,10 @@ begin
     Application.Run;
     Running:= false;
     PBoolean(@Application.Terminated)^:= false;
-    if parentWnd <> 0 then
-    begin
-      EnableWindow(parentWnd, true);
-      if IsIconic(parentWnd) then
-        SendMessage(parentWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
-      SetForegroundWindow(parentWnd);
-      if Form1.FWasDeactivated then
-        SendMessage(parentWnd, WM_ACTIVATEAPP, 1, 0);
-    end;
     if DlgResult = '' then
-      HideForm;
+      HideForm
+    else
+      BackToApp;
     Result:= ptr(DlgResult);
   except
     RSShowException;
