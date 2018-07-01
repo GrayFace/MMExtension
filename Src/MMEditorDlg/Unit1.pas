@@ -219,6 +219,7 @@ type
     procedure UpdatePanels;
     procedure UpdateChests;
     procedure UpdatePosition;
+    procedure MyClipCursor(clip: Boolean);
   end;
 
 const
@@ -1292,6 +1293,8 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  if GetWindowLong(MainWnd, GWL_STYLE) and WS_BORDER = 0 then
+    MyClipCursor(true);
   Callback('Closed');
   Action:= caHide;
 end;
@@ -1424,6 +1427,20 @@ begin
     end;
   end;
   PanelTiles.Invalidate;
+end;
+
+procedure TForm1.MyClipCursor(clip: Boolean);
+var
+  r: TRect;
+begin
+  if clip then
+  begin
+    if IsIconic(MainWnd) then  exit;
+    Windows.GetClientRect(MainWnd, r);
+    MapWindowPoints(MainWnd, 0, r, 2);
+    ClipCursor(@r);
+  end else
+    ClipCursor(nil);
 end;
 
 procedure TForm1.OpenDatDialogTypeChange(Sender: TObject);
@@ -1714,7 +1731,8 @@ begin
     Windows.ClientToScreen(MainWnd, p);
     Left:= p.X - w;
     Top:= p.Y + y;
-    ClipCursor(nil);
+    if Visible then
+      MyClipCursor(false);
   end else
   begin
     r:= TRSWnd(MainWnd).AbsoluteRect;
