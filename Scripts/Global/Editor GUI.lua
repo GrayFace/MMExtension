@@ -677,13 +677,13 @@ function Commands.NewDoor()
 		end
 	end
 	-- create door
-	local door = {DirectionX = -f.nx, DirectionY = -f.ny, DirectionZ = -f.nz, MoveLength = 128, Speed1 = 50, Speed2 = 50}
+	local door = {
+		DirectionX = -f.nx, DirectionY = -f.ny, DirectionZ = -f.nz,
+		MoveLength = 128, Speed1 = 50, Speed2 = 50,
+		VertexFilter = not FoundMoving and "Shrink" or nil
+	}
 	for id, props in Editor.ForSelection() do
 		props.set(id, "Door", door)
-		-- if no moving facets, make all facets in selection move
-		if not FoundMoving then
-			props.set(id, "MovedByDoor", true)
-		end
 	end
 end
 

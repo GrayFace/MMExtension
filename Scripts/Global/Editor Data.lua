@@ -968,6 +968,39 @@ function Editor.FindVertexOnLine(f, v0, vecs, tx, ty, tz)
 	end
 end
 
+Editor.DoorVertexFilter = Editor.DoorVertexFilter or {}
+
+local function SplitFilter(shrink, t, lists, param)
+	shrink = shrink and -1 or 1
+	local vert = table.copy(table.copy(lists[1], lists[2]), lists[3])
+	local ax, ay, az = normalize(t.DirectionX*shrink, t.DirectionY*shrink, t.DirectionZ*shrink)
+	-- min, max on Direction line
+	local x1, x2 = 1/0, -1/0
+	for v in pairs(vert) do
+		local x = v.X*ax + v.Y*ay + v.Z*az
+		x1 = math.min(x1, x)
+		x2 = math.max(x2, x)
+	end
+	-- find x >= lim
+	param = x1 + (x2 - x1)*(param or 0.5) - 1  -- (in case of one facet move it whole, that's why -1)
+	local dvert = {}
+	for v, x in pairs(vert) do
+		local x = v.X*ax + v.Y*ay + v.Z*az
+		if x >= param then
+			dvert[v] = true
+		end
+	end
+	return {dvert}
+end
+
+function Editor.DoorVertexFilter.Grow(...)
+	return SplitFilter(false, ...)
+end
+
+function Editor.DoorVertexFilter.Shrink(...)
+	return SplitFilter(true, ...)
+end
+
 Editor.DoorMinCos = 0.05  -- for unmoved facets that can't be stretched
 function Editor.WriteDoor(a, t)
 	rawset(a, "?ptr", nil)
@@ -1054,12 +1087,33 @@ function Editor.WriteDoor(a, t)
 		end
 	end
 	
+	-- filter vertices
+	if t.VertexFilter then
+		local vf, f = t.VertexFilter, nil
+		if type(t.VertexFilter) == "table" then
+			f = Editor.DoorVertexFilter[vf[1]]
+			table.remove(vf, 1)
+		else
+			f, vf = Editor.DoorVertexFilter[vf], {}
+		end
+		if f then
+			local q = f(t, {DVertex, DStaticVertex, ForceStaticVertex}, unpack(vf))
+			DVertex = q[1] or {}
+			DStaticVertex = q[2] or {}
+			ForceStaticVertex = q[3] or {}
+		else
+			Editor.LastError = "Unknown VertexFilter"
+			Editor.LastErrorFacets = DFacets
+		end
+	end
+	
 	-- remove vertices that must be static
 	for v in pairs(ForceStaticVertex) do
 		DVertex[v] = nil
 	end
 	
-	-- ClosePortal ~= true is a special case in which portal vertices are moved from static side of door to active side
+	-- ClosePortal ~= true is a special case in which portal vertices are moved from static side of the door to the active side
+	-- it's no longer generated, but still supported
 	local function PortalVertex(f, i, v1)
 		if v1 then
 			local new = table.copy(v1)

@@ -492,11 +492,13 @@ local IsDoorDirProp = {
 
 local IsDoorBSPProp = table.copy(IsDoorDirProp, {
 	MoveLength = true,
+	-- VertexFilter
 })
 
 local IsDoorUpdateProp = table.copy(IsDoorBSPProp, {
 	Speed1 = true,
 	Speed2 = true,
+	VertexFilter = true,
 })
 
 local IsDoorBit = {
@@ -519,6 +521,7 @@ local DoorProps = MakeProps{
 	"DirectionZ",
 	"NoSound",
 	"StartState2",
+	"VertexFilter",
 	"ClosePortal",
 
 	get = function(id, prop)
@@ -526,6 +529,10 @@ local DoorProps = MakeProps{
 		if not t then
 			t, FirstSelDoor = Editor.FindSelectedDoor()
 			t = FirstSelDoor
+		end
+		if prop == "VertexFilter" then
+			local ret = t and t[prop]
+			return ret, ('%s%s (nil, "Shrink" or "Grow")'):format(tostring2(ret), COMMENT)
 		end
 		return t and t[prop] or not IsDoorBit[prop] and 0
 	end,
