@@ -118,17 +118,6 @@ local function cross(x1, y1, z1, x2, y2, z2)
 	return nx, ny, nz
 end
 
-local function IsFacetCollapsed(v)
-	local n = #v
-	local nx, ny, nz = 0, 0, 0
-	for i = 1, n do
-		local v0, v1, v2 = v[(i - 2) % n + 1], v[i], v[i % n + 1]
-		local x, y, z = cross(v1.X - v0.X, v1.Y - v0.Y, v1.Z - v0.Z, v2.X - v1.X, v2.Y - v1.Y, v2.Z - v1.Z)
-		nx, ny, nz = nx + x, ny + y, nz + z
-	end
-	return nx*nx + ny*ny + nz*nz == 0
-end
-
 local function HasDoorVerts(vert)
 	for i, v in ipairs(vert) do
 		if v.Shift then
@@ -554,20 +543,8 @@ local function ReadDoor(a, t)
 		end
 	end
 	-- portals
-	for f in pairs(portals) do
-		-- (for tests)
-		-- Editor.LastError = "Collapsed portal"
-		-- Editor.LastErrorFacets = {f}
+	if next(portals) then
 		t.ClosePortal = true
-		if IsFacetCollapsed(f.Vertexes) then
-			t.ClosePortal = 2
-			for i, v in ipairs(f.Vertexes) do
-				local v1 = ver[v] and Editor.FindVertexOnLine(f, v, DStaticVertex, dirX, dirY, dirZ)
-				if v1 then
-					f.Vertexes[i] = v1
-				end
-			end
-		end
 	end
 	a["?ptr"] = nil
 
