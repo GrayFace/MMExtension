@@ -25,10 +25,18 @@ function Editor.AddUnique(state, SingleModel)
 		if list then
 			for v1 in pairs(list) do
 				if y == v1.Y and z == v1.Z then
-					if starting then
-						ids[v] = ids[v1]
+					if v1.Shift == (v and v.Shift) then
+						if starting then
+							ids[v] = ids[v1]
+						end
+						return v1, false
+					else
+						if v1.Shift then
+							v1.Shift.Delete = nil
+						else
+							v.Shift.Delete = nil
+						end
 					end
-					return v1, false
 				end
 			end
 			v = v or {X = x, Y = y, Z = z}
@@ -232,7 +240,7 @@ function Editor.Triangulate(facet, list)
 		v1, v2 = v2, vn[v2]
 	until v0 == v2
 
-	-- cut polygonal ears (leads to seeming small gaps between parts of facet, which doesn't happen with triangles)
+	-- cut polygonal ears (leads to seeming small gaps between parts of facet in D3D, which doesn't happen with triangles)
 	-- local function IsReflex(v0, v1, v2)
 		-- local x1, y1, x2, y2 = v0[X] - v1[X], v0[Y] - v1[Y], v2[X] - v1[X], v2[Y] - v1[Y]
 		-- return (x1*y2 - y1*x2)*nz > 0
@@ -381,6 +389,69 @@ function Editor.IsFacetBent(t)
 end
 
 -----------------------------------------------------
+-- Editor.JoinFacets
+-----------------------------------------------------
+
+function Editor.JoinFacetVertexes(t, q)
+	local same, i = {}, nil
+	for k, v in ipairs(q) do
+		same[v] = k
+	end
+	for k, v in ipairs(t) do
+		if same[v] then
+			i = k
+			break
+		end
+	end
+	if not i then
+		return
+	end
+	local n = #t
+	-- go to last matching vertex
+	local j = (i - 2) % n + 1
+	while same[t[i % n + 1]] and i ~= j do
+		i = i % n + 1
+	end
+	if i == j then  -- intertwined
+		return
+	end
+	
+	local j = same[t[i]]  -- starting point as seen from 'q'
+	
+	local vert = {}
+	-- go through 't'
+	repeat
+		vert[#vert + 1] = t[i]
+		i = i % n + 1
+	until same[t[i]]
+	-- go through 'q'
+	n, i = #q, same[t[i]]
+	repeat
+		vert[#vert + 1] = q[i]
+		i = i % n + 1
+	until i == j
+	
+	-- check that all are present
+	same = {}
+	for k, v in ipairs(t) do
+		same[v] = 1
+	end
+	for k, v in ipairs(q) do
+		same[v] = (same[v] or 0) + 1
+	end
+	for k, v in ipairs(vert) do
+		same[v] = 2
+	end
+	for v, i in pairs(same) do
+		if i ~= 2 then
+			return
+		end
+	end
+	
+	return vert
+end
+
+-----------------------------------------------------
 -- Editor.FacetMiddles
 -----------------------------------------------------
 
@@ -449,6 +520,54 @@ function Editor.MatchesOrientation(p, rfacets)
 		end
 	end
 	error""
+end
+
+-----------------------------------------------------
+-- Editor.EdgeFacets
+-----------------------------------------------------
+
+function Editor.EdgeFacets(rooms)
+	local t = setmetatable({}, {__index = function(t, k)
+		local q = {}
+		t[k] = q
+		return q
+	end})
+	
+	local n = 0
+	local ids = setmetatable({}, {__index = function(t, k)
+		n = n + 1
+		t[k] = n
+		return n
+	end})
+	
+	local function get(v, v2, f)
+		local i, j = ids[v], ids[v2]
+		if i > j then
+			i, j = j, i
+		end
+		if not f then
+			return t[i*0x100000 + j]
+		end
+		local r, n = nil, 0
+		for a in pairs(t[i*0x100000 + j]) do
+			n = n + 1
+			if a ~= f then
+				r = a
+			end
+		end
+		return r, n
+	end
+	
+	for _, r in ipairs(rooms or Editor.State.Rooms) do
+		for a in pairs(r.Facets) do
+			local vert = a.Vertexes
+			local n = #vert
+			for i, v in ipairs(vert) do
+				get(v, vert[i % n + 1])[a] = true
+			end
+		end
+	end
+	return get
 end
 
 -----------------------------------------------------

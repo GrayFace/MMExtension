@@ -504,6 +504,10 @@ function FindEvent(v)
 	return n
 end
 
+function SelId(v)
+	return SelectFacetWith("Id", v, true)
+end
+
 function SelectDoor()
 	SelectFacetWith("Door", Editor.Facets[next(Editor.Selection) + 1].Door)
 	-- local door = Editor.Facets[next(Editor.Selection) + 1].Door

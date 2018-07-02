@@ -4,6 +4,8 @@ local mmver = offsets.MMVersion
 Editor = Editor or {}
 local _KNOWNGLOBALS
 
+local VertexShifts
+local FacetDoorIdx
 local Vertexes
 local Facets
 local Sprites
@@ -127,6 +129,14 @@ local function IsFacetCollapsed(v)
 	return nx*nx + ny*ny + nz*nz == 0
 end
 
+local function HasDoorVerts(vert)
+	for i, v in ipairs(vert) do
+		if v.Shift then
+			return true
+		end
+	end
+end
+
 local function ReadFacetData(a, t, mf)
 	a["?ptr"] = a["?ptr"]  -- speed up
 	for _, k in ipairs(FacetDataProps) do
@@ -166,7 +176,7 @@ function Editor.ReadFacet(a, _, Verts)
 		end
 	end
 	
-	if #v < 3 then--or not a.IsPortal and IsFacetCollapsed(v) then
+	if #v < 3 then --or not a.IsPortal and IsFacetCollapsed(v) and not HasDoorVerts then
 		a["?ptr"] = nil
 		return
 	end
@@ -198,12 +208,73 @@ function Editor.ReadFacet(a, _, Verts)
 end
 
 -----------------------------------------------------
+-- JoinFacets
+-----------------------------------------------------
+
+local function SameNormal(t, q)
+	local x = t.nx - q.nx
+	local y = t.ny - q.ny
+	local z = t.nz - q.nz
+	return x*x + y*y + z*z < 0.01^2
+end
+
+local function IsFacetDifferent(t, q)
+	for k, v in pairs(t) do
+		if k ~= "PartOf" and k ~= "Vertexes" and k ~= "Id" and k ~= "nx" and k ~= "ny" and k ~= "nz" and k ~= "ndist" and v ~= q[k] then
+			return k
+		end
+	end
+end
+
+local function CompareFacets(t, q)
+	return SameNormal(t, q) and FacetDoorIdx[t] == FacetDoorIdx[q] and not IsFacetDifferent(t, q) and not IsFacetDifferent(q, t)
+end
+
+local function BaseFacet(f)
+	while f and f.PartOf ~= f do
+		f = f.PartOf
+	end
+	return f
+end
+
+local function JoinFacets()
+	local FacetIds = Editor.FacetIds
+	local get = Editor.EdgeFacets({{Facets = FacetIds}})
+	for a, id in pairs(FacetIds) do
+		repeat
+			local vert = a.Vertexes
+			local n = #vert
+			for i, v in ipairs(vert) do
+				local f, n1 = nil, 0
+				for f1 in pairs(get(v, vert[i % n + 1])) do
+					f = (f ~= a and f or BaseFacet(f1))
+					n1 = n1 + 1
+				end
+				if n1 == 2 and f ~= a and CompareFacets(a, f) then
+					a.Vertexes = Editor.JoinFacetVertexes(vert, f.Vertexes)
+					if not a.Vertexes or Editor.FindNormal(a, true) or a.Cancave then
+						a.Vertexes = vert
+						Editor.FindNormal(a, true)
+					else
+						f.PartOf = a
+						Facets[FacetIds[f] + 1] = nil
+						FacetIds[f] = nil
+						break
+					end
+				end
+			end
+		until vert == a.Vertexes
+	end
+end
+
+-----------------------------------------------------
 -- ReadRoom
 -----------------------------------------------------
 
 local function ReadRoom(a, t, n)
 	a["?ptr"] = a["?ptr"]  -- speed up
 	-- t.Facets = KeysList(a.DrawFacets, Facets, {})
+	local NonBSP = a.NonBSPDrawFacetsCount
 	t.Facets = {}
 	t.DrawFacets = {}
 	local map = {}
@@ -213,6 +284,9 @@ local function ReadRoom(a, t, n)
 			t.Facets[f] = id
 			map[i] = #t.DrawFacets
 			t.DrawFacets[#t.DrawFacets + 1] = f
+		end
+		if i == NonBSP - 1 then
+			NonBSP = #t.DrawFacets
 		end
 	end
 
@@ -242,7 +316,7 @@ local function ReadRoom(a, t, n)
 	if a.HasBSP then
 		t.BSP = ReadBSP(a.FirstBSPNode) or nil
 	end
-	t.NonBSP = t.BSP and a.NonBSPDrawFacetsCount or #t.DrawFacets
+	t.NonBSP = t.BSP and NonBSP or #t.DrawFacets
 	
 	--KeysList(a.Floors, Facets, t.Facets)
 	-- t.Sprites = KeysList(a.Sprites, Sprites, {})
@@ -386,8 +460,36 @@ function Editor.ResetDoors()
 	-- end
 end
 
-local function MoveDoorsToMiddle()
-	
+local function InitVertexShifts()
+	VertexShifts = {}
+	for _, t in Map.Doors do
+		local dx = {Delete = true}
+		for x in XYZ do
+			dx[x] = t["Direction"..x]*t.MoveLength/0x10000
+		end
+		for i, vi in t.VertexIds do
+			VertexShifts[vi] = dx
+		end
+	end
+end
+
+-- would be called before and after export/import
+function Editor.ShiftVertices(middle)
+end
+
+local function InitFacetDoorIdx()
+	FacetDoorIdx = {}
+	for di, t in Map.Doors do
+		for i, fi in t.FacetIds do
+			local f = Facets[fi + 1]
+			if f then
+				local j = FacetDoorIdx[f] or 0
+				if j % 200 ~= di then
+					FacetDoorIdx[f] = j*200 + di
+				end
+			end
+		end
+	end
 end
 
 -----------------------------------------------------
@@ -747,12 +849,20 @@ function Editor.ReadMap()
 	Editor.ImportIndex = Editor.ImportIndex and setmetatable({}, {__mode = "k"})
 	Editor.ImportBin = Editor.ImportIndex and setmetatable({}, {__mode = "k"})
 	Editor.ResetDoors()
+	-- separate door vertices, because otherwise they would collapse with other vertices in MM6
+	InitVertexShifts()
 	local state = {BaseInternalMap = Map.Name, Rooms = {}, RoomObj = {}}
 	-- vertexes
 	Vertexes = {}
 	local UniqueVertex = Editor.AddUnique(state)
 	for i, v in Map.Vertexes do
-		Vertexes[i] = UniqueVertex(v.X, v.Y, v.Z)
+		v = {X = v.X, Y = v.Y, Z = v.Z, Shift = VertexShifts[i]}
+		Vertexes[i] = UniqueVertex(v.X, v.Y, v.Z, v)
+	end
+	for i, v in pairs(Vertexes) do
+		if v.Shift and v.Shift.Delete then
+			v.Shift = nil
+		end
 	end
 	-- facets
 	Facets = {}
@@ -760,6 +870,10 @@ function Editor.ReadMap()
 	if mmver == 6 then
 		CompatibleIds(Editor.FacetIds)
 	end
+	-- join facets
+	-- InitFacetDoorIdx()
+	-- JoinFacets()
+	-- remove useless vertices
 	-- lights
 	Lights = {}
 	Editor.Lights, Editor.LightIds = ReadListEx(Lights, {}, Map.Lights, ReadLight)
@@ -778,6 +892,11 @@ function Editor.ReadMap()
 	end
 	table.sort(dark)
 	state.DefaultDarkness = dark[(#dark + 1):div(2)]  -- median darkness
+	for _, t in ipairs(state.Rooms) do
+		if t.Darkness == state.DefaultDarkness then
+			t.Darkness = nil
+		end
+	end
 	-- doors
 	-- Editor.Doors, Editor.DoorIds = {}, {}
 	Editor.Doors, Editor.DoorIds = ReadListEx({}, {}, Map.Doors, ReadDoor)
