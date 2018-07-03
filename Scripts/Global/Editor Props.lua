@@ -488,11 +488,11 @@ local IsDoorDirProp = {
 	DirectionY = true,
 	DirectionZ = true,
 	ClosePortal = true,
+	VertexFilter = true,
 }
 
 local IsDoorBSPProp = table.copy(IsDoorDirProp, {
 	MoveLength = true,
-	-- VertexFilter
 })
 
 local IsDoorUpdateProp = table.copy(IsDoorBSPProp, {
@@ -532,7 +532,7 @@ local DoorProps = MakeProps{
 		end
 		if prop == "VertexFilter" then
 			local ret = t and t[prop]
-			return ret, ('%s%s (nil, "Shrink" or "Grow")'):format(tostring2(ret), COMMENT)
+			return ret, ('%s%s (nil, "Free", "Shrink" or "Grow")'):format(tostring2(ret), COMMENT)
 		end
 		return t and t[prop] or not IsDoorBit[prop] and 0
 	end,

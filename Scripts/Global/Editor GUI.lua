@@ -85,7 +85,7 @@ events.LeaveGame = OnLeave
 local function CheckLastError()
 	if Editor.LastError then
 		local _, v = next(Editor.LastErrorFacets)
-		if v then
+		if v and type(v) == "table" then  -- because somewhere I used index instead of vertex table
 			v = v.Vertexes[1]
 			Party.X, Party.Y, Party.Z = v.X, v.Y, v.Z
 			-- select bad facets
@@ -680,7 +680,7 @@ function Commands.NewDoor()
 	local door = {
 		DirectionX = -f.nx, DirectionY = -f.ny, DirectionZ = -f.nz,
 		MoveLength = 128, Speed1 = 50, Speed2 = 50,
-		VertexFilter = not FoundMoving and "Shrink" or nil
+		VertexFilter = not FoundMoving and "Free" or nil
 	}
 	for id, props in Editor.ForSelection() do
 		props.set(id, "Door", door)

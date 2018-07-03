@@ -970,10 +970,10 @@ end
 
 Editor.DoorVertexFilter = Editor.DoorVertexFilter or {}
 
-local function SplitFilter(shrink, t, lists, param)
+local function SplitFilter(shrink, t, lists, param, param2)
 	shrink = shrink and -1 or 1
 	local vert = table.copy(table.copy(lists[1], lists[2]), lists[3])
-	local ax, ay, az = normalize(t.DirectionX*shrink, t.DirectionY*shrink, t.DirectionZ*shrink)
+	local ax, ay, az = t.DirectionX*shrink, t.DirectionY*shrink, t.DirectionZ*shrink
 	-- min, max on Direction line
 	local x1, x2 = 1/0, -1/0
 	for v in pairs(vert) do
@@ -982,15 +982,16 @@ local function SplitFilter(shrink, t, lists, param)
 		x2 = math.max(x2, x)
 	end
 	-- find x >= lim
-	param = x1 + (x2 - x1)*(param or 0.5) - 1  -- (in case of one facet move it whole, that's why -1)
+	param = x1 + (x2 - x1)*(param or 0.5)
+	param2 = x1 + (x2 - x1)*(param2 or 2)
 	local dvert = {}
 	for v, x in pairs(vert) do
 		local x = v.X*ax + v.Y*ay + v.Z*az
-		if x >= param then
+		if x >= param and x <= param2 then
 			dvert[v] = true
 		end
 	end
-	return {dvert}
+	return dvert
 end
 
 function Editor.DoorVertexFilter.Grow(...)
@@ -1001,48 +1002,29 @@ function Editor.DoorVertexFilter.Shrink(...)
 	return SplitFilter(true, ...)
 end
 
+function Editor.DoorVertexFilter.Free(t, lists)
+	return table.copy(table.copy(lists[1], lists[2]), lists[3]), nil, table.copy(lists[4])
+end
+
+
 Editor.DoorMinCos = 0.05  -- for unmoved facets that can't be stretched
-function Editor.WriteDoor(a, t)
-	rawset(a, "?ptr", nil)
-	a["?ptr"] = a["?ptr"]  -- speed up
-	mem.fill(a)
-	for k in pairs(DoorProps) do
-		a[k] = t[k]
-	end
+function Editor.GetDoorVertexLists(t, Add2)
 	local dirX, dirY, dirZ = normalize(t.DirectionX, t.DirectionY, t.DirectionZ)
-	a.DirectionX = (dirX*0x10000):round()
-	a.DirectionY = (dirY*0x10000):round()
-	a.DirectionZ = (dirZ*0x10000):round()
-	
 	-- prepare lists
 	local state = Editor.State
+	Add2 = Add2 or function() end
 	local FacetIds = Editor.FacetIds
 	local DFacets = {}
-	local FacetStartU = {}
-	local FacetStartV = {}
 	local DVertex = {}
 	local DStaticVertex = {}
 	local NDVertex = {}
 	local ForceStaticVertex = {}
-	local DRooms = {}
 	local Portals = {}
 	local Mults = {}
 	
 	local function AddDFacet(f, rid)
-		DRooms[rid - 1] = true
-		local n = #DFacets + 1
-		DFacets[n] = FacetIds[f]
-		local mf = Map.Facets[FacetIds[f]]
-		FacetStartU[n] = Map.FacetData[mf.DataIndex].BitmapU
-		FacetStartV[n] = Map.FacetData[mf.DataIndex].BitmapV
-		mf.MoveByDoor = not f.DoorStaticBmp and not f.IsPortal
-		-- make ZCalc recalculation safe
-		local nd = mf.NormalDistance
-		local nd = max(abs(nd), abs(nd - dirX*mf.NormalX - dirY*mf.NormalY - dirZ*mf.NormalZ) + 2)
-		if abs(mf.NormalZ) < floor(nd/0x8000) then
-			--Party.X, Party.Y, Party.Z = XYZ(f.Vertexes[1])
-			mf.NormalZ, mf.ZCalc1, mf.ZCalc2, mf.ZCalc3, mf.PolygonType = 0, 0, 0, 0, 1
-		end
+		DFacets[#DFacets + 1] = FacetIds[f]
+		Add2(f, rid)
 	end
 	
 	local function AddFacetVerts(f, isdoor)
@@ -1097,7 +1079,7 @@ function Editor.WriteDoor(a, t)
 			f, vf = Editor.DoorVertexFilter[vf], {}
 		end
 		if f then
-			local q = f(t, {DVertex, DStaticVertex, ForceStaticVertex}, unpack(vf))
+			local q = {f(t, {DVertex, DStaticVertex, ForceStaticVertex, NDVertex}, unpack(vf))}
 			DVertex = q[1] or {}
 			DStaticVertex = q[2] or {}
 			ForceStaticVertex = q[3] or {}
@@ -1136,6 +1118,47 @@ function Editor.WriteDoor(a, t)
 			AddDFacet(f, rid)
 		end
 	end
+	
+	return DVertex, NDVertex, DFacets
+end
+
+
+function Editor.WriteDoor(a, t)
+	rawset(a, "?ptr", nil)
+	a["?ptr"] = a["?ptr"]  -- speed up
+	mem.fill(a)
+	for k in pairs(DoorProps) do
+		a[k] = t[k]
+	end
+	local dirX, dirY, dirZ = normalize(t.DirectionX, t.DirectionY, t.DirectionZ)
+	a.DirectionX = (dirX*0x10000):round()
+	a.DirectionY = (dirY*0x10000):round()
+	a.DirectionZ = (dirZ*0x10000):round()
+	
+	-- prepare lists
+	local state = Editor.State
+	local FacetIds = Editor.FacetIds
+	local FacetStartU = {}
+	local FacetStartV = {}
+	local DRooms = {}
+
+	local function AddDFacet2(f, rid)
+		DRooms[rid - 1] = true
+		local n = #FacetStartU + 1
+		local mf = Map.Facets[FacetIds[f]]
+		FacetStartU[n] = Map.FacetData[mf.DataIndex].BitmapU
+		FacetStartV[n] = Map.FacetData[mf.DataIndex].BitmapV
+		mf.MoveByDoor = not f.DoorStaticBmp and not f.IsPortal
+		-- make ZCalc recalculation safe
+		local nd = mf.NormalDistance
+		local nd = max(abs(nd), abs(nd - dirX*mf.NormalX - dirY*mf.NormalY - dirZ*mf.NormalZ) + 2)
+		if abs(mf.NormalZ) < floor(nd/0x8000) then
+			--Party.X, Party.Y, Party.Z = XYZ(f.Vertexes[1])
+			mf.NormalZ, mf.ZCalc1, mf.ZCalc2, mf.ZCalc3, mf.PolygonType = 0, 0, 0, 0, 1
+		end
+	end
+	
+	local DVertex, NDVertex, DFacets = Editor.GetDoorVertexLists(t, AddDFacet2)
 	
 	-- cut vertexes, create vertex lists
 	local CutVertex = {}

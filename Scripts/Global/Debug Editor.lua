@@ -20,7 +20,7 @@ function BSP(rebuild)
 			r.BSP = nil
 		end
 	end
-	Editor.BuildBSP()
+	Editor.BuildBSP(true)
 	Editor.UpdateMap()
 end
 
