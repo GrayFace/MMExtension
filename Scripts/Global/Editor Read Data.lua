@@ -462,6 +462,25 @@ local function InitVertexShifts()
 	end
 end
 
+local function CleanVertexShifts()
+	local keep = {}
+	for i, v in pairs(Vertexes) do
+		if v.Shift and not v.Shift.Delete then
+			keep[v.Shift] = true
+		end
+	end
+	for i, v in pairs(Vertexes) do
+		if v.Shift then
+			if keep[v.Shift] then
+				v.Shift.Delete = nil
+			else
+				v.Shift = nil
+			end
+		end
+	end
+	VertexShifts = nil
+end
+
 -- would be called before and after export/import
 function Editor.ShiftVertices(middle)
 end
@@ -510,10 +529,6 @@ local function ReadDoor(a, t)
 	for _, i in a.FacetIds do
 		fac[Facets[i + 1] or fac] = true
 	end
-	-- normal vertexes
-	local portals = {}
-	local DStaticVertex = {}
-
 	for _, f in pairs(Facets) do
 		if fac[f] then
 			local num, ismover = 0, true
@@ -527,24 +542,15 @@ local function ReadDoor(a, t)
 			if num == 0 or not ismover and abs(f.nx*dirX + f.ny*dirY + f.nz*dirZ) > Editor.DoorMinCos then
 				--
 			elseif f.IsPortal then
-				portals[f] = true
+				t.ClosePortal = true
 			elseif f.Door then
 				f.MultiDoor = true
 			else
 				f.Door = t
 				f.MovedByDoor = ismover or nil
 				f.DoorStaticBmp = not f.MoveByDoor or nil
-				for _, v in ipairs(f.Vertexes) do
-					if not ver[v] then
-						DStaticVertex[v] = true
-					end
-				end
 			end
 		end
-	end
-	-- portals
-	if next(portals) then
-		t.ClosePortal = true
 	end
 	a["?ptr"] = nil
 
@@ -836,11 +842,7 @@ function Editor.ReadMap()
 		v = {X = v.X, Y = v.Y, Z = v.Z, Shift = VertexShifts[i]}
 		Vertexes[i] = UniqueVertex(v.X, v.Y, v.Z, v)
 	end
-	for i, v in pairs(Vertexes) do
-		if v.Shift and v.Shift.Delete then
-			v.Shift = nil
-		end
-	end
+	CleanVertexShifts()
 	-- facets
 	Facets = {}
 	Editor.Facets, Editor.FacetIds = ReadListEx(Facets, {}, Map.Facets, Editor.ReadFacet)
