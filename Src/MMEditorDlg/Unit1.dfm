@@ -17,7 +17,9 @@ object Form1: TForm1
   Visible = True
   OnClose = FormClose
   OnCreate = FormCreate
+  OnHide = FormHide
   OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 120
   TextHeight = 13
   object BtnImport: TRSSpeedButton
@@ -1159,12 +1161,6 @@ object Form1: TForm1
       Caption = 'Tile3'
       OnClick = ItemTile1Click
     end
-  end
-  object Timer2: TTimer
-    Enabled = False
-    Interval = 5
-    Left = 320
-    Top = 40
   end
   object OpenModelDialog: TOpenDialog
     DefaultExt = '.mdt'

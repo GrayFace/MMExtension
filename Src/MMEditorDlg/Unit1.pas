@@ -111,7 +111,6 @@ type
     ItemTile3: TMenuItem;
     BtnAutoLand: TRSSpeedButton;
     BtnEditMapProps: TRSSpeedButton;
-    Timer2: TTimer;
     BtnSelectSameSprite: TRSSpeedButton;
     BtnModelMode1: TRSSpeedButton;
     BtnModelMode2: TRSSpeedButton;
@@ -125,6 +124,8 @@ type
     SaveBmpDialog: TSaveDialog;
     BtnSelectAll: TRSSpeedButton;
     BtnUpdateBSP: TRSSpeedButton;
+    procedure FormHide(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure ListChestsWndProc(Sender: TObject; var m: TMessage;
       var Handled: Boolean; const NextWndProc: TWndMethod);
     procedure BtnSaveHeightMapClick(Sender: TObject);
@@ -1332,6 +1333,11 @@ begin
   LoadMapNames;
 end;
 
+procedure TForm1.FormHide(Sender: TObject);
+begin
+  Timer1.Enabled:= false;
+end;
+
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 var
@@ -1345,6 +1351,12 @@ begin
     CtrlKeyPressed(Key)
   else
     KeyPressed(Key);
+end;
+
+procedure TForm1.FormShow(Sender: TObject);
+begin
+  UpdatePosition;
+  Timer1.Enabled:= true;
 end;
 
 function TForm1.GetCreateIndex: TMyCreateIndex;
@@ -1712,34 +1724,22 @@ end;
 
 procedure TForm1.UpdatePosition;
 var
-  r, r2: TRect;
-  p: TPoint absolute r2;
-  w, h, y: int;
+  r: TRect;
+  p: TPoint;
+  h: int;
 begin
-  //if not Visible then  exit;
-  with TRSWnd(Handle) do
-  begin
-    r:= ExtendedBoundsRect;
-    r2:= AbsoluteRect;
-    w:= r.Right - r2.Left;
-  end;
+  r:= TRSWnd(MainWnd).BoundsRect;
+  Top:= r.Top;
+  Height:= r.Bottom - r.Top;
   if GetWindowLong(MainWnd, GWL_STYLE) and WS_BORDER = 0 then
   begin
-    y:= r2.Top - r.Top;
-    Windows.GetClientRect(MainWnd, r2);
-    ClientHeight:= r2.Bottom - r.Bottom - r.Top + GetClientRect.Bottom;
+    p.X:= 0;
+    p.Y:= 0;
     Windows.ClientToScreen(MainWnd, p);
-    Left:= p.X - w;
-    Top:= p.Y + y;
-    if Visible then
-      MyClipCursor(false);
+    Left:= p.X - Width;
+    ClipCursor(nil);
   end else
-  begin
-    r:= TRSWnd(MainWnd).AbsoluteRect;
-    Left:= r.Left - w;
-    Top:= r.Top;
-    Height:= r.Bottom - r.Top;
-  end;
+    Left:= r.Left - Width;
 
   with ListChests do
   begin
