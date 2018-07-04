@@ -664,6 +664,14 @@ function Commands.EditDoor()
 	Editor.EditProps("Door")
 end
 
+local function FreeDoorId()
+	local id = 0
+	for _, a in Map.Doors do
+		id = max(id, a.Id)
+	end
+	return id + 1
+end
+
 function Commands.NewDoor()
 	-- find the 'main' facet that would define door direction
 	local FoundMoving
@@ -680,7 +688,8 @@ function Commands.NewDoor()
 	local door = {
 		DirectionX = -f.nx, DirectionY = -f.ny, DirectionZ = -f.nz,
 		MoveLength = 128, Speed1 = 50, Speed2 = 50,
-		VertexFilter = not FoundMoving and "Free" or nil
+		VertexFilter = not FoundMoving and "Free" or nil,
+		Id = FreeDoorId(),
 	}
 	for id, props in Editor.ForSelection() do
 		props.set(id, "Door", door)
