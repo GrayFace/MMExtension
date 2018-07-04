@@ -70,8 +70,8 @@ function Editor.AddUnique(state, SingleModel)
 	for _, r in ipairs(rooms) do
 		local facets = r.BaseFacets or r.Facets
 		for a in pairs(facets) do
-			for _,v in ipairs(a.Vertexes) do
-				UniqueVertex(v.X, v.Y, v.Z, v)
+			for i, v in ipairs(a.Vertexes) do
+				a.Vertexes[i] = UniqueVertex(v.X, v.Y, v.Z, v)
 			end
 			UniqueFacet(a.Vertexes, a)
 		end
