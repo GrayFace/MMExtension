@@ -483,13 +483,18 @@ local FacetProps = MakeProps{
 -- DoorProps
 -----------------------------------------------------
 
-local IsDoorDirProp = {
+local IsDoorFilterProp = {
+	VertexFilter = true,
+	VertexFilterParam1 = true,
+	VertexFilterParam2 = true,
+}
+
+local IsDoorDirProp = table.copy(IsDoorFilterProp, {
 	DirectionX = true,
 	DirectionY = true,
 	DirectionZ = true,
 	ClosePortal = true,
-	VertexFilter = true,
-}
+})
 
 local IsDoorBSPProp = table.copy(IsDoorDirProp, {
 	MoveLength = true,
@@ -498,7 +503,6 @@ local IsDoorBSPProp = table.copy(IsDoorDirProp, {
 local IsDoorUpdateProp = table.copy(IsDoorBSPProp, {
 	Speed1 = true,
 	Speed2 = true,
-	VertexFilter = true,
 })
 
 local IsDoorBit = {
@@ -522,6 +526,8 @@ local DoorProps = MakeProps{
 	"NoSound",
 	"StartState2",
 	"VertexFilter",
+	"VertexFilterParam1",
+	"VertexFilterParam2",
 	"ClosePortal",
 
 	get = function(id, prop)
@@ -533,6 +539,8 @@ local DoorProps = MakeProps{
 		if prop == "VertexFilter" then
 			local ret = t and t[prop]
 			return ret, ('%s%s (nil, "Free", "Shrink" or "Grow")'):format(tostring2(ret), COMMENT)
+		elseif IsDoorFilterProp[prop] then
+			return t and t[prop]
 		end
 		return t and t[prop] or not IsDoorBit[prop] and 0
 	end,

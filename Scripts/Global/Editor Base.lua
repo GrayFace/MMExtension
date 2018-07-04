@@ -25,7 +25,7 @@ function Editor.AddUnique(state, SingleModel)
 		if list then
 			for v1 in pairs(list) do
 				if y == v1.Y and z == v1.Z then
-					if v1.Shift == (v and v.Shift) then
+					if not v or v1.Shift == (v and v.Shift) then
 						if starting then
 							ids[v] = ids[v1]
 						end

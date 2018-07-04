@@ -23,8 +23,8 @@ local function inorm(x, y, z)
 	return (n ~= 0) and n^(-0.5) or 0
 end
 
-local function normalize(x, y, z)
-	local n = inorm(x, y, z)
+local function normalize(x, y, z, mul)
+	local n = inorm(x, y, z)*(mul or 1)
 	return x*n, y*n, z*n
 end
 
@@ -970,23 +970,31 @@ end
 
 Editor.DoorVertexFilter = Editor.DoorVertexFilter or {}
 
-local function SplitFilter(shrink, t, lists, param, param2)
+local function SplitFilter(shrink, t, move, stay, static, other, param, param2)
 	shrink = shrink and -1 or 1
-	local vert = table.copy(table.copy(lists[1], lists[2]), lists[3])
-	local ax, ay, az = t.DirectionX*shrink, t.DirectionY*shrink, t.DirectionZ*shrink
+	local vert = table.copy(table.copy(move, stay), static)
+	local dirX, dirY, dirZ = t.DirectionX*shrink, t.DirectionY*shrink, t.DirectionZ*shrink
 	-- min, max on Direction line
 	local x1, x2 = 1/0, -1/0
 	for v in pairs(vert) do
-		local x = v.X*ax + v.Y*ay + v.Z*az
-		x1 = math.min(x1, x)
-		x2 = math.max(x2, x)
+		local x = v.X*dirX + v.Y*dirY + v.Z*dirZ
+		if v.Shift then
+			local v = v.Shift
+			x = x + v.X*dirX + v.Y*dirY + v.Z*dirZ
+		end
+		x1 = min(x1, x)
+		x2 = max(x2, x)
 	end
 	-- find x >= lim
 	param = x1 + (x2 - x1)*(param or 0.5)
 	param2 = x1 + (x2 - x1)*(param2 or 2)
 	local dvert = {}
 	for v, x in pairs(vert) do
-		local x = v.X*ax + v.Y*ay + v.Z*az
+		local x = v.X*dirX + v.Y*dirY + v.Z*dirZ
+		if v.Shift then
+			local v = v.Shift
+			x = x + v.X*dirX + v.Y*dirY + v.Z*dirZ
+		end
 		if x >= param and x <= param2 then
 			dvert[v] = true
 		end
@@ -1002,8 +1010,8 @@ function Editor.DoorVertexFilter.Shrink(...)
 	return SplitFilter(true, ...)
 end
 
-function Editor.DoorVertexFilter.Free(t, lists)
-	return table.copy(table.copy(lists[1], lists[2]), lists[3]), nil, table.copy(lists[4])
+function Editor.DoorVertexFilter.Free(t, move, stay, static, other)
+	return table.copy(table.copy(move, stay), static), nil, table.copy(other)
 end
 
 
@@ -1040,7 +1048,7 @@ function Editor.GetDoorVertexLists(t, Add2)
 	end
 	
 	-- enumerate facets
-	for rid, r in ipairs(state.Rooms) do
+	for rid, r in ipairs(Editor.State.Rooms) do
 		for _, f in ipairs(r.DrawFacets) do
 			local isdoor = (f.Door == t)
 			if not isdoor and (f.MultiDoor or t.ClosePortal and f.IsPortal) then
@@ -1071,15 +1079,16 @@ function Editor.GetDoorVertexLists(t, Add2)
 	
 	-- filter vertices
 	if t.VertexFilter then
-		local vf, f = t.VertexFilter, nil
-		if type(t.VertexFilter) == "table" then
-			f = Editor.DoorVertexFilter[vf[1]]
-			table.remove(vf, 1)
-		else
-			f, vf = Editor.DoorVertexFilter[vf], {}
-		end
+		local f = Editor.DoorVertexFilter[t.VertexFilter]
 		if f then
-			local q = {f(t, {DVertex, DStaticVertex, ForceStaticVertex, NDVertex}, unpack(vf))}
+			local par = {}
+			for i = 1, 1/0 do
+				par[i] = t["VertexFilterParam"..i]
+				if not par[i] then
+					break
+				end
+			end
+			local q = {f(t, DVertex, DStaticVertex, ForceStaticVertex, NDVertex, unpack(par))}
 			DVertex = q[1] or {}
 			DStaticVertex = q[2] or {}
 			ForceStaticVertex = q[3] or {}

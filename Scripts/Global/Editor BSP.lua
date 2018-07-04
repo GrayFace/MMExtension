@@ -11,6 +11,7 @@ local Delta = 2.5
 
 local UniqueVertex
 local SplitEdges
+local DoorVerts
 local CHK_FRONT = 1
 local CHK_BACK = 2
 local CHK_INTERSECT = 3
@@ -120,7 +121,8 @@ local function SplitFacet(facet, nx, ny, nz, ndist)
 			else
 				local p = math.abs(lastD/(d - lastD))
 				local q = 1 - p
-				local v1 = UniqueVertex(v.X*p + last.X*q, v.Y*p + last.Y*q, v.Z*p + last.Z*q)
+				local v1 = {X = v.X*p + last.X*q, Y = v.Y*p + last.Y*q, Z = v.Z*p + last.Z*q, Shift = v.Shift}
+				v1 = UniqueVertex(v1.X, v1.Y, v1.Z, v1)
 				SplitEdges[#SplitEdges + 1] = last
 				SplitEdges[#SplitEdges + 1] = v
 				SplitEdges[#SplitEdges + 1] = v1
@@ -385,6 +387,7 @@ end
 
 function Editor.BuildBSP(DifferErrors)
 	UniqueVertex = Editor.AddUnique()
+	DoorVerts = {}
 	for i, r in ipairs(Editor.State.Rooms) do
 		BuildRoomBSP(i - 1, r, DifferErrors)
 	end
