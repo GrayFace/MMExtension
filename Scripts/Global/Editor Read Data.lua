@@ -103,6 +103,68 @@ local FacetDataProps = {
 }
 
 -----------------------------------------------------
+-- VertexShifts
+-----------------------------------------------------
+
+local function InitVertexShifts()
+	VertexShifts = {}
+	for _, t in Map.Doors do
+		local dx = {Delete = true}
+		dx.X, dx.Y, dx.Z = normalize(t.DirectionX, t.DirectionY, t.DirectionZ, t.MoveLength/2)
+		for i, vi in t.VertexIds do
+			VertexShifts[vi] = dx
+		end
+	end
+end
+
+local function CleanVertexShifts()
+	for i, v in pairs(Vertexes) do
+		if v.Shift and v.Shift.Delete then
+			v.Shift = nil
+		end
+	end
+	VertexShifts = nil
+end
+
+local function ShiftVertexes(operate, f, done)
+	local mul = operate and 1 or -1
+	for i, v in ipairs(f.Vertexes) do
+		local a = v.Shift
+		if a and not done[v] then
+			v.X = v.X + a.X*mul
+			v.Y = v.Y + a.Y*mul
+			v.Z = v.Z + a.Z*mul
+			done[v] = true
+		end
+	end
+end
+
+-- would be called before and after export/import
+function Editor.ShiftVertexes(operate)
+	local done = {}
+	for _, r in ipairs(Editor.State.Rooms or {}) do
+		for f in pairs(r.Facets) do
+			ShiftVertexes(operate, f, done)
+		end
+	end
+end
+
+local function InitFacetDoorIdx()
+	FacetDoorIdx = {}
+	for di, t in Map.Doors do
+		for i, fi in t.FacetIds do
+			local f = Facets[fi + 1]
+			if f then
+				local j = FacetDoorIdx[f] or 0
+				if j % 200 ~= di then
+					FacetDoorIdx[f] = j*200 + di
+				end
+			end
+		end
+	end
+end
+
+-----------------------------------------------------
 -- ReadFacet
 -----------------------------------------------------
 
@@ -181,17 +243,24 @@ function Editor.ReadFacet(a, _, Verts)
 		t[k] = a[k]
 	end
 	t.MoveByDoor = a.MoveByDoor
-	if Editor.FindNormal(t, true) or t.nx*a.NormalX + t.ny*a.NormalY + t.nz*a.NormalZ < 0 then
+	Editor.FindNormal(t, true)
+	local nx, ny, nz = t.nx, t.ny, t.nz
+	ShiftVertexes(true, t, {})
+	t.nx = nil
+	Editor.FindNormal(t, true)
+	if not t.nx or not nx or t.nx*nx + t.ny*ny + t.nz*nz <= 0.9 then
 		for _, v in ipairs(v) do
 			if v.Shift then
 				v.Shift.Delete = nil
 			end
 		end
 	end
-	t.nx, t.ny, t.nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
-	t.ndist = a.NormalDistance/0x10000
-	-- local v = v[1]
-	-- t.ndist = -(v.X*t.nx + v.Y*t.ny + v.Z*t.nz)
+	ShiftVertexes(false, t, {})
+	if not t.nx then
+		t.nx, t.ny, t.nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
+	end
+	local v = v[1]
+	t.ndist = -(v.X*t.nx + v.Y*t.ny + v.Z*t.nz)
 	t.PartOf = t
 	if t.IsPortal then
 		t.Room = a.Room
@@ -454,48 +523,13 @@ function Editor.ResetDoors()
 	-- end
 end
 
-local function InitVertexShifts()
-	VertexShifts = {}
-	for _, t in Map.Doors do
-		local dx = {Delete = true}
-		dx.X, dx.Y, dx.Z = normalize(t.DirectionX, t.DirectionY, t.DirectionZ, t.MoveLength/0x20000)
-		for i, vi in t.VertexIds do
-			VertexShifts[vi] = dx
-		end
-	end
-end
-
-local function CleanVertexShifts()
-	for i, v in pairs(Vertexes) do
-		if v.Shift and v.Shift.Delete then
-			v.Shift = nil
-		end
-	end
-	VertexShifts = nil
-end
-
--- would be called before and after export/import
-function Editor.ShiftVertices(middle)
-end
-
-local function InitFacetDoorIdx()
-	FacetDoorIdx = {}
-	for di, t in Map.Doors do
-		for i, fi in t.FacetIds do
-			local f = Facets[fi + 1]
-			if f then
-				local j = FacetDoorIdx[f] or 0
-				if j % 200 ~= di then
-					FacetDoorIdx[f] = j*200 + di
-				end
-			end
-		end
-	end
-end
-
 -----------------------------------------------------
 -- ReadDoor
 -----------------------------------------------------
+
+local function VerToNum(v)
+	return v.X % 0x10000 + (v.Y % 0x10000)*0x10000 + (v.Z % 0x10000)*0x100000000
+end
 
 local function DoorCheckFree(t, ver, fac)
 	local fac2, include, exclude = {}, {}, {}
@@ -516,17 +550,20 @@ local function DoorCheckFree(t, ver, fac)
 		if not f.IsPortal then
 			for _, v in ipairs(f.Vertexes) do
 				(need and include or exclude)[v] = true
+				if not need and (not v.Shift or v.Shift.Delete) then
+					exclude[VerToNum(v)] = true
+				end
 			end
 		end
 	end
 	-- check
 	for v in pairs(include) do
-		if not ver[v] and not exclude[v] then
+		if not ver[v] and not exclude[v] and (v.Shift and not v.Shift.Delete or not exclude[VerToNum(v)]) then
 			return
 		end
 	end
 	for v in pairs(ver) do
-		if not include[v] then
+		if exclude[v] or (not v.Shift or v.Shift.Delete) and exclude[VerToNum(v)] then
 			return
 		end
 	end
@@ -578,7 +615,7 @@ local function ReadDoor(a, t)
 					ismover = false
 				end
 			end
-			if num == 0 or not ismover and abs(f.nx*dirX + f.ny*dirY + f.nz*dirZ) > Editor.DoorMinCos then
+			if num == 0 or not t.VertexFilter and not ismover and abs(f.nx*dirX + f.ny*dirY + f.nz*dirZ) > Editor.DoorMinCos then
 				--
 			elseif f.IsPortal then
 				t.ClosePortal = true

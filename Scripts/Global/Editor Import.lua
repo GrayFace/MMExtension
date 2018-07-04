@@ -646,7 +646,9 @@ function Editor.LoadObj(file, AsObjects)
 		state = Editor.State or {Rooms = {{Facets = {}}}}
 		state.Objects = state.Objects or {}
 		Editor.profile "LoadObj"
+		Editor.ShiftVertexes(true)
 		LoadBlvObj(file, AsObjects)
+		Editor.ShiftVertexes(false)
 		Editor.profile "BuildRooms"
 		BuildRooms()
 		Editor.SetState(state)

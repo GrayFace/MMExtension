@@ -87,9 +87,10 @@ function Editor.ExportObj(file, models, withGround, CenterPoint)
 	local texpath = {}
 	local textures = {}
 	local function WriteTexture(bmp, extra, invis)
-		local bmp1 = bmp:lower()..(extra and ":g" or "")..(invis and ":i" or "")
+		local bmp1 = bmp:lower()..(extra and ":g" or "")
 		
 		if not textures[bmp1] then
+			bmp = bmp:match("[^:]*")
 			textures[bmp1] = true
 			local place = ".textures/"..(extra and "ground/" or "")
 			local bmpPath = path.setext(path.name(file), place)..bmp
@@ -124,52 +125,59 @@ function Editor.ExportObj(file, models, withGround, CenterPoint)
 	
 	local function MakeVTs(f)
 		local t = {}
-		if not f.IsPortal and f.Bitmap then
-			local bmp = Game.BitmapsLod.Bitmaps[Game.BitmapsLod:LoadBitmap(f.Bitmap)]
-			local bw, bh = bmp.Width, bmp.Height
-			if BitmapsHDScale then
-				bw, bh = bw/2, bh/2
-			end
-			local fu, fv = f.BitmapU, f.BitmapV
-			local ux, uy, uz, vx, vy, vz = Editor.GetUVDirections{
-				NormalX = math.round(f.nx*0x10000),
-				NormalY = math.round(f.ny*0x10000),
-				NormalZ = math.round(f.nz*0x10000),
-			}
-			if f.ImportVertex then
-				local vertX, vertY, vertZ = f.ImportVertex.X, f.ImportVertex.Y, f.ImportVertex.Z
-				fu = fu or -(ux*vertX + uy*vertY + uz*vertZ) + f.ImportU*bw
-				fv = fv or -(vx*vertX + vy*vertY + vz*vertZ) + f.ImportV*bh
-			else
-				fu = fu or 0
-				fv = fv or 0
-			-- elseif not fu or not fv then
-				-- return t
-			end
-			local vflip = (vy == -1 and VFlipUnfixed and not state.RoomObj)
-			for i, v in ipairs(f.Vertexes) do
-				local vertX, vertY, vertZ = v.X, v.Y, v.Z
-				local u = (fu + ux*vertX + uy*vertY + uz*vertZ)/bw
-				local v = (fv + vx*vertX + vy*vertY + vz*vertZ)/bh
-				if vflip then
-					t[i] = {"vt", u, v}
-				else
-					t[i] = {"vt", u, 1 - v}
+		local bmp = Game.BitmapsLod.Bitmaps[Game.BitmapsLod:LoadBitmap(f.Bitmap)]
+		local bw, bh = bmp.Width, bmp.Height
+		if BitmapsHDScale then
+			bw, bh = bw/2, bh/2
+		end
+		local fu, fv = f.BitmapU, f.BitmapV
+		local ux, uy, uz, vx, vy, vz = Editor.GetUVDirections{
+			NormalX = math.round(f.nx*0x10000),
+			NormalY = math.round(f.ny*0x10000),
+			NormalZ = math.round(f.nz*0x10000),
+		}
+		if f.ImportVertex then
+			local vertX, vertY, vertZ = f.ImportVertex.X, f.ImportVertex.Y, f.ImportVertex.Z
+			fu = fu or -(ux*vertX + uy*vertY + uz*vertZ) + f.ImportU*bw
+			fv = fv or -(vx*vertX + vy*vertY + vz*vertZ) + f.ImportV*bh
+		else
+			fu = fu or 0
+			fv = fv or 0
+			-- handle shift
+			if f.Door and not f.DoorStaticBmp then
+				for _, v in ipairs(f.Vertexes) do
+					if v.Shift then
+						local vertX, vertY, vertZ = XYZ(v.Shift)
+						fu = fu - (ux*vertX + uy*vertY + uz*vertZ)
+						fv = fv - (vx*vertX + vy*vertY + vz*vertZ)
+						break
+					end
 				end
 			end
-			if f.AlignLeft then
-				Change(t, min, 2)
-			elseif f.AlignRight then
-				Change(t, max, 2)
+		end
+		local vflip = (vy == -1 and VFlipUnfixed and not state.RoomObj)
+		for i, v in ipairs(f.Vertexes) do
+			local vertX, vertY, vertZ = v.X, v.Y, v.Z
+			local u = (fu + ux*vertX + uy*vertY + uz*vertZ)/bw
+			local v = (fv + vx*vertX + vy*vertY + vz*vertZ)/bh
+			if vflip then
+				t[i] = {"vt", u, v}
+			else
+				t[i] = {"vt", u, 1 - v}
 			end
-			if f.AlignTop then
-				Change(t, (vflip and min or max), 3)
-			elseif f.AlignBottom then
-				Change(t, (vflip and max or min), 3)
-			end
-			for i = 1, #t do
-				t[i] = concat(t[i], " ")
-			end
+		end
+		if f.AlignLeft then
+			Change(t, min, 2)
+		elseif f.AlignRight then
+			Change(t, max, 2)
+		end
+		if f.AlignTop then
+			Change(t, (vflip and min or max), 3)
+		elseif f.AlignBottom then
+			Change(t, (vflip and max or min), 3)
+		end
+		for i = 1, #t do
+			t[i] = concat(t[i], " ")
 		end
 		return t
 	end
@@ -237,6 +245,8 @@ function Editor.ExportObj(file, models, withGround, CenterPoint)
 	end
 	
 	-- rooms/models
+	Editor.ShiftVertexes(true)
+	texture = nil
 	for name, r in pairs(models) do
 		local VertexIds = {}
 		local LocVer = {}
@@ -258,6 +268,8 @@ function Editor.ExportObj(file, models, withGround, CenterPoint)
 					-- facet with Id may be shown by an EVT command, but not the ones without it
 					-- MM6 uses exact facet indeces, so this trick won't work
 					-- bmp = "_Invisible_"
+				elseif f.Invisible then
+					bmp = bmp..":i"
 				end
 				
 				if bmp ~= texture then
@@ -290,6 +302,7 @@ function Editor.ExportObj(file, models, withGround, CenterPoint)
 		end
 		obj[LocVerInd] = concat(LocVer, "\r\n")
 	end
+	Editor.ShiftVertexes(false)
 	
 	-- write
 	io.SaveString(file, concat(obj, "\r\n"))
