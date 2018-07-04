@@ -65,7 +65,7 @@ end
 local function StructsArray(arr, offs, tabl)
 	tabl = tabl or {}
 	return function(str)
-		return DataTables.StructsArray(arr, offs, table.copy(tabl, {Resisable = true, IgnoreFields = {SFTIndex = true, Bits = true}}, true), str)
+		return DataTables.StructsArray(arr, offs, table.copy(tabl, {Resisable = true, IgnoreFields = {SFTIndex = true, Bits = true}, IgnoreRead = {['#'] = true}}, true), str)
 	end
 end
 

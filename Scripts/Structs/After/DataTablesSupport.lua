@@ -130,6 +130,7 @@ local function ReadWriteTable(f, a, str)
 			ss[#ss + 1] = table.concat(t, "\t").."\r\n"
 		end
 		ss[#ss + 1] = a.Footer or ""
+		errorinfo(einfoOld)
 		return table.concat(ss)
 	end
 	errorinfo(einfoOld)
@@ -151,6 +152,7 @@ function DataTables.StructsArray(arr, offs, t, str)
 	t.ColLow = 1
 	local resisable = t.Resisable and str
 	local ignore = t.IgnoreFields or {}
+	local ignoreR = t.IgnoreRead or {}
 	
 	
 	local function f(x, y, v, lcount)
@@ -174,7 +176,7 @@ function DataTables.StructsArray(arr, offs, t, str)
 			local col = cols[x]
 			local ret = struct[col]
 			local alias = aliases[col]
-			if v then
+			if v and not ignoreR[col] then
 				if alias and alias[v] then
 					v = alias[v]
 				end
@@ -188,7 +190,7 @@ function DataTables.StructsArray(arr, offs, t, str)
 				else
 					assert(false)
 				end
-			else
+			elseif not v then
 				errorinfo(('%s - value %s'):format(errorinfo(), tostring2(ret)))
 				if alias then
 					alias = aliasInv[col] or table.invert(alias)
