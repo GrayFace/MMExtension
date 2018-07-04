@@ -970,9 +970,9 @@ end
 
 Editor.DoorVertexFilter = Editor.DoorVertexFilter or {}
 
-local function SplitFilter(shrink, t, move, stay, static, other, param, param2)
+local function SplitFilter(shrink, t, move, maybe, static, other, param, param2)
 	shrink = shrink and -1 or 1
-	local vert = table.copy(table.copy(move, stay), static)
+	local vert = table.copy(table.copy(move, maybe), static)
 	local dirX, dirY, dirZ = t.DirectionX*shrink, t.DirectionY*shrink, t.DirectionZ*shrink
 	-- min, max on Direction line
 	local x1, x2 = 1/0, -1/0
@@ -1010,8 +1010,28 @@ function Editor.DoorVertexFilter.Shrink(...)
 	return SplitFilter(true, ...)
 end
 
-function Editor.DoorVertexFilter.Free(t, move, stay, static, other)
-	return table.copy(table.copy(move, stay), static), nil, table.copy(other)
+function Editor.DoorVertexFilter.Free(t, move, maybe, static, other)
+	return table.copy(table.copy(move, maybe), static), nil, table.copy(other)
+end
+
+function Editor.DoorVertexFilter.CheckShift(t, move, maybe, static, other)
+	local sh
+	for v in pairs(move) do
+		if not static[v] then
+			sh = v.Shift
+			break
+		end
+	end
+	if not sh then
+		return move, maybe, static, other
+	end
+	for v in pairs(table.copy(move, maybe)) do
+		if v.Shift == sh then
+			move[v] = true
+			static[v] = nil
+		end
+	end
+	return move, maybe, static, other
 end
 
 

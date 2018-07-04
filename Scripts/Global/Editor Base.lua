@@ -24,19 +24,11 @@ function Editor.AddUnique(state, SingleModel)
 		local list = verts[x]
 		if list then
 			for v1 in pairs(list) do
-				if y == v1.Y and z == v1.Z then
-					if not v or v1.Shift == (v and v.Shift) then
-						if starting then
-							ids[v] = ids[v1]
-						end
-						return v1, false
-					else
-						if v1.Shift then
-							v1.Shift.Delete = nil
-						else
-							v.Shift.Delete = nil
-						end
+				if y == v1.Y and z == v1.Z and (not v or v1.Shift == v.Shift) then
+					if starting then
+						ids[v] = ids[v1]
 					end
+					return v1, false
 				end
 			end
 			v = v or {X = x, Y = y, Z = z}

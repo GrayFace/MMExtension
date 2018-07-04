@@ -10,7 +10,6 @@ local Vertexes
 local Facets
 local Sprites
 local Lights
-local BadDoors
 
 local function inorm(x, y, z)
 	local n = x*x + y*y + z*z
@@ -183,11 +182,16 @@ function Editor.ReadFacet(a, _, Verts)
 	end
 	t.MoveByDoor = a.MoveByDoor
 	if Editor.FindNormal(t, true) or t.nx*a.NormalX + t.ny*a.NormalY + t.nz*a.NormalZ < 0 then
-		t.nx, t.ny, t.nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
-		local v = v[1]
-		t.ndist = -(v.X*t.nx + v.Y*t.ny + v.Z*t.nz)
-		-- t.ndist = a.NormalDistance/0x10000
+		for _, v in ipairs(v) do
+			if v.Shift then
+				v.Shift.Delete = nil
+			end
+		end
 	end
+	t.nx, t.ny, t.nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
+	t.ndist = a.NormalDistance/0x10000
+	-- local v = v[1]
+	-- t.ndist = -(v.X*t.nx + v.Y*t.ny + v.Z*t.nz)
 	t.PartOf = t
 	if t.IsPortal then
 		t.Room = a.Room
@@ -462,19 +466,9 @@ local function InitVertexShifts()
 end
 
 local function CleanVertexShifts()
-	local keep = {}
 	for i, v in pairs(Vertexes) do
-		if v.Shift and not v.Shift.Delete then
-			keep[v.Shift] = true
-		end
-	end
-	for i, v in pairs(Vertexes) do
-		if v.Shift then
-			if keep[v.Shift] then
-				v.Shift.Delete = nil
-			else
-				v.Shift = nil
-			end
+		if v.Shift and v.Shift.Delete then
+			v.Shift = nil
 		end
 	end
 	VertexShifts = nil
@@ -503,13 +497,12 @@ end
 -- ReadDoor
 -----------------------------------------------------
 
-local function DoorCheckGrow(t, ver, fac, must)
-	-- list of vertices of all required facets
-	local va = table.copy(ver)
-	local fac2 = {}
-	for f in pairs(fac) do
-		local need = f.MoveByDoor
-		if not need then
+local function DoorCheckFree(t, ver, fac)
+	local fac2, include, exclude = {}, {}, {}
+	for _, f in pairs(Facets) do
+		local need = fac[f]
+		if need and not f.MoveByDoor and not f.IsPortal then
+			need = false
 			for _, v in ipairs(f.Vertexes) do
 				if ver[v] then
 					need = true
@@ -519,55 +512,33 @@ local function DoorCheckGrow(t, ver, fac, must)
 		end
 		if need then
 			fac2[f] = true
+		end
+		if not f.IsPortal then
 			for _, v in ipairs(f.Vertexes) do
-				va[v] = true
+				(need and include or exclude)[v] = true
 			end
 		end
 	end
-	-- find boundaries
-	local dirX, dirY, dirZ = t.DirectionX, t.DirectionY, t.DirectionZ
-	local d1, d2, o1, o2 = 1/0, -1/0, 1/0, -1/0
-	for v in pairs(va) do
-		local x = v.X*dirX + v.Y*dirY + v.Z*dirZ
-		if v.Shift and (not v.Shift.Delete or must and ver[v]) then
-			local v = v.Shift
-			v.Delete = nil
-			x = x + v.X*dirX + v.Y*dirY + v.Z*dirZ
-		end
-		if ver[v] then
-			d1 = min(d1, x)
-			d2 = max(d2, x)
-		else
-			o1 = min(o1, x)
-			o2 = max(o2, x)
-		end
-	end
-	if t.Id == 53 then
-		print(d1, d2, o1, o2, must)
-	end
-	-- check Grow/Shrink
-	if (d1 - o2) >= 0.1*(d2 - o1) then  -- Grow
-		if d1 >= o1*0.49 + d2*0.51 and o2 < o1*0.51 + d2*0.49 then
-			t.VertexFilter = "Grow"  -- half
-		elseif must then
-			t.VertexFilter = "Grow"
-			t.VertexFilterParam1 = ((d1 + o2)/2 - o1)/(d2 - o1)
-		else
+	-- check
+	for v in pairs(include) do
+		if not ver[v] and not exclude[v] then
 			return
 		end
-	elseif (o1 - d2) >= 0.1*(o2 - d1) then  -- Shrink
-		if o1 > d1*0.49 + o2*0.51 and d2 <= d1*0.51 + o2*0.49 then
-			t.VertexFilter = "Shrink"  -- half
-		elseif must then
-			t.VertexFilter = "Shrink"
-			t.VertexFilterParam1 = ((d1 + o1)/2 - o2)/(d1 - o2)
-		else
+	end
+	for v in pairs(ver) do
+		if not include[v] then
 			return
 		end
-	else
-		return
 	end
+	t.VertexFilter = "Free"
 	return fac2
+end
+
+local function SetShiftFilter(t, ver)
+	t.VertexFilter = "CheckShift"
+	for v in pairs(ver) do
+		v.Shift.Delete = nil
+	end
 end
 
 local DoorProps = {
@@ -596,7 +567,7 @@ local function ReadDoor(a, t)
 		fac[Facets[i + 1] or fac] = true
 	end
 	fac[fac] = nil
-	fac = DoorCheckGrow(t, ver, fac, BadDoors[a["?ptr"]]) or fac
+	fac = DoorCheckFree(t, ver, fac) or fac
 	for _, f in pairs(Facets) do
 		if fac[f] then
 			local num, ismover = 0, true
@@ -626,7 +597,7 @@ local function ReadDoor(a, t)
 		local v2 = Editor.GetDoorVertexLists(t)
 		for v in pairs(ver) do
 			if not v2[v] then
-				BadDoors[a["?ptr"]] = true
+				SetShiftFilter(t, ver)
 				break
 			end
 		end
@@ -957,14 +928,7 @@ function Editor.ReadMap()
 	end
 	-- doors
 	Editor.State = state
-	BadDoors = {}
 	Editor.Doors, Editor.DoorIds = ReadListEx({}, {}, Map.Doors, ReadDoor)
-	if next(BadDoors) then
-		for _, f in pairs(Facets) do
-			f.Door, f.MultiDoor, f.DoorStaticBmp, f.MovedByDoor = nil
-		end
-		Editor.Doors, Editor.DoorIds = ReadListEx({}, {}, Map.Doors, ReadDoor)
-	end
 	-- other properties
 	Editor.ReadMapCommon(state)
 	-- no outline skip
