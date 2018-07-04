@@ -10,14 +10,15 @@ local Vertexes
 local Facets
 local Sprites
 local Lights
+local BadDoors
 
 local function inorm(x, y, z)
 	local n = x*x + y*y + z*z
 	return (n ~= 0) and n^(-0.5) or 0
 end
 
-local function normalize(x, y, z)
-	local n = inorm(x, y, z)
+local function normalize(x, y, z, mul)
+	local n = inorm(x, y, z)*(mul or 1)
 	return x*n, y*n, z*n
 end
 
@@ -453,9 +454,7 @@ local function InitVertexShifts()
 	VertexShifts = {}
 	for _, t in Map.Doors do
 		local dx = {Delete = true}
-		for x in XYZ do
-			dx[x] = t["Direction"..x]*t.MoveLength/0x10000
-		end
+		dx.X, dx.Y, dx.Z = normalize(t.DirectionX, t.DirectionY, t.DirectionZ, t.MoveLength/0x20000)
 		for i, vi in t.VertexIds do
 			VertexShifts[vi] = dx
 		end
@@ -504,6 +503,73 @@ end
 -- ReadDoor
 -----------------------------------------------------
 
+local function DoorCheckGrow(t, ver, fac, must)
+	-- list of vertices of all required facets
+	local va = table.copy(ver)
+	local fac2 = {}
+	for f in pairs(fac) do
+		local need = f.MoveByDoor
+		if not need then
+			for _, v in ipairs(f.Vertexes) do
+				if ver[v] then
+					need = true
+					break
+				end
+			end
+		end
+		if need then
+			fac2[f] = true
+			for _, v in ipairs(f.Vertexes) do
+				va[v] = true
+			end
+		end
+	end
+	-- find boundaries
+	local dirX, dirY, dirZ = t.DirectionX, t.DirectionY, t.DirectionZ
+	local d1, d2, o1, o2 = 1/0, -1/0, 1/0, -1/0
+	for v in pairs(va) do
+		local x = v.X*dirX + v.Y*dirY + v.Z*dirZ
+		if v.Shift and (not v.Shift.Delete or must and ver[v]) then
+			local v = v.Shift
+			v.Delete = nil
+			x = x + v.X*dirX + v.Y*dirY + v.Z*dirZ
+		end
+		if ver[v] then
+			d1 = min(d1, x)
+			d2 = max(d2, x)
+		else
+			o1 = min(o1, x)
+			o2 = max(o2, x)
+		end
+	end
+	if t.Id == 53 then
+		print(d1, d2, o1, o2, must)
+	end
+	-- check Grow/Shrink
+	if (d1 - o2) >= 0.1*(d2 - o1) then  -- Grow
+		if d1 >= o1*0.49 + d2*0.51 and o2 < o1*0.51 + d2*0.49 then
+			t.VertexFilter = "Grow"  -- half
+		elseif must then
+			t.VertexFilter = "Grow"
+			t.VertexFilterParam1 = ((d1 + o2)/2 - o1)/(d2 - o1)
+		else
+			return
+		end
+	elseif (o1 - d2) >= 0.1*(o2 - d1) then  -- Shrink
+		if o1 > d1*0.49 + o2*0.51 and d2 <= d1*0.51 + o2*0.49 then
+			t.VertexFilter = "Shrink"  -- half
+		elseif must then
+			t.VertexFilter = "Shrink"
+			t.VertexFilterParam1 = ((d1 + o1)/2 - o2)/(d1 - o2)
+		else
+			return
+		end
+	else
+		return
+	end
+	return fac2
+end
+
 local DoorProps = {
 	Id = true,
 	MoveLength = true,
@@ -529,6 +595,8 @@ local function ReadDoor(a, t)
 	for _, i in a.FacetIds do
 		fac[Facets[i + 1] or fac] = true
 	end
+	fac[fac] = nil
+	fac = DoorCheckGrow(t, ver, fac, BadDoors[a["?ptr"]]) or fac
 	for _, f in pairs(Facets) do
 		if fac[f] then
 			local num, ismover = 0, true
@@ -552,6 +620,18 @@ local function ReadDoor(a, t)
 			end
 		end
 	end
+	
+	-- check if the door is problematic
+	if not t.VertexFilter then
+		local v2 = Editor.GetDoorVertexLists(t)
+		for v in pairs(ver) do
+			if not v2[v] then
+				BadDoors[a["?ptr"]] = true
+				break
+			end
+		end
+	end
+	
 	a["?ptr"] = nil
 
 	return t
@@ -842,7 +922,6 @@ function Editor.ReadMap()
 		v = {X = v.X, Y = v.Y, Z = v.Z, Shift = VertexShifts[i]}
 		Vertexes[i] = UniqueVertex(v.X, v.Y, v.Z, v)
 	end
-	CleanVertexShifts()
 	-- facets
 	Facets = {}
 	Editor.Facets, Editor.FacetIds = ReadListEx(Facets, {}, Map.Facets, Editor.ReadFacet)
@@ -877,12 +956,21 @@ function Editor.ReadMap()
 		end
 	end
 	-- doors
-	-- Editor.Doors, Editor.DoorIds = {}, {}
+	Editor.State = state
+	BadDoors = {}
 	Editor.Doors, Editor.DoorIds = ReadListEx({}, {}, Map.Doors, ReadDoor)
+	if next(BadDoors) then
+		for _, f in pairs(Facets) do
+			f.Door, f.MultiDoor, f.DoorStaticBmp, f.MovedByDoor = nil
+		end
+		Editor.Doors, Editor.DoorIds = ReadListEx({}, {}, Map.Doors, ReadDoor)
+	end
 	-- other properties
 	Editor.ReadMapCommon(state)
 	-- no outline skip
 	state.OutlineFlatSkip = 1
+	-- remove unused vertex shifts
+	CleanVertexShifts()
 	
 	Editor.SetState(state)
 	Editor.AddUnique()
