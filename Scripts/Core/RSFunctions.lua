@@ -122,6 +122,13 @@ function table.invert(t, out)
 	return out
 end
 
+-- Removes all elements from the table
+function table.clear(t)
+	for k in pairs(t) do
+		t[k] = nil
+	end
+end
+
 --------- coroutine
 
 -- 'n' times in a raw calls !Lua[[coroutine.yield(...)]]. Returns the result of last call

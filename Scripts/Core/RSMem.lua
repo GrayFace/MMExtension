@@ -202,10 +202,10 @@ general.table_destructor = table_destructor
 -- Actual mem functions
 -----------------------------------------------------
 
--- mem.string(p)  - read null-terminated string
--- mem.string(p, size)  - read null-terminated string not more than 'size' bytes
--- mem.string(p, size, true)  - read 'size' bytes as string
 local mem_string = internal.Mem_String
+--!++(mem.string)(p, size, ReadNull) !Lua[[mem.string(p)]] - read null-terminated string
+-- !Lua[[mem.string(p, size)]] - read null-terminated string not more than 'size' bytes
+-- !Lua[[mem.string(p, size, true)]] - read 'size' bytes as string
 _mem.string = mem_string
 _mem.String = mem_string
 

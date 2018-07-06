@@ -32,15 +32,15 @@ newmtl %s
 local mtlStrI = {[false] = [[
 
 newmtl %s
-	Tr 0.3
 	d 0.3
+	Tr 0.7
 	map_d %s
 	map_Ka %s
 	map_Kd %s]], [true] = [[
 	
 newmtl %s
-	Tr 0.3
 	d 0.3
+	Tr 0.7
 	map_Ka %s
 	map_Kd %s]]
 }
