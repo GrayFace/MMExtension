@@ -113,7 +113,7 @@ type
   private
     function GetAbsoluteRect: TRect;
     function GetBoundsRect: TRect;
-    function GetExtendedBoundsRect: TRect;
+    function GetExtendedBoundsRect: TRect; deprecated; // turned out to be buggy (on multimonitor Win 10)
     function GetClientRect: TRect;
     function GetClass: string;
     function GetExStyle: LongInt;
