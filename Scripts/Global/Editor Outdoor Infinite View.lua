@@ -84,7 +84,7 @@ function Editor.UpdateVisibility(full)
 			mem.call(0x464A86, 0)
 		end
 		
-		mem.copy(addr, on and CodeMine or CodeStd, 5)
+		mem.copy(addr, on and CodeMine or CodeStd, 6)
 	end
 	mem.IgnoreProtection(false)
 end
