@@ -7,14 +7,7 @@ local function mmv(...)
 	return ret
 end
 
-function events.StructsLoaded()
-	Game = structs.GameStructure:new(0)
-	Party = Game.Party
-	Map = Game.Map
-	Mouse = Game.Mouse
-end
-
-local _KNOWNGLOBALS = BinarySearch
+local _KNOWNGLOBALS = BinarySearch, Game, Party, Map, Mouse
 
 local TmpBuf = mem.StaticAlloc(12)
 
@@ -46,6 +39,18 @@ local function FindInObjList(id)
 	end
 end
 
+local function AddAction(type, info1, info2)
+	local a = Game.Actions
+	local i = a.Count
+	if i < 40 then
+		a.Count = i + 1
+		a = a[i]
+		a.Type = type
+		a.Info1 = info1 or 0
+		a.Info2 = info2 or 0
+	end
+end
+
 function events.StructsLoaded()
 	rawset(Game.MapEvtLines, "RemoveEvent", internal.EventLines_RemoveEvent)
 	rawset(Game.GlobalEvtLines, "RemoveEvent", internal.EventLines_RemoveEvent)
@@ -56,6 +61,7 @@ function events.StructsLoaded()
 	rawset(Game, "Version", offsets.MMVersion)
 	rawset(Game.MapStats, "Find", FindInMapStats)
 	rawset(Game.ObjListBin, "Find", FindInObjList)
+	rawset(Game.Actions, "Add", AddAction)
 end
 
 local function MapInGamesLod(o, obj, name, val)

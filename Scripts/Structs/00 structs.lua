@@ -11,7 +11,15 @@ local PatchDll = mem.dll[AppPath.."mm"..internal.MMVersion.."patch"] or {}
 local PatchOptionsPtr = PatchDll.GetOptions
 PatchOptionsPtr = PatchOptionsPtr and PatchOptionsPtr()
 
-local _KNOWNGLOBALS = Game, Party, Map, Mouse
+function events.StructsLoaded()
+	Game = structs.GameStructure:new(0)
+	Party = Game.Party
+	Map = Game.Map
+	Mouse = Game.Mouse
+	Game.Dll = PatchDll
+end
+
+local _KNOWNGLOBALS
 
 function structs.f.GameStructure(define)
 	define
@@ -46,6 +54,7 @@ function structs.f.GameStructure(define)
 	 .Info{Sig = "[skill:const.Skills]"}
 	[mmv(0x4BCDD8, 0x4E28D8, 0x4F37D8)].i4  'CurrentScreen'
 	[mmv(0x4D4714, 0x506DC8, 0x5185A8)].i4  'CurrentCharScreen'
+	[mmv(0x52D0E4, 0x576CEC, 0x587914)].b4  'LoadingScreen'
 	--[mmv(0x4D48F8, nil, nil)].array{20, lenA = i4, lenP = mmv(0x4D46BC, nil, nil)}.struct(structs.Dlg)  'DialogsStack'
 	[mmv(0x4D5088, 0x5079F8, 0x5192EC)].array(7).EditPChar  'StatsNames'
 	 .Info{Sig = "[stat:const.Stats]"}
@@ -224,7 +233,7 @@ function structs.f.GameStructure(define)
 	if mmver > 6 then
 		define
 		[mmv(nil, 0x73B8D4, 0x7798B8)].array(0, 205).array(0, 1).EditPChar  'NPCGreet'
-		[mmv(nil, 0x73BFAA, 0x779F8E)].array(0, 50).i4  'NPCGroup'
+		[mmv(nil, 0x73BFAA, 0x779F8E)].array(0, 50).i2  'NPCGroup'
 		[mmv(nil, 0x739CF4, 0x778F50)].array(0, 50).EditPChar  'NPCNews'
 		[mmv(nil, 0x5C89E0, 0x5E4DA8)].array(1, 29).struct(structs.HistoryTxtItem)  'HistoryTxt'
 	else
@@ -714,6 +723,13 @@ end
 --[[
 	const.BonusStat
 	-- stditems, spcitems
+	
+Character_FindFreeItemSlot
+SimpleEquipItem
+Character_CheckSkillToWear
+
+hook 467722(mm8) - CanDualWield
+	
 ]]
 
 function structs.f.Player(define)
@@ -1020,6 +1036,12 @@ function structs.f.PatchOptions(define)
 	local function u8(name)
 		def('u8', name)
 	end
+	local function pchar(name)
+		def('pchar', name)
+	end
+	local function epchar(name)
+		def('EditPChar', name)
+	end
 	local Info = define.Info
 	
 	int  'Size'
@@ -1063,7 +1085,7 @@ function structs.f.PatchOptions(define)
 	bool  'SkipUnsellableItemCheck'  Info "[MM7]"
 	bool  'FixGMStaff'  Info "[MM7]"
 	bool  'FixObelisks'  Info "[MM8]"
-	bool  'BorderlessWindowed'
+	bool  'BorderlessWindowed'  Info "It's set to false only when the game is in Borderless Fullscreen mode"
 	bool  'CompatibleMovieRender'
 	bool  'SmoothMovieScaling'
 	bool  'SupportTrueColor'
@@ -1071,11 +1093,23 @@ function structs.f.PatchOptions(define)
 	int  'RenderRectTop'
 	int  'RenderRectRight'
 	int  'RenderRectBottom'
+	bool  'FixUnimplementedSpells'  Info "[MM8]"
+	int  'IndoorMinimapZoomMul'
+	int  'IndoorMinimapZoomPower'
+	bool  'FixMonsterSummon'  Info "[MM7+]"
+	bool  'FixInterfaceBugs'  Info "[MM7]"
+	pchar 'UILayout'  Info "[MM7+]"
+	int  'PaperDollInChests'
+	bool  'HigherCloseRingsButton'
+	int  'RenderBottomPixel'
 	
 	function define.f.Present(name)
 		return present[name]
 	end
 	 define.Info{Sig ="name"; "Returns 'true' if the option is supported by patch version being used"}
+	function define.f.UILayoutActive()
+		return (Game.PatchOptions.UILayout or "") ~= "" and Game.Windowed ~= 0
+	end
 end
 
 if mmver == 7 then
@@ -1112,9 +1146,9 @@ function structs.f.CustomLods(define)
 	define
 	.i4  'RecordIndex'
 	.array(256).struct(structs.LodRecord)  'Records'
-	.f.LoadCustomLod = PatchDll.LoadCustomLod
+	.f.Load = PatchDll.LoadCustomLod
 	 define.Info{Sig = "StdLod, Name"}
-	.f.FreeCustomLod = PatchDll.FreeCustomLod
+	.f.Free = PatchDll.FreeCustomLod
 	 define.Info{Sig = "Ptr"}
 end
 

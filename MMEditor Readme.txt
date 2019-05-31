@@ -2,8 +2,8 @@ MMEditor v2.2
 By Sergey Rozhenko <mailto:sergroj@mail.ru>
 https://sites.google.com/site/sergroj/
 
-Requires: versions 2.0 of my patch and MMExtension or higher + windowed mode + preferrably Hardware 3D (indoors).
-Level geometry is made in 3D modelling software and imported into the game. One major limitation of MM engine is that textures can't be rotated, stretched or even flipped. I am planning to patch it in the future to add support for any such transformation (any affine transformation).
+Requires: versions 2.2 of my patch and MMExtension or higher + windowed mode + preferrably Hardware 3D (indoors).
+Level geometry is made in 3D modelling software and imported into the game. One major limitation of MM engine is that textures can't be rotated, stretched or even flipped. I am thinking of patching it in the future to add support for any such transformation (any affine transformation).
 
 Keys:
 Alt+F1      	Activate editor / go back to game mode

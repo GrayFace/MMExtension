@@ -357,7 +357,7 @@ begin
     BtnImport.Visible:= not odoor;
     BtnExportSelected.Visible:= odoor;
     BtnExport.Enabled:= ok or edit;
-    BtnShowPortals.Enabled:= not odoor and IsD3D and edit;
+    BtnShowPortals.Enabled:= not odoor and IsD3D;
     BtnShowPortals.Visible:= IsD3D;
     BtnUpdateBSP.Visible:= not IsD3D;
     BtnUpdateBSP.Enabled:= false;
@@ -1294,7 +1294,7 @@ end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if GetWindowLong(MainWnd, GWL_STYLE) and WS_BORDER = 0 then
+  //if GetWindowLong(MainWnd, GWL_STYLE) and WS_BORDER = 0 then
     MyClipCursor(true);
   Callback('Closed');
   Action:= caHide;
@@ -1448,9 +1448,10 @@ begin
   if clip then
   begin
     if IsIconic(MainWnd) then  exit;
-    Windows.GetClientRect(MainWnd, r);
+    {Windows.GetClientRect(MainWnd, r);
     MapWindowPoints(MainWnd, 0, r, 2);
-    ClipCursor(@r);
+    ClipCursor(@r);}
+    PostMessage(MainWnd, WM_ACTIVATEAPP, 1, GetCurrentThreadId);
   end else
     ClipCursor(nil);
 end;
@@ -1731,15 +1732,16 @@ begin
   r:= TRSWnd(MainWnd).BoundsRect;
   Top:= r.Top;
   Height:= r.Bottom - r.Top;
-  if GetWindowLong(MainWnd, GWL_STYLE) and WS_BORDER = 0 then
+  if IsZoomed(MainWnd) then
   begin
     p.X:= 0;
     p.Y:= 0;
     Windows.ClientToScreen(MainWnd, p);
-    Left:= p.X - Width;
-    ClipCursor(nil);
+    Left:= max(0, p.X - Width);
+    //if GetWindowLong(MainWnd, GWL_STYLE) and WS_BORDER = 0 then
+      ClipCursor(nil);
   end else
-    Left:= r.Left - Width;
+    Left:= max(0, r.Left - Width);
 
   with ListChests do
   begin

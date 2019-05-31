@@ -380,7 +380,7 @@ end
 local CurInfo -- arguments for MakeCmd
 
 local function MakeCmd(name, num, f, invis)
-	CurInfo = {FieldTypes = {}}
+	CurInfo = {FieldTypes = {}, FieldsOrder = {}}
 	local offs0
 	local cmdStruct = mem.struct(function(define, ...)
 		offs0 = define.offsets
@@ -393,8 +393,7 @@ local function MakeCmd(name, num, f, invis)
 	Deco.CmdNames[num] = name
 	local textName = CurInfo.TextName
 	local def = CmdDef[num]
-	local order = {}
-	CurInfo.FieldsOrder = order
+	local order = CurInfo.FieldsOrder
 	Deco.CmdInfo[num] = CurInfo
 	local jump, jumpTrue = CurInfo.Jump, (CurInfo.JumpY and 3 or 2)
 	CurInfo.CanEmit = CurInfo.CanEmit or not invis
@@ -464,6 +463,8 @@ local function MakeCmd(name, num, f, invis)
 
 			if num == 3 then
 				Game.LoadSound(t.Id or 0)
+			elseif num == 0x21 and mmver == 8 and Game.CurrentScreen == 0 then
+				mem.u4[0xFFD45C] = 0
 			end
 
 			u4[offsets.CurrentEvtLinesCount] = LineN
@@ -956,11 +957,15 @@ Message("Hi!")]]]=]
 
 	---------------------------
 	MakeCmd("SummonObject", 0x22, function(define)
+		if mmver == 8 then
+			define.i4  'Item'
+			 .Info "Item index. Index over 1000 means random item of the same kind as 'Item' % 1000 of strength 'Item' div 1000. For backward compatibility, this parameter can also be called 'Type'."
+			CurInfo.FieldsOrder.Type = "Item"  -- for backward compatibility
+		else
+			define.i4  'Type'
+			 .Info "Object kind index (ObjList.txt)"
+		end
 		define
-		.i4  'Type'
-		 .Info([[
-[MM6, MM7]  Object kind index (ObjList.txt)
-[MM8]  Item index. Index over 1000 means random item of the same kind as 'Type' % 1000 of strength 'Type' div 1000.]])
 		.i4  'X'
 		.i4  'Y'
 		.i4  'Z'

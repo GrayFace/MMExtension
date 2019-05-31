@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, RSEdit, RSMemo, RSQ, RSSysUtils, RSStrUtils, Types, Math;
+  Dialogs, StdCtrls, RSEdit, RSMemo, RSQ, RSSysUtils, RSStrUtils, Types, Math,
+  MultiMon;
 
 {TODO: problems in MM7-8 in full screen}
 
@@ -85,7 +86,10 @@ begin
     if (DlgW = 0) and (parentWnd <> 0) then
     begin
       GetClientRect(parentWnd, r);
-      bo:= max(20, min(r.Right, r.Bottom) div 30);
+      MapWindowPoints(parentWnd, 0, r, 2);
+      IntersectRect(r, r, Screen.MonitorFromWindow(parentWnd).WorkareaRect);
+      OffsetRect(r, -r.Left, -r.Top);
+      bo:= max(20, min(r.Right, r.Bottom) div 25);
       DlgW:= r.Right - bo;
       DlgH:= r.Bottom - bo;
     end;
@@ -123,6 +127,7 @@ function DebugDialog(parentWnd: HWND; question: PChar; topmost: BOOL): PChar; st
   end;
 
 var
+  r: TRect;
   pt: TPoint;
   w, h: int;
   s: string;
@@ -160,27 +165,29 @@ begin
         if (parentWnd <> 0) and IsWindowVisible(parentWnd) and not IsIconic(parentWnd) then
           with TRSWnd(parentWnd).ClientRect do
           begin
+            r:= Screen.MonitorFromWindow(parentWnd).WorkareaRect;
             w:= Right - Left;
             h:= Bottom - Top;
             windows.ClientToScreen(parentWnd, pt);
           end
         else
         begin
-          w:= Screen.Width;
-          h:= Screen.Height;
+          r:= Screen.MonitorFromWindow(Handle).WorkareaRect;
+          w:= r.Right - r.Left;
+          h:= r.Bottom - r.Top;
+          pt:= r.TopLeft;
         end;
+        //Screen.Monitors.
         Left:= (w - Width) div 2 + pt.X;
         Top:= (h - Height) div 2 + pt.Y;
-        w:= Screen.Width;
-        h:= Screen.Height;
-        if Left + Width > w then
-          Left:= w - Width;
-        if Top + Height > h then
-          Top:= h - Height;
-        if Left < 0 then
-          Left:= 0;
-        if Top < 0 then
-          Top:= 0;
+        if Left + Width > r.Right then
+          Left:= r.Right - Width;
+        if Top + Height > r.Bottom then
+          Top:= r.Bottom - Height;
+        if Left < r.Left then
+          Left:= r.Left;
+        if Top < r.Top then
+          Top:= r.Top;
       end;
       SetForegroundWindow(Handle);
 
@@ -495,4 +502,5 @@ exports
   DebugDialogBranch,
   DebugDialogCaption,
   DebugDialogLastResult;
+  
 end.

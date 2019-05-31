@@ -73,13 +73,32 @@ internal.NoGlobals = NoGlobals
 local ShortFunctions = dofile(CoreScriptsPath.."ShortFunctions.lua")
 NoGlobals.CheckChunkFile(ShortFunctions.HookParser, 1)
 ShortFunctions.HookParser(NoGlobals)
+
+local LoadsLog = {}
 function internal.PreprocessChunk(str)
 	local err = NoGlobals.CheckStr(str, "")
-	if err then
-		return ShortFunctions.ConvertStr(str), err
+	local t = {Str = str, Err = err}
+	if #LoadsLog > 20 then
+		table_remove(LoadsLog, 1)
 	end
-	return NoGlobals.GetConvertedStr(), err
+	LoadsLog[#LoadsLog + 1] = t
+	if err then
+		str = ShortFunctions.ConvertStr(str)
+	else
+		str = NoGlobals.GetConvertedStr()
+	end
+	t.Ret = str
+	return str, err
 end
+_G.LoadsLog = LoadsLog
+
+-- function internal.PreprocessChunk(str)
+-- 	local err = NoGlobals.CheckStr(str, "")
+-- 	if err then
+-- 		return ShortFunctions.ConvertStr(str), err
+-- 	end
+-- 	return NoGlobals.GetConvertedStr(), err
+-- end
 
 -----------
 
@@ -503,7 +522,8 @@ local FindStruct = mem.struct(function(define)
 	.alt.u8x  'LastWriteTime'
 	.u4  'LastWriteTimeLow'
 	.u4  'LastWriteTimeHigh'
-	.i8  'FileSize'
+	.i4  'FileSizeHigh'
+	.i4  'FileSizeLow'
 	.skip(8)
 	.string(260)  'FileName'
 	.string(14)  'AlternateFileName'
