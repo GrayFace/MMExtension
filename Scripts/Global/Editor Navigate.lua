@@ -1,3 +1,5 @@
+local DevPath = DevPath or AppPath
+
 Editor = Editor or {}
 local _KNOWNGLOBALS
 
@@ -21,7 +23,6 @@ local skLight = 7
 local function nullproc()
 end
 
-DevPath = DevPath or AppPath
 local DLL = mem.dll[DevPath.."ExeMods\\MMExtension\\MMEditorDlg.dll"]
 
 local TmpHooks = HookManager()
@@ -525,12 +526,31 @@ if Game.IsD3D then
 	-- indoor
 	hooks.asmhook(mmv(nil, 0x4A2F97, 0x4A0E4C), [[
 		mov eax, [ebp + 0xC]  ; facet
+		;mov [%FacetPtrBuf%], eax
 		cmp byte [eax + %MapFacetOff%], 0
 		jz @f
 		mov eax, [%TintColor%]
 		mov [ebp - 4], eax
 	@@:
 	]])
+
+	-- need to set color, move vertices to front etc.
+	-- hooks.asmhook(mmv(nil, nil, 0x4A10F7), [[
+	-- 	mov eax, [%FacetPtrBuf%]  ; facet
+	-- 	cmp byte [eax + %MapFacetOff%], 0
+	-- 	jz @f
+	-- 	mov     eax, [edi+40088h]
+	-- 	mov     eax, [eax+38h]
+	-- 	mov     ecx, [eax]
+	-- 	push    1Ch
+	-- 	push    dword ptr [ebp+8]
+	-- 	push    $7BC410
+	-- 	push    1C4h
+	-- 	push    2
+	-- 	push    eax
+	-- 	call    dword ptr [ecx+70h]
+	-- @@:
+	-- ]])
 	
 	-- outdoor
 	hooks.asmhook2(mmv(nil, 0x4A1FE6, 0x49FAE1), [[

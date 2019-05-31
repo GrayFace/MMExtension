@@ -226,6 +226,12 @@ function Por()
 	end
 end
 
+function NoPor()
+	for _, a in Map.Facets do
+		a.IsPortal = false
+	end
+end
+
 -- function ClosestModel()
 -- 	local xp,yp,zp = XYZ(Party)
 -- 	local dist, mid = 1/0, nil
@@ -533,21 +539,6 @@ end
 function GetMF()
 	local t = Map.GetFacet(next(Editor.Selection))
 	return t, dump(t)
-end
-
-function SelectSpriteWith(k, v, MoveTo)
-	Editor.ClearSelection()
-	Editor.SelectionKind = skFacet
-	for f, id in pairs(Editor.FacetIds) do
-		if f[k] == v then
-			Editor.SelectSingleFacet(id)
-			if MoveTo then
-				XYZ(Party, XYZ(f.Vertexes[1]))
-			end
-		end
-	end
-	Editor.SelectionChanged = true
-	Editor.UpdateSelectionState()
 end
 
 function ImpI()

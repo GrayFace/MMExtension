@@ -142,7 +142,7 @@ end
 -- would be called before and after export/import
 function Editor.ShiftVertexes(operate)
 	local done = {}
-	for _, r in ipairs(Editor.State.Rooms or {}) do
+	for _, r in ipairs((Editor.State or {}).Rooms or {}) do
 		for f in pairs(r.Facets) do
 			ShiftVertexes(operate, f, done)
 		end

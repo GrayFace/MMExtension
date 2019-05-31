@@ -1,3 +1,5 @@
+local ReadLodTextTable = ReadLodTextTable or function() end
+
 Editor = Editor or {}
 local _KNOWNGLOBALS
 

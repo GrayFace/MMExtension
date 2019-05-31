@@ -1861,11 +1861,13 @@ function Editor.CompileBlv(fname)
 	data = {}
 	writenum(0, mmv(8, 40, 40))  -- header
 	writenum(0, 875)  -- visible outlines
-	for _, a in Map.Facets do
-		writenum(a.Bits)
-	end
-	for _, a in Map.Sprites do
-		writenum(a.Bits, 2)
+	if mmver > 6 then
+		for _, a in Map.Facets do
+			writenum(a.Bits)
+		end
+		for _, a in Map.Sprites do
+			writenum(a.Bits, 2)
+		end
 	end
 	awrite(Map.Monsters)
 	awrite(Map.Objects)

@@ -1,6 +1,7 @@
 local memstr = mem.string
 local persist = internal.persist
 local unpersist = internal.unpersist
+local DevPath = DevPath or AppPath
 
 Editor = Editor or {}
 local _KNOWNGLOBALS
@@ -25,7 +26,6 @@ local function mmv(...)
 end
 
 
-DevPath = DevPath or AppPath
 local DLL = mem.dll[DevPath.."ExeMods/MMExtension/MMEditorDlg.dll"]
 local Commands = {}
 Editor.Commands = Commands
