@@ -633,13 +633,15 @@ function Editor.CompileOdm(fname)
 	data = {}
 	writenum(0, mmv(8, 40, 40))  -- header
 	writenum(0, 968*2)  -- visible map
-	for _, m in Map.Models do
-		for _, a in m.Facets do
-			writenum(a.Bits)
+	if mmver > 6 then
+		for _, m in Map.Models do
+			for _, a in m.Facets do
+				writenum(a.Bits)
+			end
 		end
-	end
-	for _, a in Map.Sprites do
-		writenum(a.Bits, 2)
+		for _, a in Map.Sprites do
+			writenum(a.Bits, 2)
+		end
 	end
 	awrite(Map.Monsters)
 	awrite(Map.Objects)

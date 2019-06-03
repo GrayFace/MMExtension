@@ -69,7 +69,7 @@ function Editor.UpdateVisibility(full)
 			last[p] = last[p] or a[p]
 			a[p] = math.max(v, last[p])
 		elseif last[p] then
-			a[p] = last[p]
+			a[p], last[p] = last[p], nil
 		end
 	end
 	
