@@ -1,6 +1,6 @@
 /*
 ** Load and dump code.
-** Copyright (C) 2005-2015 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #include <errno.h>
@@ -45,24 +45,11 @@ static TValue *cpparser(lua_State *L, lua_CFunction dummy, void *ud)
   return NULL;
 }
 
-int (*lua_preprocess_chunk)(lua_State *L, lua_Reader *reader, void **data,
-		      const char **chunkname, const char **mode);
-
-LUALIB_API void *lua_preprocess_chunk_ptr()
-{
-	return &lua_preprocess_chunk;
-}
-
 LUA_API int lua_loadx(lua_State *L, lua_Reader reader, void *data,
 		      const char *chunkname, const char *mode)
 {
   LexState ls;
-  int status, top;
-	if (lua_preprocess_chunk) {
-		top = lua_gettop(L);
-		status = lua_preprocess_chunk(L, &reader, &data, &chunkname, &mode);
-		if (top != lua_gettop(L)) return status;
-	}
+  int status;
   ls.rfunc = reader;
   ls.rdata = data;
   ls.chunkarg = chunkname ? chunkname : "?";
@@ -71,7 +58,7 @@ LUA_API int lua_loadx(lua_State *L, lua_Reader reader, void *data,
   status = lj_vm_cpcall(L, NULL, &ls, cpparser);
   lj_lex_cleanup(L, &ls);
   lj_gc_check(L);
-	return status;
+  return status;
 }
 
 LUA_API int lua_load(lua_State *L, lua_Reader reader, void *data,
