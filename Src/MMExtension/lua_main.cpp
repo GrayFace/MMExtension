@@ -10,7 +10,6 @@ extern "C"
 	#include "lauxlib.h"
 	#include "luasocket.h"
 	extern unsigned char *lj_get_char_bits();
-	extern void **lua_preprocess_chunk_ptr();
 }
 #include "FunctionCalls.h"
 //#include "lupvaluejoin.h"
@@ -391,76 +390,6 @@ static int CompileAsm(lua_State *L)
 	return 2;
 }
 
-//-------- Chunk Preprocessor ---------
-
-char ChunkBuf[0x10000];
-
-void ReadReader(lua_State *L, lua_Reader reader, void *data)
-{
-	int n = 0, nbuf = 0;
-	size_t size;
-	const char *block;
-	while ((block = reader(L, data, &size)) && size) {
-		while (size) {
-			if (size >= sizeof(ChunkBuf)/2) {
-				lua_checkstack(L, LUA_MINSTACK);
-				lua_pushlstring(L, block, size);
-				nbuf++;
-				break;
-			}
-			if (sizeof(ChunkBuf) == n) {
-				lua_checkstack(L, LUA_MINSTACK);
-				lua_pushlstring(L, ChunkBuf, n);
-				nbuf++;
-				n = 0;
-			}
-			int m = min(size, sizeof(ChunkBuf) - n);
-			memcpy(&ChunkBuf[n], block, m);
-			block += m;
-			n += m;
-			size -= m;
-		}
-	}
-	lua_pushlstring(L, ChunkBuf, n);
-	lua_concat(L, nbuf + 1);
-}
-
-char ModeBuf[3] = {0, 0, 0};
-
-int preprocess_chunk(lua_State *L, lua_Reader &reader, void *&data, const char *&chunkname, const char *&mode)
-{
-	if (mode && mode[0] == 'b' && mode[1] == 0 || (void*)mode == (void*)&ModeBuf)  return 0;
-	lua_getfield(L, LUA_REGISTRYINDEX, "PreprocessChunk"); // get 'internal'.PreprocessChunk
-	if (lua_type(L, -1) != LUA_TFUNCTION) {
-		lua_pop(L, 1);
-		return 0;
-	}
-	ReadReader(L, reader, data);
-	lua_pushstring(L, chunkname);
-	lua_call(L, 2, 2);
-	if (mode)
-		*(short*)&ModeBuf = *(short*)mode;
-	else
-		*(short*)&ModeBuf = *(short*)"bt";
-	size_t size;
-	const char *buf = lua_tolstring(L, -2, &size);
-	int status = luaL_loadbufferx(L, buf, size, chunkname, ModeBuf);
-	if (!status && lua_isstring(L, -2)) {
-		lua_Debug d;
-		lua_getinfo(L, ">nS", &d);
-		if (d.name && *d.name)
-			lua_pushstring(L, d.name);
-		else
-			lua_pushstring(L, d.short_src);
-		lua_replace(L, -3);
-		lua_concat(L, 2);
-		return LUA_ERRSYNTAX;
-	}
-	lua_replace(L, -3);
-	lua_pop(L, 1);
-	return status;
-}
-
 //-------- Calls to Lua ---------
 
 int LuaFunction(const char *name)
@@ -574,7 +503,6 @@ void InitLua()
 	//lua_alnum(L)['?'] = 1;
 	lj_get_char_bits()['?'] = 128;
 	lua_atpanic(L, PanicMessage);
-	*lua_preprocess_chunk_ptr() = &preprocess_chunk;
 
 	luaL_openlibs(L); // open all standard libraries
 	//luaopen_upvaluejoin(L); // to persist functions with RSPersist

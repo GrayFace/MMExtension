@@ -20,8 +20,6 @@ local getmetatable = debug.getmetatable
 local d_setmetatable = debug.setmetatable
 local d_getinfo = debug.getinfo
 local os_time = os.time
-local loadfile = loadfile
-local loadstring = loadstring
 local require = require
 local table_insert = table.insert
 local table_remove = table.remove
@@ -37,7 +35,6 @@ local coroutine_create = coroutine.create
 local coroutine_resume = coroutine.resume
 local coroutine_running = coroutine.running
 local coroutine_main = coroutine.main
-local dofile = dofile
 local ffi = require "ffi"
 
 local _G = _G
@@ -74,31 +71,20 @@ local ShortFunctions = dofile(CoreScriptsPath.."ShortFunctions.lua")
 NoGlobals.CheckChunkFile(ShortFunctions.HookParser, 1)
 ShortFunctions.HookParser(NoGlobals)
 
-local LoadsLog = {}
-function internal.PreprocessChunk(str)
-	local err = NoGlobals.CheckStr(str, "")
-	local t = {Str = str, Err = err}
-	if #LoadsLog > 20 then
-		table_remove(LoadsLog, 1)
-	end
-	LoadsLog[#LoadsLog + 1] = t
-	if err then
-		str = ShortFunctions.ConvertStr(str)
-	else
-		str = NoGlobals.GetConvertedStr()
-	end
-	t.Ret = str
-	return str, err
-end
-_G.LoadsLog = LoadsLog
+local PreprocessHook = dofile(CoreScriptsPath.."RSPreprocessHook.lua")
 
--- function internal.PreprocessChunk(str)
--- 	local err = NoGlobals.CheckStr(str, "")
--- 	if err then
--- 		return ShortFunctions.ConvertStr(str), err
--- 	end
--- 	return NoGlobals.GetConvertedStr(), err
--- end
+function PreprocessHook.ProcessCallback(str)
+	local err = NoGlobals.CheckStr(str, "")
+	if err then
+		return ShortFunctions.ConvertStr(str), err
+	end
+	return NoGlobals.GetConvertedStr(), err
+end
+
+PreprocessHook.Activate()
+local loadfile = loadfile
+local loadstring = loadstring
+local dofile = dofile
 
 -----------
 

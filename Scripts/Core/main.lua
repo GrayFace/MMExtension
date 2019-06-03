@@ -1,8 +1,5 @@
 -- shared by MMExtension, LuaConsole and GameExtension
 
--- dofile(CoreScriptsPath.."RSFunctions.lua")
--- PrintToFile("InternalLog.txt")  -- temporary
-
 ffi = require("ffi")
 local ffi = ffi
 
@@ -27,8 +24,6 @@ local d_setmetatable = debug.setmetatable
 local os_time = os.time
 local debug_getinfo = debug.getinfo
 local d_setupvalue = debug.setupvalue
-local loadfile = loadfile
-local loadstring = loadstring
 local table_insert = table.insert
 local table_remove = table.remove
 local table_concat = table.concat
@@ -41,7 +36,6 @@ local coroutine_resume = coroutine.resume
 local coroutine_running = coroutine.running
 local msg
 local d_debug
-local dofile = dofile
 
 local _G = _G
 internal = debug.getregistry()
@@ -59,6 +53,9 @@ internal.CoreScriptsPath = CoreScriptsPath
 local CoreGamePath = internal.CoreGamePath and internal.CoreGamePath.."Scripts/Core/" or CoreScriptsPath  -- for game-specific core files (used by LuaConsole)
 local GamePath = internal.AllowForeignDir and AppPath or ""
 
+-- dofile(CoreScriptsPath.."RSFunctions.lua")
+-- PrintToFile("InternalLog.txt")  -- temporary
+
 dofile(CoreGamePath.."offsets.lua")
 offsets = offsets or {}
 dofile(CoreScriptsPath.."Common.lua")
@@ -66,6 +63,9 @@ internal.NoGlobals.Options.NameCharCodes[("?"):byte()] = true
 package.path = AppPath.."Scripts\\Modules\\?.lua"..(GitPath and ";"..GitPath.."Scripts\\Modules\\?.lua" or "")
 GitPath = internal.GitPath  -- allow changing GitPath by offsets.lua
 
+local loadfile = loadfile
+local loadstring = loadstring
+local dofile = dofile
 local error = error
 local offsets = offsets
 local events = events

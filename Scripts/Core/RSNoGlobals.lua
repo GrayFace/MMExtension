@@ -1,6 +1,6 @@
 --[[
-NoGlobals v0.0
-(c) 2015-2016 Sergey Rozhenko, MIT license
+RSNoGlobals v0.1
+(c) 2015-2019 Sergey Rozhenko, MIT license
 
 What it enforces:
 - After "local _NOGLOBALS" declaration no direct global access is allowed. local _G = _G; _G.* is still allowed.
@@ -531,14 +531,11 @@ end
 function P.Activate()
 	local _NOGLOBALS_END  -- allow globals again
 	local _load = load
-	local _loadstring = loadstring or load
 	local _loadfile = loadfile
 	local _package = package
 	local _loaded = package.loaded
 	local LOADERS = Lua52 and "searchers" or "loaders"
 	local reg = debug and debug.getregistry and debug.getregistry()
-	local io_open = io.open
-	local stdin = io.input()
 	local s_find = string.find
 	local _KNOWNGLOBALS
 
