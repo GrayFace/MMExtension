@@ -59,7 +59,19 @@ end
 -- end
 
 
-local function ReadWriteTable(f, a, str)
+local lastTime, profName
+local function profile(name)
+	-- local t = os.clock()
+	-- if profName then
+	-- 	print("Profiler: "..profName, t - lastTime)
+	-- else
+	-- 	print("Profiler: ----------------------------")
+	-- end
+	-- lastTime, profName = t, name
+end
+
+
+local function ReadWriteTable(f, a, str, onerror)
 	local h = a.Header or ""
 	local ht = SplitLines(h)
 	local hn = #ht
@@ -82,58 +94,75 @@ local function ReadWriteTable(f, a, str)
 	local rhskip = norh and 1 or 0
 
 	local einfoOld = errorinfo()
-	local einfo = (einfoOld ~= "") and einfoOld.." - " or ""
+	errorinfo((einfoOld ~= "") and einfoOld.." - \001" or "\001")
+	-- local einfo = (einfoOld ~= "") and einfoOld.." - " or ""
+	local erY, erX, erVal
 
-	if str then
-		-- read
-		local lines = SplitLines(str, 1 - hn)
-		for y = 1, yn or #lines do
-			local t = SplitTabs(lines[y] or "", rhskip)
-			if xn == nil then
-				xn = #t
-			elseif t[xn] == nil then
-				return
+	local function doit()
+		if str then
+			-- read
+			profile"split lines"
+			local lines = SplitLines(str, 1 - hn)
+			profile"read"
+			for y = 1, yn or #lines do
+				local t = SplitTabs(lines[y] or "", rhskip)
+				if xn == nil then
+					xn = #t
+				elseif t[xn] == nil then
+					return
+				end
+				for x = 1, xn do
+					local v = t[x]
+					erY, erX, erVal = y + hn, x - rhskip + 1, v
+					f(x - 1 + xl, y - 1 + yl, v, #lines)
+				end
 			end
-			for x = 1, xn do
-				local v = t[x]
-				errorinfo(('%srow %s, column %s - value "%s"'):format(einfo, y + hn, x - rhskip + 1, v))
-				f(x - 1 + xl, y - 1 + yl, v, #lines)
+			profile(nil)
+		else
+			local ss = {h}
+			-- write col headers
+			if a.ColHeaders or a.ColHeadersLow then
+				local ch = a.ColHeaders or {}
+				local cl = a.ColHeadersLow or xl
+				local t = {}
+				t[1] = ch[cl - 1] or ""
+				for x = 2, xn + 1 do
+					local i = x - 2 + cl
+					t[x] = ch[i] or i
+				end
+				ss[#ss + 1] = table.concat(t, "\t").."\r\n"
 			end
+			-- write data
+			for y = 1, yn do
+				local t = {}
+				local dx = 0
+				if not norh then
+					local i = y - 1 + rl
+					t[1] = rh[i] or i
+					dx = 1
+				end
+				for x = 1, xn do
+					erY, erX = y + hn, x - rhskip + 1
+					t[x + dx] = assert(f(x - 1 + xl, y - 1 + yl))
+				end
+				ss[#ss + 1] = table.concat(t, "\t").."\r\n"
+			end
+			ss[#ss + 1] = a.Footer or ""
+			return table.concat(ss)
 		end
-	else
-		local ss = {h}
-		-- write col headers
-		if a.ColHeaders or a.ColHeadersLow then
-			local ch = a.ColHeaders or {}
-			local cl = a.ColHeadersLow or xl
-			local t = {}
-			t[1] = ch[cl - 1] or ""
-			for x = 2, xn + 1 do
-				local i = x - 2 + cl
-				t[x] = ch[i] or i
-			end
-			ss[#ss + 1] = table.concat(t, "\t").."\r\n"
+	end
+	local ok, ret = pcall(doit)
+	if not ok then
+		local s = str and 'row %s, column %s - value "%s"' or 'row %s - column %s'
+		local i = ret:find("\001")
+		ret = ret:sub(1, i - 1)..s:format(erY, erX, erVal)..ret:sub(i + 1)
+		if onerror then
+			onerror()
 		end
-		-- write data
-		for y = 1, yn do
-			local t = {}
-			local dx = 0
-			if not norh then
-				local i = y - 1 + rl
-				t[1] = rh[i] or i
-				dx = 1
-			end
-			for x = 1, xn do
-				errorinfo(('%srow %s - column %s'):format(einfo, y + hn, x - rhskip + 1))
-				t[x + dx] = assert(f(x - 1 + xl, y - 1 + yl))
-			end
-			ss[#ss + 1] = table.concat(t, "\t").."\r\n"
-		end
-		ss[#ss + 1] = a.Footer or ""
-		errorinfo(einfoOld)
-		return table.concat(ss)
+		error(ret, 0)
 	end
 	errorinfo(einfoOld)
+	return ret
 end
 DataTables.ReadWriteTable = ReadWriteTable
 
@@ -153,7 +182,12 @@ function DataTables.StructsArray(arr, offs, t, str)
 	local resisable = t.Resisable and str
 	local ignore = t.IgnoreFields or {}
 	local ignoreR = t.IgnoreRead or {}
-	
+	local struct, LastY, types, TypesY
+	local function cleanup()
+		if struct then
+			struct["?ptr"] = nil  -- /speedup
+		end
+	end
 	
 	local function f(x, y, v, lcount)
 		if y == hdrRow then
@@ -163,34 +197,46 @@ function DataTables.StructsArray(arr, offs, t, str)
 				return assert(cols[x])
 			end
 		else
-			if resisable then
-				local n = y - hdrRow
-				arr.count = n
-				if n > baseCount then
-					local size = arr[y]["?size"]
-					mem.reallocMM(arr, size*baseCount, size*lcount)
-					baseCount = lcount
+			local col = cols[x]
+			if y ~= LastY then
+				if struct then
+					struct["?ptr"] = nil  -- /speedup
+				elseif v then
+					types, TypesY = {}, y
+				end
+				if v and resisable then
+					local n = y - hdrRow
+					arr.count = n
+					if n > baseCount then
+						local size = arr[y]["?size"]
+						mem.reallocMM(arr, size*baseCount, size*lcount)
+						baseCount = lcount
+					end
+				end
+				struct = arr[y]
+				rawset(struct, "?ptr", struct["?ptr"])  -- speedup
+				if y == TypesY and not ignoreR[col] then
+					local v = struct[col]
+					types[x] = (v ~= nil) and type(v)
 				end
 			end
-			local struct = arr[y]
-			local col = cols[x]
-			local ret = struct[col]
 			local alias = aliases[col]
-			if v and not ignoreR[col] then
+			local tp = types and types[x]
+			if v then
 				if alias and alias[v] then
 					v = alias[v]
 				end
-				local tp = type(ret)
 				if tp == "boolean" then
 					struct[col] = not boolFalse[v]
 				elseif tp == "number" then
-					struct[col] = assert(tonumber(v))
+					struct[col] = assert(tonumber(v), "not a number")
 				elseif tp == "string" then
 					struct[col] = v
 				else
 					assert(false)
 				end
 			elseif not v then
+				local ret = struct[col]
 				errorinfo(('%s - value %s'):format(errorinfo(), tostring2(ret)))
 				if alias then
 					alias = aliasInv[col] or table.invert(alias)
@@ -240,7 +286,9 @@ function DataTables.StructsArray(arr, offs, t, str)
 		t.RowCount = baseCount + 1
 	end
 	
-	return ReadWriteTable(f, t, str)
+	local ret = ReadWriteTable(f, t, str, cleanup)
+	cleanup()
+	return ret
 end
 
 
