@@ -1980,11 +1980,14 @@ function structs.f.SFTItem(define)
 	.bit('Mirror5',     0x00002000)  -- mirror image  5
 	.bit('Mirror6',     0x00004000)  -- mirror image  6
 	.bit('Mirror7',     0x00008000)  -- mirror image  7
-	.bit('Images3',     0x00010000)
-	 .Info "only views 0,2,4 exist (mirrored)"
-	.bit('Glow',        0x00020000)
-	.bit('Transparent', 0x00040000)
-	[mmv('u2', 'u4', 'u4')]  'Bits'
+	if mmver > 6 then
+		define
+		.bit('Images3',     0x00010000)
+		 .Info "only views 0,2,4 exist (mirrored)"
+		.bit('Glow',        0x00020000)
+		.bit('Transparent', 0x00040000)
+	end
+	define[mmv('u2', 'u4', 'u4')]  'Bits'
 	.i2  'LightRadius'  -- light level
 	.i2  'PaletteId'
 	.i2  'PaletteIndex'
