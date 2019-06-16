@@ -267,6 +267,7 @@ const.Keys = {
 	TAB = 9,
 	CLEAR = 12,
 	RETURN = 13,
+	ENTER = 13,
 	SHIFT = 16,
 	CONTROL = 17,
 	CTRL = 17,
@@ -864,6 +865,7 @@ const.Screens = {
 	KeyConfig = 26,
 	VideoOptions = 28,
 	AdventurersInn = 29,
+	ItemSpellMM6 = 103,
 	QuickReference = 104,
 }
 

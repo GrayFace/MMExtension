@@ -390,20 +390,14 @@ end
 
 -- WindowProc
 do
-	local buf = mem.hookalloc()
 	local ptr = mmv(0x45733A+4, 0x4652BB+3, 0x463542+3)
 	local std = u4[ptr]
-	u4[ptr] = buf
 	
-	mem.hook(buf, function(d)
-		d.esp = d.esp + 4
-		local wnd, msg, wp, lp = d:getparams(0, 4)
-		d:ret(4*4)
+	local function WndHook(wnd, msg, wp, lp)
 		local t = {Window = wnd, Msg = msg, WParam = wp, LParam = lp, Handled = false, Result = 0}
 		events.cocall("WindowMessage", t)
 		if t.Handled then
-			d.eax = t.Result
-			return
+			return t.Result
 		end
 		msg, wp, lp = t.Msg, t.WParam, t.LParam
 		if msg == 0x100 or msg == 0x104 or msg == 0x101 or msg == 0x105 then
@@ -412,15 +406,19 @@ do
 				Key = wp,
 				Alt = (msg >= 0x104), ExtendedKey = lp:And(0x1000000) ~= 0,
 				WasPressed = lp:And(0x40000000) ~= 0, Handled = false}
-			events.cocall(msg % 2 == 1 and "KeyUp" or "KeyDown", t)
+			local down = (msg % 2 == 0)
+			events.cocall(down and "KeyDown" or "KeyUp", t)
+			if down then
+				internal.TimersKeyDown(wp, t)
+			end
 			wp = t.Key
 			if wp == 0 or t.Handled then
-				d.eax = 0
-				return
+				return 0
 			end
 		end
-		d.eax = call(std, 0, wnd, msg, wp, lp)
-	end)
+		return call(std, 0, wnd, msg, wp, lp)
+	end
+	u4[ptr] = tonumber(cast('int', cast('void __stdcall (*)(int,int,int,int)', WndHook)))
 end
 
 -- OnAction

@@ -31,6 +31,7 @@ local _KNOWNGLOBALS_F = Game, Party, Map, Keys, keys
 
 local timeGetTime_add = 0
 local timeGetTime_last = 0
+-- Returns time since Windows has started in milliseconds
 function timeGetTime()
 	local ret = mem.call(internal.timeGetTime, 0)
 	if ret < timeGetTime_last then
@@ -165,6 +166,7 @@ local function DoRemoveTimer(i)
 	return true				
 end
 
+-- You can remove the timer being executed by calling this function without a parameter
 function RemoveTimer(f)
 	if not f then
 		return CurTimer <= CurTotal and DoRemoveTimer(CurTimer)
@@ -206,27 +208,56 @@ end
 
 --------- keys
 
---!v([key:const.Keys]) Example:
+--!v([key:const.Keys]) Example 1 (recommended):
+-- !LUA[[
+-- function Keys.F2(t)
+--   Message("F2 pressed")
+-- end
+-- ]]
+-- Example 2 (not recommended):
 -- !LUA[[
 -- Keys[const.Keys.F2] = function()
 --   Message("F2 pressed")
 -- end
 -- ]]
--- However, using #events.KeyDown:# is recommended instead.
+-- These examples are actually handled differently. The first one is equivalent to using #events.KeyDown:# and checking 't.Key'.
+-- The second is mostly for backward compatibility. Instead of relying on messages, it checks key state on every frame and calls the function if the key was pressed. It may miss a very short key press.
 Keys = Keys or {}
-
---!(key:const.Keys)
-function Keys.IsPressed(key)
-	return mem.call(internal.GetKeyState, 0, assertnum(key, 2)):And(0x8000) ~= 0
+local cKeys = const.Keys
+local keyInv = {}
+local keyInv2 = {}
+for k, v in pairs(cKeys) do
+	if keyInv[k] then
+		keyInv2[k] = v
+	else
+		keyInv[k] = v
+	end
 end
 
---!(key:const.Keys)
+--!(key:const.Keys) String representations of #const.Keys:# are also supported, e.g. !LUA[[Keys.IsPressed"SHIFT"]]
+function Keys.IsPressed(key)
+	return mem.call(internal.GetKeyState, 0, assertnum(cKeys[key] or key, 2)):And(0x8000) ~= 0
+end
+
+--!(key:const.Keys) String representations of #const.Keys:# are also supported, e.g. !LUA[[Keys.IsToggled"CAPSLOCK"]]
 function Keys.IsToggled(key)
-	return mem.call(internal.GetKeyState, 0, assertnum(key, 2)):And(1) ~= 0
+	return mem.call(internal.GetKeyState, 0, assertnum(cKeys[key] or key, 2)):And(1) ~= 0
 end
 
 local _, keyHandlers = events.new(Keys)
 local pressedKeys = {}
+
+
+function internal.TimersKeyDown(key, t)
+	local s = keyInv[key]
+	if s then
+		Keys.cocall(s, t)
+		s = keyInv2[key]
+		if s then
+			Keys.cocall(s, t)
+		end
+	end
+end
 
 --------- OnTick
 
