@@ -418,7 +418,8 @@ do
 		end
 		return call(std, 0, wnd, msg, wp, lp)
 	end
-	u4[ptr] = tonumber(cast('int', cast('void __stdcall (*)(int,int,int,int)', WndHook)))
+	local cast = require('ffi').cast
+	u4[ptr] = tonumber(cast('int', cast('int __stdcall (*)(int,int,int,int)', WndHook)))
 end
 
 -- OnAction
