@@ -27,7 +27,6 @@ local io_open = io.open
 local sub = string.sub
 local match = string.match
 local format = string.format
-local s_find = string.find
 local _load = load
 local _loadstring = loadstring or _load
 local _loadfile = loadfile

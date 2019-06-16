@@ -720,7 +720,7 @@ function structs.f.TravelInfo(define)
 	define[0x0].CustomType('Map', 1, MapType)
 end
 
-function structs.f.Dlg(define)  -- !!! not done MM8
+function structs.f.Dlg(define)
 	define
 	[0x0].i4  'Left'
 	[0x4].i4  'Top'
@@ -738,7 +738,7 @@ function structs.f.Dlg(define)  -- !!! not done MM8
 	.size = 0x54
 
 	define
-	.method{p = mmv(0x41A170, 0x41D0D8, nil), name = "AddButton", cc = 0, must = 4; 0, 0, 0, 0, 0, 0,  0, 0, 0, "";  0, 0, 0, 0, 0, 0}
+	.method{p = mmv(0x41A170, 0x41D0D8, 0x41C513), name = "AddButton", cc = 0, must = 4; 0, 0, 0, 0, 0, 0,  0, 0, 0, "";  0, 0, 0, 0, 0, 0}
 	 .Info{Sig = "X, Y, Width, Height, Unk1, Unk2, ActionType, ActionInfo, Unk3, Hint, Sprites..., 0"}
 end
 

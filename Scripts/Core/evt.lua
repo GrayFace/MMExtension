@@ -980,7 +980,7 @@ Message("Hi!")]]]=]
 		.Info([[
 Sets current player and returns 'evt'. You can thus write things like this:!Lua[=[
 	evt.ForPlayer("All").Add("Exp", 1000)]=]
-You can also manipulate #evt.Player:# and #evt.CurrentPlayer:# variables.
+You can also manipulate #evt.Player:# and #evt.CurrentPlayer:# variables directly.
 Usually a better approach is to specify player after 'evt', this way it only effects one call that follows:!Lua[=[
 	evt.All.Add("Exp", 1000)
 	evt[0].Add("Gold", 1000)]=]
