@@ -130,7 +130,7 @@ Editor.FinalizeList = FinalizeList
 
 
 local CopyFacetDataProps = {
-	Id = true,
+	Id = mmver > 6 or nil,
 	Event = true,
 }
 
@@ -380,7 +380,8 @@ local function WriteFacet(a, t)
 	UpdateFacetMinMax(a, t)
 	
 	-- other properties
-	a.HasData = t.Door ~= 0--(t.Door ~= 0 and not t.DoorStaticBmp)
+	a.HasData = t.Door ~= nil and (mmver > 6 or not t.DoorStaticBmp)
+	-- print(#FacetData, a.HasData)
 	for x in pairs(IsFacetDataProp) do
 		if t[x] and t[x] ~= 0 then
 			a.HasData = true
