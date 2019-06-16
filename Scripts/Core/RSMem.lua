@@ -2030,9 +2030,10 @@ function _mem.hookcall(p, nreg, nstack, f)
 	end, 5)
 end
 
--- Writes 'n' NOPs
+-- Writes 'n' NOPs. If 'n' is omitted, replaces a single instruction at the given address with NOPs
 function _mem.nop(p, n)
 	IgnoreCount = IgnoreCount + 1
+	n = n or GetInstructionSize and GetInstructionSize(p)
 	for i = p, p + n - 1 do
 		u1[i] = 0x90
 	end
