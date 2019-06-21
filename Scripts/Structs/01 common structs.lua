@@ -676,6 +676,9 @@ function structs.f.SpellBuff(define)
 	[0xC].i2  'OverlayId'
 	[0xE].u1  'Caster'
 	[0xF].u1  'Bits'
+	
+	.method{p = mmv(0x44A970, 0x458519, 0x455D97), name = "Set"; 0,0,0,0,0}
+	 .Info{Sig = "ExpireTime, Skill, Power, OverlayId, Caster"}
 	.size = 0x10
 end
 
