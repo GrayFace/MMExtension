@@ -72,6 +72,8 @@ NoGlobals.CheckChunkFile(ShortFunctions.HookParser, 1)
 ShortFunctions.HookParser(NoGlobals)
 
 local PreprocessHook = dofile(CoreScriptsPath.."RSPreprocessHook.lua")
+internal.PreprocessHook = PreprocessHook
+internal.ShortFunctions = ShortFunctions
 
 function PreprocessHook.ProcessCallback(str)
 	local err = NoGlobals.CheckStr(str, "")
@@ -80,6 +82,24 @@ function PreprocessHook.ProcessCallback(str)
 	end
 	return NoGlobals.GetConvertedStr(), err
 end
+
+-- local ChunkLog = {}
+-- internal.ChunkLog = ChunkLog
+
+-- function PreprocessHook.ProcessCallback(str)
+-- 	local err = NoGlobals.CheckStr(str, "")
+-- 	if err then
+-- 		internal.ErrorChunk = str
+-- 		local s = ShortFunctions.ConvertStr(str)
+-- 		internal.ErrorChunkC = s
+-- 		internal.ErrorChunkC0 = NoGlobals.GetConvertedStr()
+-- 		return s, err
+-- 	end
+-- 	local s = NoGlobals.GetConvertedStr()
+-- 	table_insert(ChunkLog, 1, s)
+-- 	ChunkLog[51] = nil
+-- 	return s, err
+-- end
 
 PreprocessHook.Activate()
 local loadfile = loadfile
@@ -456,29 +476,18 @@ setmetatable(0, {__index = numIndex})
 
 --------- os
 
-ffi.cdef[[
-typedef enum {
-  FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x100,
-  FORMAT_MESSAGE_IGNORE_INSERTS  = 0x200,
-  FORMAT_MESSAGE_FROM_STRING     = 0x400,
-  FORMAT_MESSAGE_FROM_HMODULE    = 0x800,
-  FORMAT_MESSAGE_FROM_SYSTEM     = 0x1000,
-  FORMAT_MESSAGE_ARGUMENT_ARRAY  = 0x2000,
-} FORMAT_MESSAGE_FLAGS;
+local kernel32 = mem.dll.kernel32
 
-uint32_t __stdcall FormatMessageA(FORMAT_MESSAGE_FLAGS dwFlags, const void *lpSource, uint32_t dwMessageId, uint32_t dwLanguageId, const char * lpBuffer, uint32_t nSize, void *Arguments);
-uint32_t __stdcall GetLastError();
-]]
+local FormatMessage = kernel32.FormatMessageA
+local GetLastError = kernel32.GetLastError
 
-local GetLastError = ffi.C.GetLastError
-local FormatMessageA = ffi.C.FormatMessageA
-local FormatMessageBuf = ffi.new("char[256]")
-local FormatMessageBufPtr = tonumber(ffi.cast("int", FormatMessageBuf))
-local FormatMessageFlags = ffi.C.FORMAT_MESSAGE_FROM_SYSTEM + ffi.C.FORMAT_MESSAGE_IGNORE_INSERTS + ffi.C.FORMAT_MESSAGE_ARGUMENT_ARRAY
+local FormatMessageBuf = mem.StaticAlloc(256)
+-- local FormatMessageFlags = ffi.C.FORMAT_MESSAGE_FROM_SYSTEM + ffi.C.FORMAT_MESSAGE_IGNORE_INSERTS + ffi.C.FORMAT_MESSAGE_ARGUMENT_ARRAY
+local FormatMessageFlags = 0x1000 + 0x200 + 0x2000
 local function GetErrorText(code)
 	code = code or GetLastError()
-	local n = FormatMessageA(FormatMessageFlags, nil, code, 0, FormatMessageBuf, 256, nil)
-	return string_match(mem_string(FormatMessageBufPtr, n, true), "^(.-)[%z\001- %.]*$"), code
+	local n = FormatMessage(FormatMessageFlags, nil, code, 0, FormatMessageBuf, 256, nil)
+	return string_match(mem_string(FormatMessageBuf, n, true), "^(.-)[%z\001- %.]*$"), code
 end
 _G.os.GetErrorText = GetErrorText
 
@@ -640,11 +649,6 @@ typedef struct {
 	void *          hNameMappings;
 	const char *    lpszProgressTitle; // only used if FOF_SIMPLEPROGRESS
 } __attribute__ ((packed)) SHFILEOPSTRUCTA, *LPSHFILEOPSTRUCTA;
-
-int __stdcall SHFileOperationA(LPSHFILEOPSTRUCTA lpFileOp);
-bool __stdcall DeleteFileA(const char *lpFileName);
-bool __stdcall MoveFileA(const char *lpExistingFileName, const char *lpNewFileName);
-bool __stdcall CopyFileA(const char *lpExistingFileName, const char *lpNewFileName, bool bFailIfExists);
 ]]
 
 local SHErrors = {  -- MSDN says these shouldn't be taken for granted
@@ -676,9 +680,8 @@ local SHErrors = {  -- MSDN says these shouldn't be taken for granted
 }
 
 -- Make os.remove utilize Recycle Bin by default
--- local SHFileOperation = ffi.load("Shell32", true).SHFileOperationA
+local SHFileOperation = mem.dll.shell32.SHFileOperationA
 local SHDeleteFlags = ffi.C.FOF_NOCONFIRMATION + ffi.C.FOF_NOERRORUI + ffi.C.FOF_SILENT
--- local DeleteFileA = ffi.C.DeleteFileA
 
 -- Can remove anything, including folders full of files and sub-folders. Uses Recycle Bin by default
 function _G.os.remove(fname, NoRecycle)
@@ -689,8 +692,7 @@ function _G.os.remove(fname, NoRecycle)
 		fos.pFrom = from
 		fos.fFlags = SHDeleteFlags + (NoRecycle and 0 or ffi.C.FOF_ALLOWUNDO)
 		local p = tonumber(ffi.cast('intptr_t', ffi.cast('void *', fos)))
-		local code = mem.dll.shell32.SHFileOperationA(p)
-		-- local code = SHFileOperation(fos)  -- ffi function calls are buggy garbage
+		local code = SHFileOperation(p)
 		if code ~= 0 then
 			return nil, fname..": "..(SHErrors[code] or GetErrorText(code)), code
 		end
@@ -699,15 +701,15 @@ function _G.os.remove(fname, NoRecycle)
 	-- return APIReturn(DeleteFileA(fname), fname)
 end
 
-local CopyFileA = ffi.C.CopyFileA
+local CopyFileA = kernel32.CopyFileA
 function _G.os.copy(old, new, FailIfExists)
-	return APIReturn(CopyFileA(old, new, not not FailIfExists), old)
+	return APIReturn(CopyFileA(old.."", new.."", not not FailIfExists), old)
 end
 
 -- just to make all functions similar. rename() is only an extra fat around MoveFile anyway
-local MoveFileA = ffi.C.MoveFileA
+local MoveFileA = kernel32.MoveFileA
 function _G.os.rename(old, new)
-	return APIReturn(MoveFileA(old, new), old)
+	return APIReturn(MoveFileA(old.."", new..""), old)
 end
 
 ffi.cdef[[
@@ -731,15 +733,15 @@ typedef enum {
 bool __stdcall PathRelativePathToA(char *outPath, const char *pszFrom, FILE_ATTRIBUTES dwAttrFrom, const char *pszTo, FILE_ATTRIBUTES dwAttrTo);
 ]]
 
-local PathRelativePathTo = ffi.load("Shlwapi", true).PathRelativePathToA
-local PathBuf = ffi.new("char[260]")
+local PathRelativePathTo = mem.dll.Shlwapi.PathRelativePathToA
+local PathBuf = mem.StaticAlloc(260)
 local attrFile = ffi.C.FILE_ATTRIBUTE_NORMAL
 local attrDir = ffi.C.FILE_ATTRIBUTE_DIRECTORY + attrFile
 function _G.path.GetRelativePath(from, to, isDir)
 	from = string_gsub(from, "/", "\\")
 	to = string_gsub(to, "/", "\\")
 	if PathRelativePathTo(PathBuf, from, attrDir, to, isDir and attrDir or attrFile) then
-		return ffi.string(PathBuf)
+		return mem_string(PathBuf)
 	end
 	return nil, GetErrorText()
 end
@@ -766,28 +768,6 @@ end
 
 --------- string
 
-ffi.cdef[[
-int MultiByteToWideChar(
-	uint32_t   CodePage,
-	uint32_t  dwFlags,
-	const char * lpMultiByteStr,
-	int    cbMultiByte,
-	char* lpWideCharStr,
-	int    cchWideChar
-);
-
-int WideCharToMultiByte(
-	uint32_t    CodePage,
-	uint32_t   dwFlags,
-	const char * lpWideCharStr,
-	int     cchWideChar,
-	char*   lpMultiByteStr,
-	int     cbMultiByte,
-	const char*  lpDefaultChar,
-	bool*  lpUsedDefaultChar
-);
-]]
-
 local encPredef = {
 	utf8 = 65001,
 	utf16 = 1200,
@@ -797,29 +777,38 @@ local encPredef = {
 -- Here's the list of them: https://msdn.microsoft.com/ru-ru/library/windows/desktop/dd317756(v=vs.85).aspx
 -- Default system encoding (0) is assumed if not specified otherwise
 -- Strings "utf8" and "utf16" are also supported.
-local usedDefault = ffi.new("bool[4]")
+local usedDefault = mem.StaticAlloc(4*4)
+local MultiByteToWideChar = kernel32.MultiByteToWideChar
+local WideCharToMultiByte = kernel32.WideCharToMultiByte
 function _G.string.convert(s, encFrom, encTo, defChar)
 	encTo = encPredef[encTo] or 0
 	encFrom = encPredef[encFrom] or 0
 	if s == "" or encFrom == encTo then
 		return s
 	end
+	s = s..""
 	local buf, n = s, #s
 	if encFrom ~= 1200 then  -- not utf16
-		n = ffi.C.MultiByteToWideChar(encFrom, 0, buf, n, nil, 0);
-		buf = ffi.new("char[?]", n*2)
-		ffi.C.MultiByteToWideChar(encFrom, 0, s, #s, buf, n)
+		n = MultiByteToWideChar(encFrom, 0, buf, n, nil, 0);
+		buf = malloc(n*2)
+		MultiByteToWideChar(encFrom, 0, s, #s, buf, n)
 	else
 		n = n/2
 	end
 	if encTo ~= 1200 then  -- not utf16
-		local n2 = ffi.C.WideCharToMultiByte(encTo, 0, buf, n, nil, 0, nil, nil);
-		local buf2 = ffi.new("char[?]", n2)
+		local n2 = WideCharToMultiByte(encTo, 0, buf, n, nil, 0, nil, nil);
+		local buf2 = malloc(n2)
 		defChar = (encTo ~= 65000 and encTo ~= 65001 and defChar or nil)
-		ffi.C.WideCharToMultiByte(encTo, 0, buf, n, buf2, n2, defChar, defChar and usedDefault);
-		return ffi.string(buf2, n2), defChar and usedDefault[0]
+		WideCharToMultiByte(encTo, 0, buf, n, buf2, n2, defChar, defChar and usedDefault);
+		local r = mem_string(buf2, n2, true)
+		free(buf2)
+		return r, defChar and u4[usedDefault] ~= 0
 	end
-	return ffi.string(buf, n*2)
+	local r = mem_string(buf, n*2, true)
+	if buf ~= s then
+		free(buf)
+	end
+	return r
 end
 
 --------- debug, events

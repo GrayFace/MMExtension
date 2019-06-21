@@ -1,8 +1,6 @@
 -- shared by MMExtension, LuaConsole and GameExtension
 
 ffi = require("ffi")
-local ffi = ffi
-
 local type = type
 local unpack = unpack
 local assert = assert
@@ -467,7 +465,7 @@ events.cocalls("StructsLoaded")
 
 --------------------------- Load Other Scripts -------------------------
 
-ffi.cdef[[void __stdcall Sleep(uint32_t dwMilliseconds);]]
+local Sleep = mem.dll.kernel32.Sleep
 local AbsoleteStr = "-- this file is here to raplace the one from older MMExtension versions"
 local function CheckNoDel(fname)
 	local f = assert(_G.io.open(fname, "rb"))
@@ -480,7 +478,7 @@ local function CheckNoDel(fname)
 		if _G.os.remove(fname, true) then
 			break
 		end
-		ffi.C.Sleep(10);
+		Sleep(10);
 	end
 end
 
