@@ -390,14 +390,20 @@ end
 
 -- WindowProc
 do
+	local buf = mem.hookalloc()
 	local ptr = mmv(0x45733A+4, 0x4652BB+3, 0x463542+3)
 	local std = u4[ptr]
+	u4[ptr] = buf
 	
-	local function WndHook(wnd, msg, wp, lp)
+	mem.hook(buf, function(d)
+		d.esp = d.esp + 4
+		local wnd, msg, wp, lp = d:getparams(0, 4)
+		d:ret(4*4)
 		local t = {Window = wnd, Msg = msg, WParam = wp, LParam = lp, Handled = false, Result = 0}
 		events.cocall("WindowMessage", t)
 		if t.Handled then
-			return t.Result
+			d.eax = t.Result
+			return
 		end
 		msg, wp, lp = t.Msg, t.WParam, t.LParam
 		if msg == 0x100 or msg == 0x104 or msg == 0x101 or msg == 0x105 then
@@ -413,13 +419,12 @@ do
 			end
 			wp = t.Key
 			if wp == 0 or t.Handled then
-				return 0
+				d.eax = 0
+				return
 			end
 		end
-		return call(std, 0, wnd, msg, wp, lp)
-	end
-	local cast = require('ffi').cast
-	u4[ptr] = tonumber(cast('int', cast('int __stdcall (*)(int,int,int,int)', WndHook)))
+		d.eax = call(std, 0, wnd, msg, wp, lp)
+	end)
 end
 
 -- OnAction
