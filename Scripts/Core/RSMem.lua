@@ -1676,17 +1676,16 @@ function _mem.hookalloc(size)
 		mem_fill(p, size, 0x90)
 		return p
 	end
-	blocksize = blocksize - size
-	if blocksize < 0 then
+	if blocksize < size then
 		blocksize = (size + PageSize - 1):AndNot(PageSize - 1)
-		block, blocksize = ucall(VirtualAlloc, 0, 0, blocksize, 0x1000, 0x40), blocksize - size
+		block = ucall(VirtualAlloc, 0, 0, blocksize, 0x1000, 0x40)
 	end
 	p = block
+	block, blocksize = block + size, blocksize - size
 	mem_fill(p, size, 0x90)
 	if size ~= 5 then
 		HookSizes[p] = size
 	end
-	block = block + size
 	if f then
 		mem_hookjmp(p, f, 5)
 	end
@@ -2028,6 +2027,23 @@ function _mem.hookcall(p, nreg, nstack, f)
 		d.eax = f(d, def, d:getparams(nreg, nstack))
 		d:ret(nstack*4)
 	end, 5)
+end
+
+-- Creates a Lua callback (because any use of FFI for function calls leads to random bugs)
+function _mem.luaproc(f, nreg, nstack)
+	nreg = nreg or 0
+	nstack = nstack or 0
+	local p = mem_hookalloc(6 + (nstack > 0 and 2 or 0))
+	if nstack > 0 then
+		u1[p+5] = 0xC2
+		u2[p+6] = nstack*4
+	else
+		u1[p+5] = 0xC3
+	end
+	mem_hook(p, function(d)
+		d.eax = f(d:getparams(nreg, nstack, d.esp + 8))
+	end, 5)
+	return p
 end
 
 -- Writes 'n' NOPs. If 'n' is omitted, replaces a single instruction at the given address with NOPs
