@@ -357,10 +357,8 @@ begin
     BtnImport.Visible:= not odoor;
     BtnExportSelected.Visible:= odoor;
     BtnExport.Enabled:= ok or edit;
-    BtnShowPortals.Enabled:= not odoor and IsD3D;
-    BtnShowPortals.Visible:= IsD3D;
-    BtnUpdateBSP.Visible:= not IsD3D;
-    BtnUpdateBSP.Enabled:= false;
+    BtnShowPortals.Enabled:= not odoor;
+    BtnUpdateBSP.Visible:= false;
     BtnNoDark.Enabled:= ok and sync and not odoor;
     BtnShowInvisible.Enabled:= ok and sync;
     BtnResetDoors.Enabled:= Editable;
@@ -422,7 +420,10 @@ end;
 procedure UpdateBSPState(bsp: Bool); stdcall;
 begin
   with Form1 do
-    BtnUpdateBSP.Enabled:= bsp and not Outdoor;
+  begin
+    BtnUpdateBSP.Visible:= bsp and not Outdoor;
+    BtnShowPortals.Visible:= not BtnUpdateBSP.Visible;
+  end;
 end;
 
 procedure ClickBtn(btn: TSpeedButton; btn2: TSpeedButton = nil; btn3: TSpeedButton = nil; btn4: TSpeedButton = nil);
@@ -1442,8 +1443,8 @@ begin
 end;
 
 procedure TForm1.MyClipCursor(clip: Boolean);
-var
-  r: TRect;
+{var
+  r: TRect;}
 begin
   if clip then
   begin

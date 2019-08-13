@@ -1097,6 +1097,7 @@ function Editor.UpdateGameBits()
 		-- bit(2, Editor.NoShades and Editor.VisibleGUI)
 		mem.u4[p] = v
 	end
+	mem.u4[mmv(0x52D2A8, 0x576EB8, 0x587AE8)] = Editor.ShowPortals and Editor.VisibleGUI and 1 or 0
 end
 
 -----------------------------------------------------

@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, RSEdit, RSMemo, RSQ, RSSysUtils, RSStrUtils, Types, Math,
-  MultiMon;
+  MultiMon, RSGraphics;
 
 {TODO: problems in MM7-8 in full screen}
 
@@ -271,6 +271,31 @@ begin
     Result:= ptr(oldResult);
 end;
 
+procedure SaveBufferToBitmap(s: PChar; buf: ptr; w, h, bits: int); stdcall;
+var
+  b: TBitmap;
+begin
+  b:= TBitmap.Create;
+  try
+    case bits of
+      32:   b.PixelFormat:= pf32bit;
+      24:   b.PixelFormat:= pf24bit;
+      16,0: b.PixelFormat:= pf16bit;
+      15:   b.PixelFormat:= pf15bit;
+      else  Assert(false);
+    end;
+    b.Width:= w;
+    b.Height:= h;
+    RSBufferToBitmap(buf, b);
+    RSCreateDir(ExtractFilePath(s));
+    b.SaveToFile(s);
+  except
+    RSShowException;
+  end;
+  b.Free;
+end;
+
+
 { DebugDialogBranch }
 
 type
@@ -501,6 +526,7 @@ exports
   DebugDialogAnswer,
   DebugDialogBranch,
   DebugDialogCaption,
-  DebugDialogLastResult;
+  DebugDialogLastResult,
+  SaveBufferToBitmap;
   
 end.
