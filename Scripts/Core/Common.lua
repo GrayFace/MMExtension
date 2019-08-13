@@ -75,31 +75,31 @@ local PreprocessHook = dofile(CoreScriptsPath.."RSPreprocessHook.lua")
 internal.PreprocessHook = PreprocessHook
 internal.ShortFunctions = ShortFunctions
 
-function PreprocessHook.ProcessCallback(str)
-	local err = NoGlobals.CheckStr(str, "")
-	if err then
-		return ShortFunctions.ConvertStr(str), err
-	end
-	return NoGlobals.GetConvertedStr(), err
-end
-
--- local ChunkLog = {}
--- internal.ChunkLog = ChunkLog
-
 -- function PreprocessHook.ProcessCallback(str)
 -- 	local err = NoGlobals.CheckStr(str, "")
 -- 	if err then
--- 		internal.ErrorChunk = str
--- 		local s = ShortFunctions.ConvertStr(str)
--- 		internal.ErrorChunkC = s
--- 		internal.ErrorChunkC0 = NoGlobals.GetConvertedStr()
--- 		return s, err
+-- 		return ShortFunctions.ConvertStr(str), err
 -- 	end
--- 	local s = NoGlobals.GetConvertedStr()
--- 	table_insert(ChunkLog, 1, s)
--- 	ChunkLog[51] = nil
--- 	return s, err
+-- 	return NoGlobals.GetConvertedStr(), err
 -- end
+
+local ChunkLog = {}
+internal.ChunkLog = ChunkLog
+
+function PreprocessHook.ProcessCallback(str)
+	local err = NoGlobals.CheckStr(str, "")
+	if err then
+		internal.ErrorChunk = str
+		local s = ShortFunctions.ConvertStr(str)
+		internal.ErrorChunkC = s
+		internal.ErrorChunkC0 = NoGlobals.GetConvertedStr()
+		return s, err
+	end
+	local s = NoGlobals.GetConvertedStr()
+	table_insert(ChunkLog, 1, s)
+	ChunkLog[51] = nil
+	return s, err
+end
 
 PreprocessHook.Activate()
 local loadfile = loadfile
