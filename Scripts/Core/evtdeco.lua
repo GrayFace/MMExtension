@@ -227,7 +227,7 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 			end
 		elseif num == 0x22 then
 			if mmver == 8 then
-				comment = GetFromArray(Game.ItemsTxt, struct.Type % 1000, 'Name')
+				comment = GetFromArray(Game.ItemsTxt, struct.Item % 1000, 'Name')
 			else
 				local _, a = Game.ObjListBin.Find(struct.Type)
 				comment = a and a.Name or GetFromArray(Game.ObjListBin, Game.ObjListBin.count)
