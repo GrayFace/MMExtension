@@ -1011,12 +1011,12 @@ function structs.f.PatchOptions(define)
 	local off, n = 0, PatchOptionsPtr and i4[PatchOptionsPtr] or 0
 	
 	local present = {}
-	local function def(kind, name)
+	local function def(kind, name, sz)
 		if off < n then
 			present[name] = true
 			define[off][kind](name)
 		end
-		off = off + 4
+		off = off + (sz or 4)
 	end
 	local function int(name)
 		def('i4', name)
@@ -1030,11 +1030,14 @@ function structs.f.PatchOptions(define)
 	local function single(name)
 		def('r4', name)
 	end
+	local function double(name)
+		def('r8', name, 8)
+	end
 	local function i8(name)
-		def('i8', name)
+		def('i8', name, 8)
 	end
 	local function u8(name)
-		def('u8', name)
+		def('u8', name, 8)
 	end
 	local function pchar(name)
 		def('pchar', name)
@@ -1085,7 +1088,7 @@ function structs.f.PatchOptions(define)
 	bool  'SkipUnsellableItemCheck'  Info "[MM7]"
 	bool  'FixGMStaff'  Info "[MM7]"
 	bool  'FixObelisks'  Info "[MM8]"
-	bool  'BorderlessWindowed'  Info "It's set to false only when the game is in Borderless Fullscreen mode"
+	bool  'BorderlessWindowed'  Info "Actually, it should be read as \"not borderless fulscreen\". It's set to false only when the game is in Borderless Fullscreen mode"
 	bool  'CompatibleMovieRender'
 	bool  'SmoothMovieScaling'
 	bool  'SupportTrueColor'
@@ -1102,6 +1105,12 @@ function structs.f.PatchOptions(define)
 	int  'PaperDollInChests'
 	bool  'HigherCloseRingsButton'
 	int  'RenderBottomPixel'
+	bool  'TrueColorTextures'  Info "[MM7+]"
+	bool  'ResetPalettes'  Info "[MM7+]"
+	bool  'FixSFT'
+	bool  'AxeGMFullProbabilityAt'  Info "[MM7+]"
+	double 'MouseDX'
+	double 'MouseDY'
 	
 	function define.f.Present(name)
 		return present[name]

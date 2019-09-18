@@ -523,6 +523,15 @@ function structs.f.GameMouse(define)
 		local mouse = Game.Mouse
 		return Game.ObjectByPixel[mouse.Y][mouse.X]
 	end
+	function define.f.GetPos()
+		local m, op = Game.Mouse, Game.PatchOptions
+		local x, y = m.X, m.Y
+		if op.Present("MouseDY") then
+			x = x + op.MouseDX
+			y = y + op.MouseDY
+		end
+		return x, y
+	end
 	-- !!! info
 end
 

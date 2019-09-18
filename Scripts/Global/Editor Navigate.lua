@@ -151,7 +151,7 @@ function Editor.GetPartyDirection()
 end
 
 function Editor.GetMouseDirection()
-	local mx, my = XYZ(Game.Mouse)
+	local mx, my = (Game.Mouse.GetPos or XYZ)(Game.Mouse)
 	if mmver == 6 then
 		my = my + i4[0x9DE3C0] - i4[0x9DE3C4]
 	end

@@ -34,10 +34,10 @@ function JoinSkill(skill, mastery)
 	return skill + (ConvertMastery[mastery] or 0)
 end
 
--- Get X,Y,Z, fields:!Lua[[
+-- Get X,Y,Z fields:!Lua[[
 -- local x, y, z = XYZ(Party)
 -- ]]
--- Set X,Y,Z, fields:!Lua[[
+-- Set X,Y,Z fields:!Lua[[
 -- XYZ(Party, x, y, z)
 -- ]]
 -- Enumerate "X", "Y", "Z" strings:!Lua[[
