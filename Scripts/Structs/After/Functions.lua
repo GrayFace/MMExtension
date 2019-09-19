@@ -256,7 +256,7 @@ local MonTxtProps = {
 -- 'place' defines monster index in #Map.Monsters:# array if specified.
 function SummonMonster(id, x, y, z, treasure, place)
 	local n = Map.Monsters.Count
-	mem.call(offsets.SummonMonster, 2, id, x, y, z)
+	mem.call(offsets.SummonMonster, 2, id, x or Party.X, y or Party.Y, z or Party.Z)
 	if Map.Monsters.Count == n + 1 then
 		local mon = Map.Monsters[n]
 		mon.Hostile = false
