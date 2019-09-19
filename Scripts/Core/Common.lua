@@ -35,7 +35,6 @@ local coroutine_create = coroutine.create
 local coroutine_resume = coroutine.resume
 local coroutine_running = coroutine.running
 local coroutine_main = coroutine.main
-local ffi = require "ffi"
 
 local _G = _G
 local internal = debug.getregistry() -- internals
@@ -329,6 +328,7 @@ local i4, i2, i1, u8, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u8, mem.u4
 local mem_string = mem.string
 local mem_copy = mem.copy
 local mem_fill = mem.fill
+local mem_topointer = mem.topointer
 local IgnoreProtection = mem.IgnoreProtection
 function mem.StaticAlloc(size)
 	local p = StaticAlloc(size)
@@ -614,43 +614,6 @@ _G.io.SaveString = _G.io.save
 --!- backwards compatibility
 _G.io.LoadString = _G.io.load
 
-ffi.cdef[[
-typedef enum {
-	FO_MOVE                   = 0x0001,
-	FO_COPY                   = 0x0002,
-	FO_DELETE                 = 0x0003,
-	FO_RENAME                 = 0x0004,
-} FILEOP_FUNC;
-
-typedef enum {
-	FOF_MULTIDESTFILES        = 0x0001,
-	FOF_CONFIRMMOUSE          = 0x0002,
-	FOF_SILENT                = 0x0004,  // don't create progress/report
-	FOF_RENAMEONCOLLISION     = 0x0008,
-	FOF_NOCONFIRMATION        = 0x0010,  // Don't prompt the user.
-	FOF_WANTMAPPINGHANDLE     = 0x0020,  // Fill in SHFILEOPSTRUCT.hNameMappings
-                                      // Must be freed using SHFreeNameMappings
-	FOF_ALLOWUNDO             = 0x0040,
-	FOF_FILESONLY             = 0x0080,  // on *.*, do only files
-	FOF_SIMPLEPROGRESS        = 0x0100,  // means don't show names of files
-	FOF_NOCONFIRMMKDIR        = 0x0200,  // don't confirm making any needed dirs
-	FOF_NOERRORUI             = 0x0400,  // don't put up error UI
-	FOF_NOCOPYSECURITYATTRIBS = 0x0800,  // dont copy NT file Security Attributes
-	FOF_NORECURSION           = 0x1000  // don't recurse into directories.
-} __attribute__ ((packed)) FILEOP_FLAGS;
-
-typedef struct {
-	void *          hwnd;
-	FILEOP_FUNC     wFunc;
-	const char *    pFrom;
-	const char *    pTo;
-	short           fFlags;
-	int             fAnyOperationsAborted;
-	void *          hNameMappings;
-	const char *    lpszProgressTitle; // only used if FOF_SIMPLEPROGRESS
-} __attribute__ ((packed)) SHFILEOPSTRUCTA, *LPSHFILEOPSTRUCTA;
-]]
-
 local SHErrors = {  -- MSDN says these shouldn't be taken for granted
 	[0x71] = "The source and destination files are the same file",
 	[0x72] = "Multiple file paths were specified in the source buffer, but only one destination file path",
@@ -679,19 +642,57 @@ local SHErrors = {  -- MSDN says these shouldn't be taken for granted
 	[0x10074] = "Destination is a root directory and cannot be renamed",
 }
 
+local FOF = {
+	MULTIDESTFILES        = 0x0001,
+	CONFIRMMOUSE          = 0x0002,
+	SILENT                = 0x0004,  -- don't create progress/report
+	RENAMEONCOLLISION     = 0x0008,
+	NOCONFIRMATION        = 0x0010,  -- Don't prompt the user.
+	WANTMAPPINGHANDLE     = 0x0020,  -- Fill in SHFILEOPSTRUCT.hNameMappings
+                                      -- Must be freed using SHFreeNameMappings
+	ALLOWUNDO             = 0x0040,
+	FILESONLY             = 0x0080,  -- on *.*, do only files
+	SIMPLEPROGRESS        = 0x0100,  -- means don't show names of files
+	NOCONFIRMMKDIR        = 0x0200,  -- don't confirm making any needed dirs
+	NOERRORUI             = 0x0400,  -- don't put up error UI
+	NOCOPYSECURITYATTRIBS = 0x0800,  -- dont copy NT file Security Attributes
+	NORECURSION           = 0x1000  -- don't recurse into directories.
+}
+
+local FO = {
+	MOVE                   = 0x0001,
+	COPY                   = 0x0002,
+	DELETE                 = 0x0003,
+	RENAME                 = 0x0004,
+}
+
+local SHOff = {
+	hwnd = 0,
+	wFunc = 4,
+	pFrom = 8,
+	pTo = 12,
+	fFlags = 16,
+	fAnyOperationsAborted = 18,
+	hNameMappings = 22,
+	lpszProgressTitle = 26,
+	size = 30,
+}
+
 -- Make os.remove utilize Recycle Bin by default
 local SHFileOperation = mem.dll.shell32.SHFileOperationA
-local SHDeleteFlags = ffi.C.FOF_NOCONFIRMATION + ffi.C.FOF_NOERRORUI + ffi.C.FOF_SILENT
+local SHDeleteFlags = FOF.NOCONFIRMATION + FOF.NOERRORUI + FOF.SILENT
+local FileOpStruct
 
 -- Can remove anything, including folders full of files and sub-folders. Uses Recycle Bin by default
 function _G.os.remove(fname, NoRecycle)
 	-- if not NoRecycle then
-		local fos = ffi.new("SHFILEOPSTRUCTA")
-		fos.wFunc = "FO_DELETE"
+		local p = FileOpStruct or mem.StaticAlloc(SHOff.size)
+		FileOpStruct = p
+		mem_fill(FileOpStruct, SHOff.size)
+		u4[p + SHOff.wFunc] = FO.DELETE
 		local from = path_noslash(fname).."\000"
-		fos.pFrom = from
-		fos.fFlags = SHDeleteFlags + (NoRecycle and 0 or ffi.C.FOF_ALLOWUNDO)
-		local p = tonumber(ffi.cast('intptr_t', ffi.cast('void *', fos)))
+		u4[p + SHOff.pFrom] = mem_topointer(from)
+		u2[p + SHOff.fFlags] = SHDeleteFlags + (NoRecycle and 0 or FOF.ALLOWUNDO)
 		local code = SHFileOperation(p)
 		if code ~= 0 then
 			return nil, fname..": "..(SHErrors[code] or GetErrorText(code)), code
@@ -712,31 +713,27 @@ function _G.os.rename(old, new)
 	return APIReturn(MoveFileA(old.."", new..""), old)
 end
 
-ffi.cdef[[
-typedef enum {
-	FILE_ATTRIBUTE_READONLY            = 0x00000001,
-	FILE_ATTRIBUTE_HIDDEN              = 0x00000002,
-	FILE_ATTRIBUTE_SYSTEM              = 0x00000004,
-	FILE_ATTRIBUTE_DIRECTORY           = 0x00000010,
-	FILE_ATTRIBUTE_ARCHIVE             = 0x00000020,
-	FILE_ATTRIBUTE_DEVICE              = 0x00000040,
-	FILE_ATTRIBUTE_NORMAL              = 0x00000080,
-	FILE_ATTRIBUTE_TEMPORARY           = 0x00000100,
-	FILE_ATTRIBUTE_SPARSE_FILE         = 0x00000200,
-	FILE_ATTRIBUTE_REPARSE_POINT       = 0x00000400,
-	FILE_ATTRIBUTE_COMPRESSED          = 0x00000800,
-	FILE_ATTRIBUTE_OFFLINE             = 0x00001000,
-	FILE_ATTRIBUTE_NOT_CONTENT_INDEXED = 0x00002000,
-	FILE_ATTRIBUTE_ENCRYPTED           = 0x00004000,
-} FILE_ATTRIBUTES;
-
-bool __stdcall PathRelativePathToA(char *outPath, const char *pszFrom, FILE_ATTRIBUTES dwAttrFrom, const char *pszTo, FILE_ATTRIBUTES dwAttrTo);
-]]
+local FILE_ATTRIBUTE = {
+	READONLY            = 0x00000001,
+	HIDDEN              = 0x00000002,
+	SYSTEM              = 0x00000004,
+	DIRECTORY           = 0x00000010,
+	ARCHIVE             = 0x00000020,
+	DEVICE              = 0x00000040,
+	NORMAL              = 0x00000080,
+	TEMPORARY           = 0x00000100,
+	SPARSE_FILE         = 0x00000200,
+	REPARSE_POINT       = 0x00000400,
+	COMPRESSED          = 0x00000800,
+	OFFLINE             = 0x00001000,
+	NOT_CONTENT_INDEXED = 0x00002000,
+	ENCRYPTED           = 0x00004000,
+}
 
 local PathRelativePathTo = mem.dll.Shlwapi.PathRelativePathToA
 local PathBuf = mem.StaticAlloc(260)
-local attrFile = ffi.C.FILE_ATTRIBUTE_NORMAL
-local attrDir = ffi.C.FILE_ATTRIBUTE_DIRECTORY + attrFile
+local attrFile = FILE_ATTRIBUTE.NORMAL
+local attrDir = FILE_ATTRIBUTE.DIRECTORY + attrFile
 function _G.path.GetRelativePath(from, to, isDir)
 	from = string_gsub(from, "/", "\\")
 	to = string_gsub(to, "/", "\\")
@@ -747,24 +744,8 @@ function _G.path.GetRelativePath(from, to, isDir)
 end
 
 -- os.execute
--- ffi.cdef[[
--- bool CreateProcess(
---   const char * lpApplicationName,
---   char * lpCommandLine,
---   void * lpProcessAttributes,
---   void * lpThreadAttributes,
---   bool bInheritHandles,
---   uint32_t dwCreationFlags,
---   void * lpEnvironment,
---   _In_opt_    LPCTSTR               lpCurrentDirectory,
---   _In_        LPSTARTUPINFO         lpStartupInfo,
---   _Out_       LPPROCESS_INFORMATION lpProcessInformation
--- );]]
-
-
 
 -- _G.AppPath = _G.AppPath or _G.path.addslash(GetCurrentDirectory())
-
 
 --------- string
 
