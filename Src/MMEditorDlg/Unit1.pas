@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Buttons, RSSpeedButton, ExtCtrls, RSQ, RSSysUtils, RSStrUtils,
   StdCtrls, RSLabel, RSSpinEdit, RSListBox, UnitChooseKind, RSLod,
-  Types, Menus, RSGraphics, pngimage, Math;
+  Types, Menus, RSGraphics, pngimage, Math, RSUtils;
 
 type
   TMyCallback = function(cmd: PChar; params: ptr = nil): int; stdcall;
@@ -428,7 +428,7 @@ end;
 
 procedure ClickBtn(btn: TSpeedButton; btn2: TSpeedButton = nil; btn3: TSpeedButton = nil; btn4: TSpeedButton = nil);
 begin
-  if btn.Enabled and btn.Visible and btn.Parent.Visible then
+  if btn.Enabled and RSIsControlVisible(btn) then
   begin
     if btn.GroupIndex <> 0 then
       btn.Down:= not btn.Down;
@@ -494,17 +494,17 @@ begin
           ClickBtn(BtnModelMode1, BtnModelMode2);
       ord('G'):
         ClickBtn(BtnGround);
-      ord('1'):
+      ord('1'), VK_NUMPAD1:
         ClickBtn(BtnTileset1, BtnHeightMode1, BtnNewSprite);
-      ord('2'):
+      ord('2'), VK_NUMPAD2:
         ClickBtn(BtnTileset2, BtnHeightMode3, BtnNewMonster);
-      ord('3'):
+      ord('3'), VK_NUMPAD3:
         ClickBtn(BtnTileset3, BtnHeightMode5, BtnNewItem);
-      ord('4'):
+      ord('4'), VK_NUMPAD4:
         ClickBtn(BtnTileset0, BtnHeightMode2, BtnNewLight);
-      ord('5'):
+      ord('5'), VK_NUMPAD5:
         ClickBtn(BtnRoad, BtnHeightMode4, BtnNewSpawn);
-      ord('6'):
+      ord('6'), VK_NUMPAD6:
         ClickBtn(BtnRoadDiag, BtnHeightMode6);
     end;
 end;

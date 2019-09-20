@@ -1078,15 +1078,16 @@ local function SelectObjByProp(ids, prop)
 		return
 	end
 	local props = Editor.GetProps()
-	Editor.ClearSelection()
+	local need = {}
 	for o, id in pairs(Editor.EnumSelection()) do
-		local v = props.get(id, prop)
-		for f, id in pairs(Editor[ids]) do
-			if props.get(id, prop) == v then
-				Editor.Selection[id] = true
-			end
+		need[props.get(id, prop) or false] = true
+	end
+	for f, id in pairs(Editor[ids]) do
+		if need[props.get(id, prop)] then
+			Editor.Selection[id] = true
 		end
 	end
+	Editor.SelectionChanged = true
 end
 
 local ListMainPropByObjKind = {
