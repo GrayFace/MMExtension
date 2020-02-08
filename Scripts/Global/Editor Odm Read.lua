@@ -221,6 +221,6 @@ function Editor.ReadOdm()
 	
 	Editor.SetState(state)
 	
-	Editor.DefaultFileName = Editor.MapsDir..path.setext(Map.Name, '.dat')
+	Editor.DefaultFileName = Editor.MapsDir..path.setext(Map.Name, '.odt')
 	Editor.profile(nil)
 end
