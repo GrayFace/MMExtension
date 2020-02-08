@@ -129,6 +129,15 @@ function table.clear(t)
 	end
 end
 
+-- Adds 't1' array to the end of 't'
+function table.join(t, t1)
+	local n = #t
+	for i, v in ipairs(t1) do
+		t[i + n] = v
+	end
+	return t
+end
+
 --------- coroutine
 
 -- 'n' times in a raw calls !Lua[[coroutine.yield(...)]]. Returns the result of last call

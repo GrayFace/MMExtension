@@ -523,6 +523,7 @@ function structs.f.GameMouse(define)
 		local mouse = Game.Mouse
 		return Game.ObjectByPixel[mouse.Y][mouse.X]
 	end
+	define.Info"Returns #ObjectRef:structs.ObjectRef# of current mouse target"
 	function define.f.GetPos()
 		local m, op = Game.Mouse, Game.PatchOptions
 		local x, y = m.X, m.Y
@@ -532,7 +533,8 @@ function structs.f.GameMouse(define)
 		end
 		return x, y
 	end
-	-- !!! info
+	define.Info("Returns floating-point mouse position that includes sub-pixel difference caused by upscaling.\n"..
+	 "In UILayout mode this is the only way to find mouse coordinates when it's over 3D view. #Mouse.X:# and #Mouse.Y:# would just return the middle of the view. When mouse is over interface items, both this function and #Mouse.X:#, #Mouse.Y:# get coordinates within traditional interface to which UI layout is mapped.")
 end
 
 function structs.f.ObjectRefAny(define, long)

@@ -485,7 +485,6 @@ end
 local DoMoveModel = io.load(DevPath.."Scripts/Structs/After/MoveModel.asm")
 DoMoveModel = DoMoveModel:gsub("%%(%w*)%%", {[""] = "%", GetU = mmv(0x4790A0, 0x44C38E, 0x449AD7)})
 DoMoveModel = mem.asmproc(DoMoveModel)
--- DoMoveModel = ffi.cast(
 
 -- 'MoveParty' isn't supported yet
 function MoveModel(m, dx, dy, dz, MoveParty)
