@@ -1256,7 +1256,7 @@ local MonsterProps = MakeProps{
 	"TreasureItemLevel",
 	"TreasureItemType",
 	"Item",
-	"NPC_ID",
+	mm7 "NPC_ID",
 
 	"Invisible",
 	mm7 "OnAlertMap",

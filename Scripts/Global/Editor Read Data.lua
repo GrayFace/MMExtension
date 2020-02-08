@@ -754,7 +754,7 @@ local MonsterProps = {
 	TreasureItemLevel = true,
 	TreasureItemType = true,
 	Item = true,
-	NPC_ID = true,
+	NPC_ID = mmver > 6 or nil,
 
 	Fly = true,
 	MoveType = true,
