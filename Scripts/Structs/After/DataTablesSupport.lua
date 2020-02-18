@@ -133,8 +133,8 @@ local function ReadWriteTable(f, a, str, onerror)
 				ss[#ss + 1] = table.concat(t, "\t").."\r\n"
 			end
 			-- write data
+			local t = {}
 			for y = 1, yn do
-				local t = {}
 				local dx = 0
 				if not norh then
 					local i = y - 1 + rl
@@ -201,6 +201,7 @@ function DataTables.StructsArray(arr, offs, t, str)
 			if y ~= LastY then
 				if struct then
 					struct["?ptr"] = nil  -- /speedup
+					rawset(arr, LastY, nil)  -- prevent "not enough memory"
 				elseif v then
 					types, TypesY = {}, y
 				end
@@ -215,10 +216,11 @@ function DataTables.StructsArray(arr, offs, t, str)
 				end
 				struct = arr[y]
 				rawset(struct, "?ptr", struct["?ptr"])  -- speedup
-				if y == TypesY and not ignoreR[col] then
-					local v = struct[col]
-					types[x] = (v ~= nil) and type(v)
-				end
+				LastY = y
+			end
+			if y == TypesY and not ignoreR[col] then
+				local v = struct[col]
+				types[x] = (v ~= nil) and type(v)
 			end
 			local alias = aliases[col]
 			local tp = types and types[x]
@@ -633,4 +635,24 @@ function DataTables.ComputeRowCountInPChar(p, MinCols, NeedCol)
 		p = p1 + 2
 	end)
 	return r
+end
+
+-----------------------------------------------------
+-- BasicTable
+-----------------------------------------------------
+
+function DataTables.ReadBasicTable(s)
+	local t = s:split("\r\n", true)
+	for i = 1, #t do
+		t[i] = t[i]:split("\t", true)
+	end
+	return t
+end
+
+function DataTables.WriteBasicTable(t)
+	local q = {}
+	for i = 1, #t do
+		q[i] = table.concat(t[i], "\t")
+	end
+	return table.concat(q, "\r\n")
 end
