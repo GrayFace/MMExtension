@@ -100,6 +100,7 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 			4
 		)
 		Process({0x453FEC, 0x454752, 0x4547D9, 0x4547FE}, (NewCount - OldCount)*0x44)
+		Process({0x433B8A}, NewCount - OldCount)
 		d.esi = ptr
 		mem.asmpatch(0x497F88, ([[
 			cmp eax, %s
@@ -155,6 +156,7 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 		)
 
 		Process({0x451756, 0x451EBD, 0x451F43, 0x451F68}, (NewCount - OldCount)*0x44)
+		Process({0x4313A8}, NewCount - OldCount)
 		-- fix by Rodril
 		mem.asmpatch(0x4949a0, ([[
 			cmp eax, %s
