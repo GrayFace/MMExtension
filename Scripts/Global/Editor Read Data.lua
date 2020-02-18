@@ -975,7 +975,7 @@ function Editor.ReadMap()
 	
 	Editor.SetState(state)
 	Editor.AddUnique()
-	Editor.DefaultFileName = Editor.MapsDir..path.setext(Map.Name, '.dat')
+	Editor.DefaultFileName = (Editor.MapsDir or "")..path.setext(Map.Name, '.dat')
 	-- Editor.ProcessDoors()
 	Editor.profile(nil)
 end

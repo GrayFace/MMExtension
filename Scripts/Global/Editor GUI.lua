@@ -73,11 +73,12 @@ function events.KeyUp(t)
 	end
 end
 
+Editor.Close = DLL.CloseEditor
 local function OnLeave()
 	Editor.StateSync = false
 	Editor.Selection = {}
 	events.EditorSelectionChanged()
-	DLL.CloseEditor()
+	Editor.Close()
 end
 events.LeaveMap = OnLeave
 events.LeaveGame = OnLeave
@@ -221,7 +222,7 @@ end
 
 local function StartEditor()
 	if Editor.VisibleGUI then
-		return DLL.CloseEditor()
+		return Editor.Close()
 	end
 	Game.TurnBased = 0
 	Editor.VisibleGUI = true
@@ -278,7 +279,7 @@ end
 local function Import(name, AsObjects)
 	Editor.ClearSelection()
 	name = memstr(name)
-	Editor.DefaultFileName = Editor.MapsDir..path.setext(path.name(name), Map.IsOutdoor() and ".odt" or '.dat')
+	Editor.DefaultFileName = (Editor.MapsDir or "")..path.setext(path.name(name), Map.IsOutdoor() and ".odt" or '.dat')
 	Editor.LoadObj(name, AsObjects)
 	Editor.UpdateMap()
 	if not Editor.State.Party and Map.IsIndoor() and Map.RoomFromPoint(Party.X, Party.Y, Party.Z) <= 0 then
@@ -304,7 +305,7 @@ local function DoExport(name, selected)
 	name = memstr(name)
 	if not Editor.State then
 		Editor.ReadMap()
-		Editor.DefaultFileName = Editor.MapsDir..path.setext(path.name(name), Map.IsOutdoor() and ".odt" or '.dat')
+		Editor.DefaultFileName = (Editor.MapsDir or "")..path.setext(path.name(name), Map.IsOutdoor() and ".odt" or '.dat')
 	end
 	if selected then
 		local t = {}
@@ -403,6 +404,9 @@ function Editor.LoadBlv(name, KeepState)
 		Editor.LoadBlvKeepState = KeepState
 		Game.Time = Game.Time + 0x1000000000
 		Editor.ClearUndoStack()
+		if mmver == 6 then
+			mem.u1[offsets.MapName] = 1  -- avoid triggering losing game
+		end
 	end
 	evt.MoveToMap{Name = name}
 end

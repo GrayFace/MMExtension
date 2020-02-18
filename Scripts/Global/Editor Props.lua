@@ -875,7 +875,7 @@ local SpriteProps = MakeProps{
 	"ShowOnMap",
 	"IsChest",
 	"Invisible",
-	"IsObeliskChest",
+	mmver == 6 and "IsShip" or "IsObeliskChest",
 
 	IndexList = "Sprites",
 	

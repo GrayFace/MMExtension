@@ -137,7 +137,7 @@ function EM()
 	local name = AppPath.."MapObj/"..path.setext(Map.Name, ".obj")
 	if not Editor.State then
 		Editor.ReadMap()
-		Editor.DefaultFileName = Editor.MapsDir..path.setext(path.name(name), Map.IsOutdoor() and ".odt" or '.dat')
+		Editor.DefaultFileName = (Editor.MapsDir or "")..path.setext(path.name(name), Map.IsOutdoor() and ".odt" or '.dat')
 	end
 	local old = Editor.ExportMergeRooms
 	Editor.ExportMergeRooms = true
@@ -585,6 +585,91 @@ function ExtractChests(fname)
 	io.save(fname, table.concat(data))
 end
 
+
+function DoBatchSave(dir)
+	local co = coroutine.running()
+	for _, a in Game.MapStats do
+		local s = a.FileName
+		if s ~= "" then
+			print('loading', s)
+			function events.LoadMap()
+				events.remove('LoadMap', 1)
+				io.SaveString(dir..s..".dat", internal.persist(Editor.State))
+				Editor.Close()
+				function events.Tick()
+					events.remove('Tick', 1)
+					print('resuming after', s)
+					coroutine.resume(co)
+				end
+			end
+			Editor.LoadBlv(s)
+			coroutine.yield()
+		end
+	end
+end
+-- Editor.UpdateMap(dir..s)
+
+function BatchSave(dir)
+	dir = path.addslash(dir or AppPath.."Batch")
+	os.mkdir(dir)
+	cocall2(DoBatchSave, dir)
+end
+
+function DoBatchLoad(mask, odir, preproc, postproc)
+	local co = coroutine.running()
+	for s in path.find(mask) do
+		print(s)
+	end
+	for s in path.find(mask) do
+		print('loading', s)
+		Editor.ClearSelection()
+		Editor.FileName = s
+		Editor.State = internal.unpersist(io.load(s))
+		if preproc then
+			preproc(Editor.State, s)
+		end
+		Editor.StateSync = false
+		Editor.ClearUndoStack()
+		Editor.State.BaseInternalMap = nil
+		Editor.NeedStateSync()		
+		if not Editor.StateSync then
+			print('indoor/outdoor switch')
+			-- local oldUpd = Editor.UpdateMap
+			-- function Editor.UpdateMap()
+			-- end
+			function events.LoadMap()
+				events.remove('LoadMap', 1)
+				Editor.Close()
+				-- Editor.UpdateMap = oldUpd
+				function events.Tick()
+					events.remove('Tick', 1)
+					print('resuming', s)
+					coroutine.resume2(co)
+				end
+			end
+			coroutine.yield()
+		end
+		print('compiling', s)
+		Editor.UpdateMap(odir..path.setext(path.name(s), ''))
+		print('ok', s)
+	end
+	if postproc then
+		postproc()
+	end
+end
+
+function DoBatchLoadAll(dir, odir, ...)
+	dir = path.addslash(dir or AppPath.."Batch")
+	odir = path.addslash(odir or AppPath.."BatchCompiled")
+	Sleep(1)
+	DoBatchLoad(dir.."*.dat", odir, ...)
+	-- DoBatchLoad(dir.."*.blv.dat", odir, preproc)
+	-- DoBatchLoad(dir.."*.odm.dat", odir, preproc)
+end
+
+function BatchLoad(...)
+	cocall2(DoBatchLoadAll, ...)
+end
 
 -----------------------------------------------------
 -- Unrelated to editor

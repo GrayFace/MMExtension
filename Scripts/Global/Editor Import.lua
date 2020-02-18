@@ -639,7 +639,7 @@ end
 
 function Editor.LoadObj(file, AsObjects)
 	if not Editor.State then
-		Editor.DefaultFileName = Editor.MapsDir..path.setext(path.name(file), '.dat')
+		Editor.DefaultFileName = (Editor.MapsDir or "")..path.setext(path.name(file), '.dat')
 	end
 	-- local back = internal.persist(Editor.State)
 	if Map.IsIndoor() then
