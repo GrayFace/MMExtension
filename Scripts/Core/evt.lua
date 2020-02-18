@@ -1542,6 +1542,13 @@ do
 		evt.VarNum.Skills[i] = p
 		add(v.."Skill")
 	end
+	evt.VarNum.Conditions = {}
+	for k, i in pairs(const.Condition) do
+		if i <= 16 then
+			evt.VarNum.Conditions[i] = p + i
+			evt.VarNum[k] = p + i
+		end
+	end
 	add("Cursed")                    -- 57/69/6B
 	add("Weak")                      -- 58/6A
 	add("Asleep")                    -- 59/6B
