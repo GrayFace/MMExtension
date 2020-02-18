@@ -88,7 +88,7 @@ const.SpriteBits = {
 	ShowOnMap = 0x0008,
 	IsChest = 0x0010,
 	Invisible = 0x0020,
-	IsObeliskChest = 0x0040,
+	[mmver == 6 and "IsShip" or "IsObeliskChest"] = 0x0040,
 }
 
 MakeBitsDefiner("ChestBits")
@@ -1230,8 +1230,12 @@ const.HouseTypeInv = {
 	"The Adventurer's Inn",
 }
 const.HouseType = table.invert(const.HouseTypeInv)
+const.HouseType["General Store"] = 6  -- MM6
+const.HouseType["Alchemist"] = 6  -- MM7,8
 const.HouseType["Element Guild"] = 14  -- MM6
 const.HouseType["Elemental Guild"] = 14  -- MM7,8
+const.HouseType["Thieves Guild"] = 17  -- MM6
+const.HouseType["Town Hall"] = 17  -- MM7,8
 const.HouseType["The Seer"] = 26  -- MM6, MM7
 const.HouseType["The Oracle"] = 26  -- MM6
 const.HouseType["Seer Good"] = 26  -- MM7

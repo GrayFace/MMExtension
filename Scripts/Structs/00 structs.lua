@@ -287,8 +287,6 @@ function structs.f.GameStructure(define)
 		[mmv(0x4BCB08, 0x4E1D50)].array(6).i2  'TownPortalHeight'
 		[mmv(0x4BCAFC, 0x4E1D44)].array(6).i2  'TownPortalWidth'
 	end
-	-- town portal picture: townport
-	-- town portal icons: tpharmndy, tpelf, tpwarlock, tpisland, tpheaven, tphell
 	define
 	[mmv(0x4C3F20, 0x4F0830, 0x500DF8)].array(mmv(36, 35, 25)).struct(structs.TravelInfo)  'TransportLocations'
 	[mmv(0x4C43A0, 0x4F0C90, 0x501118)].array(mmv(48, 54, 54), mmv(68, 73, 73)).array(1, mmv(3, 4, 4)).i1  'TransportIndex'
@@ -309,6 +307,8 @@ function structs.f.GameStructure(define)
 			mem.copy(mmv(0x4D6B14, 0x510604, 0x521EE4), val, #val + 1)
 		end
 	end)
+	[mmv(0x42F187, 0x433B0C, 0x43132C)].EditConstPChar  'WinMapIndex'
+	 .Info "Number represented as a string.\n[MM6] Index in games.lod\n[MM7,8] Index in mapstats.txt"
 	[mmv(0x53CB6C, 0x598570, 0x5AC9E0)].array{mmv(3000, 4400, 5000), lenA = i4, lenP = mmv(0x54D038, 0x5A53B0, 0x5BB440)}.struct(structs.EventLine)  'GlobalEvtLines'
 	[mmv(0x552F58, 0x5B6458, 0x5CCCE8)].array{mmv(3000, 4400, 5000), lenA = i4, lenP = mmv(0x533EB4, 0x5B0F90, 0x5C7020)}.struct(structs.EventLine)  'MapEvtLines'
 	[mmv(0x55DD88, 0x5C6C40, 0x5E2FD0)].struct(structs.SFT)  'SFTBin'
@@ -394,6 +394,10 @@ function structs.f.GameStructure(define)
 		mem.call(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), soundId, object or -1, loops or 0, x or -1, y or 0, unk or 0, volume or 0, playbackRate or 0)
 	end
 	define.Info{Sig = "SoundId, Object = -1, Loops = 0, X = -1, Y = 0, Unk = 0, Volume = 0, PlaybackRate = 0"}
+	function define.f.StopAllSounds(keepMin, keepMax)
+		mem.call(mmv(0x48FB40, 0x4AB69F, 0x4A9BF7), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), keepMin, keepMax)
+	end
+	define.Info{Sig = "keepMin = -1, keepMax = -1"}
 	function define.f.LoadDecSprite(name)
 		local id = (mmver > 6 and mem.call(mmv(nil, 0x4488D9, 0x445C59), 1, mmv(nil, 0x69AC54, 0x6C8B5C), name) or 0)
 		if mmver == 6 then
@@ -476,7 +480,9 @@ elseif mmver == 7 then
 		[0x4ED610].array(36).u1  'HPFactor'
 		[0x4ED634].array(36).u1  'SPFactor'
 		[0x4ED818].array(36).array(37).u1  'Skills'
-		[internal.SPStatKinds].array(36).u1  'SPStats'  -- 0 - no SP, 1 - Intellect, 2 - Personality, 3 - both
+		 .Info "Same as in 'SplitSkill' function: 0 - none, 1 - normal, 2 - expert, 3 - master, 4 - GM"
+		[internal.SPStatKinds].array(36).u1  'SPStats'
+		 .Info "0 - no SP, 1 - intellect, 2 - personality, 3 - both"
 	end
 
 	function structs.f.GameClassKinds(define)
