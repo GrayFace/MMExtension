@@ -233,7 +233,7 @@ mem.hook(mmv(0x44F378, 0x45F4CA, 0x45CF92), function(d)
 --[[!({
   IsArena
   SaveKind
-})]]
+}) 'SaveKind': 0 - normal, 1 - autosave, 2 - quick save]]
 	MapCheckHook(d, "CanSaveGame", {SaveKind = (mmver == 6 and d.ebx or u4[d.ebp - 0x24])})
 end)
 
@@ -592,6 +592,16 @@ do
 	-- 44A253 DrawTextLimited
 end
 
+-- A bug I once had with SimpleMessage cmd
+if mmver == 7 then
+	mem.asmhook(0x44CE7C, [[
+		test edi, edi
+		jnz @f
+		jmp absolute 0x44D0DA
+	@@:
+	]])
+end
+
 -- Improve doors in D3D mode
 if mmver > 6 then
 	-- Bitmap-independant door UV calculation in D3D mode (was good for editor when it used to change textures)
@@ -766,6 +776,21 @@ if mmver == 6 then
 		or edi, ebx
 		xor eax, eax
 	]], 0x42E6DC - 0x42E6C9)
+	
+	-- fix town portal order
+	hooks.asmhook(0x42E639, [[
+		mov [esp+3D8h-3B8h], al
+	]])
+	local t, map = {}, {[0] = 3, 2, 4, 1, 0, 5}
+	local p, sz = 0x4C1F98, 0x14
+	for i = 0, 5 do
+		t[i] = mem.string(p + i*sz, sz, true)
+	end
+	for i = 0, 5 do
+		mem.copy(p + i*sz, t[map[i]], sz)
+	end
+	
+	
 	-- strange: 42F209 - pyramid.blv
 	-- 43BC39 - NPC news, not that important
 	
@@ -857,6 +882,21 @@ else
 	]], mm78(0x433A9F - 0x433A64, 0x4D12C8 - 0x4D1288))
 end
 
+-- Win map being searched in games.lod
+if mmver == 6 then
+	-- need more work on this
+elseif mmver == 7 then
+	mem.asmpatch(0x433BB1, [[
+		mov esi, [0x5CAA38 + 4 + edi]
+		jmp absolute 0x433BF1
+	]])
+elseif mmver == 8 then
+	mem.asmpatch(0x4313CD, [[
+		mov esi, [0x5E6E00 + 4 + edi]
+		jmp absolute 0x431409
+	]])
+end
+
 -- SkyBitmap
 mem.autohook(mmv(0x46E01E, 0x47EB89, 0x47E0D4), function(d)
 	local time = Map.OutdoorLastVisitTime
@@ -918,8 +958,6 @@ mem.hookfunction(mmv(0x4A59A0, 0x4BE671, 0x4BC1F1), 2, mmv(1, 2, 2), function(d,
 	events.cocall("ShowMovie", t)
 	t.CallDefault()
 end)
-
-
 
 
 
@@ -1175,6 +1213,7 @@ if mmver > 6 then
 	-- 	return t.Result
 	-- end)
 	
+	-- MonsterKinds
 	local KindPtr = mem.StaticAlloc(8)
 	local f = mm78(0x438BCE, 0x436542)
 	internal.MonsterKindPtr = KindPtr
@@ -1287,5 +1326,20 @@ if mmver > 6 then
 		t.CallDefault()
 	end)
 end
+
+
+
+-- Sprite hooks
+-- local function GetSprite(p)
+-- 	if p == 0 then
+-- 		return
+-- 	end
+-- 	local i = (p - Map.Sprites["?ptr"]) / Map.Sprites[0]["?size"]
+-- 	return i, Map.Sprites[i]
+-- end
+
+-- mem.hookfunction(0x44C320
+
+
 
 mem.IgnoreProtection(false)
