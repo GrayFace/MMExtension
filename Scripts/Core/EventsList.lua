@@ -108,7 +108,7 @@ local function cocallPart(ret, f, i, to, ...)
 		end
 	end, ...)
 	local i2 = i
-	i = to
+	i = to + 1
 	return ret, f, i2, to, ok
 end
 
