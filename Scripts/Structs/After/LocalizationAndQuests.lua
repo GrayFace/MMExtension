@@ -295,25 +295,26 @@ local function RegisterQuest(t)
 	
 	local function UpdateCurrentQuests(npc)
 		CurrentQuests = {}
+		local ev = Game.NPC[npc].Events
 		for i = 0, 5 do
-			local t = FindCurrentQuest(npc, i)
+			local t = FindCurrentQuest(-1, i) or FindCurrentQuest(npc, i)
 			if t then
 				local topic = t:GetTopic()
 				if topic then
-					BackupNPC[i] = BackupNPC[i] or Game.NPC[npc].Events[i]
+					BackupNPC[i] = BackupNPC[i] or ev[i]
 					if type(topic) == "number" then
-						Game.NPC[npc].Events[i] = topic
+						ev[i] = topic
 					else
 						local k = FreeEvents[i]
-						Game.NPC[npc].Events[i] = k
+						ev[i] = k
 						BackupTopics[k] = BackupTopics[k] or Game.NPCTopic[k]
 						Game.NPCTopic[k] = topic
 						CurrentQuests[k] = t
 					end
 				else
-					Game.NPC[npc].Events[i] = 0
+					ev[i] = 0
 				end
-			elseif BackupNPC[i] then
+			elseif BackupNPC[i] and ev[i] == FreeEvents[i] then
 				Game.NPC[npc].Events[i] = BackupNPC[i]
 				BackupNPC[i] = nil
 			end
@@ -370,8 +371,10 @@ local function RegisterQuest(t)
 			Game.NPCTopic[k] = BackupTopics[k]
 		end
 		BackupTopics = {}
-		for k, s in pairs(BackupNPC) do
-			Game.NPC[CurrentNPC].Events[k] = BackupNPC[k]
+		for i, s in pairs(BackupNPC) do
+			if Game.NPC[CurrentNPC].Events[i] == FreeEvents[i] then
+				Game.NPC[CurrentNPC].Events[i] = s
+			end
 		end
 		BackupNPC = {}
 		internal.SaveGameData.SeenNPC = internal.SaveGameData.SeenNPC or {}
