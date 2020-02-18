@@ -85,7 +85,7 @@ begin
   ps:= RSParseString(ss, ['|']);
   SetLength(Result, RSGetTokensCount(ps));
   for i:= 0 to RSGetTokensCount(ps) - 1 do
-    Result[i]:= TRSLod.Create(ExpandFileName(RSGetToken(ps, i)));
+    Result[i]:= RSLoadMMArchive(ExpandFileName(RSGetToken(ps, i)));
 end;
 
 {function LoadLods(path: string): TRSMMArchivesArray;
