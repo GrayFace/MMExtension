@@ -312,11 +312,22 @@ local function RegisterQuest(t)
 						CurrentQuests[k] = t
 					end
 				else
+					BackupNPC[i] = BackupNPC[i] or ev[i]
 					ev[i] = 0
 				end
-			elseif BackupNPC[i] and ev[i] == FreeEvents[i] then
+			elseif BackupNPC[i] then
 				Game.NPC[npc].Events[i] = BackupNPC[i]
 				BackupNPC[i] = nil
+			end
+		end
+	end
+	
+	function UpdateNPCQuests()
+		local old = CurrentQuests
+		UpdateCurrentQuests(CurrentNPC)
+		for k, v in pairs(table.copy(old, table.copy(CurrentQuests))) do
+			if old[k] == nil or CurrentQuests[k] == nil then
+				Game.UpdateDialogTopics()
 			end
 		end
 	end
@@ -332,13 +343,7 @@ local function RegisterQuest(t)
 		local t = CurrentNPC and CurrentQuests and CurrentQuests[evtId]
 		if t then
 			cocall2(t.Execute, t)
-			local old = CurrentQuests
-			UpdateCurrentQuests(CurrentNPC)
-			for k, v in pairs(table.copy(old, table.copy(CurrentQuests))) do
-				if old[k] == nil or CurrentQuests[k] == nil then
-					Game.UpdateDialogTopics()
-				end
-			end
+			UpdateNPCQuests()
 		end
 	end
 	
@@ -372,9 +377,7 @@ local function RegisterQuest(t)
 		end
 		BackupTopics = {}
 		for i, s in pairs(BackupNPC) do
-			if Game.NPC[CurrentNPC].Events[i] == FreeEvents[i] then
-				Game.NPC[CurrentNPC].Events[i] = s
-			end
+			Game.NPC[CurrentNPC].Events[i] = s
 		end
 		BackupNPC = {}
 		internal.SaveGameData.SeenNPC = internal.SaveGameData.SeenNPC or {}
