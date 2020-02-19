@@ -640,7 +640,7 @@ function structs.f.GameParty(define)
 		[mmv(nil, 0xACD588, 0xB215FA)].array(5).i4  'MonsHuntKilled'  -- only index 0 is used in MM8
 	end
 	define
-	[mmv(0x908D6D, 0xACD59D, 0xB2160F)].array(1, 512).abit  'QBits'
+	[mmv(0x908D6D, 0xACD59D, 0xB2160F)].array(mmv(0, 1, 1), mmv(511, 512, 512)).abit  'QBits'
 	[mmv(0x908DAD, 0xACD636, 0xB216A8)].array(1, mmv(128, 255, 300)).abit  'AutonotesBits'
 	[mmv(0xACD5ED, 0xACD5ED, 0xB2165F)].i1  'InArenaQuest'
 	if mmver > 6 then
