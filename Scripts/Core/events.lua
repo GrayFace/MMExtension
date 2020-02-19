@@ -959,6 +959,22 @@ mem.hookfunction(mmv(0x4A59A0, 0x4BE671, 0x4BC1F1), 2, mmv(1, 2, 2), function(d,
 	t.CallDefault()
 end)
 
+-- dungeon enter from house (draw properly)
+if mmver == 7 then
+	mem.asmpatch(0x4B351C, [[
+		jmp absolute 0x4B3563
+	]])
+
+	-- mem.asmhook2(0x4B34E7, [[
+	-- 	mov eax, [ebx]
+	-- 	movzx eax, word [eax + 0x18]
+	-- 	sub eax, 63
+	-- 	sar eax, 1
+	-- 	sub [esp], eax	
+	-- ]])
+elseif mmver == 8 then
+	-- also must load and free OK/Cancel...	
+end
 
 
 -- Player hooks
