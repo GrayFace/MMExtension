@@ -428,7 +428,7 @@ do
 end
 
 -- OnAction
-local screensNPC = {[4] = true, [13] = true, [19] = true}  -- SpeakNPC, house, street NPC
+local screensNPC = {[4] = true, [19] = true}  -- SpeakNPC, street NPC, separate processing for house
 local function OnAction(InGame, a1, a2, a3)
 	local t = {Action = i4[a1], Param = i4[a2], Param2 = a3 and i4[a3] or 0, Handled = false}
 	events.cocall(InGame and "Action" or "MenuAction", t)
@@ -441,11 +441,41 @@ local function OnAction(InGame, a1, a2, a3)
 		end
 		if CurrentNPC and i4[a1] == 113 and screensNPC[Game.CurrentScreen] then
 			local i = CurrentNPC
-			CurrentNPC = nil
-			events.cocalls("ExitNPC", i)
+			local t = {NPC = i, Allow = true}
+			events.cocalls("CanExitNPC", t)
+			if t.Allow then
+				events.cocalls("ExitNPC", i)
+				CurrentNPC = nil
+			else
+				i4[a1] = 0
+			end
 		end
 	end
 end
+
+-- exit house screen
+mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), 0, 0, function()
+	local i = Game.HouseScreen
+	if CurrentNPC and (i == 0 or i == 1) then  -- i == 0 shouldn't really happen
+		if i == 0 then
+			MessageBox"Unexpected NPC exit happened earlier"
+		end
+		local i = CurrentNPC
+		local t = {NPC = i, Allow = true}
+		events.cocalls("CanExitNPC", t)
+		if Game.HouseNPCSlot <= 0 then  -- something went wrong, can't talk anymore
+			while not t.Allow do
+				events.cocalls("CanExitNPC", t)
+			end
+		end
+		if t.Allow then
+			events.cocalls("ExitNPC", i)
+			CurrentNPC = nil
+		else
+			Game.HouseScreen = -1
+		end
+	end
+end)
 
 function GetCurrentNPC()
 	return CurrentNPC

@@ -275,6 +275,7 @@ local function RegisterQuest(t)
 	local BackupTopics = {}
 	local BackupNPC = {}
 	local CurrentBranch = ""
+	local BranchStack = {}
 	local sgd = internal.SaveGameData
 	local QuestBranches = tget(sgd, "QuestBranches")
 	if mmver == 6 then
@@ -396,6 +397,28 @@ local function RegisterQuest(t)
 		CurrentBranch = branch
 		if persist then
 			QuestBranches[GetCurrentNPC()] = branch
+		end
+	end
+	
+	-- Switches dialog branch to 'branch', but returns to current branch upon pressing Esc
+	function QuestBranchScreen(branch)
+		BranchStack[#BranchStack + 1] = CurrentBranch
+		CurrentBranch = branch or ""
+	end
+	
+	function ExitQuestBranch()
+		if BranchStack[1] then
+			CurrentBranch = BranchStack[#BranchStack]
+			BranchStack[#BranchStack] = nil
+		else
+			Game.Actions.Add(113)
+		end
+	end
+
+	function events.CanExitNPC(t)
+		if BranchStack[1] then
+			t.Allow = false
+			ExitQuestBranch()
 		end
 	end
 	

@@ -56,6 +56,8 @@ function structs.f.GameStructure(define)
 	[mmv(0x4D4714, 0x506DC8, 0x5185A8)].i4  'CurrentCharScreen'
 	[mmv(0x52D0E4, 0x576CEC, 0x587914)].b4  'LoadingScreen'
 	--[mmv(0x4D48F8, nil, nil)].array{20, lenA = i4, lenP = mmv(0x4D46BC, nil, nil)}.struct(structs.Dlg)  'DialogsStack'
+	[mmv(0x9DDD8C, 0xF8B01C, 0xFFD408)].i4  'HouseScreen'
+	[mmv(0x551F94, 0x591270, 0x5A56E0)].i4  'HouseNPCSlot'
 	[mmv(0x4D5088, 0x5079F8, 0x5192EC)].array(7).EditPChar  'StatsNames'
 	 .Info{Sig = "[stat:const.Stats]"}
 	[mmv(0x56F27C, 0x5C85F8, 0x5E4990)].array(7).EditPChar  'StatsDescriptions'
@@ -422,9 +424,9 @@ function structs.f.GameStructure(define)
 	end
 	define.Info{Sig = "Name";  "Loads a texture and returns its ID."}
 	function define.f.UpdateDialogTopics()
-		if Game.CurrentScreen == 13 then
-			i4[mmv(0x9DDD8C, 0xF8B01C, 0xFFD408)] = -1
-			mem.call(mmv(0x4998A0, 0x4B4187, 0x4B2C36), 1, i4[mmv(0x551F94, 0x591270, 0x5A56E0)] - 1)
+		if Game.CurrentScreen == 13 and Game.HouseNPCSlot > 0 then
+			Game.HouseScreen = -1
+			mem.call(mmv(0x4998A0, 0x4B4187, 0x4B2C36), 1, Game.HouseNPCSlot - 1)
 		end
 	end
 	function define.f.ShowStatusText(text, t)
