@@ -63,7 +63,7 @@ function P.ProcessCallback(str)
 end
 
 function P.LoadCallback(s, ...)
-	local s, err = P.ProcessCallback(s, match(... or "", "^@?.*"), (...))
+	local s, err = P.ProcessCallback(s, match(... or "", "^@?(.*)"), (...))
 	if s then
 		local f, err2 = _loadstring(s, ...)
 		if not f then

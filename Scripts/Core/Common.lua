@@ -85,8 +85,8 @@ internal.ShortFunctions = ShortFunctions
 local ChunkLog = {}
 internal.ChunkLog = ChunkLog
 
-function PreprocessHook.ProcessCallback(str)
-	local err = NoGlobals.CheckStr(str, "")
+function PreprocessHook.ProcessCallback(str, ChunkName)
+	local err = NoGlobals.CheckStr(str, ChunkName)
 	if err then
 		internal.ErrorChunk = str
 		local s = ShortFunctions.ConvertStr(str)
