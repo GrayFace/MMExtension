@@ -1230,17 +1230,16 @@ const.HouseTypeInv = {
 	"The Adventurer's Inn",
 }
 const.HouseType = table.invert(const.HouseTypeInv)
-const.HouseType["General Store"] = 6  -- MM6
-const.HouseType["Alchemist"] = 6  -- MM7,8
+const.HouseType["General Store"] = 4  -- MM6
+const.HouseType["Alchemist"] = 4  -- MM7,8
 const.HouseType["Element Guild"] = 14  -- MM6
 const.HouseType["Elemental Guild"] = 14  -- MM7,8
+const.HouseType["Spell Shop"] = 14  -- MM8
 const.HouseType["Thieves Guild"] = 17  -- MM6
-const.HouseType["Town Hall"] = 17  -- MM7,8
 const.HouseType["The Seer"] = 26  -- MM6, MM7
 const.HouseType["The Oracle"] = 26  -- MM6
 const.HouseType["Seer Good"] = 26  -- MM7
 const.HouseType["Seer Evil"] = 26  -- MM7
-const.HouseType["Spell Shop"] = 14  -- MM8
 const.HouseType["Castle Ent"] = 24  -- consistancy
 const.HouseType["Dungeon Entrance"] = 25  -- consistancy
 
