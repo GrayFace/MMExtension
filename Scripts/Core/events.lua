@@ -1,3 +1,4 @@
+local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
 local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar
 local call = mem.call
 local mmver = offsets.MMVersion
@@ -453,34 +454,6 @@ local function OnAction(InGame, a1, a2, a3)
 	end
 end
 
--- exit house screen
-mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), 0, 0, function()
-	local i = Game.HouseScreen
-	if CurrentNPC and (i == 0 or i == 1) then  -- i == 0 shouldn't really happen
-		if i == 0 then
-			MessageBox"Unexpected NPC exit happened earlier"
-		end
-		local i = CurrentNPC
-		local t = {NPC = i, Allow = true}
-		events.cocalls("CanExitNPC", t)
-		if Game.HouseNPCSlot <= 0 then  -- something went wrong, can't talk anymore
-			while not t.Allow do
-				events.cocalls("CanExitNPC", t)
-			end
-		end
-		if t.Allow then
-			events.cocalls("ExitNPC", i)
-			CurrentNPC = nil
-		else
-			Game.HouseScreen = -1
-		end
-	end
-end)
-
-function GetCurrentNPC()
-	return CurrentNPC
-end
-
 if mmver == 6 then
 	mem.hook(0x42B348, function(d)
 		local a1, a2, a3 = d.esp + 4 + 0x3D8 - 0x3B0, d.esp + 4 + 0x3D8 - 0x3C8, d["?ptr"] + d.offsets.edx
@@ -505,6 +478,100 @@ else
 		OnAction(false, ...)
 	end)
 end
+
+-- exit house screen
+mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), 0, 0, function()
+	local i = Game.HouseScreen
+	if CurrentNPC and (i == 0 or i == 1) then  -- i == 0 shouldn't really happen
+		if i == 0 then
+			MessageBox"Unexpected NPC exit happened earlier"
+		end
+		local i = CurrentNPC
+		local t = {NPC = i, Allow = true}
+		events.cocalls("CanExitNPC", t)
+		if Game.HouseNPCSlot <= 0 then  -- something went wrong, can't talk anymore
+			while not t.Allow do
+				events.cocalls("CanExitNPC", t)
+			end
+		end
+		if t.Allow then
+			events.cocalls("ExitNPC", i)
+			CurrentNPC = nil
+		else
+			Game.HouseScreen = -1
+		end
+	else
+		events.cocalls("ExitHouseScreen", Game.HouseScreen)
+	end
+end)
+
+function GetCurrentNPC()
+	return CurrentNPC
+end
+
+-- skill teacher
+do
+	local buf, cant
+	mem.hookfunction(mmv(0x496C90, 0x4B24B0, 0x4B0DC1), 1, 0, function(d, def, topic)
+		cant = true
+		local r = def(topic)
+		if cant then
+			return r
+		end
+		local s = mem.string(r)
+		local t = {Text = s, Cost = Game.HouseCost, Skill = Game.HouseActionInfo, Mastery = Game.HouseTeachMastery, Allow = Game.HouseAllowAction}
+		events.cocalls("CanTeachSkillMastery", t)
+		if t.Text ~= s then
+			s = t.Text
+			buf = buf or mem.allocMM(2000)
+			mem.copy(buf, s, min(#s, 1999))
+			r = buf
+		end
+		Game.HouseCost = t.Cost
+		Game.HouseActionInfo = t.Skill
+		Game.HouseTeachMastery = t.Mastery
+		Game.HouseAllowAction = t.Allow		
+		return r
+	end)
+	mem.autohook(mmv(0x496D4F, 0x4B2660, 0x4B0F2E), function(d)
+		cant = false
+	end)
+end
+
+-- house dialogs
+local function PopulateDialog(t)
+	local n = 0
+	for i = 1, table.maxn(t) do
+		local k = t[i]
+		if k then
+			mem.call(mmv(0x498450, 0x4B362F, 0x4B1F3C), 2, i - 1, k)
+			n = n + 1
+		end
+	end
+	local dlg = u4[mmv(0x4D50C0, 0x507A3C, 0x519324)]
+	mem.call(mmv(0x41A0E0, 0x41D038, 0x41C473), 1, dlg, n, 1, 0, 2)
+	n = i4[dlg + 0x28]
+	i4[mmv(0x9DDDFC, 0xF8B060, 0xFFD450)] = n
+	return n
+end
+
+if mmver == 7 then  -- make room for PopulateHouseDialog hook
+	mem.asmpatch(0x4B3AA9, [[nop]])
+	mem.asmpatch(0x4B3AAA, [[
+		jng @f
+		jmp absolute 0x4B3B8F
+	@@:
+	]])
+end
+
+mem.hookfunction(mmv(0x498490, 0x4B3AA5, 0x4B250A), 1, 0, function(d, def, type)
+	local t = {PicType = type, House = mem[mmv('i2', 'i4', 'i4')][u4[mmv(0x4D50C4, 0x507A40, 0x519328)] + 0x1C], Result = nil}
+	events.cocalls("PopulateHouseDialog", t)
+	if not t.Result then
+		return def(type)
+	end
+	return PopulateDialog(t.Result)
+end)
 
 -- KeysFilter
 if mmver > 6 then

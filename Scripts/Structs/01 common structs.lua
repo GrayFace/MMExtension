@@ -467,6 +467,10 @@ function structs.f.Item(define)
 		return mem.call(mmv(0x448790, 0x45664C, 0x453ECC), 1, Game.ItemsTxt["?ptr"] - 4, assertnum(strength, 2), assertnum(type, 2), self)
 	end
 	define.Info{Sig = "Strenght, Type:const.ItemType"}
+	function define.m:T()
+		return Game.ItemsTxt[self.Number]
+	end
+	define.Info{Sig = "Strenght, Type:const.ItemType"}
 end
 
 function structs.f.MouseStruct(define)
@@ -1278,6 +1282,7 @@ function structs.f.ItemsTxtItem(define)
 	[0x14+o].u1  'EquipStat'
 	 .Info {Type = "const.ItemType";  "Subtract 1 from #const.ItemType:# value"}
 	[0x15+o].u1  'Skill'
+	 .Info {Type = "const.Skill";  "Add 1 to #const.Skill:# value"}
 	[0x16+o].u1  'Mod1DiceCount'
 	[0x17+o].u1  'Mod1DiceSides'
 	[0x18+o].u1  'Mod2'

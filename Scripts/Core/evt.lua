@@ -672,7 +672,7 @@ local function DeclareCommands()
 	MakeCmd("SetSnow", 0x0A, function(define)
 		define
 		.u1  'EffectId'
-		 .Info "only 0 available"
+		 .Info "Only 0 available"
 		.b1  'On'
 	end)
 

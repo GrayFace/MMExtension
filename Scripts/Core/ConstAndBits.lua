@@ -1235,7 +1235,9 @@ const.HouseType["Alchemist"] = 4  -- MM7,8
 const.HouseType["Element Guild"] = 14  -- MM6
 const.HouseType["Elemental Guild"] = 14  -- MM7,8
 const.HouseType["Spell Shop"] = 14  -- MM8
-const.HouseType["Thieves Guild"] = 17  -- MM6
+if mmver ~= 6 then
+	const.HouseType["Thieves Guild"] = 18  -- Merc Guild works similar to it
+end
 const.HouseType["The Seer"] = 26  -- MM6, MM7
 const.HouseType["The Oracle"] = 26  -- MM6
 const.HouseType["Seer Good"] = 26  -- MM7

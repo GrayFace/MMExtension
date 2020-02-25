@@ -58,6 +58,12 @@ function structs.f.GameStructure(define)
 	--[mmv(0x4D48F8, nil, nil)].array{20, lenA = i4, lenP = mmv(0x4D46BC, nil, nil)}.struct(structs.Dlg)  'DialogsStack'
 	[mmv(0x9DDD8C, 0xF8B01C, 0xFFD408)].i4  'HouseScreen'
 	[mmv(0x551F94, 0x591270, 0x5A56E0)].i4  'HouseNPCSlot'
+	[mmv(0x9DDD9C, 0xF8B034, 0xFFD420)].i4  'HouseCost'
+	[mmv(0x9DDD70, 0xF8B028, 0xFFD414)].i4  'HouseAllowAction'
+	[mmv(0x9DDD88, 0xF8B02C, 0xFFD418)].i4  'HouseActionInfo'
+	[mmv(0x9DDD98, 0xF8B030, 0xFFD41C)].i4  'HouseTeachMastery'
+	[mmv(0x9DDD80, 0xF8B018, 0xFFD404)].i4  'HousePicType'
+	[mmv(0x4C3E10, 0x4F076C, 0x500D30)].array(mmv(17, 11, 11)).i4  'GuildJoinCost'
 	[mmv(0x4D5088, 0x5079F8, 0x5192EC)].array(7).EditPChar  'StatsNames'
 	 .Info{Sig = "[stat:const.Stats]"}
 	[mmv(0x56F27C, 0x5C85F8, 0x5E4990)].array(7).EditPChar  'StatsDescriptions'
@@ -247,6 +253,8 @@ function structs.f.GameStructure(define)
 		define[mmv(0x6A9168, 0x724050)]
 		.array(mmv(400, 501)).struct(structs.NPC)  'NPCDataTxt'
 		.array{mmv(400, 501), lenA = i4, lenP = mmv(0x6BA534, 0x73C014)}.struct(structs.NPC)  'NPC'
+		[mmv(0x6B74F0, 0x737F44)].array{100, lenA = i4, lenP = mmv(0x6BA530, 0x73C010)}.struct(structs.NPC)  'StreetNPC'
+		[mmv(0x6BA85C, 0x73C110)].array(mmv(78, 59)).EditPChar  'NPCProfNames'
 	else
 		define[0x761998]
 		.array(551).struct(structs.NPC)  'NPCDataTxt'
@@ -261,7 +269,7 @@ function structs.f.GameStructure(define)
 	else
 		define
 		[mmv(nil, 0x723D08, 0x761650)].array{1, 104, ItemSize = 8}.EditPChar  'AwardsTxt'
-		[mmv(nil, 0x723D0C, 0x761654)].array{1, 104, ItemSize = 4}.i4  'AwardsSort'
+		[mmv(nil, 0x723D0C, 0x761654)].array{1, 104, ItemSize = 8}.i4  'AwardsSort'
 	end
 	if mmver == 6 then
 		define[0x6BA62C].array{1, 128}.EditPChar  'AutonoteTxt'
@@ -979,6 +987,7 @@ function structs.f.Player(define)
 	.method{p = mmv(0x4853E0, 0x4912A8, 0x49031C), name = "GetDisarmTrapTotalSkill"}
 	.method{p = mmv(0x488F50, 0x494A1D, 0x492D6A), name = "ShowFaceExpression", must = 1;  0, 0}
 	 .Info{Sig = "Expression, Time = 0"}
+	.method{p = mmv(0x4876E0, 0x492C03, 0x491514), name = "IsConscious", ret = true}
 	if mmver == 6 then
 		define.method{p = 0x4852D0, name = "GetDiplomacyTotalSkill"}
 	-- 486CF0 Character_CanTakeItemInPos
