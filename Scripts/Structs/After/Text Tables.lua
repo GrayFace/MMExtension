@@ -7,6 +7,7 @@ local string_sub = string.sub
 local string_match = string.match
 local string_split = string.split
 local io_load = io.load
+local io_save = io.save
 
 local next = next
 local pairs = pairs
@@ -161,6 +162,18 @@ function _G.LoadBasicTextTable(s, StartingLinesCount)
 	return ParseBasicTextTable(io_load(s), StartingLinesCount)
 end
 
+local function WriteBasicTextTable(t, fname)
+	if fname then
+		return io_save(fname, WriteBasicTextTable(t))
+	end
+	local q = {}
+	for i = 1, #t do
+		q[i] = (type(t[i]) == "table" and table_concat(t[i], "\t") or t[i])
+	end
+	return table_concat(q, "\r\n")
+end
+_G.WriteBasicTextTable = WriteBasicTextTable
+
 
 local function ParseNumbersTextTable(s, StartingLinesCount)
 	local t = string_split(s, "\r\n", true)
@@ -178,6 +191,49 @@ _G.ParseNumbersTextTable = ParseNumbersTextTable
 function _G.LoadNumbersTextTable(s, StartingLinesCount)
 	return ParseNumbersTextTable(io_load(s), StartingLinesCount)
 end
+
+
+local function ParseNamedColTable(s)
+	local t = string_split(s, "\r\n", true)
+	local names = string_split(t[1], "\t", true)
+	t[0] = string_split(t[1], "\t", true)
+	for i = 1, #t - 1 do
+		local q = string_split(t[i + 1], "\t", true)
+		local q2 = {}
+		for i, k in ipairs(names) do
+			q2[k] = q[i]
+		end
+		t[i] = q2
+	end
+	t[#t] = nil
+	return t
+end
+_G.ParseNamedColTable = ParseNamedColTable
+
+function _G.LoadNamedColTable(s)
+	return ParseNamedColTable(io_load(s))
+end
+
+local function WriteNamedColTable(t, fname)
+	if fname then
+		return io_save(fname, WriteNamedColTable(t))
+	end
+	local names = t[0]
+	local a = {}
+	local q = {table_concat(names, "\t")}
+	for i, v in ipairs(t) do
+		if type(v) == "table" then
+			for j, s in ipairs(names) do
+				a[j] = v[s] or ""
+			end
+			q[i+1] = table_concat(a, "\t")
+		else
+			q[i+1] = v
+		end
+	end
+	return table_concat(q, "\r\n")
+end
+_G.WriteNamedColTable = WriteNamedColTable
 
 
 function _G.TransposeTextTable(t)

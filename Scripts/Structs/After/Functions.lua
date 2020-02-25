@@ -240,6 +240,39 @@ function EnumAvailableSkills(class)
 end
 
 -----------------------------------------------------
+-- String special chars
+-----------------------------------------------------
+
+do
+	local i4, gbits = mem.i4, mmv(0x9B1118, 0xA74AF4, 0xAB2ABC)
+
+	-- function ColorToRGB(v)
+	-- 	local r, g, b
+	-- 	if mem.i4[gbits] == 6 then
+			
+	-- 	else
+	-- 	end
+	-- end
+	function RGB(r, g, b)
+		r, b = r:And(0xF8), b:And(0xF8)
+		if i4[gbits] == 6 then
+			return (b + 0x40*(g:And(0xFC) + 0x20*r))/8
+		end
+		return (b + 0x20*(g:And(0xF8) + 0x20*r))/8
+	end
+end
+
+function StrLeft(v)
+	return ('\t%.3d'):format(v)
+end
+function StrRight(v)
+	return ('\r%.3d'):format(v)
+end
+function StrColor(r, g, b)
+	return ('\f%.5d'):format(b and RGB(r, g, b) or r)
+end
+
+-----------------------------------------------------
 -- Summon*
 -----------------------------------------------------
 

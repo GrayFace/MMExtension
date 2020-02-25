@@ -513,7 +513,7 @@ local function NewQuestNumber(t)
 	function NewQuestNumber()
 		QuestNumberIndex = QuestNumberIndex + 1
 		local i = QuestNumbers[QuestNumberIndex]
-		t.Quest = assert(i, 'no free quest indeces left. Free indeces are those with "0" set as Quest Note Text in quests.txt')
+		t.Quest = assert(i, 'no free quest indexes left. Free indeces are those with "0" set as Quest Note Text in quests.txt')
 		QuestLog[QuestNumberIndex] = t
 	end
 	

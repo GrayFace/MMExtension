@@ -637,22 +637,3 @@ function DataTables.ComputeRowCountInPChar(p, MinCols, NeedCol)
 	return r
 end
 
------------------------------------------------------
--- BasicTable
------------------------------------------------------
-
-function DataTables.ReadBasicTable(s)
-	local t = s:split("\r\n", true)
-	for i = 1, #t do
-		t[i] = t[i]:split("\t", true)
-	end
-	return t
-end
-
-function DataTables.WriteBasicTable(t)
-	local q = {}
-	for i = 1, #t do
-		q[i] = table.concat(t[i], "\t")
-	end
-	return table.concat(q, "\r\n")
-end
