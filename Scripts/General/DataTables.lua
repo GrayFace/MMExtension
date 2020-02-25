@@ -161,7 +161,7 @@ local function update2()
 		          {CastByMonster = true, CastByEvent = true, CauseDamage = true, SpecialDamage = true, Bits = true,
 		           SpellPointsNormal = is6, SpellPointsExpert = is6, SpellPointsMaster = is6}}))
 	end
-	DataTable('Transport Index', StructsArray(Game.TransportIndex, {[1] = 1, [2] = 2, [3] = 3},
+	DataTable('Transport Index', StructsArray(Game.TransportIndex, {[1] = 1, [2] = 2, [3] = 3, [4] = Game.Version > 6 and 4 or nil},
 		{Resisable = false, RowHeaders = {[Game.TransportIndex.low - 1] = "2D Event"}}))
 	DataTable('Transport Locations', StructsArray(Game.TransportLocations, nil,
 		{Resisable = false, IgnoreFields = {MapIndex = true}}))
