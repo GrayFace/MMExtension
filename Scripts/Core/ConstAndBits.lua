@@ -1208,7 +1208,7 @@ const.HouseTypeInv = {
 	"Dark Guild",
 	(mmver == 6 and "Element Guild" or "Elemental Guild"),
 	"Self Guild",
-	nil, -- 16 - "mir..." - planned, but not realized Mirrored Path Guild of Light and Dark
+	nil,  -- 16 - "mir..." - planned, but not included Mirrored Path Guild of Light and Dark
 	(mmver ~= 6 and "Town Hall" or "Thieves Guild"),  -- everything else in MM6
 	"Merc Guild",
 	mmv("Town Hall"),
@@ -1236,7 +1236,7 @@ const.HouseType["Element Guild"] = 14  -- MM6
 const.HouseType["Elemental Guild"] = 14  -- MM7,8
 const.HouseType["Spell Shop"] = 14  -- MM8
 if mmver ~= 6 then
-	const.HouseType["Thieves Guild"] = 18  -- Merc Guild works similar to it
+	const.HouseType["Thieves Guild"] = 18  -- Merc Guild works similar to it and doesn't work without a few tweaks anyway
 end
 const.HouseType["The Seer"] = 26  -- MM6, MM7
 const.HouseType["The Oracle"] = 26  -- MM6

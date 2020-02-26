@@ -63,6 +63,8 @@ function structs.f.GameStructure(define)
 	[mmv(0x9DDD88, 0xF8B02C, 0xFFD418)].i4  'HouseActionInfo'
 	[mmv(0x9DDD98, 0xF8B030, 0xFFD41C)].i4  'HouseTeachMastery'
 	[mmv(0x9DDD80, 0xF8B018, 0xFFD404)].i4  'HousePicType'
+	[mmv(0x552F48, 0x590F00, 0x5A5384)].i4  'HouseOwnerPic'
+	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8)}
 	[mmv(0x4C3E10, 0x4F076C, 0x500D30)].array(mmv(17, 11, 11)).i4  'GuildJoinCost'
 	[mmv(0x4D5088, 0x5079F8, 0x5192EC)].array(7).EditPChar  'StatsNames'
 	 .Info{Sig = "[stat:const.Stats]"}
@@ -175,7 +177,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x908E30, 0xACD6B4, 0xB21728)].b4  'TurnBased'
 	[mmv(0x4C7DF4, 0x4F86DC, 0x509C9C)].i4  'TurnBasedPhase'
 	 .Info "1 = monsters move, 2 = combat, 3 = party walking"
-	[mmv(0x9CF598, 0xF78F58, 0xFEB360)].i4  'PlaySoundStruct'
+	-- [mmv(0x9CF598, 0xF78F58, 0xFEB360)].i4  'PlaySoundStruct'
 	[mmv(0x9CF5A0, 0xF791FC, 0xFEB604)].i4  'RedbookHandle'
 	[mmv(0x9CF5A4, 0xF79200, 0xFEB608)].i4  'MSSHandle'
 	-- [mmv(0x9CF5C0, 0xF7921C, 0xFEB624)].i4  'MasterVolume'
@@ -229,7 +231,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x56B830, 0x5E4000, 0x601448)].array(mmv(596, 677, 750)).EditPChar  'GlobalTxt'
 	[mmv(0x52D530, 0x5912B8, 0x5A5728)].array(mmv(558, 526, 526)).struct(structs.Events2DItem)  'Houses'  -- 2DEvents
 	 .Info "2DEvents.txt"
-	[mmv(0x4BE888, 0x4E5F40, 0x4F66D8)].array(mmv(118, 196, 161)).struct(structs.HouseMovie)  'HouseMovies'
+	[mmv(0x4BE888, 0x4E5F40, 0x4F66D8)].array(mmv(119, 196, 161)).struct(structs.HouseMovie)  'HouseMovies'
 	[mmv(0x4C1048, 0x4EAF3C, 0x4FADE4)].array(1, mmv(234, 464, 500)).EditPChar  'TransTxt'
 	[mmv(0x4BE3B8, 0x4E4540, 0x4F53F0)].array(1, 6).i4  'SpecialEnterX'
 	 .Info "Used for Free Haven Sewer entrances in MM6. Negative Questbit Restrictions field in '2DEvents.txt' corresponds to array index"
@@ -346,6 +348,7 @@ function structs.f.GameStructure(define)
 	end
 	define.i4  'ExitLevelCode'
 	 .Info "0 = in game, 2 = load other map, 8 = death"
+	[mmv(0x6107E3, 0x6BE1EF, 0x6F39AF)].i4  'SoundVolume'
 	
 	-- stditems, spcitems, rnditems
 
@@ -432,13 +435,13 @@ function structs.f.GameStructure(define)
 	end
 	define.Info{Sig = "Name";  "Loads a texture and returns its ID."}
 	function define.f.UpdateDialogTopics()
-		if Game.CurrentScreen == 13 and Game.HouseNPCSlot > 0 then
+		if Game.CurrentScreen == 13 and Game.HouseNPCSlot > (Game.HouseOwnerPic ~= 0 and 1 or 0) then
 			Game.HouseScreen = -1
 			mem.call(mmv(0x4998A0, 0x4B4187, 0x4B2C36), 1, Game.HouseNPCSlot - 1)
 		end
 	end
-	function define.f.ShowStatusText(text, t)
-		mem.call(mmv(0x442BD0, 0x44C1A1, 0x4496C5), 2, tostring(text), t or 2)
+	function define.f.ShowStatusText(text, time)
+		mem.call(mmv(0x442BD0, 0x44C1A1, 0x4496C5), 2, tostring(text), time or 2)
 		Game.NeedRedraw = true
 	end
 	define.Info{Sig = "Text, Seconds = 2"}
@@ -460,6 +463,12 @@ function structs.f.GameStructure(define)
 		end
 	end
 	define.Info{Sig = "Name"}
+	function define.f.GetCurrentHouse()
+		local p = mem.u4[mmv(0x4D50C4, 0x507A40, 0x519328)]
+		if p ~= 0 then
+			return mem.i4[p + 0x1C]
+		end
+	end
 end
 
 if mmver == 6 then
@@ -902,6 +911,10 @@ function structs.f.Player(define)
 	if mmver > 6 then
 		define[mmv(nil, 0x1B3A, 0x1D26)].u1  'FireSpikeCasts'
 	end
+	if mmver == 7 then
+		define[0x1924].i4  'FaceBeforeZombie'
+		.i4  'VoiceBeforeZombie'
+	end
 
 	define
 	.method{p = mmv(0x47D830, 0x48C83B, 0x48C31F), name = "GetBaseMight"}
@@ -1022,6 +1035,18 @@ function structs.f.Player(define)
 		return DoCountPlayerItems(PrepareCountItems(items), self)
 	end
 	define.Info{Sig = "{item1, item2, ...}"}
+end
+
+function structs.f.Screen(define)
+	function define.f.Draw(x, y, pic, opaque)
+		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic)
+		local f = opaque and mmv(0x40A1D0, 0x4A5E42, 0x4A3CD5) or mmv(0x40A680, 0x4A6204, 0x4A419B)
+		if mmver == 6 then
+			
+		else
+			-- Game.IconsLod.Bitmaps[pic]
+		end
+	end
 end
 
 function structs.f.PatchOptions(define)

@@ -324,6 +324,9 @@ local function RegisterQuest(t)
 	end
 	
 	function UpdateNPCQuests()
+		if not CurrentNPC then
+			return
+		end
 		local old = CurrentQuests
 		UpdateCurrentQuests(CurrentNPC)
 		for k, v in pairs(table.copy(old, table.copy(CurrentQuests))) do

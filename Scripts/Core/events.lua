@@ -807,6 +807,14 @@ elseif mmver == 8 then
 	-- doesn't seem to happen in MM8
 end
 
+-- Special effects of spells (can't do as Lua hook, they slow things down)
+-- if mmver > 6 then
+-- 	mem.hookfunction(mm78(0x4A815A, 0x4A673D), 1, 1, function(d, def, this, obj)
+-- 		local t = {}
+-- 		local function callDef()
+-- 	end)
+-- end
+
 -- when games.lod index is used make negative indeces refer to mapstats.txt lines, make "Town Portal to" text respect TownPortalInfo
 if mmver == 6 then
 	local hooks = HookManager{

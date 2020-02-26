@@ -62,6 +62,7 @@ function events.StructsLoaded()
 	rawset(Game.MapStats, "Find", FindInMapStats)
 	rawset(Game.ObjListBin, "Find", FindInObjList)
 	rawset(Game.Actions, "Add", AddAction)
+	rawset(Game.Actions, "Process", mem.func{p = mmv(0x42ADA0, 0x4304D6, 0x42EDD8)})
 end
 
 local function MapInGamesLod(o, obj, name, val)
