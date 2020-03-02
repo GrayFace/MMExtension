@@ -651,27 +651,28 @@ function structs.f.GameParty(define)
 	[mmv(0x908D50, 0xACD56C, 0xB215D4)].i4  'Gold'
 	[mmv(0x908D54, 0xACD570, 0xB215D8)].i4  'BankGold'
 	[mmv(0x908D2C, 0xACD560, 0xB215C8)].i4  'Food'
-	[mmv(0xACD574, 0xACD574, 0xB215DC)].i4  'Deaths'
-	[mmv(0xACD57C, 0xACD57C, 0xB215E4)].i4  'PritsonTerms'
+	[mmv(0x908D58, 0xACD574, 0xB215DC)].i4  'Deaths'
+	[mmv(0x908D60, 0xACD57C, 0xB215E4)].i4  'PritsonTerms'
+	[mmv(0x908D64, 0xACD580, 0xB215E8)].i4  'BountiesCollected'
 	if mmver > 6 then
 		define
 		[mmv(nil, 0xAE3060, 0xBB2EF4)].i4  'Fine'
-		[mmv(nil, 0xACD580, 0xB215E8)].i4  'MontersHunted'
 		[mmv(nil, 0xACD588, 0xB215F0)].array(5).i4  'MonsHuntTarget'  -- only index 0 is used in MM8
-		[mmv(nil, 0xACD588, 0xB215FA)].array(5).i4  'MonsHuntKilled'  -- only index 0 is used in MM8
+		[mmv(nil, 0xACD588, 0xB215FA)].array(5).i2  'MonsHuntKilled'  -- only index 0 is used in MM8
+	else
+		define
+		[0x908DC5].array(3).u1  'MonsHuntTarget'
+		[0x908DC8].array(3).b1  'MonsHuntKilled'
 	end
 	define
 	[mmv(0x908D6D, 0xACD59D, 0xB2160F)].array(mmv(0, 1, 1), mmv(511, 512, 512)).abit  'QBits'
 	[mmv(0x908DAD, 0xACD636, 0xB216A8)].array(1, mmv(128, 255, 300)).abit  'AutonotesBits'
-	[mmv(0xACD5ED, 0xACD5ED, 0xB2165F)].i1  'InArenaQuest'
-	if mmver > 6 then
-		define
-		.i1  'ArenaWinsPage'
-		.i1  'ArenaWinsSquire'
-		.i1  'ArenaWinsKnight'
-		.i1  'ArenaWinsLord'
-		[mmv(nil, 0xACD5DD, 0xB2164F)].array(16).b1  'ArcomageWins'
-	end
+	[mmv(0x908DBD, 0xACD5ED, 0xB2165F)].i1  'InArenaQuest'
+	.i1  'ArenaWinsPage'
+	.i1  'ArenaWinsSquire'
+	.i1  'ArenaWinsKnight'
+	.i1  'ArenaWinsLord'
+	[mmv(0x908DBE, 0xACD5DD, 0xB2164F)].array(16).b1  'ArcomageWins'
 	define[mmv(0x908DCB, 0xACD5F2, 0xB21664)].array(mmv(400, 500, 500), mmv(429, 567, 567)).b1  'ArtifactsFound'
 	if mmver == 7 then
 		define[0xACD6C0].i4  'Alignment'

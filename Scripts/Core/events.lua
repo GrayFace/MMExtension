@@ -798,16 +798,13 @@ else
 	-- ]])	
 end
 
--- fix water in maps without a building with WtrTyl texture, also don't turn textures with water bit into water
-if mmver == 7 then
-	mem.autohook(0x47EBD2, function(d)
-		mem.i4[0xEF5114] = Game.BitmapsLod:LoadBitmap("WtrTyl")
-	end)
-	mem.autohook(0x460B5A, function(d)
-		mem.i4[0xEF5114] = Game.BitmapsLod:LoadBitmap("WtrTyl")
-	end)
-elseif mmver == 8 then
-	-- doesn't seem to happen in MM8
+-- fix water in maps without a building with WtrTyl texture, also don't turn textures with water bit into water (fixed in new patch version)
+function events.GameInitialized2()
+	if mmver == 7 and Game.IsD3D and not Game.PatchOptions.Present'TrueColorSprites' then
+		mem.autohook(0x4649B7, function(d)
+			Game.BitmapsLod:LoadBitmap("WtrTyl")
+		end)
+	end
 end
 
 -- Special effects of spells (can't do as Lua hook, they slow things down)
