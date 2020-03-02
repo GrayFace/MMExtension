@@ -1306,31 +1306,12 @@ mem[mmver == 7 and 'hook' or 'autohook'](mmv(0x487F74, 0x493DC0, 0x49216B), func
 	end
 	-- 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes case of conditions
 	events.cocall('Regeneration', t)
-	if t.HP > 0 then
+	if t.HP ~= 0 then
 		local v = pl.HP
 		v = min(v + t.HP, max(v, pl:GetFullHP()))
 		pl.HP = v
 		if v > 0 and pl.Unconscious ~= 0 then
 			pl.Unconscious = 0
-			Game.NeedRedraw = true
-		end
-	elseif t.HP < 0 then
-		local v = pl.HP + t.HP
-		pl.HP = v
-		if v <= 0 and pl.Unconscious == 0 then
-			if mmver == 6 then
-				pl.Unconscious = Game.Time
-			else
-				pl:AddCondition(c.Unconscious)
-			end
-			Game.NeedRedraw = true
-		end
-		if v <= 0 and v + pl.EnduranceBase + pl:CalcStatBonusByItems(const.Stats.Endurance) <= 0 and pl.Dead == 0 then
-			if mmver == 6 then
-				pl.Dead = Game.Time
-			else
-				pl:AddCondition(c.Dead)
-			end
 			Game.NeedRedraw = true
 		end
 	end
