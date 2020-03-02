@@ -519,7 +519,7 @@ do
 			return r
 		end
 		local s = mem.string(r)
-		local t = {Text = s, Cost = Game.HouseCost, Skill = Game.HouseActionInfo, Mastery = Game.HouseTeachMastery, Allow = Game.HouseAllowAction}
+		local t = {Text = s, Cost = Game.HouseCost, Skill = Game.HouseActionInfo, Mastery = Game.HouseTeachMastery, Allow = Game.HouseAllowAction ~= 0}
 		events.cocalls("CanTeachSkillMastery", t)
 		if t.Text ~= s then
 			s = t.Text
@@ -530,7 +530,7 @@ do
 		Game.HouseCost = t.Cost
 		Game.HouseActionInfo = t.Skill
 		Game.HouseTeachMastery = t.Mastery
-		Game.HouseAllowAction = t.Allow		
+		Game.HouseAllowAction = t.Allow and 1 or 0
 		return r
 	end)
 	mem.autohook(mmv(0x496D4F, 0x4B2660, 0x4B0F2E), function(d)
