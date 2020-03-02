@@ -523,8 +523,8 @@ do
 		events.cocalls("CanTeachSkillMastery", t)
 		if t.Text ~= s then
 			s = t.Text
-			buf = buf or mem.allocMM(2000)
-			mem.copy(buf, s, min(#s, 1999))
+			buf = buf or mem.allocMM(500)
+			mem.copy(buf, s, min(#s+1, 499))
 			r = buf
 		end
 		Game.HouseCost = t.Cost
@@ -798,9 +798,12 @@ else
 	-- ]])	
 end
 
--- fix water in maps without a building with WtrTyl texture
+-- fix water in maps without a building with WtrTyl texture, also don't turn textures with water bit into water
 if mmver == 7 then
 	mem.autohook(0x47EBD2, function(d)
+		mem.i4[0xEF5114] = Game.BitmapsLod:LoadBitmap("WtrTyl")
+	end)
+	mem.autohook(0x460B5A, function(d)
 		mem.i4[0xEF5114] = Game.BitmapsLod:LoadBitmap("WtrTyl")
 	end)
 elseif mmver == 8 then
@@ -1289,6 +1292,98 @@ do
 	end)
 end
 
+-- Regeneration
+
+mem[mmver == 7 and 'hook' or 'autohook'](mmv(0x487F74, 0x493DC0, 0x49216B), function(d)
+	if mmver == 7 and d.zf then
+		u4[d.esp] = 0x493E76
+	end
+	local t = {HP = 0, SP = 0}
+	t.PlayerIndex, t.Player = GetPlayer(d.esi)
+	local pl, c = t.Player, const.Condition
+	if pl.Dead ~= 0 or pl.Eradicated ~= 0 then
+		return
+	end
+	-- 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes case of conditions
+	events.cocall('Regeneration', t)
+	if t.HP > 0 then
+		local v = pl.HP
+		v = min(v + t.HP, max(v, pl:GetFullHP()))
+		pl.HP = v
+		if v > 0 and pl.Unconscious ~= 0 then
+			pl.Unconscious = 0
+			Game.NeedRedraw = true
+		end
+	elseif t.HP < 0 then
+		local v = pl.HP + t.HP
+		pl.HP = v
+		if v <= 0 and pl.Unconscious == 0 then
+			if mmver == 6 then
+				pl.Unconscious = Game.Time
+			else
+				pl:AddCondition(c.Unconscious)
+			end
+			Game.NeedRedraw = true
+		end
+		if v <= 0 and v + pl.EnduranceBase + pl:CalcStatBonusByItems(const.Stats.Endurance) <= 0 and pl.Dead == 0 then
+			if mmver == 6 then
+				pl.Dead = Game.Time
+			else
+				pl:AddCondition(c.Dead)
+			end
+			Game.NeedRedraw = true
+		end
+	end
+	
+	if t.SP > 0 then
+		pl.SP = min(pl.SP + t.SP, max(pl.SP, pl:GetFullSP()))
+	elseif t.SP < 0 then
+		pl.SP = max(pl.SP + t.SP, 0)
+	end
+end)
+
+-- ModifyItemDamage
+local function ModifyItemDamage(dmg, mon, pl, slot)
+	local t = {Damage = dmg, Result = dmg, MonsterId = mon, Slot = slot}
+	local i = (pl - Party.PlayersArray["?ptr"]):div(Party.PlayersArray[0]["?size"])
+	t.PlayerIndex, pl = i, Party.PlayersArray[i]
+	t.Player, t.Item = pl, pl:GetActiveItem(slot, true)
+	events.cocall("ModifyItemDamage", t)
+	return t.Result
+end
+
+if mmver == 6 then
+	mem.autohook(0x47E4B0, function(d)
+		d.edi = ModifyItemDamage(d.esi, i4[d.esp + 0x2C], d.esi, 1)
+	end)
+	mem.autohook(0x47E5CE, function(d)
+		d.edi = ModifyItemDamage(d.esi, i4[d.esp + 0x2C], d.esi, 0)
+	end)
+	mem.autohook(0x47EB40, function(d)
+		d.edi = ModifyItemDamage(d.edi, i4[d.esp + 0xC], d.ecx, 2)
+	end)
+elseif mmver == 7 then
+	mem.autohook(0x48CE7F, function(d)
+		d.esi = ModifyItemDamage(d.esi, i4[d.esp + 0x2C], d.edi, 1)
+	end)
+	mem.autohook(0x48CFAA, function(d)
+		d.esi = ModifyItemDamage(d.esi, i4[d.esp + 0x2C], d.edi, 0)
+	end)
+	mem.autohook(0x48D260, function(d)
+		print('shoot', i4[d.ebp + 0x8])
+		d.esi = ModifyItemDamage(d.esi, i4[d.ebp + 0x8], d.ebx, 2)
+	end)
+else
+	mem.autohook(0x48C810, function(d)
+		d.esi = ModifyItemDamage(d.esi, i4[d.esp + 0x28], d.edi, 1)
+	end)
+	mem.autohook(mm78(0x48CFAA, 0x48C92A), function(d)
+		d.esi = ModifyItemDamage(d.esi, i4[d.esp + 0x28], d.edi, 0)
+	end)
+	mem.autohook(mm78(0x48D260, 0x48CB80), function(d)
+		d.esi = ModifyItemDamage(d.esi, i4[d.ebp + 0x8], d.ebx, 2)
+	end)
+end
 
 
 
@@ -1394,6 +1489,7 @@ if mmver > 6 then
 	-- 	return t.Result
 	-- end)
 end
+
 
 local CalcDamageToMonster_PlayerProc = mmv()
 

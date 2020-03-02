@@ -693,8 +693,11 @@ function structs.f.SpellBuff(define)
 	[0xE].u1  'Caster'
 	[0xF].u1  'Bits'
 	
-	.method{p = mmv(0x44A970, 0x458519, 0x455D97), name = "Set"; 0,0,0,0,0}
-	 .Info{Sig = "ExpireTime, Skill, Power, OverlayId, Caster"}
+	function define.m:Set(time, skill, power, overlay, caster)
+		local tm = time%0x100000000
+		return mem.call(mmv(0x44A970, 0x458519, 0x455D97), 1, self['?ptr'], tm, (time - tm)/0x100000000, skill or 1, power or 1, overlay or 0, caster or 0)
+	end
+	define.Info{Sig = "ExpireTime, Skill, Power, OverlayId, Caster"}
 	.size = 0x10
 end
 

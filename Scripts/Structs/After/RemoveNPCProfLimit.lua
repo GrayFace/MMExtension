@@ -3,7 +3,7 @@ local i4, i2, i1, u4, u2, u1 = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1
 local mmver = offsets.MMVersion
 
 if mmver ~= 7 then
-	return
+	return  -- only for MM7 for now
 end
 
 local function mmv(...)

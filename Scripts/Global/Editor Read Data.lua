@@ -532,6 +532,7 @@ local function VerToNum(v)
 end
 
 local function DoorCheckFree(t, ver, fac)
+	do return end  -- doesn't work right yet
 	local fac2, include, exclude = {}, {}, {}
 	for _, f in pairs(Facets) do
 		local need = fac[f]
@@ -638,6 +639,14 @@ local function ReadDoor(a, t)
 				break
 			end
 		end
+	-- elseif t.VertexFilter == "Free" then
+	-- 	local v2 = Editor.GetDoorVertexLists(t)
+	-- 	for v in pairs(v2) do
+	-- 		if not ver[v] then
+	-- 			SetShiftFilter(t, ver)
+	-- 			break
+	-- 		end
+	-- 	end
 	end
 	
 	a["?ptr"] = nil

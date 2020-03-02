@@ -1,3 +1,4 @@
+local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
 local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar
 local mmver = offsets.MMVersion
 
@@ -177,6 +178,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x908E30, 0xACD6B4, 0xB21728)].b4  'TurnBased'
 	[mmv(0x4C7DF4, 0x4F86DC, 0x509C9C)].i4  'TurnBasedPhase'
 	 .Info "1 = monsters move, 2 = combat, 3 = party walking"
+	[mmv(0x4C6CA8, 0xAE2F7C, 0xBB2E0C)].array(mmv(4, 4, 5)).i4  'TurnBasedDelays'
 	-- [mmv(0x9CF598, 0xF78F58, 0xFEB360)].i4  'PlaySoundStruct'
 	[mmv(0x9CF5A0, 0xF791FC, 0xFEB604)].i4  'RedbookHandle'
 	[mmv(0x9CF5A4, 0xF79200, 0xFEB608)].i4  'MSSHandle'
@@ -730,7 +732,7 @@ function structs.f.GameParty(define)
 	.func{name = "AddKillExp", p = mmv(0x421520, 0x42694B, 0x424D5B), cc = 2, must = 1}
 	 .Info{Sig = "Experience";  "'Experience' is shared among conscious players and effected by Learning skill"}
 	if mmver < 8 then
-		define.func{name = "HasNPCProfession", p = mmv(0x467F30, 0x476399, nil), cc = 2, must = 1, ret = true}
+		define.func{name = "HasNPCProfession", p = mmv(0x467F30, 0x476399, nil), cc = 1, must = 1, ret = true}
 	end
 	function define.f.CountItems(items)
 		local t = PrepareCountItems(items)
@@ -764,6 +766,9 @@ function structs.f.Player(define)
 		define[0xC8].string(256)  'Biography'  -- length is unknown
 		.method{p = 0x48F5CE, name = "GetSex"; false}
 		 .Info{Sig = "BasedOnVoice = false"; "Determines sex based on Face or Voice"}
+	end
+	for name, i in pairs(const.Condition) do
+		define[mmv(0x1380, 0x0, 0x0) + 8*i].i8 (name)
 	end
 	define
 	[mmv(0x1380, 0x0, 0x0)].array(mmv(17, 20, 20)).i8  'Conditions'
@@ -963,7 +968,8 @@ function structs.f.Player(define)
 		.method{p = mmv(nil, 0x48D10A, 0x48CA37), name = "GetRangedDamageMin"}
 		.method{p = mmv(nil, 0x48D177, 0x48CA9F), name = "GetRangedDamageMax"}
 		.method{p = mmv(nil, 0x48D6B6, 0x48CF8A), name = "HasItemBonus"}
-		.method{p = mmv(nil, 0x48D6EF, 0x48CFC3), name = "WearsItem"}
+		.method{p = mmv(nil, 0x48D6EF, 0x48CFC3), name = "WearsItem", must = 1, ret = true; 0, 16}
+		 .Info{Sig = "ItemNum, Slot = 16"; "If 'Slot' isn't specified, searches all slots for the item"}
 		.method{p = mmv(nil, 0x48E737, 0x48DBA2), name = "GetBaseResistance", must = 1}
 		.method{p = mmv(nil, 0x48E7C8, 0x48DD6B), name = "GetResistance", must = 1}
 	else
@@ -978,6 +984,18 @@ function structs.f.Player(define)
 		.method{p = 0x482AE0, name = "GetColdResistance"}
 		.method{p = 0x482B30, name = "GetPoisonResistance"}
 		.method{p = 0x482B80, name = "GetMagicResistance"}
+		function define.m:WearsItem(n, slot)
+			if slot < 16 then
+				local it = self:GetActiveItem(slot)
+				return it and it.Number == n
+			end
+			for it in self:EnumActiveItems() do
+				if it.Number == n then
+					return true
+				end
+			end
+			return false
+		end
 	end
 	define
 	.method{p = mmv(0x482570, 0x48E64E, 0x48DAB9), name = "GetBaseArmorClass"}
@@ -985,7 +1003,7 @@ function structs.f.Player(define)
 	.method{p = mmv(0x4828A0, 0x48E6D4, 0x48DB3F), name = "GetBaseAge"}
 	.method{p = mmv(0x482920, 0x48E724, 0x48DB8F), name = "GetAge"}
 	.method{p = mmv(0x482BB0, 0x48E8ED, 0x48DF81), name = "Recover"}
-	.method{p = mmv(0x482C80, 0x48E962, 0x48DFF8), name = "SetRecoveryDelay", must = 1}
+	.method{p = mmv(0x482C80, 0x48E962, 0x48DFF8), name = "SetRecoveryDelayRaw", must = 1}
 	 .Info{Sig = "Delay"}
 	.method{p = mmv(0x482D30, 0x48E9EC, 0x48E127), name = "GetMainCondition"}
 	 .Info{Type = "const.Condition"}
@@ -1013,28 +1031,55 @@ function structs.f.Player(define)
 		 .Info{Sig = "Animation"}
 		.method{p = mmv(nil, 0x491252, 0x4902DF), name = "GetPerceptionTotalSkill"}
 		.method{p = mmv(nil, 0x49130F, 0x49036E), name = "GetLearningTotalSkill"}
+		.method{p = mmv(nil, 0x492D5D, 0x49165D), name = "AddCondition", must = 1; 0, false}
 	end
 	if mmver == 7 then
 		define.method{p = 0x490101, name = "GetRace"}
 	end
 	
-	function define.m:EnumActiveItems()
+	function define.m:EnumActiveItems(includeBroken)
 		local i = -1
 		return function()
 			while i < 15 do
 				i = i + 1
 				local slot = self.EquippedItems[i]
 				local item = (slot ~= 0 and self.Items[slot])
-				if item and item.Condition:And(2) == 0 then
+				if item and (includeBroken or item.Condition:And(2) == 0) then
 					return item, i
 				end
 			end
+		end
+	end
+	function define.m:GetActiveItem(slot, includeBroken)
+		slot = self.EquippedItems[slot]
+		local item = (slot ~= 0 and self.Items[slot])
+		if item and (includeBroken or item.Condition:And(2) == 0) then
+			return item
 		end
 	end
 	function define.m:CountItems(items)
 		return DoCountPlayerItems(PrepareCountItems(items), self)
 	end
 	define.Info{Sig = "{item1, item2, ...}"}
+	function define.m:SetRecoveryDelay(delay)
+		if Game.TurnBased then
+			self:SetRecoveryDelayRaw(delay)
+			local ppl = self['?ptr']
+			for i, a in Party do
+				if a['?ptr'] == ppl then
+					Game.TurnBasedDelays[i] = max(delay, Game.TurnBasedDelays[i])
+					local p = mmv(0x4C7DF0, 0x4F86D8, 0x509C98)
+					if i*8 + 4 == i4[p + 4*8] then
+						mem.call(mmv(0x404EB0, 0x40471C, 0x4049BA), 1, p)
+					end
+					break
+				end
+			end
+		else
+			self:SetRecoveryDelayRaw(delay*2.1333333333333333333333*mem.r4[mmv(0x61080C, 0x6BE224, 0x6F39E4)])
+		end
+	end
+	define.Info{Sig = "Delay"}
 end
 
 function structs.f.Screen(define)
@@ -1153,6 +1198,7 @@ function structs.f.PatchOptions(define)
 	bool  'AxeGMFullProbabilityAt'  Info "[MM7+]"
 	double 'MouseDX'
 	double 'MouseDY'
+	bool  'TrueColorSprites'  Info "[MM7+]"
 	
 	function define.f.Present(name)
 		return present[name]
