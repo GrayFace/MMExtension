@@ -1332,12 +1332,12 @@ end
 
 if mmver == 6 then
 	mem.autohook(0x47E4B0, function(d)
-		d.edi = ModifyItemDamage(d.esi, i4[d.esp + 0x2C], d.esi, 1)
+		d.edi = ModifyItemDamage(d.edi, i4[d.esp + 0x2C], d.esi, 1)
 	end)
 	mem.autohook(0x47E5CE, function(d)
-		d.edi = ModifyItemDamage(d.esi, i4[d.esp + 0x2C], d.esi, 0)
+		d.edi = ModifyItemDamage(d.edi, i4[d.esp + 0x2C], d.esi, 0)
 	end)
-	mem.autohook(0x47EB40, function(d)
+	mem.autohook2(0x47EB40, function(d)
 		d.edi = ModifyItemDamage(d.edi, i4[d.esp + 0xC], d.ecx, 2)
 	end)
 elseif mmver == 7 then
