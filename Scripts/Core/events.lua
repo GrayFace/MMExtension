@@ -5,10 +5,10 @@ local mmver = offsets.MMVersion
 
 
 local function mmv(...)
-	return select(mmver - 5, ...)
+	return (select(mmver - 5, ...))
 end
 local function mm78(...)
-	return select(mmver - 5, nil, ...)
+	return (select(mmver - 5, nil, ...))
 end
 
 local _KNOWNGLOBALS = Party, Game, Map, VFlipUnfixed, FixVFlip, HookManager, structs, GetCurrentNPC
@@ -572,6 +572,45 @@ mem.hookfunction(mmv(0x498490, 0x4B3AA5, 0x4B250A), 1, 0, function(d, def, type)
 	end
 	return PopulateDialog(t.Result)
 end)
+
+-- learn skill dialogs
+
+function _G.SkillToHouseTopic(i)
+	return i + 36
+end
+
+function _G.HouseTopicToSkill(i)
+	return i >= 36 and i <= 36 + const.Skills.Learning and i - 36 or nil
+end
+
+if mmver > 6 then
+	local bufLim = mm78(37, 39)
+	local buf
+	mem.nop(mm78(0x4B381C, 0x4B21B6))
+	mem.autohook2(mm78(0x4B3825, 0x4B21BF) - 5, function(d)
+		local p, pn = d.esi, d.ebp - 4
+		local t = {}
+		for i = 1, i4[pn] do
+			t[i] = i4[p + i*4 - 4] - 36
+		end
+		t = {Result = t, PicType = Game.HousePicType, House = mem[mmv('i2', 'i4', 'i4')][u4[mmv(0x4D50C4, 0x507A40, 0x519328)] + 0x1C]}
+		events.cocalls("PopulateLearnSkillsDialog", t)
+		t = t.Result
+		if #t > mm78(3, 5) then
+			buf = buf or mem.allocMM(bufLim*4)
+			p, d.esi = buf, buf
+		end
+		local n = min(#t, bufLim)
+		i4[pn] = n
+		for i = 1, n do
+			i4[p + i*4 - 4] = t[i] + 36
+		end
+		if n == 0 then
+			d:push(mm78(0x4B39AF, 0x4B23B6))
+			return true
+		end
+	end)
+end
 
 -- KeysFilter
 if mmver > 6 then

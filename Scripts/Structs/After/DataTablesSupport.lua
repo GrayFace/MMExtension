@@ -3,7 +3,7 @@ local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, me
 local mmver = offsets.MMVersion
 
 local function mmv(...)
-	return select(mmver - 5, ...)
+	return (select(mmver - 5, ...))
 end
 
 DataTables = {}

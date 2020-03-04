@@ -1,7 +1,7 @@
 local mmver = offsets.MMVersion
 
 local function mmv(...)
-	return select(mmver - 5, ...)
+	return (select(mmver - 5, ...))
 end
 
 const = const or {}
