@@ -1769,8 +1769,24 @@ local function GetNoJumpSize(p)
 	return n
 end
 
+-- fixes calls and jumps in the relocated code
+local function FixCallsJumps(p1, p2, pstd)
+	local p = p1
+	while p2 - p >= 5 do
+		local sz = GetInstructionSize(p)
+		local code = sz == 5 and u1[p] or sz == 6 and u2[p]
+		p = p + sz
+		if code == OpCALL or code == OpJMP or p <= p2 and code and code:And(0xF0FF) == 0x800F then
+			local v = i4[p - 4]
+			if p + v < p1 or p + v >= p2 then
+				i4[p - 4] = v + pstd - p1
+			end
+		end
+	end
+end
+
 -- Copies standard code into a memory block and then writes a jump back into the function
--- (the copied code must not contain jumps or calls, except within the copied block)
+-- (the copied code must not contain short jumps that lead outside of it)
 -- 'MemPtr' can optionally specify a pre-allocated memory address.
 function _mem.copycode(ptr, size, MemPtr, NoJumpBack)
 	size = size or GetHookSize(ptr)
@@ -1783,15 +1799,7 @@ function _mem.copycode(ptr, size, MemPtr, NoJumpBack)
 	--assert(u1[ptr] ~= OpCALL and u1[ptr] ~= OpJMP, "call or jump in original code")  -- a little check for already existing hook
 	local std = MemPtr or mem_hookalloc(FullSize)
 	mem_copy(std, ptr, size)
-	if size >= 5 then
-		local byte1 = u1[std]
-		if byte1 == OpCALL or byte1 == OpJMP then  -- fix standard jump / call at the beginning
-			local addr = i4[std + 1] + 5
-			if addr < 0 or addr >= size then
-				i4[std + 1] = i4[std + 1] + ptr - std
-			end
-		end
-	end
+	FixCallsJumps(std, std + size, ptr)
 	if not NoJumpBack then
 		u1[std + size] = OpJMP
 		i4[std + size + 1] = ptr - std - 5
