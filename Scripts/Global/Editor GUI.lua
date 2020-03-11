@@ -6,7 +6,7 @@ local DevPath = DevPath or AppPath
 Editor = Editor or {}
 local _KNOWNGLOBALS
 Editor.Selection = Editor.Selection or {}
-local skSpawn = 1
+local skSpawn = 1  -- in the game 1 is for doors
 local skObject = 2
 local skMonster = 3
 local skSprite = 5

@@ -454,7 +454,8 @@ local function FacetMiddles_index(middles, f)
 	for i, v in ipairs(f.Vertexes) do
 		x, y, z, n = x + v.X, y + v.Y, z + v.Z, i
 	end
-	t.X, t.Y, t.Z = x/n, y/n, z/n
+	x, y, z = x/n, y/n, z/n
+	t.X, t.Y, t.Z = x, y, z
 	
 	local r = 0
 	for i, v in ipairs(f.Vertexes) do

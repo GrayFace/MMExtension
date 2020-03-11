@@ -798,33 +798,47 @@ function Editor.UpdateSpriteLights()
 	end
 end
 
-local function AssignEntityToRooms(rooms, t, r)
+local function AssignEntityToRooms(rooms, t, r2)
 	for _, a in pairs(rooms) do
 		a[t] = nil
 	end
+	-- local log = {r}
 	local x, y, z = t.X, t.Y, t.Z
 	local best = math.huge
-	for _, room in ipairs(Editor.State.Rooms) do
+	for ri, room in ipairs(Editor.State.Rooms) do
 		for _, f in pairs(room.DrawFacets) do
 			local m = Editor.FacetMiddles[f]
 			local x, y, z = x - m.X, y - m.Y, z - m.Z
-			local r1 = (x*x + y*y + z*z)^0.5
-			if r1 < best then
-				best = r1
-			end
-			if r1 < r + m.R then
-				rooms[room][t] = true
-				break
+			local r = x*f.nx + y*f.ny + z*f.nz
+			if r > -1 then
+				local r = max(0, (x*x + y*y + z*z - r*r)^0.5 - m.R)^2 + r*r
+				if r < best then
+					best = r
+				end
+				if r <= r2 then
+					-- log[#log+1] = r
+					rooms[room][t] = true
+					-- if rooms == RoomSprites then
+					-- 	print(ri)
+					-- end
+					break
+				end
 			end
 		end
 	end
-	if best > r then
+	-- print(unpack(log))
+	if best > r2 then
 		AssignEntityToRooms(rooms, t, best)
 	end
 end
 
 local function AssignSpriteToRooms(t)
-	return AssignEntityToRooms(RoomSprites, t, 1024)
+	-- local i = Map.RoomFromPoint(XYZ(t))
+	-- if i == 0 then
+		return AssignEntityToRooms(RoomSprites, t, 0)
+	-- end
+	-- RoomSprites[Editor.State.Rooms[i + 1]][t] = true
+	-- return AssignEntityToRooms(RoomSprites, t, 1024^2)
 end
 
 -- for editing assign all sprites to all rooms in a single list
@@ -897,7 +911,7 @@ function Editor.CreateLight(t)
 end
 
 local function AssignLightToRooms(t)
-	return AssignEntityToRooms(RoomLights, t, t.Radius or 0)
+	return AssignEntityToRooms(RoomLights, t, (t.Radius or 0)^2)
 end
 
 function Editor.UpdateLightsList()
@@ -1666,6 +1680,9 @@ function Editor.UpdateMap(CompileFile)
 		profile "BuildBSP"
 		Editor.BuildBSP(true)
 	end
+	-- if CompileFile and not Editor.StateSync then
+	-- 	Editor.UpdateMap()  -- need RoomFromPoint for sprites
+	-- end
 	profile "PrepareLists"
 	PrepareLists(CompileFile)
 
