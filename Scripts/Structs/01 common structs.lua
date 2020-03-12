@@ -1,4 +1,5 @@
-local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar
+local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
+local i4, i2, i1, u4, u2, u1, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar, mem.call
 local mmver = offsets.MMVersion
 
 local function mmv(...)
@@ -23,7 +24,7 @@ local function FindInGamesLod(name)
 end
 
 local function FindInMapStats(name, ErrorLevel)
-	local i = mem.call(mmv(0x446BD0, 0x4547CF, 0x451F39), 1, Game.MapStats["?ptr"], name)
+	local i = call(mmv(0x446BD0, 0x4547CF, 0x451F39), 1, Game.MapStats["?ptr"], name)
 	if i > 0 then
 		return i, Game.MapStats[i]
 	elseif ErrorLevel then
@@ -216,9 +217,9 @@ function structs.f.GameMap(define)
 	function define.f.Render()
 		local v = Game.Map.IndoorOrOutdoor
 		if v == 2 then
-			mem.call(mmv(0x437040, 0x441D22, 0x43E979), 0)
+			call(mmv(0x437040, 0x441D22, 0x43E979), 0)
 		elseif v == 1 then
-			mem.call(mmv(0x4371E0, 0x441BF7, 0x43E84D), 0)
+			call(mmv(0x4371E0, 0x441BF7, 0x43E84D), 0)
 		end
 	end
 	function define.f.IsIndoor()
@@ -233,9 +234,9 @@ function structs.f.GameMap(define)
 	c.IsOutdoors = c.IsOutdoor
 	function define.f.LoadTileset(id)
 		if mmver == 8 then
-			mem.call(0x487729, 1, u4[0x6F2FD4], id)
+			call(0x487729, 1, u4[0x6F2FD4], id)
 		else
-			mem.call(mmv(0x47A5D0, 0x487E3E), 1, mmv(0x610740, 0x6BDEC8), id)
+			call(mmv(0x47A5D0, 0x487E3E), 1, mmv(0x610740, 0x6BDEC8), id)
 		end
 		if SoundByTileset[id] then
 			Game.LoadSound(SoundByTileset[id])
@@ -248,26 +249,26 @@ function structs.f.GameMap(define)
 			x, y, z = x.X, x.Y, x.Z
 		end
 		assert(x and y and z)
-		return mem.call(mmv(0x48C3D0, 0x49ABA0, 0x4980BA), 1, mmv(0x5F7AA8, 0x6BE248, 0x6F3A08), x, y, z)
+		return call(mmv(0x48C3D0, 0x49ABA0, 0x4980BA), 1, mmv(0x5F7AA8, 0x6BE248, 0x6F3A08), x, y, z)
 	end
 	define.Info{Sig = "x, y, z"}
 	function define.f.GetFloorLevel(x, y, z, room)
 		local i
 		if Map.IsIndoor() then
-			i = mem.call(mmv(0x45DD10, 0x46CEC7, 0x46B975), 2, x, y, z, room or Map.RoomFromPoint(x, y, z), TmpBuf)
+			i = call(mmv(0x45DD10, 0x46CEC7, 0x46B975), 2, x, y, z, room or Map.RoomFromPoint(x, y, z), TmpBuf)
 		elseif mmver == 8 then
-			i = mem.call(0x46BF50, 2, 0, x, y, z, 0, TmpBuf + 4, TmpBuf + 8, TmpBuf, 1)
+			i = call(0x46BF50, 2, 0, x, y, z, 0, TmpBuf + 4, TmpBuf + 8, TmpBuf, 1)
 		else
-			i = mem.call(mmv(0x45E2E0, 0x46D4A2), 2, x, y, z, 0, TmpBuf + 4, TmpBuf, 1)
+			i = call(mmv(0x45E2E0, 0x46D4A2), 2, x, y, z, 0, TmpBuf + 4, TmpBuf, 1)
 		end
 		return i, i4[TmpBuf]
 	end
 	define.Info{Sig = "x, y, z, room"; "Returns 'FloorZ', 'FacetId'."}
 	function define.f.GetGroundLevel(x, y)
 		if mmver == 8 then
-			return mem.call(0x481E19, 2, 0, x, y, TmpBuf, TmpBuf + 4, 1, 1)
+			return call(0x481E19, 2, 0, x, y, TmpBuf, TmpBuf + 4, 1, 1)
 		else
-			return mem.call(mmv(0x472040, 0x48257E), 2, x, y, TmpBuf, TmpBuf + 4)
+			return call(mmv(0x472040, 0x48257E), 2, x, y, TmpBuf, TmpBuf + 4)
 		end
 	end
 	define.Info{Sig = "x, y"}
@@ -280,7 +281,7 @@ function structs.f.GameMap(define)
 	end
 	define.Info{Sig = "Id"}
 	-- function define.f.GetTileBitmap(x, y)
-		-- return mem.call(mmv(nil, nil, 0x47E383), 1, Map.OutdoorPtr, x, y)
+		-- return call(mmv(nil, nil, 0x47E383), 1, Map.OutdoorPtr, x, y)
 	-- end
 end
 
@@ -294,9 +295,9 @@ function structs.f.TilesetDef(define)
 		i2[p] = val
 		-- i2[p+2] = Map.GetTilesetOffset
 		if mmver == 8 then
-			i2[p+2] = mem.call(0x4877AE, 1, u4[0x6F2FD4], val, 1)
+			i2[p+2] = call(0x4877AE, 1, u4[0x6F2FD4], val, 1)
 		else
-			i2[p+2] = mem.call(mmv(0x47A650, 0x487EBC), 1, mmv(0x610740, 0x6BDEC8), val, 1)
+			i2[p+2] = call(mmv(0x47A650, 0x487EBC), 1, mmv(0x610740, 0x6BDEC8), val, 1)
 		end
 	end)
 	.i2  'Offset'
@@ -367,12 +368,15 @@ function structs.f.MapExtra(define)
 end
 
 function structs.f.Weather(define)
-	if mmver == 6 then
-		define[0x61A96C].b1  'Snow'
+	define
+	[mmv(0x61A968, 0x6BDEA0, 0x6F2F98)].i4  'Shade'
+	 .Info "0 = sunny, 1 = dark, 2 = misty"
+	if mmver < 8 then
+		define.b4  'Snow'
+	else
+		define[0x6F2658 + 0x93C].b4  'Rain'
 	end
 	define
-	[mmv(0x61A968, 0x61A968, 0x6F2F98)].i4  'Shade'
-	 .Info "0 = sunny, 1 = dark, 2 = misty"
 	[mmv(0x61A978, 0x6BDEB0, 0x6F2FA4)].CustomType('Fog', 0, function(o, obj, _, val)
 		if val == nil then
 			return u1[o]:And(1) ~= 0
@@ -425,8 +429,8 @@ function structs.f.Weather(define)
 	define.Info{Sig = "LightChance, MiddleChance, ThickChance"}
 	
 	function define.f.New()  -- randomizes new weather
-		if mmver > 6 and Map.IsOutdoor then
-			mem.call(mmv(nil, 0x48946D, 0x488D93))
+		if mmver > 6 and Map.IsOutdoor() then
+			call(mmv(nil, 0x48946D, 0x488D93))
 		end
 	end
 end
@@ -465,7 +469,7 @@ function structs.f.Item(define)
 	-- .method{p = 0x, name = ""}
 	function define.m:Randomize(strength, type)
 		mem.fill(self["?ptr"], self["?size"])
-		return mem.call(mmv(0x448790, 0x45664C, 0x453ECC), 1, Game.ItemsTxt["?ptr"] - 4, assertnum(strength, 2), assertnum(type, 2), self)
+		return call(mmv(0x448790, 0x45664C, 0x453ECC), 1, Game.ItemsTxt["?ptr"] - 4, assertnum(strength, 2), assertnum(type, 2), self)
 	end
 	define.Info{Sig = "Strenght, Type:const.ItemType"}
 	function define.m:T()
@@ -522,7 +526,7 @@ function structs.f.GameMouse(define)
 		if mmver ~= 6 and Game.RendererD3D ~= 0 then
 			MTargetBuf = MTargetBuf or mem.StaticAlloc(4)
 			MTarget = MTarget or structs.ObjectRef:new(MTargetBuf)
-			i4[MTargetBuf] = mem.call(mmv(nil, 0x4C1B63, 0x4BF70D), 1, u4[u4[mmv(nil, 0x71FE94, 0x75CE00)] + 3660])
+			i4[MTargetBuf] = call(mmv(nil, 0x4C1B63, 0x4BF70D), 1, u4[u4[mmv(nil, 0x71FE94, 0x75CE00)] + 3660])
 			return MTarget
 		end
 		local mouse = Game.Mouse
@@ -563,7 +567,7 @@ function structs.f.ObjectRefAny(define, long)
 		if val == nil then
 			return u2[p]:div(8)
 		else
-			u2[p] = u2[p]%8 + math.floor(val)*8
+			u2[p] = u2[p]%8 + floor(val)*8
 		end
 	end)
 	-- [0].CustomType('ModelId', 2, function(o, obj, _, val)
@@ -571,7 +575,7 @@ function structs.f.ObjectRefAny(define, long)
 		-- if val == nil then
 			-- return u2[p]:div(8*64)
 		-- else
-			-- u2[p] = u2[p]%8 + math.floor(val)*8
+			-- u2[p] = u2[p]%8 + floor(val)*8
 		-- end
 	-- end)
 
@@ -695,7 +699,7 @@ function structs.f.SpellBuff(define)
 	
 	function define.m:Set(time, skill, power, overlay, caster)
 		local tm = time%0x100000000
-		return mem.call(mmv(0x44A970, 0x458519, 0x455D97), 1, self['?ptr'], tm, (time - tm)/0x100000000, skill or 1, power or 1, overlay or 0, caster or 0)
+		return call(mmv(0x44A970, 0x458519, 0x455D97), 1, self['?ptr'], tm, (time - tm)/0x100000000, skill or 1, power or 1, overlay or 0, caster or 0)
 	end
 	define.Info{Sig = "ExpireTime, Skill, Power, OverlayId, Caster"}
 	.size = 0x10
@@ -1050,7 +1054,7 @@ function structs.f.MapMonster(define)
 	 .Info{Sig = "SoundLoaded = false";  "If 'SoundLoaded' = 'false', sound indexes would be loaded for the monster as well."}
 
 	function define.m:LoadFramesAndSounds()
-		mem.call(mmv(0x44BF50, 0x4595D3, 0x456E90), 1, self, 0)
+		call(mmv(0x44BF50, 0x4595D3, 0x456E90), 1, self, 0)
 		for i = 0, 3 do
 			Game.LoadSound(self.Sounds[i])
 		end
@@ -2373,18 +2377,18 @@ function structs.f.BitmapsLod(define)
 	
 	function define.m:LoadBitmap(name, EnglishD)
 		name = name or ""
-		mem.copy(bmpbuf, name, math.max(#name + 1, 63))
+		mem.copy(bmpbuf, name, min(#name + 1, 63))
 		u1[bmpbuf + 63] = 0
-		return mem.call(mmv(0x40B430, 0x40FB2C, 0x410D70), 1, self["?ptr"], bmpbuf, (self == Game.IconsLod and 2 or 0), 0, EnglishD or 0)
+		return call(mmv(0x40B430, 0x40FB2C, 0x410D70), 1, self["?ptr"], bmpbuf, (self == Game.IconsLod and 2 or 0), 0, EnglishD or 0)
 	end
 	function define.m:LoadTFTBitmap(name)
 		name = name or ""
-		mem.copy(bmpbuf, name, math.max(#name + 1, 63))
+		mem.copy(bmpbuf, name, min(#name + 1, 63))
 		u1[bmpbuf + 63] = 0
 		local p = mmv(0x55DDA0, 0x5C6C38, 0x5E2FC8)
-		local bmp = mem.call(mmv(0x444C60, 0x44E18F, 0x44B87B), 1, p, bmpbuf)
+		local bmp = call(mmv(0x444C60, 0x44E18F, 0x44B87B), 1, p, bmpbuf)
 		if bmp ~= 0 then
-			mem.call(mmv(0x444BE0, 0x44E119, 0x44B801), 1, p, bmp)
+			call(mmv(0x444BE0, 0x44E119, 0x44B801), 1, p, bmp)
 			return bmp
 		end
 	end
@@ -2401,9 +2405,9 @@ function structs.f.SpritesLod(define)
 	
 	function define.m:LoadSprite(name, PaletteNumber)  -- MM6 doesn't use PaletteNumber
 		local p = self["?ptr"]
-		mem.copy(bmpbuf, name, math.max(#name + 1, 16))  -- may be unnecessary, but it was necessary for LoadBitmap
+		mem.copy(bmpbuf, name, min(#name + 1, 16))  -- may be unnecessary, but it was necessary for LoadBitmap
 		u1[bmpbuf + 15] = 0
-		return mem.call(mmv(0x490990, 0x4AC723, 0x4AABAE), 1, self["?ptr"], bmpbuf, PaletteNumber or 0)
+		return call(mmv(0x490990, 0x4AC723, 0x4AABAE), 1, self["?ptr"], bmpbuf, PaletteNumber or 0)
 	end
 end
 

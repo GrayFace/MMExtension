@@ -1,5 +1,5 @@
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
-local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar
+local i4, i2, i1, u4, u2, u1, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar, mem.call
 local mmver = offsets.MMVersion
 
 local function mmv(...)
@@ -368,7 +368,7 @@ function structs.f.GameStructure(define)
 		.Info{Name = "IsD3D", new = true}
 	end
 	define[0].CustomType('RandSeed', 0, function(o, obj, name, val)
-		local p = (mmver > 6 and mem.call(mmv(0, 0x4CECD2, 0x4DDD52), 0) + 5*4 or 0x4C5354)
+		local p = (mmver > 6 and call(mmv(0, 0x4CECD2, 0x4DDD52), 0) + 5*4 or 0x4C5354)
 		if val then
 			i4[p] = val
 		else
@@ -402,19 +402,19 @@ function structs.f.GameStructure(define)
 	
 	function define.f.LoadSound(soundId, unk, unk2)
 		-- unk2 present only in MM8
-		mem.call(mmv(0x48E2D0, 0x4A99F7, 0x4A7F22), 1, mmv(0x9CF700, 0xF79BDC, 0xFEBFE4), soundId, unk or 0, unk2 or 0)
+		call(mmv(0x48E2D0, 0x4A99F7, 0x4A7F22), 1, mmv(0x9CF700, 0xF79BDC, 0xFEBFE4), soundId, unk or 0, unk2 or 0)
 	end
 	define.Info{Sig = "SoundId, Unk = 0"}
 	function define.f.PlaySound(soundId, object, loops, x, y, unk, volume, playbackRate)
-		mem.call(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), soundId, object or -1, loops or 0, x or -1, y or 0, unk or 0, volume or 0, playbackRate or 0)
+		call(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), soundId, object or -1, loops or 0, x or -1, y or 0, unk or 0, volume or 0, playbackRate or 0)
 	end
 	define.Info{Sig = "SoundId, Object = -1, Loops = 0, X = -1, Y = 0, Unk = 0, Volume = 0, PlaybackRate = 0"}
 	function define.f.StopAllSounds(keepMin, keepMax)
-		mem.call(mmv(0x48FB40, 0x4AB69F, 0x4A9BF7), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), keepMin, keepMax)
+		call(mmv(0x48FB40, 0x4AB69F, 0x4A9BF7), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), keepMin, keepMax)
 	end
 	define.Info{Sig = "keepMin = -1, keepMax = -1"}
 	function define.f.LoadDecSprite(name)
-		local id = (mmver > 6 and mem.call(mmv(nil, 0x4488D9, 0x445C59), 1, mmv(nil, 0x69AC54, 0x6C8B5C), name) or 0)
+		local id = (mmver > 6 and call(mmv(nil, 0x4488D9, 0x445C59), 1, mmv(nil, 0x69AC54, 0x6C8B5C), name) or 0)
 		if mmver == 6 then
 			name = name:lower()
 			for i, a in Game.DecListBin do
@@ -424,7 +424,7 @@ function structs.f.GameStructure(define)
 				end
 			end
 		end
-		mem.call(mmv(0x44AC80, 0x4586CC, 0x455F4A), 1, mmv(0x5E2188, 0x69AC54, 0x6C8B5C), id)
+		call(mmv(0x44AC80, 0x4586CC, 0x455F4A), 1, mmv(0x5E2188, 0x69AC54, 0x6C8B5C), id)
 		return id
 	end
 	define.Info{Sig = "Name";  "Loads a sprite and returns its ID."}
@@ -439,20 +439,20 @@ function structs.f.GameStructure(define)
 	function define.f.UpdateDialogTopics()
 		if Game.CurrentScreen == 13 and Game.HouseNPCSlot > (Game.HouseOwnerPic ~= 0 and 1 or 0) then
 			Game.HouseScreen = -1
-			mem.call(mmv(0x4998A0, 0x4B4187, 0x4B2C36), 1, Game.HouseNPCSlot - 1)
+			call(mmv(0x4998A0, 0x4B4187, 0x4B2C36), 1, Game.HouseNPCSlot - 1)
 		end
 	end
 	function define.f.ShowStatusText(text, time)
-		mem.call(mmv(0x442BD0, 0x44C1A1, 0x4496C5), 2, tostring(text), time or 2)
+		call(mmv(0x442BD0, 0x44C1A1, 0x4496C5), 2, tostring(text), time or 2)
 		Game.NeedRedraw = true
 	end
 	define.Info{Sig = "Text, Seconds = 2"}
 	function define.f.LoadPalette(PalNum)
-		return mem.call(mmv(0x47CBC0, 0x48A3A2, 0x489C9F), 1, mmv(0x762D80, 0x80D018, 0x84AFE0), PalNum)
+		return call(mmv(0x47CBC0, 0x48A3A2, 0x489C9F), 1, mmv(0x762D80, 0x80D018, 0x84AFE0), PalNum)
 	end
 	define.Info{Sig = "PalNum"}
 	function define.f.LoadDataFileFromLod(name, UseMalloc)
-		local p = mem.call(mmv(0x40C1A0, 0x410897, 0x411C9B), 1, mmv(0x4CB6D0, 0x6BE8D8, 0x6FB828), name, UseMalloc)
+		local p = call(mmv(0x40C1A0, 0x410897, 0x411C9B), 1, mmv(0x4CB6D0, 0x6BE8D8, 0x6FB828), name, UseMalloc)
 		return p ~= 0 and p, Game.PatchOptions.LastLoadedFileSize
 	end
 	define.Info{Sig = "Name, UseMalloc"}
@@ -712,10 +712,10 @@ function structs.f.GameParty(define)
 	c.ptr = mmv(0x908C70, 0xACCE38, 0xB20E90)  -- start of Party.bin structure
 	function define.f.RestAndHeal(mins)
 		if mins then
-			mem.call(mmv(0x496180, 0x4B1B3E, 0x4B0341), 0, mins % 0x100000000, mins:div(0x100000000))
+			call(mmv(0x496180, 0x4B1B3E, 0x4B0341), 0, mins % 0x100000000, mins:div(0x100000000))
 			Game.Weather.New()
 		else
-			mem.call(mmv(0x484D40, 0x490CFA, 0x48FE9C), 1, mmv(0x908C70, 0xACCE38, 0xB20E90))
+			call(mmv(0x484D40, 0x490CFA, 0x48FE9C), 1, mmv(0x908C70, 0xACCE38, 0xB20E90))
 		end
 	end
 	define
@@ -1071,7 +1071,7 @@ function structs.f.Player(define)
 					Game.TurnBasedDelays[i] = max(delay, Game.TurnBasedDelays[i])
 					local p = mmv(0x4C7DF0, 0x4F86D8, 0x509C98)
 					if i*8 + 4 == i4[p + 4*8] then
-						mem.call(mmv(0x404EB0, 0x40471C, 0x4049BA), 1, p)
+						call(mmv(0x404EB0, 0x40471C, 0x4049BA), 1, p)
 					end
 					break
 				end
