@@ -227,7 +227,7 @@ function Editor.ReadFacet(a, _, Verts)
 		end
 	end
 	
-	if #v < 3 then --or not a.IsPortal and IsFacetCollapsed(v) and not HasDoorVerts then
+	if #v < (Map.IsIndoor() and 1 or 3) then -- 3 then --or not a.IsPortal and IsFacetCollapsed(v) and not HasDoorVerts then
 		a["?ptr"] = nil
 		return
 	end
@@ -358,18 +358,24 @@ local function ReadRoom(a, t, n)
 			return nil
 		end
 		local a = Map.BSPNodes[ni]
-		local o = map[a.CoplanarOffset]
-		local t = {CoplanarOffset = o, Front = ReadBSP(a.FrontNode), Back = ReadBSP(a.BackNode)}
+		local n, m, off = 0, 0, nil  -- n = full count, m = non-empty count 
+		for i = a.CoplanarOffset, a.CoplanarOffset + a.CoplanarSize - 1, 1 do
+			local o = map[i]
+			if o then
+				n = n + 1
+				off = off or o
+				if #t.DrawFacets[o + 1].Vertexes > 2 then
+					m = m + 1
+				end
+			end
+		end
+		local t = {CoplanarOffset = off, Front = ReadBSP(a.FrontNode), Back = ReadBSP(a.BackNode)}
 		if t.Front == false or t.Back == false then
 			return false
-		elseif not o then
-			return a.CoplanarSize == 1 and (not t.Back and t.Front or not t.Front and t.Back)
-		end
-		local n = 1
-		for i = a.CoplanarOffset + 1, a.CoplanarOffset + a.CoplanarSize - 1, 1 do
-			if map[i] then
-				n = n + 1
-			end
+		elseif not off then
+			return not t.Back and t.Front or not t.Front and t.Back
+		elseif m == 0 and not (t.Back and t.Front) then
+			return t.Back or t.Front
 		end
 		t.CoplanarSize = n
 		return t
@@ -378,6 +384,9 @@ local function ReadRoom(a, t, n)
 	t.BSP = false
 	if a.HasBSP then
 		t.BSP = ReadBSP(a.FirstBSPNode) or nil
+		if not t.BSP then
+			print('failed to keep BSP:', Map.Name, n)
+		end
 	end
 	t.NonBSP = t.BSP and NonBSP or #t.DrawFacets
 	
@@ -390,6 +399,19 @@ local function ReadRoom(a, t, n)
 		t.EaxEnvironment = nil
 	end
 	a["?ptr"] = nil
+	return t
+end
+
+-----------------------------------------------------
+-- ReadOutline
+-----------------------------------------------------
+
+local function ReadOutline(a, t)
+	t.Vertex1 = Vertexes[a.Vertex1]
+	t.Vertex2 = Vertexes[a.Vertex2]
+	t.Facet1 = Facets[a.Facet1 + 1]
+	t.Facet2 = Facets[a.Facet2 + 1]
+	t.Z = a.Z
 	return t
 end
 
@@ -975,10 +997,11 @@ function Editor.ReadMap()
 	-- doors
 	Editor.State = state
 	Editor.Doors, Editor.DoorIds = ReadListEx({}, {}, Map.Doors, ReadDoor)
+	-- outlines
+	state.Outlines = ReadListEx({}, {}, Map.Outlines, ReadOutline)
+	state.OutlineFlatSkip = 1
 	-- other properties
 	Editor.ReadMapCommon(state)
-	-- no outline skip
-	state.OutlineFlatSkip = 1
 	-- remove unused vertex shifts
 	CleanVertexShifts()
 	

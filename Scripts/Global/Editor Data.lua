@@ -614,8 +614,36 @@ local function GetOIndex(o)
 	return min(i, j)*0x100000 + max(i, j)
 end
 
+local function WriteStoredOutlines(sorted)
+	local mo, lim = Map.Outlines.Items, Map.Outlines.Limit
+	if #sorted > lim and not Editor.LastError then
+		Editor.LastError = ("Too many outlines (%s/"..lim..")"):format(#sorted)
+		Editor.LastErrorFacets = {}
+	end
+	for _, t in ipairs(sorted) do
+		local n = mo.count
+		if n == lim then
+			break
+		end
+		mo.count = n + 1
+		local a = mo[n]
+		rawset(a, "?ptr", nil)
+		a["?ptr"] = a["?ptr"]  -- speed up
+		a.Vertex1 = VertexIds[t.Vertex1]
+		a.Vertex2 = VertexIds[t.Vertex2]
+		a.Facet1 = FacetIds[t.Facet1]
+		a.Facet2 = FacetIds[t.Facet2]
+		a.Z = t.Z
+		a["?ptr"] = nil
+	end
+end
+
 local function WriteOutlines()
 	mem.fill(Map.VisibileOutlines)
+	mem.fill(Map.Outlines)
+	if state.Outlines then
+		return WriteStoredOutlines(state.Outlines)
+	end
 	local SplitEdges = GetSplitEdges()
 	local out = {}
 	local count = 0
@@ -684,7 +712,6 @@ local function WriteOutlines()
 	end)
 	
 	local mo = Map.Outlines.Items
-	mem.fill(Map.Outlines)
 	for _, o in ipairs(sorted) do
 		o.f1, o.f2 = nil, nil
 		o.v1, o.v2 = nil, nil

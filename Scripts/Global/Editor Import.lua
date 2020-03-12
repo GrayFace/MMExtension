@@ -270,6 +270,7 @@ end
 local function BuildRooms()
 	local rooms = {{Facets = {}}}
 	state.Rooms = rooms
+	state.Outlines = nil  -- need to remake if they were loaded from game map
 	
 	-- add facets to rooms, fill portals and vertex rooms lists
 	VertexRoom1, VertexRoom2 = {}, {}

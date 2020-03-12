@@ -148,7 +148,7 @@ local function WriteFacet(a, t, m, VertexIds)
 	Editor.WriteInterceptDisplacement(a, v)
 
 	-- GradientVertexes
-	do
+	if #v > 2 then
 		--a.GradientVertexes[0] = 0
 		local x0, y0 = round(v[1].X), round(v[1].Y)
 		local ax, ay, d0

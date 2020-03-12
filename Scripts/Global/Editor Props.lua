@@ -1565,7 +1565,7 @@ local IndoorProps = {
 		local t = Editor.State
 		AddUndoProp(id, prop, t[prop])
 		t[prop] = val
-		if prop == "OutlineFlatSkip" then
+		if prop == "OutlineFlatSkip" and not Editor.State.Outlines then
 			Editor.UpdateOutlines()
 		elseif prop == "DefaultDarkness" then
 			Editor.UpdateNoDark()
