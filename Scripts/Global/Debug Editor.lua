@@ -586,8 +586,30 @@ function ExtractChests(fname)
 end
 
 
+local function AutoResume()
+	local state = PauseGame()
+	ResumeGame(state)
+	local mlook = Game.PatchOptions.MouseLook
+	Game.PatchOptions.MouseLook = false
+	local function OnWndMsg(t)
+		ResumeGame(state)
+	end
+	events.WindowMessage = OnWndMsg
+	return function()
+		events.WindowMessage.remove(OnWndMsg)
+		Game.PatchOptions.MouseLook = mlook
+	end
+end
+
+local function PostActivateMessage()
+	mem.dll.user32.PostMessageA(Game.WindowHandle, 0x1C, 1, 0)  -- WM_ACTIVATEAPP
+	mem.dll.user32.PostMessageA(Game.WindowHandle, 0, 0, 0)  -- WM_NULL
+end
+
 function DoBatchSave(dir)
+	Sleep(1)
 	local co = coroutine.running()
+	local done = AutoResume()
 	for _, a in Game.MapStats do
 		local s = a.FileName
 		if s ~= "" then
@@ -596,6 +618,7 @@ function DoBatchSave(dir)
 				events.remove('LoadMap', 1)
 				io.SaveString(dir..s..".dat", internal.persist(Editor.State))
 				Editor.Close()
+				PostActivateMessage()
 				function events.Tick()
 					events.remove('Tick', 1)
 					print('resuming after', s)
@@ -603,9 +626,11 @@ function DoBatchSave(dir)
 				end
 			end
 			Editor.LoadBlv(s)
+			PostActivateMessage()
 			coroutine.yield()
 		end
 	end
+	done()
 end
 -- Editor.UpdateMap(dir..s)
 
@@ -617,9 +642,10 @@ end
 
 function DoBatchLoad(mask, odir, preproc, postproc)
 	local co = coroutine.running()
-	for s in path.find(mask) do
-		print(s)
-	end
+	local done = AutoResume()
+	-- for s in path.find(mask) do
+	-- 	print(s)
+	-- end
 	for s in path.find(mask) do
 		print('loading', s)
 		Editor.ClearSelection()
@@ -640,6 +666,7 @@ function DoBatchLoad(mask, odir, preproc, postproc)
 			function events.LoadMap()
 				events.remove('LoadMap', 1)
 				Editor.Close()
+				PostActivateMessage()
 				-- Editor.UpdateMap = oldUpd
 				function events.Tick()
 					events.remove('Tick', 1)
@@ -647,12 +674,14 @@ function DoBatchLoad(mask, odir, preproc, postproc)
 					coroutine.resume2(co)
 				end
 			end
+			PostActivateMessage()
 			coroutine.yield()
 		end
 		print('compiling', s)
 		Editor.UpdateMap(odir..path.setext(path.name(s), ''))
 		print('ok', s)
 	end
+	done()
 	if postproc then
 		postproc()
 	end
