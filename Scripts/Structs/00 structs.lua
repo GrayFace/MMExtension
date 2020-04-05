@@ -71,9 +71,9 @@ function structs.f.GameStructure(define)
 	 .Info{Sig = "[stat:const.Stats]"}
 	[mmv(0x56F27C, 0x5C85F8, 0x5E4990)].array(7).EditPChar  'StatsDescriptions'
 	 .Info{Sig = "[stat:const.Stats]"}
-	[mmv(0x970C7C, 0xAE3150, 0xBB3060)].array(mmv(31, 37, 37)).EditPChar  'SkillNames'
+	[mmv(0x970C7C, 0xAE3150, 0xBB3060)].array(mmv(31, 37, 39)).EditPChar  'SkillNames'
 	 .Info{Sig = "[skill:const.Skills]"}
-	[mmv(0x56F394, 0x5C88F0, 0x5E4CB0)].array(mmv(31, 37, 37)).EditPChar  'SkillDescriptions'
+	[mmv(0x56F394, 0x5C88F0, 0x5E4CB0)].array(mmv(31, 37, 39)).EditPChar  'SkillDescriptions'
 	 .Info{Sig = "[skill:const.Skills]"}
 	[mmv(0x970BEC, 0xAE3070, 0xBB2FD0)].array(mmv(18, 36, 36)).EditPChar  'ClassNames'
 	 .Info{Sig = "[class:const.Class]"}
