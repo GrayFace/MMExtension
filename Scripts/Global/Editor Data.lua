@@ -388,6 +388,17 @@ local function WriteFacet(a, t)
 			break
 		end
 	end
+	
+	if t.ExactData then
+		-- table.copy(t.ExactData, a, true)
+		for k, v in pairs(t.ExactData) do
+			if v ~= a[k] and k:sub(1,3) == 'Min' or k:sub(1,3) == 'Max' then --k:lower() > "m" and k:lower() < "n" then
+				-- print(k, a[k], v)
+				a[k] = v
+			end
+		end
+	end
+	
 	if a.HasData then
 		local n = #FacetData
 		FacetData[n + 1] = t
@@ -1110,10 +1121,11 @@ function Editor.GetDoorVertexLists(t, Add2)
 	end
 	
 	-- enumerate facets
+	local exact = t.ExactFacets
 	for rid, r in ipairs(Editor.State.Rooms) do
 		for _, f in ipairs(r.DrawFacets) do
-			local isdoor = (f.Door == t)
-			if not isdoor and (f.MultiDoor or t.ClosePortal and f.IsPortal) then
+			local isdoor = exact and exact[f] or (f.Door == t)
+			if not isdoor and not exact and (f.MultiDoor or t.ClosePortal and f.IsPortal) then
 				if t.ClosePortal ~= true and f.IsPortal then
 					Portals[f] = rid
 				else
@@ -1593,6 +1605,14 @@ local function PrepareLists(compile)
 	Editor.SpriteIds = {}
 	Lights = {}
 	LightIds = {}
+	
+	-- verts
+	if state.ExactVertexes then
+		VertexIds = table.invert(state.ExactVertexes)
+		for i, v in pairs(state.ExactVertexes) do
+			Vertexes[i + 1] = v
+		end
+	end
 	
 	-- facets
 	local vn = 0

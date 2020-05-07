@@ -102,6 +102,17 @@ local FacetDataProps = {
 	"Event",
 }
 
+local function MakeExact(a, skip)
+	local exact = {}
+	skip = skip or {}
+	for k, v in structs.enum(a) do
+		if type(v) ~= 'table' and k ~= 'Bits' and not skip[k] then
+			exact[k] = v
+		end
+	end
+	return exact
+end
+
 -----------------------------------------------------
 -- VertexShifts
 -----------------------------------------------------
@@ -227,7 +238,7 @@ function Editor.ReadFacet(a, _, Verts)
 		end
 	end
 	
-	if #v < (Map.IsIndoor() and 1 or 3) then -- 3 then --or not a.IsPortal and IsFacetCollapsed(v) and not HasDoorVerts then
+	if #v < (Map.IsIndoor() and Editor.ExactMode == 2 and 0 or 1 or 3) then -- 3 then --or not a.IsPortal and IsFacetCollapsed(v) and not HasDoorVerts then
 		a["?ptr"] = nil
 		return
 	end
@@ -266,6 +277,11 @@ function Editor.ReadFacet(a, _, Verts)
 		t.Room = a.Room
 		t.RoomBehind = a.RoomBehind
 	end
+	
+	if Editor.ExactMode then
+		t.ExactData = MakeExact(a)
+	end
+	
 	a["?ptr"] = nil
 	return t
 end
@@ -653,7 +669,10 @@ local function ReadDoor(a, t)
 	end
 	
 	-- check if the door is problematic
-	if not t.VertexFilter then
+	if Editor.ExactMode == 2 then
+		SetShiftFilter(t, ver)
+		t.ExactFacets = fac
+	elseif not t.VertexFilter then
 		local v2 = Editor.GetDoorVertexLists(t)
 		for v in pairs(ver) do
 			if not v2[v] then
@@ -960,6 +979,15 @@ function Editor.ReadMap()
 	for i, v in Map.Vertexes do
 		v = {X = v.X, Y = v.Y, Z = v.Z, Shift = VertexShifts[i]}
 		Vertexes[i] = UniqueVertex(v.X, v.Y, v.Z, v)
+		if Editor.ExactMode == 2 and Vertexes[i] ~= v then
+			print('Duplicate vertex:', i)
+			VertexShifts[i] = {X = 0, Y = 0, Z = 0}
+			v.Shift = VertexShifts[i]
+			Vertexes[i] = UniqueVertex(v.X, v.Y, v.Z, v)
+		end
+	end
+	if Editor.ExactMode == 2 then
+		state.ExactVertexes = Vertexes
 	end
 	-- facets
 	Facets = {}
@@ -1006,7 +1034,9 @@ function Editor.ReadMap()
 	CleanVertexShifts()
 	
 	Editor.SetState(state)
-	Editor.AddUnique()
+	if Editor.ExactMode ~= 2 then
+		Editor.AddUnique()
+	end
 	Editor.DefaultFileName = (Editor.MapsDir or "")..path.setext(Map.Name, '.dat')
 	-- Editor.ProcessDoors()
 	Editor.profile(nil)
