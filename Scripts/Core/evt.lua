@@ -1465,7 +1465,7 @@ do
 	add(nil)                         -- 0E : not used
 	add(nil)                         -- 0F : not used
 	add("QBits")                     -- 10
-	add("Inventory")                 -- 11
+	add("Inventory", "Items")        -- 11
 	add("HourIs")                    -- 12
 	add("DayOfYearIs")               -- 13
 	add("DayOfWeekIs")               -- 14

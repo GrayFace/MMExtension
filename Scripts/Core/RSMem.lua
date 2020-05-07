@@ -1796,7 +1796,6 @@ function _mem.copycode(ptr, size, MemPtr, NoJumpBack)
 			error(format("attempt to copy code containing a hook at address %X", i), 2)
 		end
 	end
-	--assert(u1[ptr] ~= OpCALL and u1[ptr] ~= OpJMP, "call or jump in original code")  -- a little check for already existing hook
 	local std = MemPtr or mem_hookalloc(FullSize)
 	mem_copy(std, ptr, size)
 	FixCallsJumps(std, std + size, ptr)

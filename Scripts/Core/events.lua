@@ -1,6 +1,5 @@
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
-local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar
-local call = mem.call
+local i4, i2, i1, u4, u2, u1, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar, mem.call
 local mmver = offsets.MMVersion
 
 
@@ -75,6 +74,9 @@ do
 		function t.ProcessAsm(code)
 			return code:gsub("%%([%w_]*)%%", t.ref)
 		end
+		function t.asm(code)
+			return mem.asm(t.ProcessAsm(code))
+		end
 		for proc in pairs(procs) do
 			t[proc] = function(...)
 				t.Add(mem[proc], ...)
@@ -130,7 +132,6 @@ end
 
 function internal.CalcSpellDamage(dmg, spell, skill, mastery, HP)
 	local t = {Result = dmg, Spell = spell,
-		-- :const.Skills
 		Skill = skill,
 		-- :const
 		Mastery = mastery,
@@ -220,7 +221,7 @@ end
 
 local function MapCheckHook(d, ev, t)
 	local param1, param2 = d:getparams(0, 2)
-	local r = mem.call(mmv(0x4AF370, 0x4CAAF0, 0x4DA920), 0, param1, param2)
+	local r = call(mmv(0x4AF370, 0x4CAAF0, 0x4DA920), 0, param1, param2)
 	t = t or {}
 	t.Map = mem.string(param1):lower()
 	t.Result = (r ~= 0)
@@ -265,7 +266,7 @@ end)
 -- IsUnderwater
 local function IsUnderwaterHook(d)
 	local param1, param2 = d:getparams(0, 2)
-	local r = mem.call(mmv(0x4AF370, 0x4CAAF0, 0x4DA920), 0, param1, param2)
+	local r = call(mmv(0x4AF370, 0x4CAAF0, 0x4DA920), 0, param1, param2)
 	local t = {Map = mem.string(param1):lower(), Result = (r == 0)}
 	-- [MM7+]
 	events.cocalls("IsUnderwater", t)
@@ -297,7 +298,7 @@ end
 -- Don't show error message if .evt or .str doesn't exist
 mem.hook(mmv(0x43968E, 0x443D1E, 0x440B1F), function(d)
 	local this, name = d:getparams(1, 1)
-	local f = mem.call(mmv(0x44CBC0, 0x4615BD, 0x45FCA6), 1, mmv(this, this, 0x6F30D0), name, 0)
+	local f = call(mmv(0x44CBC0, 0x4615BD, 0x45FCA6), 1, mmv(this, this, 0x6F30D0), name, 0)
 	if f ~= 0 then  -- found
 		d:push(mmv(0x40C1A0, 0x410897, 0x411C9B))
 	else
@@ -544,12 +545,12 @@ local function PopulateDialog(t)
 	for i = 1, table.maxn(t) do
 		local k = t[i]
 		if k then
-			mem.call(mmv(0x498450, 0x4B362F, 0x4B1F3C), 2, i - 1, k)
+			call(mmv(0x498450, 0x4B362F, 0x4B1F3C), 2, i - 1, k)
 			n = n + 1
 		end
 	end
 	local dlg = u4[mmv(0x4D50C0, 0x507A3C, 0x519324)]
-	mem.call(mmv(0x41A0E0, 0x41D038, 0x41C473), 1, dlg, n, 1, 0, 2)
+	call(mmv(0x41A0E0, 0x41D038, 0x41C473), 1, dlg, n, 1, 0, 2)
 	n = i4[dlg + 0x28]
 	i4[mmv(0x9DDDFC, 0xF8B060, 0xFFD450)] = n
 	return n
@@ -1402,7 +1403,64 @@ else
 	end)
 end
 
+-- GetShopItemTreatment
+local ShopAction = {nil, 'buy', 'sell', 'identify', 'repair'}
 
+mem.hookfunction(mmv(0x485120, 0x490EE6, 0x49000D), 1, 4, function(d, def, pl, item, housetype, house, action)
+	local t = {
+		House = house,
+		HouseType = housetype,
+		Action = ShopAction[action] or action,
+		Item = structs.Item:new(item),
+		Result = def(pl, item, housetype, house, action),
+	}
+	t.PlayerIndex, t.Player = GetPlayer(pl)
+	function t.GetDefault(HouseType, House, Item, Action, Player)
+		return def(Player or pl, Item or item, HouseType or housetype, House or house, Action or action)
+	end
+	-- 'Action': "buy", "sell", "identify", "repair"
+	-- 'Result': 0-based option from merchant.txt
+	-- t.GetDefault(HouseType, House, Item, Action, Player) lets you get item treatment by another shop type (all parameters re optional)
+	events.cocall("GetShopItemTreatment", t)
+	return t.Result
+end)
+
+-- CanShopOperateOnItem
+mem.hookfunction(mmv(0x4A4C30, 0x4BDA12, 0x4BB612), 2, 0, function(d, def, item, house)
+	local t = {
+		House = house,
+		HouseType = Game.Houses[house].Type,
+		Item = structs.Item:new(item),
+		Result = def(item, house) ~= 0,
+	}
+	function t.GetDefault(House, Item)
+		return def(Item or item, House or house)
+	end
+	-- t.GetDefault(House, Item) lets you get item treatment by another shop type (all parameters re optional)
+	events.cocall("CanShopOperateOnItem", t)
+	return t.Result and 1 or 0
+end)
+
+-- ShopItemsGenerated
+mem.hookfunction(mmv(0x49FD40, 0x4B8EF7, 0x4B74B6), 0, 0, function(d, def)
+	def()
+	local house = Game.GetCurrentHouse()
+	local t = {
+		House = house,
+		HouseType = Game.Houses[house].Type,
+	}
+	events.cocall("ShopItemsGenerated", t)
+end)
+
+-- GuildItemsGenerated
+mem.autohook(mmv(0x4A465D, 0x4BD307, 0x4BB2B6), function(d)
+	local house = Game.GetCurrentHouse()
+	local t = {
+		House = house,
+		HouseType = Game.Houses[house].Type,
+	}
+	events.cocall("GuildItemsGenerated", t)
+end)
 
 
 local AddFields_damageMonsterFromParty

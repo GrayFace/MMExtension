@@ -64,7 +64,9 @@ local function NewLoc(t)
 			return NewLoc(t1)
 		end,
 		__call = function(_, t1, over)
-			CopyLoc(t1, t, over)
+			if t1 then
+				CopyLoc(t1, t, over)
+			end
 			return t
 		end,
 		__newindex = function(_, k, t2)

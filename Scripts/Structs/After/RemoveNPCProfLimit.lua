@@ -73,6 +73,7 @@ mem.autohook(mmv(nil, 0x477167), function(d)
 		ptr = Extend(0x73C110, 4, {0x416C79, 0x41E9DD, 0x445488, 0x4B2B10})
 	else
 	end
+	mem.IgnoreProtection(false)
 	ChangeGameArray("NPCProfNames", ptr)
 	
 	-- load names from NPCProf.txt
