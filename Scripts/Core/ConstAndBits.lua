@@ -603,11 +603,11 @@ const.ItemType = {
 	Amulet_    = 41,
 	Wand_      = 42,
 	Scroll_    = 43,
-	Potion     = 44,
-	Reagent    = 45,
+	Potion_    = 44,
+	Reagent_   = 45,
 	Gems       = 46,
 	Gems2      = 47,
-	Gold       = 50,
+	Gold_      = 50,
 }
 
 const.ItemSlot = {
