@@ -1292,6 +1292,17 @@ mem.hookfunction(mmv(0x480010, 0x48DCDC, 0x48D166), 1, mmv(1, 2, 2), function(d,
 	return t.Allow and def(this, thing, mon) or 0
 end)
 
+-- CanTempleHealPlayer
+mem.hookfunction(mmv(0x49DAD0, 0x4B6F5C, 0x4B57BD), 1, 0, function(d, def, this)
+	local t = {
+		House = Game.GetCurrentHouse(),
+		Result = def(this) ~= 0,
+	}
+	t.PlayerIndex, t.Player = GetPlayer(this)
+	events.cocall("CanTempleHealPlayer", t)
+	return t.Result and 1 or 0
+end)
+
 -- GetStatisticEffect
 mem.hookfunction(mmv(0x482DC0, 0x48EA13, 0x48E18E), 0, 1, function(d, def, val)
 	local t = {
