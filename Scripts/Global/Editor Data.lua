@@ -262,6 +262,9 @@ end
 local function UpdateFacetMinMax(a, t)
 	local v = t.Vertexes
 	local door = t.Door or {}
+	if not v[1] then
+		return  -- for exact mode
+	end
 	-- BBox
 	local function minmax(coord)
 		local m1, m2 = v[1][coord], v[1][coord]
@@ -1090,6 +1093,9 @@ end
 
 Editor.DoorMinCos = 0.05  -- for unmoved facets that can't be stretched
 function Editor.GetDoorVertexLists(t, Add2)
+	if t.ExactFacets and t.ExactVertexes then
+		return table.copy(t.ExactVertexes), {}, table.copy(t.ExactFacets)
+	end	
 	local dirX, dirY, dirZ = normalize(t.DirectionX, t.DirectionY, t.DirectionZ)
 	-- prepare lists
 	local state = Editor.State
@@ -1593,6 +1599,14 @@ function Editor.UpdateDynamicStuff(CompileFile)
 	WriteMonsters(CompileFile)
 end
 
+local function NewEntityList()
+	local t = {}
+	for i, r in ipairs(state.Rooms) do
+		t[r] = {}
+	end
+	return t
+end
+
 local function PrepareLists(compile)
 	FacetData = {{}}
 	DeanimateFacets = {}
@@ -1654,28 +1668,22 @@ local function PrepareLists(compile)
 	FinalizeList(Facets, FacetIds)
 	
 	-- sprites
-	RoomSprites = {}
-	for i, r in ipairs(state.Rooms) do
-		RoomSprites[r] = {}
-	end
+	RoomSprites = state.ExactRoomSprites or NewEntityList()
 	state.Sprites = state.Sprites or {}
 	for a, id in pairs(state.Sprites) do
 		AddToList(Editor.Sprites, Editor.SpriteIds, a, id)
-		if compile then
+		if compile and not state.ExactRoomSprites then
 			AssignSpriteToRooms(a)
 		end
 	end
 	FinalizeList(Editor.Sprites, Editor.SpriteIds)
 	
 	-- lights
-	RoomLights = {}
-	for i, r in ipairs(state.Rooms) do
-		RoomLights[r] = {}
-	end
+	RoomLights = state.ExactRoomLights or NewEntityList()
 	state.Lights = state.Lights or {}
 	for a, id in pairs(state.Lights) do
 		AddToList(Lights, LightIds, a, id)
-		if compile then
+		if compile and not state.ExactRoomLights then
 			AssignLightToRooms(a)
 		end
 	end

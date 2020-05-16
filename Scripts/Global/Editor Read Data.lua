@@ -120,7 +120,7 @@ end
 local function InitVertexShifts()
 	VertexShifts = {}
 	for _, t in Map.Doors do
-		local dx = {Delete = true}
+		local dx = {Delete = Editor.ExactMode ~= 2}
 		dx.X, dx.Y, dx.Z = normalize(t.DirectionX, t.DirectionY, t.DirectionZ, t.MoveLength/2)
 		for i, vi in t.VertexIds do
 			VertexShifts[vi] = dx
@@ -238,7 +238,7 @@ function Editor.ReadFacet(a, _, Verts)
 		end
 	end
 	
-	if #v < (Map.IsIndoor() and Editor.ExactMode == 2 and 0 or 1 or 3) then -- 3 then --or not a.IsPortal and IsFacetCollapsed(v) and not HasDoorVerts then
+	if #v < (Map.IsIndoor() and (Editor.ExactMode == 2 and 0 or 1) or 3) then -- 3 then --or not a.IsPortal and IsFacetCollapsed(v) and not HasDoorVerts then
 		a["?ptr"] = nil
 		return
 	end
@@ -271,7 +271,11 @@ function Editor.ReadFacet(a, _, Verts)
 		t.nx, t.ny, t.nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
 	end
 	local v = v[1]
-	t.ndist = -(v.X*t.nx + v.Y*t.ny + v.Z*t.nz)
+	if v then
+		t.ndist = -(v.X*t.nx + v.Y*t.ny + v.Z*t.nz)
+	else
+		t.ndist = a.NormalDistance/0x10000
+	end
 	t.PartOf = t
 	if t.IsPortal then
 		t.Room = a.Room
@@ -672,6 +676,7 @@ local function ReadDoor(a, t)
 	if Editor.ExactMode == 2 then
 		SetShiftFilter(t, ver)
 		t.ExactFacets = fac
+		t.ExactVertexes = KeysList(a.VertexIds, Vertexes, {})
 	elseif not t.VertexFilter then
 		local v2 = Editor.GetDoorVertexLists(t)
 		for v in pairs(ver) do
@@ -1032,6 +1037,16 @@ function Editor.ReadMap()
 	Editor.ReadMapCommon(state)
 	-- remove unused vertex shifts
 	CleanVertexShifts()
+	-- read sprite and light lists
+	if Editor.ExactMode then
+		state.ExactRoomSprites = {}
+		state.ExactRoomLights = {}
+		for i, a in Map.Rooms do
+			local t = state.Rooms[i + 1]
+			state.ExactRoomSprites[t] = KeysList(a.Sprites, Sprites, {})
+			state.ExactRoomLights[t] = KeysList(a.Lights, Lights, {})
+		end
+	end
 	
 	Editor.SetState(state)
 	if Editor.ExactMode ~= 2 then
