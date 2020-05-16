@@ -74,10 +74,10 @@ local function LastMessage(text, forceGlobal)
 	return i
 end
 
-function Message(text)
+function Message(text, KeepSound)
 	evt.SetMessage(LastMessage(text))
 	if Game.CurrentScreen == 0 then
-		evt.SimpleMessage()
+		evt.SimpleMessage{KeepSound = true}
 	end
 end
 -- for backward compatibility
@@ -320,21 +320,17 @@ end
 function SummonItem(number, x, y, z, speed)
 	local n = Map.Objects.Count
 	for i,o in Map.Objects do
-		if o.Id == 0 then
+		if o.TypeIndex == 0 then
 			n = i
 			break
 		end
 	end
-	evt.SummonObject(Game.ItemsTxt[number].SpriteIndex, x, y, z, speed)
+	evt.SummonObject(mmver == 8 and number or Game.ItemsTxt[number].SpriteIndex, x, y, z, speed)
 	local obj = (n < Map.Objects.Count and Map.Objects[n])
-	if obj and obj.Id ~= 0 then
+	if obj and obj.TypeIndex ~= 0 then
 		obj.Item.Number = number
 		return obj
 	end
-end
-
-if mmver == 8 then
-	SummonItem = evt.SummonObject
 end
 
 local function IsSpriteSquare(sx, sy, x, y)

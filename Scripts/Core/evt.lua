@@ -478,7 +478,7 @@ local function MakeCmd(name, num, f, invis)
 			if not player or player == evt.Players.Current then
 				player = evt.CurrentPlayer or evt.Players.Current
 			end
-			local ret = mem.call(internal.CallProcessEvent, 0, 0x7FFF, 0, player, MayShow)
+			local ret = mem.call(internal.CallProcessEvent, 0, 0x7FFF, t.KeepSound and 1 or 0, player, MayShow)
 			if oldGlobalEventInfo then
 				u4[offsets.GlobalEventInfo] = oldGlobalEventInfo
 			end
