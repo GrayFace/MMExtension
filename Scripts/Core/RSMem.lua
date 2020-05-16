@@ -1459,6 +1459,10 @@ _mem.hooks = mem_hooks
 
 if internal.GetHookSize then
 
+	-- Returns 'n', 'short', 'long'.
+	-- 'n' is the number of bytes occupied by instructions at address 'p'. 'n' is 5 or more, because placing a hook requires 5 bytes.
+	-- 'short' is 'true' if the code contains a short jump leading outside of it.
+	-- 'long' is 'true' if the code contains a near jump or call to a relative address.
 	function _mem.GetHookSize(p)
 		if rawcall(IsBadCodePtr, 0, p) ~= 0 then
 			code_error(p, 2)
@@ -1477,6 +1481,10 @@ end
 
 if GetInstructionSize then
 
+	-- Returns 'n', 'short', 'long'.
+	-- 'n' is the number of bytes occupied by the instruction at address 'p'.
+	-- 'short' is 'true' if the instruction is a short jump and it doesn't lead to itself.
+	-- 'long' is 'true' if the instruction is a near jump or call to a relative address.
 	function _mem.GetInstructionSize(p)
 		if rawcall(IsBadCodePtr, 0, p) ~= 0 then
 			code_error(p, 2)
@@ -1760,26 +1768,21 @@ local mem_hookfree = _mem.hookfree
 -- end
 
 local function GetNoJumpSize(p)
-	local byte1 = u1[p]
-	if byte1 == OpCALL or byte1 == OpJMP then  -- allow standard jump / call
-		return 5
-	end
-	local n, j = GetHookSize(p)
-	assert(not j, "call or jump in original code")
+	local n, short = GetHookSize(p)
+	assert(not short, "short jump in original code")
 	return n
 end
 
 -- fixes calls and jumps in the relocated code
-local function FixCallsJumps(p1, p2, pstd)
+local function FixCallsJumps(p1, p2, delta)
 	local p = p1
 	while p2 - p >= 5 do
-		local sz = GetInstructionSize(p)
-		local code = sz == 5 and u1[p] or sz == 6 and u2[p]
+		local sz, short, long = GetInstructionSize(p)
 		p = p + sz
-		if code == OpCALL or code == OpJMP or p <= p2 and code and code:And(0xF0FF) == 0x800F then
+		if long then
 			local v = i4[p - 4]
 			if p + v < p1 or p + v >= p2 then
-				i4[p - 4] = v + pstd - p1
+				i4[p - 4] = v + delta
 			end
 		end
 	end
@@ -1788,22 +1791,31 @@ end
 -- Copies standard code into a memory block and then writes a jump back into the function
 -- (the copied code must not contain short jumps that lead outside of it)
 -- 'MemPtr' can optionally specify a pre-allocated memory address.
-function _mem.copycode(ptr, size, MemPtr, NoJumpBack)
+-- If 'DuplicateHooks' is 'true', Lua hooks are kept in both new and old code, otherwise they're moved to the new location.
+function _mem.copycode(ptr, size, MemPtr, NoJumpBack, DuplicateHooks)
 	size = size or GetHookSize(ptr)
 	local FullSize = size + (NoJumpBack and 0 or 5)
-	for i = ptr - 4, ptr + size - 1 do
+	for i = ptr - 4, ptr - 1 do
 		if mem_hooks[i] then
-			error(format("attempt to copy code containing a hook at address %X", i), 2)
+			error(format("attempt to copy code starting at address %X, which intercepts with existing hook at %X", ptr, i), 2)
 		end
 	end
-	local std = MemPtr or mem_hookalloc(FullSize)
-	mem_copy(std, ptr, size)
-	FixCallsJumps(std, std + size, ptr)
-	if not NoJumpBack then
-		u1[std + size] = OpJMP
-		i4[std + size + 1] = ptr - std - 5
+	local new = MemPtr or mem_hookalloc(FullSize)
+	mem_copy(new, ptr, size)
+	FixCallsJumps(new, new + size, ptr - new)
+	for i = ptr, ptr + size - 4 do
+		if mem_hooks[i] then
+			mem_hooks[i + new - ptr] = mem_hooks[i]
+			if not DuplicateHooks then
+				mem_hooks[i] = nil
+			end
+		end
 	end
-	return std
+	if not NoJumpBack then
+		u1[new + size] = OpJMP
+		i4[new + size + 1] = ptr - new - 5
+	end
+	return new
 end
 local copycode = _mem.copycode
 
@@ -1821,7 +1833,7 @@ local function MyCopyCode(p, size, MemPtr, NoJumpBack)
 		end
 		return MemPtr, size1
 	else
-		return copycode(p, size, MemPtr), size
+		return copycode(p, size, MemPtr, NoJumpBack), size
 	end
 end
 
@@ -1832,7 +1844,7 @@ function _mem.autohook(p, f, size)
 	local code, size1
 	local byte1 = (size == 5 and u1[p])
 	-- CALL and JMP can be hooked without copying
-	if byte1 == OpCALL then
+	if byte1 == OpCALL and not mem_hooks[p] then
 		code = p + 5 + i4[p + 1]
 		mem_hook(p, function(d)
 			d.esp = d.esp + 4
@@ -1842,7 +1854,7 @@ function _mem.autohook(p, f, size)
 			end
 		end, size)
 		return
-	elseif byte1 == OpJMP then
+	elseif byte1 == OpJMP and not mem_hooks[p] then
 		code = p + 5 + i4[p + 1]
 		size1 = size
 	else

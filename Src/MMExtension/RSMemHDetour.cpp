@@ -22,20 +22,23 @@ static int DoGetHookSize(lua_State *L, int lim)
 	DWORD p = ToDWORD(L, 1);
 	lua_settop(L, 0);
 	DWORD n = 0;
-	bool jumps = false;
+	bool jumps = false, jumpl = false;
 	while (n < lim)
 	{
 		hde32s a;
 		hde32_disasm((void*)(p + n), &a);
-		// attempt to recognize some jump/call instructions
 		n += a.len;
-		jumps = jumps || (a.opcode >= 0x70 && a.opcode <= 0x7F  // conditional jump short
-			|| a.opcode == 0x0F && a.opcode2 >= 0x80 && a.opcode2 <= 0x8F  // conditional jump near
-			|| a.opcode == 0xE8 || a.opcode == 0xE9 || a.opcode == 0xEB || a.opcode == 0xE3);
+		// recognize relative jump/call instructions
+		// https://c9x.me/x86/html/file_module_x86_id_147.html, https://c9x.me/x86/html/file_module_x86_id_26.html, https://c9x.me/x86/html/file_module_x86_id_146.html
+		// ignore short jumps within the code block
+		jumps = jumps || ((a.opcode|0xF) == 0x7F || a.opcode == 0xEB || a.opcode == 0xE3) && ((DWORD)(*(short*)(p + n - 1) + n) >= lim);  // conditional, jmp, jecxz
+		// report all near jumps regardless
+		jumpl = jumpl || a.opcode == 0x0F && (a.opcode2|0xF) == 0x8F || a.opcode == 0xE8 || a.opcode == 0xE9;  // conditional, call, jmp
 	}
 	lua_pushnumber(L, n);
 	lua_pushboolean(L, jumps);
-	return 2;
+	lua_pushboolean(L, jumpl);
+	return 3;
 }
 
 static int GetHookSize(lua_State *L)
