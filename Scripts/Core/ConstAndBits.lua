@@ -652,7 +652,7 @@ else
 		Body = 8,
 		Light = 9,
 		Dark = 10,
-		Dragon = 50,
+		Dragon = mmver == 8 and 50 or nil,
 	}
 end
 

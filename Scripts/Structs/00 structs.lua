@@ -20,7 +20,7 @@ function events.StructsLoaded()
 	Game.Dll = PatchDll
 end
 
-local _KNOWNGLOBALS
+local _KNOWNGLOBALS, DecListBuf
 
 function structs.f.GameStructure(define)
 	define
@@ -94,6 +94,8 @@ function structs.f.GameStructure(define)
 	[mmv(0x560C14, 0x5D2864, 0x5EFBCC)].array{mmv(581, 800, 803), lenA = i4, lenP = mmv(0x560C10, 0x5D2860, 0x5EFBC8)}.struct(structs.ItemsTxtItem)  'ItemsTxt'
 	.array(mmv(14, 24, 24)).struct(structs.StdItemsTxtItem)  'StdItemsTxt'
 	.array(mmv(59, 72, 72)).struct(structs.SpcItemsTxtItem)  'SpcItemsTxt'
+	local i, j = mmv(160, 222, 222), mmv(188, 271, 271)
+	define[mmv(0x56A780, 0x5E17C4, 0x5FEC10)].array(i, j).array(i, j)[mmv('u1','i2','i2')]  'PotionTxt'
 	
 	if mmver == 6 then
 		define[0x56C188].array{174, lenA = i4, lenP = 0x56C188 + structs.MonstersTxtItem["?size"]*174}.struct(structs.MonstersTxtItem)  'MonstersTxt'
@@ -414,7 +416,7 @@ function structs.f.GameStructure(define)
 	end
 	define.Info{Sig = "keepMin = -1, keepMax = -1"}
 	function define.f.LoadDecSprite(name)
-		local id = (mmver > 6 and call(mmv(nil, 0x4488D9, 0x445C59), 1, mmv(nil, 0x69AC54, 0x6C8B5C), name) or 0)
+		local id
 		if mmver == 6 then
 			name = name:lower()
 			for i, a in Game.DecListBin do
@@ -423,6 +425,11 @@ function structs.f.GameStructure(define)
 					break
 				end
 			end
+		else  -- gotta copy the constant, because MM7 does that
+			DecListBuf = DecListBuf or mmver > 6 and mem.malloc(32)
+			assert(#name < 32, 'DecList name too long')
+			mem.copy(DecListBuf, name, #name + 1)
+			id = (mmver > 6 and call(mmv(nil, 0x4488D9, 0x445C59), 1, mmv(nil, 0x69AC54, 0x6C8B5C), DecListBuf) or 0)
 		end
 		call(mmv(0x44AC80, 0x4586CC, 0x455F4A), 1, mmv(0x5E2188, 0x69AC54, 0x6C8B5C), id)
 		return id
@@ -657,12 +664,14 @@ function structs.f.GameParty(define)
 	if mmver > 6 then
 		define
 		[mmv(nil, 0xAE3060, 0xBB2EF4)].i4  'Fine'
-		[mmv(nil, 0xACD588, 0xB215F0)].array(5).i4  'MonsHuntTarget'  -- only index 0 is used in MM8
-		[mmv(nil, 0xACD588, 0xB215FA)].array(5).i2  'MonsHuntKilled'  -- only index 0 is used in MM8
+		[mmv(nil, 0xACD588, 0xB215F0)].array(5).i2  'MonsHuntTarget'  -- only index 0 is used in MM8
+		[mmv(nil, 0xACD592, 0xB215FA)].array(5).i2  'MonsHuntKilled'  -- only index 0 is used in MM8
+		[mmv(nil, 0xACCE74, 0xB20ECC)].array(5).i8  'MonsHuntReset'  -- for some reason 10 values fit there
 	else
 		define
 		[0x908DC5].array(3).u1  'MonsHuntTarget'
 		[0x908DC8].array(3).b1  'MonsHuntKilled'
+		[0x90E844].array(3).i8  'MonsHuntReset'  -- for some reason 9 values fit there
 	end
 	define
 	[mmv(0x908D6D, 0xACD59D, 0xB2160F)].array(mmv(0, 1, 1), mmv(511, 512, 512)).abit  'QBits'
@@ -1083,17 +1092,13 @@ function structs.f.Player(define)
 	define.Info{Sig = "Delay"}
 end
 
-function structs.f.Screen(define)
-	function define.f.Draw(x, y, pic, opaque)
-		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic)
-		local f = opaque and mmv(0x40A1D0, 0x4A5E42, 0x4A3CD5) or mmv(0x40A680, 0x4A6204, 0x4A419B)
-		if mmver == 6 then
-			
-		else
-			-- Game.IconsLod.Bitmaps[pic]
-		end
-	end
-end
+-- function structs.f.Screen(define)
+-- 	function define.f.Draw(x, y, pic, opaque)
+-- 		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic)
+-- 		local f = opaque and mmv(0x40B000, 0x4A5E42, 0x4A3CD5) or mmv(0x40B180, 0x4A6204, 0x4A419B)
+-- 		-- Game.IconsLod.Bitmaps[pic]
+-- 	end
+-- end
 
 function structs.f.PatchOptions(define)
 	local off, n = 0, PatchOptionsPtr and i4[PatchOptionsPtr] or 0

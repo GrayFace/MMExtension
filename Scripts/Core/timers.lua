@@ -268,7 +268,7 @@ local function CallTimers(tick, last)
 		local v = timers[CurTimer]
 		if tick >= v[3] then
 			local period, time, next_time = v[2], v[3], v[4]
-			coroutine.resume2(coroutine.create(v[1]), time, period, last, tick)
+			cocall2(v[1], time, period, last, tick)
 			if timers[CurTimer] == v then
 				v[3] = next_time(time, period, last)
 				if not v[3] then

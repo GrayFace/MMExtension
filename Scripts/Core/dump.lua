@@ -11,7 +11,7 @@ do
 end
 
 -- Useful for debugging and experiments. Shows 't', expanding all tables in it up to the 'depth' level. In 'exact' = 'true' mode outputs proper Lua code.
-function dump(t, depth, exact)
+function dump(t, depth, exact, detectClones)
 	local buf = {}
 	local bufn = 0
 	local ShowN
@@ -79,7 +79,7 @@ function dump(t, depth, exact)
 		end
 		if type(v) == "table" then
 			local n = tables[v]
-			local SameStruct = not n and structs and FindSameStruct(v)
+			local SameStruct = detectClones and not n and structs and FindSameStruct(v)
 			if SameStruct then
 				n = tables[SameStruct]
 				if n then

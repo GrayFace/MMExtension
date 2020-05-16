@@ -141,7 +141,7 @@ function internal.CalcSpellDamage(dmg, spell, skill, mastery, HP)
 end
 
 
-
+-- WalkToMap
 local WorldSides = {'up', 'down', 'left', 'right'}  -- 0 - party start, 1 - north, 2 - south, 3 - east, 4 - west
 local SideToNum = table.invert(WorldSides)
 
@@ -203,6 +203,11 @@ function internal.DeathMap(p)
 	assert(#t.Name < 0x14)
 	mem.copy(p, t.Name, #t.Name + 1)
 	Party.FallStartZ = Party.Z
+end
+
+-- always invoke LeaveMap event (death and walking fixed by my patches)
+for _, p in ipairs(mmv({}, {0x433324, 0x44800F, 0x44C30F, 0x4B6A96}, {0x430BC3, 0x445335, 0x4B52F5})) do
+	mem.asmhook(p, 'pushad'..'\ncall absolute '..mm78(0x443FB8, 0x440DBC)..'\npopad')
 end
 
 function internal.SetFogRange()
@@ -317,6 +322,17 @@ if mmver == 8 then
 		end
 		d.ecx = mon
 	end, 6)
+end
+
+-- MM7 Question - clean screen afterwards
+if mmver == 7 then
+	mem.asmhook(0x4451C1, [[
+		mov eax, [0x507A64]
+		cmp dword [eax + 0x1C], 0x1A
+		jnz @f
+		mov dword [0x576EAC], 1
+	@@:
+	]])
 end
 
 -- MM7 Question in house: 0x4B29ED - check esi ~= 0
@@ -1180,7 +1196,7 @@ mem.hookfunction(mmv(0x482E80, 0x48EAA6, 0x48E213), 1, mmv(1, 2, 2), function(d,
 	--!k{Player :structs.Player}
 	-- Here's how 'SetArtifactBonus'('value') method works:
 	--   [MM7+] If 'value' is bigger than 'ArtifactBonus', it modifies 'ArtifactBonus' and increases 'Result'.
-	--   [MM6] It just adds the 'value' to 'Result'.
+	--   [MM6] It just adds the 'value' to 'Result'. The game does the same, but only includes one instance of each artifact into consideration.
 	--
 	-- 'SetMagicBonus' does the same to 'MagicBonus'.
 	events.cocall("CalcStatBonusByItems", t)
@@ -1399,7 +1415,6 @@ elseif mmver == 7 then
 		d.esi = ModifyItemDamage(d.esi, i4[d.esp + 0x2C], d.edi, 0)
 	end)
 	mem.autohook(0x48D260, function(d)
-		print('shoot', i4[d.ebp + 0x8])
 		d.esi = ModifyItemDamage(d.esi, i4[d.ebp + 0x8], d.ebx, 2)
 	end)
 else
