@@ -875,16 +875,16 @@ local function CommonMonsterProps(define, montxt)
 		local p = define.offset
 		define.union  'Resistances'
 			.u1(const.Damage.Fire)
-			.u1(const.Damage.Cold)
 			.u1(const.Damage.Elec)
+			.u1(const.Damage.Cold)
 			.u1(const.Damage.Poison)
 			.u1(const.Damage.Phys)
 			.u1(const.Damage.Magic)
 		.union().Info{Sig = "[kind:const.Damage]"; "For immunity use #const.MonsterImmune:#"}
 		[p]
 		.u1  'FireResistance'  -- 0x24    FIRE_RESISTANCE
-		.u1  'ColdResistance'  -- 0x25    ELECTRICAL_RESISTANCE
-		.u1  'ElecResistance'  -- 0x26    COLD_RESISTANCE
+		.u1  'ElecResistance'  -- 0x25    ELECTRICAL_RESISTANCE
+		.u1  'ColdResistance'  -- 0x26    COLD_RESISTANCE
 		.u1  'PoisonResistance'  -- 0x27    POISON_RESISTANCE
 		.u1  'PhysResistance'  -- 0x28    PHYSICAL_RESISTANCE
 		.u1  'MagicResistance'  -- 0x29    MAGICAL_RESISTANCE
