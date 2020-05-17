@@ -606,13 +606,13 @@ local function PostActivateMessage()
 	mem.dll.user32.PostMessageA(Game.WindowHandle, 0, 0, 0)  -- WM_NULL
 end
 
-function DoBatchSave(dir)
+function DoBatchSave(dir, includeBlv)
 	Sleep(1)
 	local co = coroutine.running()
 	local done = AutoResume()
 	for _, a in Game.MapStats do
 		local s = a.FileName
-		if s ~= "" then
+		if s ~= "" and (includeBlv or path.ext(s):lower() ~= '.blv') then
 			print('loading', s)
 			function events.LoadMap()
 				events.remove('LoadMap', 1)
@@ -634,10 +634,10 @@ function DoBatchSave(dir)
 end
 -- Editor.UpdateMap(dir..s)
 
-function BatchSave(dir)
+function BatchSave(dir, includeBlv)
 	dir = path.addslash(dir or AppPath.."Batch")
 	os.mkdir(dir)
-	cocall2(DoBatchSave, dir)
+	cocall2(DoBatchSave, dir, includeOdm)
 end
 
 function DoBatchLoad(mask, odir, preproc, postproc)

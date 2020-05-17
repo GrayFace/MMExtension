@@ -38,6 +38,9 @@ MakeBitsDefiner("FacetBits")
 const.FacetBits = {
 	IsPortal = 0x00000001,
 	IsWater = 0x00000010,
+	ProjectToXY = 0x00000100,
+	ProjectToXZ = 0x00000200,
+	ProjectToYZ = 0x00000400,
 	Invisible = 0x00002000,
 	AnimatedTFT = 0x00004000,
 	MoveByDoor = 0x00040000,
