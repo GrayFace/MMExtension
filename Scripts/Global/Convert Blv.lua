@@ -288,8 +288,3 @@ end
 function WriteRawBlv(fname, state)
 	ReadWrite(state, fname, false)
 end
-
-
-function TestBlv()
-	WriteRawBlv(AppPath..[[BatchOut\d01.blv]], ReadRawBlv(AppPath..[[BatchInput\d01.blv]]))
-end
