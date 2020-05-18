@@ -37,6 +37,9 @@ local PostRead = {
 		b.GuardRadius = 0
 		CleanupStruct(b, t)
 		t.Id = b.Id
+		if mmver == 6 or (t.NPC_ID or 0) < 0 or (t.NPC_ID or 0) >= 5000 then
+			t.NPC_ID = nil
+		end
 	end,
 	FacetData = |a, t| t.Id = mmver ~= 6 and t.Id or t.FacetIndex,
 	MapLight = |a, t, idx| t.Id = t.Id or idx,
