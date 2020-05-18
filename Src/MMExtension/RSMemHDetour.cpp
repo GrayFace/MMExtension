@@ -31,7 +31,7 @@ static int DoGetHookSize(lua_State *L, int lim)
 		// recognize relative jump/call instructions
 		// https://c9x.me/x86/html/file_module_x86_id_147.html, https://c9x.me/x86/html/file_module_x86_id_26.html, https://c9x.me/x86/html/file_module_x86_id_146.html
 		// ignore short jumps within the code block
-		jumps = jumps || ((a.opcode|0xF) == 0x7F || a.opcode == 0xEB || a.opcode == 0xE3) && ((DWORD)(*(short*)(p + n - 1) + n) >= lim);  // conditional, jmp, jecxz
+		jumps = jumps || ((a.opcode|0xF) == 0x7F || a.opcode == 0xEB || a.opcode == 0xE3) && ((DWORD)(*(signed char*)(p + n - 1) + n) >= lim);  // conditional, jmp, jecxz
 		// report all near jumps regardless
 		jumpl = jumpl || a.opcode == 0x0F && (a.opcode2|0xF) == 0x8F || a.opcode == 0xE8 || a.opcode == 0xE9;  // conditional, call, jmp
 	}
