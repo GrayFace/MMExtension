@@ -224,14 +224,9 @@ end
 -- The second is mostly for backward compatibility. Instead of relying on messages, it checks key state on every frame and calls the function if the key was pressed. It may miss a very short key press.
 Keys = Keys or {}
 local cKeys = const.Keys
-local keyInv = {}
-local keyInv2 = {}
+local keyInv, keyInv2 = {}, {}
 for k, v in pairs(cKeys) do
-	if keyInv[k] then
-		keyInv2[k] = v
-	else
-		keyInv[k] = v
-	end
+	(keyInv[v] and keyInv2 or keyInv)[v] = k
 end
 
 --!(key:const.Keys) String representations of #const.Keys:# are also supported, e.g. !LUA[[Keys.IsPressed"SHIFT"]]
@@ -246,7 +241,6 @@ end
 
 local _, keyHandlers = events.new(Keys)
 local pressedKeys = {}
-
 
 function internal.TimersKeyDown(key, t)
 	local s = keyInv[key]
