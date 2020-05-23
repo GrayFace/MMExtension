@@ -69,5 +69,6 @@ mem.autohook(mm78(0x454FA2, 0x452789), function(d)
 	else
 		ptr = Extend(0x5EF9B0, 4, {0x420769, 0x456E7A, 0x452795-4}, nil, 'fill')
 	end
+	OldCount = NewCount
 	ChangeGameArray("PlaceMonTxt", ptr)
 end)

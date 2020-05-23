@@ -120,7 +120,7 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 		]]):format(NewCount))
 
 		mem.asmhook2(0x476C20, ([[
-			mov [esp], %s
+			mov dword [esp], %s
 		]]):format(NewCount))
 		
 		-- NPCDist.txt - make caring of it unaccessory
@@ -165,6 +165,7 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 		d.esi = ptr
 	end
 	mem.IgnoreProtection(false)
+	OldCount = NewCount
 	
 	ChangeGameArray("MapStats", ptr)
 	internal.SetArrayUpval(Game.MapStats, "lenP", ptr + structs.MapStatsItem["?size"]*NewCount)

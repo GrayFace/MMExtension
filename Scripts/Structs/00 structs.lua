@@ -175,6 +175,15 @@ function structs.f.GameStructure(define)
 			mem.IgnoreProtection(false)
 		end
 	end)
+	[mmv(0x483E62, 0x4902C2, 0x4904EB) - 4].CustomType('MaxBirthYear', 4, function(o, obj, _, val)
+		if val == nil then
+			return i4[o]
+		else
+			mem.IgnoreProtection(true)
+			i4[o] = val
+			mem.IgnoreProtection(false)
+		end
+	end)
 	[mmv(0x90E838, 0xAD45B0, 0xB7CA88)].bit ('NeedRender', 2)
 	 .Info "Same as Party.NeedRender"
 	[mmv(0x908E30, 0xACD6B4, 0xB21728)].b4  'TurnBased'
@@ -293,6 +302,7 @@ function structs.f.GameStructure(define)
 	define
 	[mmv(0x6BA9A0, 0x73C208, 0x77A1E0)].array(4).array(mmv(6, 7, 7)).EditPChar  'MerchantTxt'
 	[mmv(0x4D50A8, 0x507A18, 0x51930C)].b4  'CtrlPressed'
+	[mmv(0x4D50EC, 0x507A70, 0x519354)].b1  'RightButtonPressed'
 	[mmv(0x4C1F98, 0x4ECA60, 0x4FCA88)].array(6).struct(structs.TownPortalTownInfo)  'TownPortalInfo'
 	[mmv(0x4BCAE4, 0x4E1D2C, 0x501BC8)].array(6).i2  'TownPortalX'
 	 .Info "Town portal picture: townport"
@@ -415,12 +425,12 @@ function structs.f.GameStructure(define)
 		call(mmv(0x48FB40, 0x4AB69F, 0x4A9BF7), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), keepMin, keepMax)
 	end
 	define.Info{Sig = "keepMin = -1, keepMax = -1"}
-	function define.f.LoadDecSprite(name)
-		local id
+	function define.f.LoadDecSprite(name, justFind)
+		local id, pDecList = 0, mmv(0x5E2188, 0x69AC54, 0x6C8B5C)
 		if mmver == 6 then
 			name = name:lower()
 			for i, a in Game.DecListBin do
-				if a.Name:lower() == name then
+				if i > 0 and a.Name:lower() == name then
 					id = i
 					break
 				end
@@ -429,9 +439,11 @@ function structs.f.GameStructure(define)
 			DecListBuf = DecListBuf or mmver > 6 and mem.malloc(32)
 			assert(#name < 32, 'DecList name too long')
 			mem.copy(DecListBuf, name, #name + 1)
-			id = (mmver > 6 and call(mmv(nil, 0x4488D9, 0x445C59), 1, mmv(nil, 0x69AC54, 0x6C8B5C), DecListBuf) or 0)
+			id = i2(call(mmv(nil, 0x4488D9, 0x445C59), 1, pDecList, DecListBuf))
 		end
-		call(mmv(0x44AC80, 0x4586CC, 0x455F4A), 1, mmv(0x5E2188, 0x69AC54, 0x6C8B5C), id)
+		if not justFind then
+			call(mmv(0x44AC80, 0x4586CC, 0x455F4A), 1, pDecList, id)
+		end
 		return id
 	end
 	define.Info{Sig = "Name";  "Loads a sprite and returns its ID."}

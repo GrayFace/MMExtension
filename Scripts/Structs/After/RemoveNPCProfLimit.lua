@@ -74,6 +74,7 @@ mem.autohook(mmv(nil, 0x477167), function(d)
 	else
 	end
 	mem.IgnoreProtection(false)
+	OldCount = NewCount
 	ChangeGameArray("NPCProfNames", ptr)
 	
 	-- load names from NPCProf.txt

@@ -65,6 +65,7 @@ mem.autohook(mmv(0x43918F, 0x443862, 0x440681), function(d)
 		)
 	end
 	mem.IgnoreProtection(false)
+	OldCount = NewCount
 	
 	ChangeGameArray("Houses", ptr)
 end)

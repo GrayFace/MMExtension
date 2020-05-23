@@ -634,10 +634,10 @@ function Quest(t)
 				end
 				AddGoldExp((t.Gold or 0) - (t.QuestGold or 0), t.Experience or t.Exp)
 				if t.RewardItem then
-					evt.Add("Inventory", t.RewardItem)
+					evt.Current.Add("Inventory", t.RewardItem)
 				end
 				if t.Awards then
-					evt.Add("Awards", t.Awards)
+					evt.All.Add("Awards", t.Awards)
 				end
 				ev = "Done"
 			else

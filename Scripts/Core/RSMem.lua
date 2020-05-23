@@ -1353,7 +1353,7 @@ do -- mem.struct
 				end
 				local a1 = i - low
 				if a1 >= 0 and a1 < GetLen(obj) then
-					return i, f(size*a1, t, i)
+					return i, t[i]
 				end
 			end
 			
