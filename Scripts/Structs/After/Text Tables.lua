@@ -150,9 +150,13 @@ end
 
 
 local function ParseBasicTextTable(s, StartingLinesCount)
-	local t = string_split(s, "\r\n", true)
+	local t, s = string_split(s, "\r\n", true), nil
 	for i = (StartingLinesCount or 0) + 1, #t do
-		t[i] = string_split(t[i], "\t", true)
+		s = t[i]
+		t[i] = string_split(s, "\t", true)
+	end
+	if s == '' then
+		t[#t] = nil
 	end
 	return t
 end
@@ -166,9 +170,13 @@ local function WriteBasicTextTable(t, fname)
 	if fname then
 		return io_save(fname, WriteBasicTextTable(t))
 	end
-	local q = {}
+	local q, s = {}, ''
 	for i = 1, #t do
-		q[i] = (type(t[i]) == "table" and table_concat(t[i], "\t") or t[i])
+		s = (type(t[i]) == "table" and table_concat(t[i], "\t") or t[i])
+		q[i] = s
+	end
+	if s ~= '' then
+		q[#q + 1] = ''
 	end
 	return table_concat(q, "\r\n")
 end
@@ -194,11 +202,12 @@ end
 
 
 local function ParseNamedColTable(s)
-	local t = string_split(s, "\r\n", true)
+	local t, s = string_split(s, "\r\n", true), nil
 	local names = string_split(t[1], "\t", true)
 	t[0] = string_split(t[1], "\t", true)
 	for i = 1, #t - 1 do
-		local q = string_split(t[i + 1], "\t", true)
+		s = t[i + 1]
+		local q = string_split(s, "\t", true)
 		local q2 = {}
 		for i, k in ipairs(names) do
 			q2[k] = q[i]
@@ -206,6 +215,9 @@ local function ParseNamedColTable(s)
 		t[i] = q2
 	end
 	t[#t] = nil
+	if s == '' then
+		t[#t] = nil
+	end
 	return t
 end
 _G.ParseNamedColTable = ParseNamedColTable
@@ -230,6 +242,9 @@ local function WriteNamedColTable(t, fname)
 		else
 			q[i+1] = v
 		end
+	end
+	if q[#q] ~= '' then
+		q[#q + 1] = ''
 	end
 	return table_concat(q, "\r\n")
 end

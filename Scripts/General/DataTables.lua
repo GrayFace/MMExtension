@@ -41,7 +41,7 @@ local function DataTable(name, f, checkBin)
 	if not time1 then
 		if name == 'SFT' then
 			mem.dll.user32.ClipCursor(0)
-			MessageBox("MMExtension is about to generate text tables for binary files. This will take a few minutes. On the next run of the game you will also experience a delay.")
+			MessageBox("MMExtension is about to generate text tables for binary files. This will take a few minutes. On the next run of the game you will also experience a small delay.")
 		end
 		io.save(nameTxt, f())
 	else
