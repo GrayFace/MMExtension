@@ -135,9 +135,10 @@ local function ReadWrite(state, fname, read)
 
 	local function str(name, n)
 		if read then
-			target[name] = file:read(n)
+			target[name] = file:read(n):match'[^%z]*'
 		else
-			file:write(target[name])
+			local s = target[name]:sub(1, n - 1)
+			file:write(s..string.rep('\0', n - #s))
 		end
 	end
 	

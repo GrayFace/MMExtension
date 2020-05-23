@@ -607,7 +607,9 @@ local function PostActivateMessage()
 end
 
 function DoBatchSave(dir, includeBlv)
-	Sleep(1)
+	if not Editor.BatchNoSleep then
+		Sleep(1)
+	end
 	local co = coroutine.running()
 	local done = AutoResume()
 	for _, a in Game.MapStats do
@@ -690,7 +692,9 @@ end
 function DoBatchLoadAll(dir, odir, ...)
 	dir = path.addslash(dir or AppPath.."Batch")
 	odir = path.addslash(odir or AppPath.."BatchCompiled")
-	Sleep(1)
+	if not Editor.BatchNoSleep then
+		Sleep(1)
+	end
 	DoBatchLoad(dir.."*.dat", odir, ...)
 	-- DoBatchLoad(dir.."*.blv.dat", odir, preproc)
 	-- DoBatchLoad(dir.."*.odm.dat", odir, preproc)
