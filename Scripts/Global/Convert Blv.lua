@@ -10,7 +10,9 @@ local function StructInfo(a)
 		local ok = pcall(|| for i in a do
 			fields[i] = true
 		end)
-		if not ok then
+		if not ok and a.Male ~= nil and a.Female ~= nil then  -- MapMonster.Prefers is the only union of interest
+			return const.MonsterPref
+		else
 			return
 		end
 	end
@@ -28,7 +30,8 @@ local function CleanupStruct(a, t)
 end
 
 local SkipFields = {
-	MapSprite = {Bits = true, DecName = true}
+	MapSprite = {Bits = true, DecName = true},
+	MapMonster = {Bits = true, PrefClass = true},
 }
 local PostRead = {
 	MapMonster = |a, t| do
@@ -75,6 +78,14 @@ local invoke = |f, ...| if f then
 	f(...)
 end
 
+local function IsResizeable(t)
+	local f = getmetatable(t).__newindex
+	if f then
+		local i, v = debug.findupvalue(f, 'lenA')
+		return v ~= nil
+	end
+end
+
 local function CopyStruct(a, t, name, read)
 	local fields, kind = StructInfo(a)
 	-- print('fields:', fields)
@@ -89,7 +100,7 @@ local function CopyStruct(a, t, name, read)
 		if k == '' or skip[k] then
 			-- skip
 		elseif type(a[k]) == 'table' then
-			if CopyStruct(a[k], t, k, read) then
+			if CopyStruct(a[k], t, k, read) and IsResizeable(a[k]) then
 				if read then
 					t['#'..k] = a[k].count
 				elseif t['#'..k] then
