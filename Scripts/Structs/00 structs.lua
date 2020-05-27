@@ -671,7 +671,8 @@ function structs.f.GameParty(define)
 	[mmv(0x908D54, 0xACD570, 0xB215D8)].i4  'BankGold'
 	[mmv(0x908D2C, 0xACD560, 0xB215C8)].i4  'Food'
 	[mmv(0x908D58, 0xACD574, 0xB215DC)].i4  'Deaths'
-	[mmv(0x908D60, 0xACD57C, 0xB215E4)].i4  'PritsonTerms'
+	[mmv(0x908D60, 0xACD57C, 0xB215E4)].i4  'PrisonTerms'
+	[mmv(0x908D60, 0xACD57C, 0xB215E4)].i4  'PritsonTerms' .Info(false)  -- backward compatibility
 	[mmv(0x908D64, 0xACD580, 0xB215E8)].i4  'BountiesCollected'
 	if mmver > 6 then
 		define
@@ -744,7 +745,8 @@ function structs.f.GameParty(define)
 	 .Info{Sig = "Minutes"}
 	.func{name = "FindActivePlayer", p = mmv(0x487780, 0x493707, 0x491A55), cc = 1; c.ptr}
 	.func{name = "GetFame", p = mmv(0x485510, 0x491356, 0x49039B), cc = 1; c.ptr}
-	.func{name = "GetRepuatation", p = mmv(0x47D600, 0x47752F, 0x41AB72), cc = 1; c.ptr}
+	.func{name = "GetReputation", p = mmv(0x47D600, 0x47752F, 0x47603F), cc = 1; c.ptr}
+	.func{name = "GetRepuataion ", p = mmv(0x47D600, 0x47752F, 0x47603F), cc = 1; c.ptr} .Info(false)  -- backward compat
 	.func{name = "AddGold", p = mmv(0x41EDE0, 0x420BAE, 0x420131), cc = 2, must = 1; 0, 0}
 	 .Info{Sig = "Gold, Kind = 0";  "'Kind' values:\n"..
 	 "0 = increase by Banker, give some part to followers\n"..
