@@ -95,7 +95,8 @@ local function update()
 	DataTable('Class Starting Stats', DataTables.StartingStats)
 	DataTable('House Movies', DataTables.HouseMovies)
 	local FtIgnore = {TotalTime = true, NotGroupEnd = true, Bits = true, SpriteIndex = true, PaletteIndex = true, IconIndex = true, Index = true, Loaded = true}
-	if DataTable('SFT', StructsArray(Game.SFTBin.Frames, structs.o.SFTItem, {IgnoreFields = FtIgnore}), true) then
+	local FtIgnoreRead = Game.Version == 6 and {Images3 = true, Glow = true, Transparent = true} or nil
+	if DataTable('SFT', StructsArray(Game.SFTBin.Frames, structs.o.SFTItem, {IgnoreFields = FtIgnore, IgnoreRead = FtIgnoreRead}), true) then
 		sameSFT = false
 		DataTables.UpdateSFTGroups()
 		io.save(BinFolder.."dsft.bin", DataTables.STFToBin())

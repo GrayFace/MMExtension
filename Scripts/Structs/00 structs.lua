@@ -168,9 +168,13 @@ function structs.f.GameStructure(define)
 				{0x460465, 0x48E71F, 0x49401D, 0x494115, 0x4B1C3C},
 				{0x45DEBB, 0x48DB8A, 0x492253, 0x49234B, 0x4B0428}
 			)
+			local t1 = mmv({}, {0x41E0E2-4}, {0x41D68D-4})
 			mem.IgnoreProtection(true)
 			for _, p in ipairs(t) do
 				i4[p] = val
+			end
+			for _, p in ipairs(t1) do
+				i4[p] = -val
 			end
 			mem.IgnoreProtection(false)
 		end

@@ -224,7 +224,7 @@ function DataTables.StructsArray(arr, offs, t, str)
 			end
 			local alias = aliases[col]
 			local tp = types and types[x]
-			if v then
+			if v and not ignoreR[col] then
 				if alias and alias[v] then
 					v = alias[v]
 				end
