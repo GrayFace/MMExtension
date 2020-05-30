@@ -12,7 +12,7 @@ local function StructInfo(a)
 		end)
 		if not ok and a.Male ~= nil and a.Female ~= nil then  -- MapMonster.Prefers is the only union of interest
 			return const.MonsterPref
-		else
+		elseif not ok then
 			return
 		end
 	end
@@ -81,7 +81,7 @@ end
 local function IsResizeable(t)
 	local f = getmetatable(t).__newindex
 	if f then
-		local i, v = debug.findupvalue(f, 'lenA')
+		local i, v = debug.findupvalue(f, 'SetLen')
 		return v ~= nil
 	end
 end
@@ -100,6 +100,9 @@ local function CopyStruct(a, t, name, read)
 		if k == '' or skip[k] then
 			-- skip
 		elseif type(a[k]) == 'table' then
+			-- if kind == 'MapChest' then
+			-- 	print(debug.upvalues(getmetatable(a[k]).__newindex).SetLen)
+			-- end
 			if CopyStruct(a[k], t, k, read) and IsResizeable(a[k]) then
 				if read then
 					t['#'..k] = a[k].count

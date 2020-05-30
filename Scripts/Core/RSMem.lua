@@ -374,6 +374,9 @@ function _mem.copy(dest, src, count)
 	elseif st == "string" then
 		count = count or #src
 	end
+	if type(dest) == "table" then
+		dest = dest["?ptr"]
+	end
 	dest, count = assertnum(dest, 2), assertnum(count, 2)
 	if rawcall(IsBadReadPtr, 0, src, count) ~= 0 then
 		read_error(src, count, 2)

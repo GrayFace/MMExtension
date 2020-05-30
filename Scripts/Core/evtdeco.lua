@@ -222,8 +222,8 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 			if mmver == 8 then
 				comment = GetStr(struct.Question)  -- answers are in map strings!
 			else
-				comment = "("..JoinStr(GetStr(struct.Answer1), struct.Answer2 ~= struct.Answer1 and GetStr(struct.Answer2), ", ")..")"
-				comment = JoinStr(GetStr(struct.Question), comment, " ")
+				comment = JoinStr(GetStr(struct.Answer1), struct.Answer2 ~= struct.Answer1 and GetStr(struct.Answer2), ", ")
+				comment = JoinStr(GetStr(struct.Question), comment and "("..comment..")", " ")
 			end
 		elseif num == 0x22 then
 			if mmver == 8 then

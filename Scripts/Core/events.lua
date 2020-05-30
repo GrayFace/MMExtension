@@ -189,9 +189,27 @@ function internal.TravelWalk(mapName, x, y, buf, bufsize, result)
 end
 
 function internal.NewGameMap()
-	Party.FallStartZ = 99999
-	events.cocalls("NewGameMap")
-	if Party.FallStartZ == 99999 then
+	local t = {AutoFallStart = true, Set = nil}
+	function t.Set(x, y, z, direction, lookAngle, speedZ)
+		Party.X = x
+		Party.Y = y
+		Party.Z = z
+		Party.FallStartZ = Party.Z
+		Party.Direction = direction
+		Party.LookAngle = lookAngle
+		Party.SpeedZ = speedZ
+		local a = Game.MoveToMap
+		a.Defined = true
+		a.X = x == 0 and 1 or x
+		a.Y = y == 0 and 1 or y
+		a.Z = z == 0 and 1 or z
+		a.Direction = direction == 0 and 1 or direction
+		a.LookAngle = lookAngle == 0 and 1 or lookAngle
+		a.SpeedZ = speedZ
+	end
+	-- 'Set'!Params[[(x, y, z, direction, lookAngle, speedZ)]] function sets both party position (saved in autosave) and map transition (used on start immediately).
+	events.cocalls("NewGameMap", t)
+	if t.AutoFallStart then
 		Party.FallStartZ = Party.Z
 	end
 	mem.copy(mmv(0x908CAC, 0xACD500, 0xB21568), mmv(0x908C98, 0xACD4EC, 0xB21554), 0x14)
@@ -208,6 +226,17 @@ end
 -- always invoke LeaveMap event (death and walking fixed by my patches)
 for _, p in ipairs(mmv({}, {0x433324, 0x44800F, 0x44C30F, 0x4B6A96}, {0x430BC3, 0x445335, 0x4B52F5})) do
 	mem.asmhook(p, 'pushad'..'\ncall absolute '..mm78(0x443FB8, 0x440DBC)..'\npopad')
+end
+
+-- fix savegame loading
+if mmver == 6 then
+	u1[0x44F03A] = 1
+elseif mmver == 7 then
+	u1[0x45F1AB] = 1
+	u1[0x45F214] = 1
+else
+	u1[0x45CB47] = 1
+	u1[0x45CBB6] = 1	
 end
 
 function internal.SetFogRange()
@@ -1110,6 +1139,7 @@ mem.hookfunction(mmv(0x4A59A0, 0x4BE671, 0x4BC1F1), 2, mmv(1, 2, 2), function(d,
 		ExitCurrentScreen = (ExitCurrentScreen ~= 0),
 		Allow = true,
 	}
+	-- function!Params[[()]]
 	t.CallDefault = function()
 		if t.Allow then
 			def(t.Name, t.Y, t.DoubleSize, t.ExitCurrentScreen)
@@ -1194,7 +1224,7 @@ mem.hookfunction(mmv(0x482E80, 0x48EAA6, 0x48E213), 1, mmv(1, 2, 2), function(d,
 	-- [MM7+]
 	t.MagicBonus = ArtifactBonus and i4[ArtifactBonus + 4]
 	--!k{Player :structs.Player}
-	-- Here's how 'SetArtifactBonus'('value') method works:
+	-- Here's how 'SetArtifactBonus'!Params[[(value)]] method works:
 	--   [MM7+] If 'value' is bigger than 'ArtifactBonus', it modifies 'ArtifactBonus' and increases 'Result'.
 	--   [MM6] It just adds the 'value' to 'Result'. The game does the same, but only includes one instance of each artifact into consideration.
 	--
@@ -1343,6 +1373,7 @@ do
 			IsPortraitClick = (portrait ~= 0),
 			Allow = true,
 		}
+		-- function!Params[[()]]
 		t.CallDefault = function()
 			if t.Allow then
 				def(t.ActivePlayer, t.PlayerIndex + 1, t.IsPortraitClick)
@@ -1446,7 +1477,7 @@ mem.hookfunction(mmv(0x485120, 0x490EE6, 0x49000D), 1, 4, function(d, def, pl, i
 	end
 	-- 'Action': "buy", "sell", "identify", "repair"
 	-- 'Result': 0-based option from merchant.txt
-	-- t.GetDefault(HouseType, House, Item, Action, Player) lets you get item treatment by another shop type (all parameters re optional)
+	-- 'GetDefault'!Params[[(HouseType, House, Item, Action, Player)]] function lets you get item treatment by another shop type (all parameters are optional)
 	events.cocall("GetShopItemTreatment", t)
 	return t.Result
 end)
@@ -1462,7 +1493,7 @@ mem.hookfunction(mmv(0x4A4C30, 0x4BDA12, 0x4BB612), 2, 0, function(d, def, item,
 	function t.GetDefault(House, Item)
 		return def(Item or item, House or house)
 	end
-	-- t.GetDefault(House, Item) lets you get item treatment by another shop type (all parameters re optional)
+	-- 'GetDefault'!Params[[(House, Item)]] function lets you get item treatment by another shop type (all parameters are optional)
 	events.cocall("CanShopOperateOnItem", t)
 	return t.Result and 1 or 0
 end)
@@ -1614,6 +1645,7 @@ mem.hookfunction(mmv(0x421670, 0x426A03, 0x424E3D), 0, 1, function(d, def, mon)
 	local t = {
 		Allow = true,
 	}
+	-- function!Params[[()]]
 	t.CallDefault = function()
 		if t.Allow then
 			def = def and def(mon) and nil
@@ -1632,6 +1664,7 @@ if mmver > 6 then
 		local t = {
 			Allow = true,
 		}
+		-- function!Params[[()]]
 		t.CallDefault = function()
 			if t.Allow then
 				def = def and def(mon) and nil
