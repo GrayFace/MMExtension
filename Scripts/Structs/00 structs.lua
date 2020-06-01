@@ -417,10 +417,9 @@ function structs.f.GameStructure(define)
 	end
 	
 	function define.f.LoadSound(soundId, unk, unk2)
-		-- unk2 present only in MM8
 		call(mmv(0x48E2D0, 0x4A99F7, 0x4A7F22), 1, mmv(0x9CF700, 0xF79BDC, 0xFEBFE4), soundId, unk or 0, unk2 or 0)
 	end
-	define.Info{Sig = "SoundId, Unk = 0"}
+	define.Info{Sig = "SoundId, Unk = 0, Unk2 = 0"; "'Unk2' is present only in MM8"}
 	function define.f.PlaySound(soundId, object, loops, x, y, unk, volume, playbackRate)
 		call(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), soundId, object or -1, loops or 0, x or -1, y or 0, unk or 0, volume or 0, playbackRate or 0)
 	end

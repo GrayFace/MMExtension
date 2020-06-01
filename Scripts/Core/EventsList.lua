@@ -274,17 +274,18 @@ local function make_events(evt)
 		return false
 	end
 	evt.exists, evt.Exists = exists, exists
+
+	local function callUnload(f, files, ...)
+		if files[FunctionFile(f)] then
+			return cocall2(f, ...)
+		end
+	end
 	
 	local function RemoveFiles(files)
 		-- call Unload
 		local un = t.Unload
 		if un then
-			local function mycall(f, ...)
-				if files[FunctionFile(f)] then
-					return cocall2(f, ...)
-				end
-			end
-			speccall(mycall, un, un.from, un.to)
+			speccall(callUnload, un, un.from, un.to, files)
 		end
 		-- remove
 		for a, f in next, t do

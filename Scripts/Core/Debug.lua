@@ -69,9 +69,9 @@ local function DoDebug(str)
 		internal.EnterDebug(false)
 		return
 	end
-	local f, err = loadstring("return "..str, "")
+	local f, err = loadstring("return "..str, "@<console>")
 	if f == nil then
-		f, err = loadstring(str, "")
+		f, err = loadstring(str, "@<console>")
 	end
 	if f == nil then
 		return DoDebug(err.."\n")

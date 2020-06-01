@@ -59,7 +59,13 @@ function XYZ(t, x, y, z)
 	end
 end
 
-
+function ClearConsoleEvents()
+	local t = {['<console>'] = true}
+	events.RemoveFiles(t)
+	evt.map.RemoveFiles(t)
+	evt.global.RemoveFiles(t)
+	Keys.RemoveFiles(t)
+end
 
 local function LastMessage(text, forceGlobal)
 	local t, i
