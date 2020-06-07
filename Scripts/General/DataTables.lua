@@ -5,8 +5,6 @@ local BinFolder = "DataFiles/"
 -- /Config
 
 BinFolder = path.addslash(BinFolder)
-os.mkdir(BinFolder)
-os.mkdir("Data/Tables/")
 
 local UpdateMode
 local TimesTable = {}
@@ -30,15 +28,26 @@ local function FixFileTimes()
 end
 
 local function DataTable(name, f, checkBin)
-	nameTxt = "Data/Tables/"..name..'.txt'
+	nameTxt = DataTables.Files[name] or "Data/Tables/"..name..'.txt'
+	local dir = path.dir(nameTxt)
 	errorinfo('file "'..nameTxt..'"')
+	if dir == '' then
+		if nameTxt ~= '' then
+			f(Game.LoadTextFileFromLod(nameTxt))
+		end
+		errorinfo('')
+		return
+	end
 	local time1, time2
 	if not UpdateMode then
 		for _, a in path.find(nameTxt) do
 			time1, time2 = a.LastWriteTimeLow, a.LastWriteTimeHigh
 		end
 	end
-	if not time1 then
+	if not time1 and not UpdateMode and DataTables.LazyMode then
+		-- do nothing
+	elseif not time1 then
+		os.mkdir(dir)
 		if name == 'SFT' then
 			mem.dll.user32.ClipCursor(0)
 			MessageBox("MMExtension is about to generate text tables for binary files. This will take a few minutes. On the next run of the game you will also experience a small delay.")
@@ -81,6 +90,7 @@ local function NameHeader(hdr, arr)
 end
 
 local function SaveBin(name, t)
+	os.mkdir(BinFolder)
 	io.save(BinFolder.."d"..name..".bin", DataTables.ToBin(t))
 	FixFileTimes()
 end
@@ -180,5 +190,17 @@ end
 
 function UpdateDataTables()
 	update()
-	update2()
+	if UpdateMode then
+		update2()
+	end
+end
+
+function ReloadDataTables()
+	local old = UpdateMode
+	UpdateMode = nil
+	update()
+	if old then
+		update2()
+	end
+	UpdateMode = old
 end

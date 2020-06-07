@@ -528,7 +528,7 @@ local function DeclareCommands()
 		).Info{Type = "evt.VarNum"}
 	end
 
-	local function TEvtString(name)
+	local function EvtString(name)
 		CurInfo.TextName = name
 		return mem.structs.CustomType(name, 1,
 			function(o, obj, name, val)
@@ -644,7 +644,7 @@ local function DeclareCommands()
 		define[mmver == 8 and "u2" or "u1"]  'HouseId'
 		 .Info "In 2DEvents.txt"
 		define.u1  'Icon'
-		TEvtString 'Name'
+		EvtString 'Name'
 		 .Info 'if unspecified or starts with "0" => current map'
 	end)
 
@@ -681,7 +681,7 @@ local function DeclareCommands()
 		define
 		.i4  'Facet'
 		 .Info "[MM6]  Index in #Map.Facets:# indoors.\n[MM7+]  Id of facets group."
-		TEvtString 'Name'
+		EvtString 'Name'
 	end)
 
 	---------------------------
@@ -692,14 +692,14 @@ local function DeclareCommands()
 			.b1  'ExitCurrentScreen'
 			 .Info ("Use 'true' only before using #evt.MoveToMap:# command in houses and before showing game ending.\n"
 			   .."Prevents loading of house anmation after the movie stops playing, but doesn't exit the screen properly.")
-			TEvtString 'Name'
+			EvtString 'Name'
 		end)
 	else
 		MakeCmd("SetTextureOutdoors", 0x0C, function(define)
 			define
 			.u4  'Model'
 			.u4  'Facet'
-			TEvtString 'Name'
+			EvtString 'Name'
 		end)
 	end
 
@@ -709,7 +709,7 @@ local function DeclareCommands()
 		.i4  'SpriteId'
 		.u1  'Visible'
 		 .Info "bit 0x20 of sprite"
-		TEvtString 'Name'
+		EvtString 'Name'
 		 .Info[[If 'Name' is unspecified or "0", the sprite isn't changed]]
 	end)
 
@@ -823,7 +823,7 @@ local function DeclareCommands()
 			.i4  'Model'
 			 .Info "Model index in #Map.Models:#"
 			.i4  'Facet'
-			 .Info "-1 = for all faces of model"
+			 .Info "-1 = for all faces of the model"
 			.i4  'Bit'
 			 Type("FacetBits")
 			.b1  'On'

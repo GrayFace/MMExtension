@@ -6,7 +6,7 @@ local function mmv(...)
 	return (select(mmver - 5, ...))
 end
 
-DataTables = {}
+DataTables = {Files = {}, LazyMode = false}
 
 local _KNOWNGLOBALS_F
 
