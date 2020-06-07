@@ -1825,6 +1825,7 @@ end
 
 function structs.f.MapRoom(define)
 	define
+	[0x0].bit('HasNonVerticalPortals', 0x8)
 	[0x0].bit('HasBSP', 0x10)
 	[0x0].u4  'Bits'  -- Attributes
 	local o = mmv(0, 0, 4)
@@ -1933,7 +1934,7 @@ function structs.f.SpawnPoint(define)
 	[0xe].i2  'Kind'  -- Kind  (const.ObjectRefKind)
 	 .Info {Type = "const.ObjectRefKind"}
 	[0x10].i2  'Index'
-	 .Info "Index: monster (1-3: M1-M3,  4-6: M1a-M1c,  7-9: M2a-M2c,  10-12: M3a-M3c) or item (1-6)"
+	 .Info "Index: monster (1-3: M1-M3,  4-6: M1a-M1c,  7-9: M2a-M2c,  10-12: M3a-M3c) or item (1-6 for regular item, 7 for artifact)"
 	[0x12].bit('OnAlertMap', 1)
 	[0x12].u2  'Bits'  -- Attributes
 	if mmver > 6 then

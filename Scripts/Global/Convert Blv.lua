@@ -32,6 +32,7 @@ end
 local SkipFields = {
 	MapSprite = {Bits = true, DecName = true},
 	MapMonster = {Bits = true, PrefClass = true},
+	MapRoom = {},
 }
 local PostRead = {
 	MapMonster = |a, t| do

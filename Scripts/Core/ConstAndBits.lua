@@ -44,7 +44,6 @@ const.FacetBits = {
 	Invisible = 0x00002000,
 	AnimatedTFT = 0x00004000,
 	MoveByDoor = 0x00040000,
-	-- 0x4000 - untextured??
 	--TriggerByTouch = 0x00080000,  -- doesn't work anymore
 	IsEventJustHint = 0x00100000,  -- [MM7+]
 	AlternativeSound = 0x00200000,
