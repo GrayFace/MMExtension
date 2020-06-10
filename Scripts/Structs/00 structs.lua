@@ -65,7 +65,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x9DDD98, 0xF8B030, 0xFFD41C)].i4  'HouseTeachMastery'
 	[mmv(0x9DDD80, 0xF8B018, 0xFFD404)].i4  'HousePicType'
 	[mmv(0x552F48, 0x590F00, 0x5A5384)].i4  'HouseOwnerPic'
-	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8)}
+	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), ret = true}
 	[mmv(0x4C3E10, 0x4F076C, 0x500D30)].array(mmv(17, 11, 11)).i4  'GuildJoinCost'
 	[mmv(0x4D5088, 0x5079F8, 0x5192EC)].array(7).EditPChar  'StatsNames'
 	 .Info{Sig = "[stat:const.Stats]"}

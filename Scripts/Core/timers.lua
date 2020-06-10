@@ -289,6 +289,7 @@ function internal.OnTimer()
 		end
 	end
 	if tick ~= LastTick and not Game.Paused and not Game.MoveToMap.Defined and timers then
+		internal.ResetEvtPlayer()
 		CallTimers(tick, LastTick)
 	end
 	events.cocalls("Tick")

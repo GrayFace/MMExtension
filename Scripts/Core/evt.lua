@@ -58,6 +58,7 @@ local MayShow = 0  -- 0 in loading screen, 1 after the game was loaded
 local WasInGame
 
 local function OnLeaveMap()
+	internal.ResetEvtPlayer()
 	events.cocall("LeaveMap")
 	events.RemoveFiles(CurMapScripts)
 	evt.global.RemoveFiles(CurMapScripts)
@@ -165,16 +166,22 @@ function internal.OnLoadMap()
 	-- Return 'true' to cancel execution of map scripts. Used by the Editor.
 	local NoScripts = events.call("CancelLoadingMapScripts")
 	if not NoScripts then
+		internal.ResetEvtPlayer()
+		events.cocall("BeforeLoadMapScripts", WasInGame)
 		LoadScripts("Scripts/Maps/*."..path.setext(MapName, ".lua"), CurMapScripts)
 		LoadScripts("Scripts/Maps/"..path.setext(MapName, ".lua"), CurMapScripts)
+		internal.ResetEvtPlayer()
+		events.cocall("LoadMapScripts", WasInGame)
 	end
 	-- 'NoScripts' = 'true' if map scripts execution was cancelled by #CancelLoadingMapScripts:events.CancelLoadingMapScripts# event.
+	internal.ResetEvtPlayer()
 	events.cocall("LoadMap", WasInGame, NoScripts)
 	UpdateEventJustHint()
 	MayShow = 1
 end
 
 function internal.AfterLoadMap()
+	internal.ResetEvtPlayer()
 	events.cocall("AfterLoadMap")
 end
 
@@ -297,18 +304,23 @@ end
 local GlobalEventInfo, TargetObj
 local AsyncProc, AsyncTrue, AsyncPlayer, AsyncCurrentPlayer, AsyncTargetObj
 
+function internal.ResetEvtPlayer()
+	evt.Player = u4[offsets.CurrentPlayer] - 1
+	if evt.Player < 0 then
+		--!v
+		evt.Player = math.random(Party.Count) - 1
+	end
+	--!v
+	evt.CurrentPlayer = evt.Player
+end
+
 function internal.AfterProcessEvent(evtId, seq, globalEventInfo, targetObj, param, retseq)
 	if evt.house == nil then  -- OnLoadMap wasn't executed
 		return
 	end
 	local old1, old2, old3, old4 = GlobalEventInfo, TargetObj, evt.Player, evt.CurrentPlayer
-	GlobalEventInfo, TargetObj, MayShow, evt.Player = globalEventInfo, targetObj, param, u4[offsets.CurrentPlayer] - 1
-	if evt.Player < 0 then
-		--!v
-		evt.Player = math.random(offsets.PlayersCount) - 1
-	end
-	--!v
-	evt.CurrentPlayer = evt.Player
+	GlobalEventInfo, TargetObj, MayShow = globalEventInfo, targetObj, param
+	internal.ResetEvtPlayer()
 	local f = AsyncProc
 	AsyncProc = nil
 	if evtId ~= 0x7FFF then

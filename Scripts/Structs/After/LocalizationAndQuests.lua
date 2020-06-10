@@ -810,7 +810,7 @@ function KillMonstersQuest(t)
 		evt.Player = pl
 	end
 	
-	local function OnLoadMap()
+	local function OnLoadMap(_, NoScripts)
 		CurMap = Map.Name:lower()
 		CurTasks = {}
 		MaySleep = true
@@ -818,7 +818,7 @@ function KillMonstersQuest(t)
 		RefillDays = a and a.RefillDays or 1/0
 		
 		local state = vars.Quests[t.BaseName]
-		if state == t.DoneState then
+		if state == t.DoneState or NoScripts then
 			return
 		end
 		for _, task in ipairs(tasks) do
