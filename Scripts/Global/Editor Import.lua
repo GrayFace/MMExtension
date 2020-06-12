@@ -75,6 +75,9 @@ local function ParseObj(file, AddVertex, AddFacet, NewObject)
 			local s = line:match("%s([^%s]+)")
 			texture = mtl[s]
 			invis = mtlInv[s]
+			if not texture then
+				texture, invis = events.EditorImportMissingTexture(s)
+			end
 		elseif s == "v" then
 			local t = ParseObjString(line)
 			if not Editor.NoExportRotation then

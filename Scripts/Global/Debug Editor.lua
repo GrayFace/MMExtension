@@ -606,7 +606,7 @@ local function PostActivateMessage()
 	mem.dll.user32.PostMessageA(Game.WindowHandle, 0, 0, 0)  -- WM_NULL
 end
 
-function DoBatchSave(dir, includeBlv)
+function DoBatchSave(dir, includeBlv, export)
 	if not Editor.BatchNoSleep then
 		Sleep(1)
 	end
@@ -618,7 +618,11 @@ function DoBatchSave(dir, includeBlv)
 			print('loading', s)
 			function events.LoadMap()
 				events.remove('LoadMap', 1)
-				io.SaveString(dir..s..".dat", internal.persist(Editor.State))
+				if export then
+					Editor.ExportObj(dir..s..".obj")
+				else
+					io.SaveString(dir..s..".dat", internal.persist(Editor.State))
+				end
 				Editor.Close()
 				PostActivateMessage()
 				function events.Tick()
@@ -639,7 +643,13 @@ end
 function BatchSave(dir, includeBlv)
 	dir = path.addslash(dir or AppPath.."Batch")
 	os.mkdir(dir)
-	cocall2(DoBatchSave, dir, includeOdm)
+	cocall2(DoBatchSave, dir, includeBlv)
+end
+
+function BatchExport(dir)
+	dir = path.addslash(dir or AppPath.."BatchExport")
+	os.mkdir(dir)
+	cocall2(DoBatchSave, dir, true, true)
 end
 
 function DoBatchLoad(mask, odir, preproc, postproc)
