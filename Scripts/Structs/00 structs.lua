@@ -80,6 +80,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x56B6C0, 0x5C8560, 0x5E48F0)].array(mmv(18, 36, 36)).EditPChar  'ClassDescriptions'
 	 .Info{Sig = "[class:const.Class]"}
 	[mmv(0x4D5F4C, 0x50CA54, 0x51E334)].array{40, lenA = i4, lenP = mmv(0x4D5F48, 0x50CA50, 0x51E330)}.struct(structs.ActionItem)  'Actions'
+	.func{name = "ProcessActions", p = mmv(0x42ADA0, 0x4304D6, 0x42EDD8)}
 	[mmv(0x52D29C, 0x576EAC, 0x587ADC)].b4  'NeedRedraw'
 	[mmv(0x55BC04, 0x5C32A8, 0x5DB758)].string(200)  'StatusMessage'
 	.string(200)  'MouseOverStatusMessage'

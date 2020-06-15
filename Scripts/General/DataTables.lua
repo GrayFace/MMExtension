@@ -177,6 +177,7 @@ local function update2()
 	DataTable('Transport Locations', StructsArray(Game.TransportLocations, nil,
 		{Resisable = false, IgnoreFields = {MapIndex = true}}))
 	FixFileTimes()  -- just to be sure
+	events.DataTablesLoaded()
 end
 
 function events.GameInitialized1()
