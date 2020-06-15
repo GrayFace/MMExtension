@@ -1077,12 +1077,16 @@ if mmver == 6 then
 	-- need more work on this
 elseif mmver == 7 then
 	mem.asmpatch(0x433BB1, [[
-		mov esi, [0x5CAA38 + 4 + edi]
+		lea esi, [edi + 4]
+		add esi, [0x413C39]
+		mov esi, [esi]
 		jmp absolute 0x433BF1
 	]])
 elseif mmver == 8 then
 	mem.asmpatch(0x4313CD, [[
-		mov esi, [0x5E6E00 + 4 + edi]
+		lea esi, [edi + 4]
+		add esi, [0x41F936]
+		mov esi, [esi]
 		jmp absolute 0x431409
 	]])
 end
