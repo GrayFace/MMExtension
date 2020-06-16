@@ -183,7 +183,7 @@ local function ReadHeader(state)
 		TilesetsFile = (mmver == 8 and Map.TilesetsFile or nil),
 		Tilesets = {},
 		-- SkyBitmap = Map.OutdoorExtra.SkyBitmap,
-		Ceiling = Map.OutdoorExtra.Ceiling,
+		Ceiling = Map.OutdoorExtra.Ceiling or mmver == 7 and 4000 or 3000,
 		MinimapName = path.setext(Map.Name, ""),
 	}
 	for k in pairs(Editor.OdmBits) do
