@@ -106,6 +106,9 @@ function parse.Options.OnListEnd(E)
 		LL.End()
 		LL.NewStatement()
 	end
+	if _E().ShortFunction and not _E().ShortFunctionEnclosed then
+		LL.NewStatement()
+	end
 end
 
 local oldComma = LL.Parsers()[","]
