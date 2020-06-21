@@ -168,8 +168,8 @@ function internal.OnLoadMap()
 	if not NoScripts then
 		internal.ResetEvtPlayer()
 		events.cocall("BeforeLoadMapScripts", WasInGame)
-		LoadScripts("Scripts/Maps/*."..path.setext(MapName, ".lua"), CurMapScripts)
 		LoadScripts("Scripts/Maps/"..path.setext(MapName, ".lua"), CurMapScripts)
+		LoadScripts("Scripts/Maps/*."..path.setext(MapName, ".lua"), CurMapScripts)
 		internal.ResetEvtPlayer()
 		events.cocall("LoadMapScripts", WasInGame)
 	end
