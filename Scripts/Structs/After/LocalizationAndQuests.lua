@@ -515,14 +515,14 @@ local function NewQuestNumber(t)
 		end
 	end
 	
-	function NewQuestNumber()
+	function NewQuestNumber(t)
 		QuestNumberIndex = QuestNumberIndex + 1
 		local i = QuestNumbers[QuestNumberIndex]
 		t.Quest = assert(i, 'no free quest indexes left. Free indeces are those with "0" set as Quest Note Text in quests.txt')
 		QuestLog[QuestNumberIndex] = t
 	end
 	
-	return NewQuestNumber()
+	return NewQuestNumber(t)
 end
 
 local SlotLiterals = {A = 0, B = 1, C = 2, D = 3, E = 4, F = 5}
