@@ -275,6 +275,8 @@ function structs.f.GameStructure(define)
 		.array{mmv(400, 501), lenA = i4, lenP = mmv(0x6BA534, 0x73C014)}.struct(structs.NPC)  'NPC'
 		[mmv(0x6B74F0, 0x737F44)].array{100, lenA = i4, lenP = mmv(0x6BA530, 0x73C010)}.struct(structs.NPC)  'StreetNPC'
 		[mmv(0x6BA85C, 0x73C110)].array(mmv(78, 59)).EditPChar  'NPCProfNames'
+		[mmv(0x6B4CE8, 0x7369C8)].array(540).array(2).EditPChar  'NPCNames'
+		[mmv(0x6BA540, 0x73C020)].array(2).i4  'NPCNamesCount'
 	else
 		define[0x761998]
 		.array(551).struct(structs.NPC)  'NPCDataTxt'

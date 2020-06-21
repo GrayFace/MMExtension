@@ -1044,10 +1044,13 @@ function structs.f.MapMonster(define)
 	[0x20c+o].i4  'Summoner'
 	[0x210+o].i4  'LastAttacker'
 	 .Info "Last one who hit the monster"
-	[0x214+o].i4  'NameId'  -- NAME_ID
-	 .Info "From PlaceMon.txt"
-	[0x218+o].skip(3*3)  -- RESERVED
-	.size = mmv(0x224, 0x344, 0x3CC)
+	if mmver > 6 then
+		define
+		[0x214+o].i4  'NameId'  -- NAME_ID
+		 .Info "From PlaceMon.txt"
+		[0x218+o].skip(3*3)  -- RESERVED
+	end
+	define.size = mmv(0x224, 0x344, 0x3CC)
 
 	define
 	.method{p = mmv(0x44BF50, 0x4595D3, 0x456E90), name = "LoadFrames"; false}
