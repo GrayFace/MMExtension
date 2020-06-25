@@ -179,15 +179,18 @@ end
 -----------------------------------------------------
 
 local function ReadHeader(state)
+	local a = Map.OutdoorExtra
 	state.Header = {
 		TilesetsFile = (mmver == 8 and Map.TilesetsFile or nil),
 		Tilesets = {},
 		-- SkyBitmap = Map.OutdoorExtra.SkyBitmap,
 		Ceiling = Map.OutdoorExtra.Ceiling or mmver == 7 and 4000 or 3000,
 		MinimapName = path.setext(Map.Name, ""),
+		FogRange1 = a.Foggy and a.FogRange1 or nil,
+		FogRange2 = a.Foggy and a.FogRange2 or nil,
 	}
 	for k in pairs(Editor.OdmBits) do
-		state.Header[k] = Map.OutdoorExtra[k]
+		state.Header[k] = a[k]
 	end
 	for i = 0, 3 do
 		state.Header.Tilesets[i] = Map.Tilesets[i].Group

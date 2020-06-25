@@ -413,12 +413,17 @@ Editor.OdmBits = {
 
 local function UpdateOutdoorExtra()
 	local h = Editor.State.Header
-	mem.fill(Map.OutdoorExtra)
+	local a = Map.OutdoorExtra
+	mem.fill(a)
 	-- h.SkyBitmap = h.SkyBitmap or "plansky3"
 	-- Map.OutdoorExtra.SkyBitmap = h.SkyBitmap
-	Map.OutdoorExtra.Ceiling = h.Ceiling or 100
+	a.Ceiling = mmver == 8 and (h.Ceiling or 4000) or nil
 	for k in pairs(Editor.OdmBits) do
-		Map.OutdoorExtra[k] = h[k]
+		a[k] = h[k]
+	end
+	if a.Foggy then
+		a.FogRange1 = h.FogRange1 or 0
+		a.FogRange2 = h.FogRange2 or 4096
 	end
 end
 

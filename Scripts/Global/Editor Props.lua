@@ -1588,11 +1588,17 @@ local OutdoorProps = {
 	mm8 "AlwaysDark",
 	mm8 "AlwaysLight",
 	mm8 "AlwaysFoggy",
+	"FogRange1",
+	"FogRange2",
 	
 	get = function(id, prop)
 		local v = Editor.State.Header[prop]
 		if prop == "Ceiling" and not v or v == 0 then
 			return 4000
+		elseif prop == "FogRange1" then
+			return v or 0, (v or 0)..COMMENT.."4096 for light fog, 0 for middle or thick"
+		elseif prop == "FogRange2" then
+			return v or 4096, (v or 4096)..COMMENT.."8192 for light fog, 4096 for middle, 2048 for thick, must be bigger than FogRange1"
 		end
 		return v
 	end,
