@@ -919,7 +919,7 @@ function structs.f.Player(define)
 	.i4  'ItemRing4'
 	.i4  'ItemRing5'
 	.i4  'ItemRing6'
-	[mmv(0x1468, 0x1988, 0x1C44)].i4  'SpellBookPage'
+	[mmv(0x152E, 0x1A4E, 0x1C44)].i4  'SpellBookPage'
 	[mmv(0x152F, 0x1A4F, 0x1C45)].u1  'QuickSpell'
 	[mmv(0x1530, 0x1A50, 0x1C46)].array(512).abit  'PlayerBits'
 	if mmver < 8 then
@@ -1225,6 +1225,9 @@ function structs.f.PatchOptions(define)
 	double 'MouseDX'
 	double 'MouseDY'
 	bool  'TrueColorSprites'  Info "[MM7+]"
+	bool  'FixMonstersBlockingShots'  Info "[MM7+]"
+	bool  'FixParalyze'  Info "[MM6] May come to MM7 and MM8 in the future."
+	bool  'EnableAttackSpell'
 	
 	function define.f.Present(name)
 		return present[name]

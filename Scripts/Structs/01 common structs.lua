@@ -1034,6 +1034,7 @@ function structs.f.MapMonster(define)
 	 .Info{Sig = "[buff:const.MonsterBuff]"}
 	if mmver > 6 then
 		define.array(4).struct(structs.Item)  'Items'
+		 .Info "Indexes 0 and 1 are used for stolen items, indexes 2 and 3 are used if TreasureGenerated bit is set: index 2 holds the item and index 3 holds the gold."
 	end
 	o = mmv(0, 0x2c4 - 0x1a4, 0x34c - 0x1a4)
 	define
