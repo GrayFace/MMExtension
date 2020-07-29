@@ -1466,7 +1466,7 @@ function structs.f.HouseMovie(define)
 	define
 	.EditPChar  'FileName'
 	.u1  'Background'
-	 .Info "EVTPAR*, used only in MM6"
+	 .Info "EVTPAR* index, used only in MM6"
 	.skip(3)
 	.i4  'NPCPic'
 	.u1  'HouseType'

@@ -215,10 +215,10 @@ function structs.f.GameStructure(define)
 		 .Info "!Lua[[MonClass = (Id + 2):div(3)]]"
 	end
 	define
-	[offsets.TimeStruct1 + 4].b4  'Paused'  -- checked by event timers
-	 .Info "checked by event timers"
-	[offsets.TimeStruct2 + 4].b4  'Paused2'  -- checked by water damage
-	 .Info "checked by water damage"
+	[offsets.TimeStruct1 + 4].b4  'Paused'
+	 .Info "pauses game logic"
+	[offsets.TimeStruct2 + 4].b4  'Paused2'
+	 .Info "pauses updating view"
 	-- MM6: 4C4468 - something related to shop items generation
 	[mmv(0x90EC2C, 0xAD45B4, 0xB7CA8C)].array(mmv(1, 0, 0), mmv(47, 52, 52)).array(12).struct(structs.Item)  'ShopItems'
 	 .Info{Sig = "[house][slot]"}
@@ -617,7 +617,6 @@ local function DoCountPlayerItems(t, pl)
 	return n
 end
 
--- bounties, deaths, prisons, Page Victories, Squire, Knight, Lord, Bounty Creature, Killed bounty creature,  "unknown coords", Artifacts found
 function structs.f.GameParty(define)
 	define
 	 .Info{Name = "Party"}
@@ -626,9 +625,9 @@ function structs.f.GameParty(define)
 	.i4  'Y'
 	.i4  'Z'
 	.i4  'Direction'
-	 .Info "0 - 2047. 0 is East."
+	 .Info "0 - 2047. 0 is East, 512 is North and so on."
 	.i4  'LookAngle'
-	 .Info "-512 - 512. Values allowed with mouse look: -200 - 200. Without mouse look: -128 - 128"
+	 .Info "-512 - 512. Values allowed with mouse look: -240 - 300 (prior to patch 2.5: -200 - 200). Without mouse look: -128 - 128"
 	.i4  'LastX'
 	.i4  'LastY'
 	.i4  'LastZ'
@@ -896,10 +895,10 @@ function structs.f.Player(define)
 	 .Info{Sig = "[buff:const.PlayerBuff]"}
 	[mmv(0x137C, 0x1934, 0x1BF2)].i2  'RecoveryDelay'
 	[mmv(0x1410, 0x1938, 0x1BF4)].i4  'SkillPoints'
-	[mmv(0x1414, 0x193C, 0x1BF8)].i4  'HP'
-	[mmv(0x1414, 0x193C, 0x1BF8)].i4  'HitPoints'
-	[mmv(0x1418, 0x1940, 0x1BFC)].i4  'SP'
-	[mmv(0x1418, 0x1940, 0x1BFC)].i4  'SpellPoints'
+	[mmv(0x1414, 0x193C, 0x1BF8)].alt.i4  'HP'
+	.i4  'HitPoints'
+	[mmv(0x1418, 0x1940, 0x1BFC)].alt.i4  'SP'
+	.i4  'SpellPoints'
 	[mmv(0x141C, 0x1944, 0x1C00)].i4  'BirthYear'
 	[mmv(0x1428, 0x1948, 0x1C04)].array(16).i4  'EquippedItems'
 	 .Info{Sig = "[slot:const.ItemSlot]"}
@@ -919,7 +918,7 @@ function structs.f.Player(define)
 	.i4  'ItemRing4'
 	.i4  'ItemRing5'
 	.i4  'ItemRing6'
-	[mmv(0x152E, 0x1A4E, 0x1C44)].i4  'SpellBookPage'
+	[mmv(0x152E, 0x1A4E, 0x1C44)].i1  'SpellBookPage'
 	[mmv(0x152F, 0x1A4F, 0x1C45)].u1  'QuickSpell'
 	[mmv(0x1530, 0x1A50, 0x1C46)].array(512).abit  'PlayerBits'
 	if mmver < 8 then
@@ -1228,6 +1227,8 @@ function structs.f.PatchOptions(define)
 	bool  'FixMonstersBlockingShots'  Info "[MM7+]"
 	bool  'FixParalyze'  Info "[MM6] May come to MM7 and MM8 in the future."
 	bool  'EnableAttackSpell'
+	int  'ShooterMode'
+	int  'MaxMLookUpAngle'
 	
 	function define.f.Present(name)
 		return present[name]

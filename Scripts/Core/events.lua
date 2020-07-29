@@ -364,6 +364,16 @@ if mmver == 7 then
 	]])
 end
 
+-- MM8 Question - don't react to key presses
+if mmver == 8 then
+	mem.asmhook2(0x42ED54, [[
+		cmp byte [0x5CCCE4], 0
+		jz @f
+		mov eax, edi
+	@@:
+	]])
+end
+
 -- MM7 Question in house: 0x4B29ED - check esi ~= 0
 
 -- ShowNPCTopics - called when NPC topics list is about to be shown
@@ -528,17 +538,17 @@ end
 -- exit house screen
 mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), 0, 0, function()
 	local i = Game.HouseScreen
-	if CurrentNPC and (i == 0 or i == 1) then  -- i == 0 shouldn't really happen
-		if i == 0 then
-			MessageBox"Unexpected NPC exit happened earlier"
-		end
+	if CurrentNPC and (i == 0 or i == 1) then  -- i == 0 happens with "Enter Temple of Light/Dark"
 		local i = CurrentNPC
 		local t = {NPC = i, Allow = true}
 		events.cocalls("CanExitNPC", t)
-		if Game.HouseNPCSlot <= 0 then  -- something went wrong, can't talk anymore
-			while not t.Allow do
+		if Game.HouseNPCSlot <= 0 then  -- can't talk anymore
+			local _ = 0
+			while not t.Allow and (_ < 100) do
 				events.cocalls("CanExitNPC", t)
+				_ = _ + 1
 			end
+			t.Allow = true
 		end
 		if t.Allow then
 			events.cocalls("ExitNPC", i)
@@ -1403,7 +1413,7 @@ mem[mmver == 7 and 'hook' or 'autohook'](mmv(0x487F74, 0x493DC0, 0x49216B), func
 	if pl.Dead ~= 0 or pl.Eradicated ~= 0 then
 		return
 	end
-	-- 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes case of conditions
+	-- 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes care of conditions
 	events.cocall('Regeneration', t)
 	if t.HP ~= 0 then
 		local v = pl.HP

@@ -102,7 +102,7 @@ const.ChestBits = {
 
 MakeBitsDefiner("MonsterBits")
 const.MonsterBits = {
-	Active = 0x00000400,  -- ?inside the active radius?
+	Active = 0x00000400,  -- inside the active radius
 	ShowOnMap = 0x00008000,  -- monster was once seen by party
 	Invisible = 0x00010000,
 	NoFlee = 0x00020000,
