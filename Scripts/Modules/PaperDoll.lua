@@ -256,7 +256,7 @@ local function DrawDoll(pl)
 	-- decrease effect time
 	if EffectItem then
 		local EffectTime = mm78(0x50C828, 0x51E100)
-		local time = max(i4[EffectTime] - i4[mm78(0x50BA7C, 0x51D354)], 0)
+		local time = max(i4[EffectTime] - Game.TimeDelta, 0)
 		i4[EffectTime] = time
 		if time == 0 then
 			i4[mm78(0x50C824, 0x51E0FC)] = 0

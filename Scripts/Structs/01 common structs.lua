@@ -2384,10 +2384,14 @@ function structs.f.BitmapsLod(define)
 		define
 		[0x23C].array{1000, lenA = i4, lenP = 0x11B7C}.struct(structs.LodBitmap)  'Bitmaps'
 		[0x11BA4].b4  'KeepCompressed'
-		[0x11BA8].b4  'IsHardware'
-		[0x11BAC].parray{lenA = i4, lenP = 0x11B7C}.u4  'D3D_Surfaces'
-		[0x11BB0].parray{lenA = i4, lenP = 0x11B7C}.u4  'D3D_Textures'
-		[0x11BB4].skip(4)
+		.b4  'IsHardware'
+		if mmver == 8 then
+			define.skip(4)
+		end
+		define
+		.parray{lenA = i4, lenP = 0x11B7C}.u4  'D3D_Surfaces'
+		.parray{lenA = i4, lenP = 0x11B7C}.u4  'D3D_Textures'
+		.skip(4)
 		.size = 0x11BB8
 	end
 	

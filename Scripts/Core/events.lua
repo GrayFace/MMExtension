@@ -95,6 +95,24 @@ do
 
 end
 
+local ConditionalHooks = {}
+
+local function Conditional(hooks, name)
+	ConditionalHooks[name] = hooks
+	hooks.Switch(false)
+end
+
+events.setup{
+	EventUsed = function(name, on)
+		local t = ConditionalHooks[name]
+		if t then
+			t.Switch(on)
+		end
+	end,
+}
+internal.EventsSetup = events.setup
+events.setup = nil
+
 
 mem.IgnoreProtection(true)
 
@@ -484,6 +502,15 @@ do
 		end
 		d.eax = call(std, 0, wnd, msg, wp, lp)
 	end)
+end
+
+-- Draw D3D effects
+if mmver > 6 then
+	local hooks = HookManager()
+	hooks.autohook(mm78(0x4A1F92, 0x49FA68), function()
+		events.cocall("PostRender")
+	end)
+	Conditional(hooks, "PostRender")
 end
 
 -- OnAction

@@ -115,6 +115,10 @@ end
 local function make_events(evt)
 	evt = evt or {}
 	local t = {}
+	local onset
+	local function setup(t)
+		onset = t.EventUsed == nil and onset or t.EventUsed
+	end
 	
 	local function call(a, ...)
 		local f = t[a]
@@ -175,6 +179,9 @@ local function make_events(evt)
 				f[f.to] = v
 			else
 				t[a] = {v, from = 1, to = 1}
+				if onset then
+					onset(a, true, evt)
+				end
 			end
 		end
 	end
@@ -192,6 +199,9 @@ local function make_events(evt)
 				f[f.from] = v
 			else
 				t[a] = {v, from = 1, to = 1}
+				if onset then
+					onset(a, true, evt)
+				end
 			end
 		end
 	end
@@ -201,6 +211,9 @@ local function make_events(evt)
 		local d = f.to - f.from
 		if d < 0 then
 			t[a] = nil
+			if onset then
+				onset(a, false, evt)
+			end
 		elseif (f.gaps or 0)*3 + abs(f.from - 1)*1.5 > d then  -- allow 1/3 to be filled with gaps
 			t[a] = remake_list(f)
 		end
@@ -256,6 +269,9 @@ local function make_events(evt)
 			end
 		end
 		t[a] = nil
+		if onset then
+			onset(a, false, evt)
+		end
 	end
 	evt.clear, evt.Clear = clear, clear
 
@@ -313,6 +329,9 @@ local function make_events(evt)
 				f[i] = nil
 			end
 			t[a] = nil
+			if onset then
+				onset(a, false, evt)
+			end
 		end
 	end
 	
@@ -365,7 +384,8 @@ local function make_events(evt)
 		return setmetatable(t1, t1)
 	end
 
-	return setmetatable(evt, {__index = index, __newindex = newindex}), t
+	return setmetatable(evt, {__index = index, __newindex = newindex}), t, setup
 end
 
-_G.events = make_events{new = make_events}
+local ev, t, setup = make_events{new = make_events, setup = true}
+_G.events, ev.setup = ev, setup

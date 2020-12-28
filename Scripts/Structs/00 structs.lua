@@ -224,6 +224,8 @@ function structs.f.GameStructure(define)
 	 .Info "pauses game logic"
 	[offsets.TimeStruct2 + 4].b4  'Paused2'
 	 .Info "pauses updating view"
+	[mmv(0x4D519C, 0x50BA7C, 0x51D354)].i4  'TimeDelta'
+	 .Info "Time since last tick"
 	-- MM6: 4C4468 - something related to shop items generation
 	[mmv(0x90EC2C, 0xAD45B4, 0xB7CA8C)].array(mmv(1, 0, 0), mmv(47, 52, 52)).array(12).struct(structs.Item)  'ShopItems'
 	 .Info{Sig = "[house][slot]"}
@@ -247,10 +249,12 @@ function structs.f.GameStructure(define)
 	 .Info{Sig = "[house]"}
 	[mmv(0x9B1090, 0xE31A9C, 0xF019B4)].parray(480).array(640).struct(structs.ObjectRef)  'ObjectByPixel'
 	 .Info{Sig = "[y][x]"}
-	[mmv(0x918938, 0xAE2F74, 0xBB2E04)].i4  'ArmageddonTimeLeft'  -- maximum is 417
+	[mmv(0x918938, 0xAE2F74, 0xBB2E04)].i4  'ArmageddonTimeLeft'
 	 .Info "maximum is 417"
-	[mmv(0x91893C, 0xAE2F78, 0xBB2E08)].i4  'ArmageddonSkill'  -- damage is 50 + skill
+	[mmv(0x91893C, 0xAE2F78, 0xBB2E08)].i4  'ArmageddonSkill'
 	 .Info "damage is 50 + skill"
+	[mmv(0x6296F4, 0x6BDF04, 0x6F300C)].i4  'OutdoorViewMul'
+	 .Info "Acts as the opposite of FOV"
 	[mmv(0x56B830, 0x5E4000, 0x601448)].array(mmv(596, 677, 750)).EditPChar  'GlobalTxt'
 	[mmv(0x52D530, 0x5912B8, 0x5A5728)].array(mmv(558, 526, 526)).struct(structs.Events2DItem)  'Houses'  -- 2DEvents
 	 .Info "2DEvents.txt"
