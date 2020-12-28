@@ -1,0 +1,480 @@
+Doll	ItemPicture	Image	X	Y	Piece	Mul	Comments
+							Body:
+MBase	PlayerBody	PC%.2dBod	0	0
+MBase	PlayerBody	PC%.2dLad	103	106	arm2		arm when not holding 2-handed weapon
+MBase	PlayerBody	PC%.2dLau	26	107	arm2h		arm when holding 2-handed weapon
+MBase	PlayerBody	PC%.2dRh	30	144	hand1		hand1, always drawn
+MBase	PlayerBody	PC%.2dLh	128	205	hand2		dual-wielding hand
+MBase	PlayerBody	PC%.2dLhu	26	107	hand2h		hand when holding 2-handed weapon
+FBase	PlayerBody	PC%.2dBod	0	0
+FBase	PlayerBody	PC%.2dLad	101	108	arm2
+FBase	PlayerBody	PC%.2dLau	40	109	arm2h
+FBase	PlayerBody	PC%.2dRh	34	158	hand1
+FBase	PlayerBody	PC%.2dLh	131	201	hand2
+FBase	PlayerBody	PC%.2dLhu	40	109	hand2h
+MDwarf	PlayerBody	PC%.2dBod	0	0
+MDwarf	PlayerBody	PC%.2dLad	116	141	arm2
+MDwarf	PlayerBody	PC%.2dLau	25	141	arm2h
+MDwarf	PlayerBody	PC%.2dRh	25	186	hand1
+MDwarf	PlayerBody	PC%.2dLh	131	216	hand2
+MDwarf	PlayerBody	PC%.2dLhu	25	141	hand2h
+FDwarf	PlayerBody	PC%.2dBod	0	0
+FDwarf	PlayerBody	PC%.2dLad	116	147	arm2
+FDwarf	PlayerBody	PC%.2dLau	32	146	arm2h
+FDwarf	PlayerBody	PC%.2dRh	31	184	hand1
+FDwarf	PlayerBody	PC%.2dLh	123	216	hand2
+FDwarf	PlayerBody	PC%.2dLhu	32	146	hand2h
+13	PlayerBody	PC13BRD	52	130	scarf
+14	PlayerBody	PC14BRD	56	136	scarf
+
+							Wetsuit:
+MBase	item299	PC23v1Bod	0	0
+MBase	item299	PC23v1Lad	103	106	arm2
+MBase	item299	PC23v1Lau	26	107	arm2h
+MBase	item299	PC23v1Rh	30	144	hand1
+MBase	item299	PC23v1Lh	128	205	hand2
+MBase	item299	PC23v1Lhu	26	107	hand2h
+FBase	item299	PC23v2Bod	0	0
+FBase	item299	PC23v2Lad	101	108	arm2
+FBase	item299	PC23v2Lau	40	109	arm2h
+FBase	item299	PC23v2Rh	34	158	hand1
+FBase	item299	PC23v2Lh	131	201	hand2
+FBase	item299	PC23v2Lhu	40	109	hand2h
+MDwarf	item299	PC23v3Bod	0	0
+MDwarf	item299	PC23v3Lad	116	141	arm2
+MDwarf	item299	PC23v3Lau	25	141	arm2h
+MDwarf	item299	PC23v3Rh	25	186	hand1
+MDwarf	item299	PC23v3Lh	131	216	hand2
+MDwarf	item299	PC23v3Lhu	25	141	hand2h
+FDwarf	item299	PC23v4Bod	0	0
+FDwarf	item299	PC23v4Lad	116	147	arm2
+FDwarf	item299	PC23v4Lau	32	146	arm2h
+FDwarf	item299	PC23v4Rh	31	184	hand1
+FDwarf	item299	PC23v4Lh	123	216	hand2
+FDwarf	item299	PC23v4Lhu	32	146	hand2h
+
+							Offsets:
+							Shield:
+MBase	ItemExtraHand		128	205	shield	-1
+FBase	ItemExtraHand		131	201	shield	-1
+MDwarf	ItemExtraHand		131	216	shield	-1
+FDwarf	ItemExtraHand		123	216	shield	-1
+							Dual-wielding:
+MBase	ItemExtraHand		128	205	hand2	-1
+FBase	ItemExtraHand		131	201	hand2	-1
+MDwarf	ItemExtraHand		131	216	hand2	-1
+FDwarf	ItemExtraHand		123	216	hand2	-1
+							Arm1:
+MBase	ItemMainHand		30	144		-1
+FBase	ItemMainHand		38	158		-1
+MDwarf	ItemMainHand		29	186		-1
+FDwarf	ItemMainHand		35	184		-1
+							Bow:
+MBase	ItemBow		88	85		-1
+FBase	ItemBow		98	87		-1
+MDwarf	ItemBow		88	119		-1
+FDwarf	ItemBow		98	119		-1
+
+							Cloaks:
+MBase	item105	item105v1	17	104
+FBase	item105	item105v2	21	100
+MDwarf	item105	item105v3	16	138
+FDwarf	item105	item105v4	20	146
+
+MBase	item106	item106v1	15	104
+FBase	item106	item106v2	11	107
+MDwarf	item106	item106v3	9	139
+FDwarf	item106	item106v4	16	146
+MBase	item106	item106v1a1	52	100	scarf
+FBase	item106	item106v2a1	53	102	scarf
+MDwarf	item106	item106v3a1	48	135	scarf
+FDwarf	item106	item106v4a1	56	138	scarf
+
+MBase	item107	item107v1	20	113
+FBase	item107	item107v2	14	103
+MDwarf	item107	item107v3	24	152
+FDwarf	item107	item107v4	21	152
+MBase	item107	item107v1a1	33	105	scarf
+FBase	item107	item107v2a1	41	104	scarf
+MDwarf	item107	item107v3a1	30	134	scarf
+FDwarf	item107	item107v4a1	36	139	scarf
+
+MBase	item108	item108v1	25	107
+FBase	item108	item108v2	21	107
+MDwarf	item108	item108v3	37	145
+FDwarf	item108	item108v4	31	145
+MBase	item108	item108v1a1	29	103	scarf
+FBase	item108	item108v2a1	31	104	scarf
+MDwarf	item108	item108v3a1	27	134	scarf
+FDwarf	item108	item108v4a1	29	139	scarf
+
+MBase	item109	item109v1	33	111
+FBase	item109	item109v2	27	111
+MDwarf	item109	item109v3	41	144
+FDwarf	item109	item109v4	34	144
+MBase	item109	item109v1a1	32	103	scarf
+FBase	item109	item109v2a1	31	106	scarf
+MDwarf	item109	item109v3a1	28	138	scarf
+FDwarf	item109	item109v4a1	33	140	scarf
+
+MBase	item325	item325v1	5	104
+FBase	item325	item325v2	3	107
+MDwarf	item325	item325v3	8	138
+FDwarf	item325	item325v4	8	146
+MBase	item325	item325v1a1	33	104	scarf
+FBase	item325	item325v2a1	33	106	scarf
+MDwarf	item325	item325v3a1	33	135	scarf
+FDwarf	item325	item325v4a1	39	138	scarf
+
+MBase	item330	item330v1	5	104
+FBase	item330	item330v2	0	107
+MDwarf	item330	item330v3	9	139
+FDwarf	item330	item330v4	12	146
+MBase	item330	item330v1a1	52	100	scarf
+FBase	item330	item330v2a1	43	102	scarf
+MDwarf	item330	item330v3a1	48	135	scarf
+FDwarf	item330	item330v4a1	52	138	scarf
+
+MBase	item348	item348v1	20	113
+FBase	item348	item348v2	14	103
+MDwarf	item348	item348v3	24	152
+FDwarf	item348	item348v4	21	152
+MBase	item348	item348v1a1	33	105	scarf
+FBase	item348	item348v2a1	38	104	scarf
+MDwarf	item348	item348v3a1	30	134	scarf
+FDwarf	item348	item348v4a1	36	139	scarf
+
+MBase	item350	item350v1	3	107
+FBase	item350	item350v2	0	107
+MDwarf	item350	item350v3	3	145
+FDwarf	item350	item350v4	3	145
+MBase	item350	item350v1a1	29	103	scarf
+FBase	item350	item350v2a1	31	104	scarf
+MDwarf	item350	item350v3a1	27	134	scarf
+FDwarf	item350	item350v4a1	37	139	scarf
+
+							Armor:
+MBase	item066	item066v1	44	103	
+MBase	item066	item066v1a1	100	103	arm2
+FBase	item066	item066v2	50	104	
+FBase	item066	item066v2a1	96	107	arm2
+MDwarf	item066	item066v3	42	140	
+MDwarf	item066	item066v3a1	109	140	arm2
+FDwarf	item066	item066v4	51	144	
+FDwarf	item066	item066v4a1	114	145	arm2
+
+MBase	item067	item067v1	48	105	
+MBase	item067	item067v1a1	97	103	arm2
+MBase	item067	item067v1a2	97	103	arm2h
+FBase	item067	item067v2	50	105	
+FBase	item067	item067v2a1	96	108	arm2
+MDwarf	item067	item067v3	41	140	
+MDwarf	item067	item067v3a1	117	140	arm2
+FDwarf	item067	item067v4	50	144	
+FDwarf	item067	item067v4a1	114	145	arm2
+
+MBase	item068	item068v1	45	103	
+MBase	item068	item068v1a1	101	104	arm2
+FBase	item068	item068v2	53	105	
+FBase	item068	item068v2a1	96	107	arm2
+MDwarf	item068	item068v3	42	137	
+FDwarf	item068	item068v4	52	145	
+
+MBase	item069	item069v1	44	100	
+MBase	item069	item069v1a1	110	116	arm2
+MBase	item069	item069v1a2	100	105	arm2h
+FBase	item069	item069v2	51	104	
+FBase	item069	item069v2a1	97	106	arm2
+FBase	item069	item069v2a2	96	108	arm2h
+MDwarf	item069	item069v3	41	134	
+MDwarf	item069	item069v3a1	114	141	arm2
+MDwarf	item069	item069v3a2	114	141	arm2h
+FDwarf	item069	item069v4	50	142	
+FDwarf	item069	item069v4a1	110	146	arm2
+FDwarf	item069	item069v4a2	114	145	arm2h
+
+MBase	item070	item070v1	20	102	
+MBase	item070	item070v1a1	108	104	arm2
+MBase	item070	item070v1a2	100	104	arm2h
+FBase	item070	item070v2	36	103	
+FBase	item070	item070v2a1	96	105	arm2
+FBase	item070	item070v2a2	94	105	arm2h
+MDwarf	item070	item070v3	18	135	
+MDwarf	item070	item070v3a1	106	137	arm2
+MDwarf	item070	item070v3a2	98	137	arm2h
+FDwarf	item070	item070v4	33	139	
+FDwarf	item070	item070v4a1	111	145	arm2
+FDwarf	item070	item070v4a2	103	143	arm2h
+
+MBase	item071	item071v1	34	103	
+MBase	item071	item071v1a1	97	103	arm2
+FBase	item071	item071v2	48	105	
+MDwarf	item071	item071v3	45	137	
+FDwarf	item071	item071v4	49	139	
+
+MBase	item072	item072v1	32	102	
+MBase	item072	item072v1a1	102	104	arm2
+FBase	item072	item072v2	51	104	
+FBase	item072	item072v2a1	96	106	arm2
+MDwarf	item072	item072v3	42	136	
+MDwarf	item072	item072v3a1	115	140	arm2
+FDwarf	item072	item072v4	51	142	
+
+MBase	item073	item073v1	37	102	
+MBase	item073	item073v1a1	108	106	arm2
+MBase	item073	item073v1a2	94	102	arm2h
+FBase	item073	item073v2	49	105	
+FBase	item073	item073v2a1	97	105	arm2
+FBase	item073	item073v2a2	93	106	arm2h
+MDwarf	item073	item073v3	37	135	
+MDwarf	item073	item073v3a1	105	140	arm2
+MDwarf	item073	item073v3a2	105	140	arm2h
+FDwarf	item073	item073v4	47	143	
+FDwarf	item073	item073v4a1	110	145	arm2
+
+MBase	item074	item074v1	18	102	
+MBase	item074	item074v1a1	110	109	arm2
+MBase	item074	item074v1a2	95	105	arm2h
+FBase	item074	item074v2	25	105	
+FBase	item074	item074v2a1	99	106	arm2
+FBase	item074	item074v2a2	91	106	arm2h
+MDwarf	item074	item074v3	18	139	
+MDwarf	item074	item074v3a1	110	141	arm2
+MDwarf	item074	item074v3a2	94	141	arm2h
+FDwarf	item074	item074v4	22	141	
+FDwarf	item074	item074v4a1	113	144	arm2
+FDwarf	item074	item074v4a2	100	147	arm2h
+
+MBase	item075	item075v1	10	102	
+MBase	item075	item075v1a1	103	105	arm2
+MBase	item075	item075v1a2	85	105	arm2h
+FBase	item075	item075v2	25	106	
+FBase	item075	item075v2a1	100	106	arm2
+FBase	item075	item075v2a2	91	106	arm2h
+MDwarf	item075	item075v3	18	139	
+MDwarf	item075	item075v3a1	113	141	arm2
+MDwarf	item075	item075v3a2	97	141	arm2h
+FDwarf	item075	item075v4	24	140	
+FDwarf	item075	item075v4a1	114	141	arm2
+FDwarf	item075	item075v4a2	101	140	arm2h
+
+MBase	item076	item076v1	19	100	
+MBase	item076	item076v1a1	112	103	arm2
+MBase	item076	item076v1a2	95	103	arm2h
+FBase	item076	item076v2	22	102	
+FBase	item076	item076v2a1	97	102	arm2
+FBase	item076	item076v2a2	89	105	arm2h
+MDwarf	item076	item076v3	17	138	
+MDwarf	item076	item076v3a1	112	141	arm2
+MDwarf	item076	item076v3a2	95	141	arm2h
+FDwarf	item076	item076v4	25	140	
+FDwarf	item076	item076v4a1	114	144	arm2
+FDwarf	item076	item076v4a2	101	145	arm2h
+
+MBase	item077	item077v1	14	100	
+MBase	item077	item077v1a1	110	109	arm2
+MBase	item077	item077v1a2	95	104	arm2h
+FBase	item077	item077v2	22	101	
+FBase	item077	item077v2a1	102	103	arm2
+FBase	item077	item077v2a2	86	104	arm2h
+MDwarf	item077	item077v3	21	135	
+MDwarf	item077	item077v3a1	114	141	arm2
+MDwarf	item077	item077v3a2	96	141	arm2h
+FDwarf	item077	item077v4	27	142	
+FDwarf	item077	item077v4a1	115	147	arm2
+FDwarf	item077	item077v4a2	103	145	arm2h
+
+MBase	item078	item078v1	10	99	
+MBase	item078	item078v1a1	108	111	arm2
+MBase	item078	item078v1a2	50	105	arm2h
+FBase	item078	item078v2	15	107	
+FBase	item078	item078v2a1	100	108	arm2
+FBase	item078	item078v2a2	56	110	arm2h
+MDwarf	item078	item078v3	9	137	
+MDwarf	item078	item078v3a1	116	142	arm2
+MDwarf	item078	item078v3a2	46	140	arm2h
+FDwarf	item078	item078v4	12	140	
+FDwarf	item078	item078v4a1	115	144	arm2
+FDwarf	item078	item078v4a2	54	144	arm2h
+
+MBase	item234	item234v1	20	102	
+MBase	item234	item234v1a1	108	104	arm2
+MBase	item234	item234v1a2	100	104	arm2h
+FBase	item234	item234v2	36	103	
+FBase	item234	item234v2a1	96	105	arm2
+FBase	item234	item234v2a2	94	105	arm2h
+MDwarf	item234	item234v3	18	135	
+MDwarf	item234	item234v3a1	106	137	arm2
+MDwarf	item234	item234v3a2	98	137	arm2h
+FDwarf	item234	item234v4	33	139	
+FDwarf	item234	item234v4a1	111	145	arm2
+FDwarf	item234	item234v4a2	103	143	arm2h
+
+MBase	item235	item235v1	10	102	
+MBase	item235	item235v1a1	103	105	arm2
+MBase	item235	item235v1a2	85	105	arm2h
+FBase	item235	item235v2	25	106	
+FBase	item235	item235v2a1	100	106	arm2
+FBase	item235	item235v2a2	91	106	arm2h
+MDwarf	item235	item235v3	18	139	
+MDwarf	item235	item235v3a1	113	141	arm2
+MDwarf	item235	item235v3a2	97	141	arm2h
+FDwarf	item235	item235v4	24	140	
+FDwarf	item235	item235v4a1	114	141	arm2
+FDwarf	item235	item235v4a2	101	140	arm2h
+
+MBase	item236	item236v1	10	99	
+MBase	item236	item236v1a1	108	111	arm2
+MBase	item236	item236v1a2	50	105	arm2h
+FBase	item236	item236v2	15	107	
+FBase	item236	item236v2a1	100	108	arm2
+FBase	item236	item236v2a2	56	110	arm2h
+MDwarf	item236	item236v3	9	137	
+MDwarf	item236	item236v3a1	116	142	arm2
+MDwarf	item236	item236v3a2	46	140	arm2h
+FDwarf	item236	item236v4	12	140	
+FDwarf	item236	item236v4a1	115	144	arm2
+FDwarf	item236	item236v4a2	54	144	arm2h
+
+							Belts:
+MBase	item100	item100v1	58	182
+FBase	item100	item100v2	62	173
+MDwarf	item100	item100v1	59	213
+FDwarf	item100	item100v2	66	210
+
+MBase	item101	item101v1	55	178
+FBase	item101	item101v2	58	172
+MDwarf	item101	item101v1	55	210
+FDwarf	item101	item101v2	63	208
+
+MBase	item102	item102v1	52	185
+FBase	item102	item102v2	55	176
+MDwarf	item102	item102v1	49	213
+FDwarf	item102	item102v2	59	215
+
+MBase	item103	item103v1	58	185
+FBase	item103	item103v2	58	177
+MDwarf	item103	item103v1	57	214
+FDwarf	item103	item103v2	60	213
+
+MBase	item104	item104v1	55	183
+FBase	item104	item104v2	57	176
+MDwarf	item104	item104v1	55	216
+FDwarf	item104	item104v2	59	214
+
+MBase	item324	item324v1	56	172
+FBase	item324	item324v2	60	165
+MDwarf	item324	item324v3	55	209
+FDwarf	item324	item324v4	62	207
+
+							Helms:
+MBase	item089	item089v1	62	31
+FBase	item089	item089v2	65	30
+MDwarf	item089	item089v1	63	71
+FDwarf	item089	item089v2	69	69
+
+MBase	item090	item090v1	65	44
+FBase	item090	item090v2	66	43
+MDwarf	item090	item090v1	65	86
+FDwarf	item090	item090v2	70	84
+
+MBase	item091	item091v1	55	47
+FBase	item091	item091v2	55	47
+MDwarf	item091	item091v1	55	89
+FDwarf	item091	item091v2	58	85
+
+MBase	item092	item092v1	49	50
+FBase	item092	item092v2	52	48
+MDwarf	item092	item092v3	50	94
+FDwarf	item092	item092v3	56	88
+
+MBase	item093	item093v1	55	42
+FBase	item093	item093v2	57	41
+MDwarf	item093	item093v1	55	88
+FDwarf	item093	item093v2	60	84
+
+MBase	item094	item094v1	57	40
+FBase	item094	item094v2	58	38
+MDwarf	item094	item094v1	57	84
+FDwarf	item094	item094v2	63	82
+
+MBase	item095	item095v1	54	52
+FBase	item095	item095v2	54	52
+MDwarf	item095	item095v1	52	97
+FDwarf	item095	item095v2	57	91
+
+MBase	item096	item096v1	65	56
+FBase	item096	item096v2	65	55
+MDwarf	item096	item096v1	64	97
+FDwarf	item096	item096v2	69	92
+
+MBase	item097	item097v1	64	49
+FBase	item097	item097v2	66	50
+MDwarf	item097	item097v1	65	93
+FDwarf	item097	item097v2	71	92
+
+MBase	item098	item098v1	64	33
+FBase	item098	item098v2	64	33
+MDwarf	item098	item098v1	62	79
+FDwarf	item098	item098v2	68	75
+
+MBase	item099	item099v1	64	49
+FBase	item099	item099v2	64	49
+MDwarf	item099	item099v1	62	91
+FDwarf	item099	item099v2	68	87
+
+MBase	item239	item239v1	60	51
+FBase	item239	item239v2	64	47
+MDwarf	item239	item239v1	61	91
+FDwarf	item239	item239v2	67	85
+
+MBase	item240	item240v1	61	36
+FBase	item240	item240v2	62	34
+MDwarf	item240	item240v1	63	76
+FDwarf	item240	item240v2	68	74
+
+MBase	item241	item241v1	58	26
+FBase	item241	item241v2	59	26
+MDwarf	item241	item241v1	59	69
+FDwarf	item241	item241v2	62	69
+
+MBase	item344	item344v1	65	72
+FBase	item344	item344v2	66	71
+MDwarf	item344	item344v1	65	116
+FDwarf	item344	item344v2	71	112
+
+							Boots:
+MBase	item115	item115v1	14	285
+FBase	item115	item115v2	20	293
+MDwarf	item115	item115v3	29	289
+FDwarf	item115	item115v4	31	295
+
+MBase	item116	item116v1	13	285
+FBase	item116	item116v2	19	290
+MDwarf	item116	item116v3	28	287
+FDwarf	item116	item116v4	31	290
+
+MBase	item117	item117v1	12	266
+FBase	item117	item117v2	21	288
+MDwarf	item117	item117v3	27	283
+FDwarf	item117	item117v4	27	283
+
+MBase	item118	item118v1	10	255
+FBase	item118	item118v2	21	276
+MDwarf	item118	item118v3	28	279
+FDwarf	item118	item118v4	29	279
+
+MBase	item119	item119v1	13	249
+FBase	item119	item119v2	19	266
+MDwarf	item119	item119v3	22	278
+FDwarf	item119	item119v4	29	278
+
+MDwarf	item281	item281pc%.2d	27	311
+FDwarf	item281	item281pc%.2d	29	311
+MBase	item281	item281pc%.2d	13	311
+FBase	item281	item281pc%.2d	17	318
+
+MBase	item312	item312v1	12	270
+FBase	item312	item312v2	17	278
+MDwarf	item312	item312v3	27	283
+FDwarf	item312	item312v4	27	287

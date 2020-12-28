@@ -7,6 +7,9 @@ local function mmv(...)
 	assert(ret ~= nil)
 	return ret
 end
+local function mm78(...)
+	return (select(mmver - 5, nil, ...))
+end
 
 local PatchDll = mem.dll[AppPath.."mm"..internal.MMVersion.."patch"] or {}
 local PatchOptionsPtr = PatchDll.GetOptions
@@ -17,6 +20,7 @@ function events.StructsLoaded()
 	Party = Game.Party
 	Map = Game.Map
 	Mouse = Game.Mouse
+	Screen = Game.Screen
 	Game.Dll = PatchDll
 end
 
@@ -36,6 +40,7 @@ function structs.f.GameStructure(define)
 	[0].struct(structs.GameMap)  'Map'
 	[mmv(0x6A6110, 0, 0)].struct(structs.GameMouse)  'Mouse'
 	[0].struct(structs.Weather)  'Weather'
+	[mmv(0x971068, 0xDF1A68, 0xEC1980)].struct(structs.GameScreen)  'Screen'
 	-- [0].struct(structs.GameStrings)  'Strings'
 	[PatchOptionsPtr or 0].struct(structs.PatchOptions)  'PatchOptions'
 	if PatchDll.GetLodRecords then
@@ -793,8 +798,10 @@ function structs.f.Player(define)
 		define[mmv(0x11, 0xB8)].b1  'Sex'
 	else
 		define[0xC8].string(256)  'Biography'  -- length is unknown
-		.method{p = 0x48F5CE, name = "GetSex"; false}
-		 .Info{Sig = "BasedOnVoice = false"; "Determines sex based on Face or Voice"}
+	end
+	if mmver > 6 then
+		define.method{p = mm78(0x490139, 0x48F5CE), name = "GetSex"; mm78(nil, false)}
+		 .Info{Sig = "BasedOnVoice[MM8] = false"; "Determines sex based on Face or Voice"}
 	end
 	for name, i in pairs(const.Condition) do
 		define[mmv(0x1380, 0x0, 0x0) + 8*i].i8 (name)
@@ -1111,13 +1118,63 @@ function structs.f.Player(define)
 	define.Info{Sig = "Delay"}
 end
 
--- function structs.f.Screen(define)
--- 	function define.f.Draw(x, y, pic, opaque)
--- 		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic)
--- 		local f = opaque and mmv(0x40B000, 0x4A5E42, 0x4A3CD5) or mmv(0x40B180, 0x4A6204, 0x4A419B)
--- 		-- Game.IconsLod.Bitmaps[pic]
--- 	end
--- end
+local DrawStyles = {
+	opaque = mmv(0x40A1D0, 0x4A5E42, 0x4A3CD5),
+	transparent = mmv(0x40A680, 0x4A6204, 0x4A419B),
+	red = mmv(0x40A760, 0x4A6706, 0x4A4784),
+	green = mmv(0x40A880, 0x4A687F, 0x4A4A1E),
+}
+
+-- 'style':
+--   "transparent", 'false' - draw treating color index 0 as transparent
+--   "opaque", 'true' - draw without transparency
+--   "red" - draw broken item
+--   "green" - draw unidentified item
+function structs.f.GameScreen(define)
+	define.Info{Name = "Screen"}
+	if mmver > 6 then
+		define.b4  'IsD3D'
+	end
+	define[mmv(4, 0x10, 0x10)]
+	.i4  'Width'
+	.i4  'Height'
+	.i4  'Pitch'
+	.i4  'cx1'
+	.i4  'cy1'
+	.i4  'cx2'
+	.i4  'cy2'
+	[mmv(0x40024, 0x400EC, 0x400EC)].u4  'Buffer'
+	[mmv(0x40028, 0x40034, 0x40034)].u4  'ObjectByPixel'
+	
+	function define.f:Draw(x, y, pic, style, rotate, EnglishD)
+		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
+		local f = DrawStyles[style == true and 'opaque' or style or 'transparent']
+		if mmver == 6 then
+			mem.call(f, 2, self.Buffer + (self.Width*y + x)*2, pic, 0)
+		else
+			mem.call(f, 1, self['?ptr'], x, y, Game.IconsLod.Bitmaps[pic], rotate or 0)
+		end
+	end
+	define.Info{Sig = "x, y, pic, style, rotate, EnglishD"}
+
+	function define.f:DrawItemEffect(x, y, shapePic, efPic, palShift, palFrom, palTo, rotate, EnglishD)
+		assert(mmver > 6)
+		shapePic = Game.IconsLod.Bitmaps[type(shapePic) == "number" and shapePic or Game.IconsLod:LoadBitmap(shapePic, EnglishD)]
+		efPic = Game.IconsLod.Bitmaps[type(efPic) == "number" and efPic or Game.IconsLod:LoadBitmap(efPic, EnglishD)]
+		mem.call(mm78(0x4A6376, 0x4A4424), 1, self['?ptr'], x, y, shapePic, efPic, palShift or timeGetTime()/10, palFrom or 0, palTo or 255, rotate or 0)
+	end
+	define.Info{Sig = "x, y, shapePic, effectPic, palShift, palAnimateFrom, palAnimateTo, rotate, EnglishD"}
+	
+	function define.f:DrawToObjectByPixel(x, y, pic, index, rotate, EnglishD)
+		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
+		if mmver == 6 then
+			mem.call(0x40A990, 2, self.ObjectByPixel + (self.Width*y + x)*4, pic, index)
+		else
+			mem.call(mm78(0x4A60BA, 0x4A3F4D), 1, self['?ptr'], x, y, Game.IconsLod.Bitmaps[pic], index, rotate or 0)
+		end
+	end	
+	define.Info{Sig = "x, y, pic, index, rotate, EnglishD"}
+end
 
 function structs.f.PatchOptions(define)
 	local off, n = 0, PatchOptionsPtr and i4[PatchOptionsPtr] or 0

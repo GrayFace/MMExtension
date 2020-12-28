@@ -2024,6 +2024,8 @@ if internal.CompileAsm then
 end
 
 -- Set hook at the beginning of a function, allows calling the original function (see #copycode:mem.copycode# note)
+-- Function 'f' is as follows: !Lua[[f(d, def, params...)]]
+-- Here 'd' is HookData object, 'def' is the default function defined as !Lua[[def(params...)]] and 'params...' are the parameters.
 function _mem.hookfunction(p, nreg, nstack, f, size)
 	size = size or GetNoJumpSize(p)
 	assert(size >= 5)

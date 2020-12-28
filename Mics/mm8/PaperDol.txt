@@ -1,0 +1,371 @@
+Doll	ItemPicture	Image	X	Y	Piece	Mul	Comments
+							Body:
+1	PlayerBody	pc01bod	30	33
+2	PlayerBody	pc02bod	60	47
+3	PlayerBody	pc03bod	30	31
+4	PlayerBody	pc04bod	60	47
+5	PlayerBody	pc05bod	29	34
+6	PlayerBody	pc06bod	60	47
+7	PlayerBody	pc07bod	29	34
+8	PlayerBody	pc08bod	60	47
+9	PlayerBody	pc09bod	29	34
+10	PlayerBody	pc10bod	60	54
+11	PlayerBody	pc11bod	29	38
+12	PlayerBody	pc12bod	60	48
+13	PlayerBody	pc13bod	30	33
+14	PlayerBody	pc14bod	60	47
+15	PlayerBody	pc15bod	30	34
+16	PlayerBody	pc16bod	60	47
+17	PlayerBody	pc17bod	30	38
+18	PlayerBody	pc18bod	60	47
+19	PlayerBody	pc19bod	30	36
+20	PlayerBody	pc20bod	60	47
+21	PlayerBody	pc21bod	47	67
+22	PlayerBody	pc22bod	48	54
+23	PlayerBody	pc23bod	43	43
+24	PlayerBody	pc24bod	41	51
+25	PlayerBody	pc25bod	0	0
+26	PlayerBody	pc26bod	0	0
+27	PlayerBody	pc27bod	29	33
+28	PlayerBody	pc28bod	61	45
+MBase	PlayerBody	pc%.2dLHu	138	150	hand2		dual-wielding hand
+MBase	PlayerBody	pc%.2dLHu	138	150	shield		arm drawn behind armor when holding shield
+MBase	PlayerBody	pc%.2dLHo	132	150	arm2f		arm drawn behind armor when not holding anything
+MBase	PlayerBody	pc%.2dLHu	138	150	arm2hb		arm drawn behind armor when not holding 2-handed weapon
+MBase	PlayerBody	pc%.2dRHb	27	118	hand1x		hand1 drawn only when holding weapon
+MBase	PlayerBody	pc%.2dRHd	29	110	arm1f		arm1 when not holding weapon
+MBase	PlayerBody	pc%.2dRHu	27	117	arm1		arm1 drawn only when holding weapon
+FBase	PlayerBody	pc%.2dLHd	129	148	arm2f
+FBase	PlayerBody	pc%.2dLHo	117	148	arm2hb
+FBase	PlayerBody	pc%.2dLHu	129	148	hand2
+FBase	PlayerBody	pc%.2dLHu	129	148	shield
+FBase	PlayerBody	pc%.2dRHb	43	142	hand1x
+FBase	PlayerBody	pc%.2dRHd	25	132	arm1f
+FBase	PlayerBody	pc%.2dRHu	43	142	arm1
+Minotaur	PlayerBody	pc%.2dLHd	122	162	arm2f
+Minotaur	PlayerBody	pc%.2dLHo	119	161	arm2hb
+Minotaur	PlayerBody	pc%.2dLHu	122	162	hand2
+Minotaur	PlayerBody	pc%.2dLHu	122	162	shield
+Minotaur	PlayerBody	pc%.2dRHb	12	170	hand1x
+Minotaur	PlayerBody	pc%.2dRHd	14	168	arm1f
+Minotaur	PlayerBody	pc%.2dRHu	12	166	arm1
+Troll	PlayerBody	pc%.2dLHd	131	159	arm2f
+Troll	PlayerBody	pc%.2dLHo	131	159	arm2hb
+Troll	PlayerBody	pc%.2dLHu	131	159	hand2
+Troll	PlayerBody	pc%.2dLHu	131	159	shield
+Troll	PlayerBody	pc%.2dRHb	3	157	hand1x
+Troll	PlayerBody	pc%.2dRHd	8	159	arm1f
+Troll	PlayerBody	pc%.2dRHu	3	156	arm1
+
+							Offsets:
+							Shield:
+MBase	ItemExtraHand		144	194	shield	-1
+FBase	ItemExtraHand		133	200	shield	-1
+Minotaur	ItemExtraHand		145	232	shield	-1
+Troll	ItemExtraHand		149	209	shield	-1
+							Dual-wielding:
+MBase	ItemExtraHand		144	194	hand2	0,-1,1,0
+FBase	ItemExtraHand		133	200	hand2	0,-1,1,0
+Minotaur	ItemExtraHand		145	232	hand2	0,-1,1,0
+Troll	ItemExtraHand		149	209	hand2	0,-1,1,0
+							Arm1:
+MBase	ItemMainHand		37	125		-1
+FBase	ItemMainHand		51	149		-1
+Minotaur	ItemMainHand		20	182		-1
+Troll	ItemMainHand		13	169		-1
+							Bow:
+	ItemBow		98	117		-1
+
+							Cloaks:
+MBase	item122	item122v1a	51	79
+MBase	item122	item122v1b	84	80	scarf
+FBase	item122	item122v2a	47	90
+FBase	item122	item122v2b	75	90	scarf
+Minotaur	item122	item122v1a	40	120
+Minotaur	item122	item122v1b	68	120	scarf
+Troll	item122	item122v1a	41	94
+Troll	item122	item122v1b	61	99	scarf
+
+MBase	item123	item123v1a	54	81
+MBase	item123	item123v1b	77	81	scarf
+FBase	item123	item123v2a	54	91
+FBase	item123	item123v2b	67	91	scarf
+Minotaur	item123	item123v1a	40	119
+Minotaur	item123	item123v1b	64	116	scarf
+Troll	item123	item123v1a	39	94
+Troll	item123	item123v1b	61	99	scarf
+
+MBase	item124	item124v1a	56	82
+MBase	item124	item124v1b	76	76	scarf
+FBase	item124	item124v2a	60	91
+FBase	item124	item124v2b	69	91	scarf
+Minotaur	item124	item124v1a	40	115
+Minotaur	item124	item124v1b	65	113	scarf
+Troll	item124	item124v1a	44	103
+Troll	item124	item124v1b	65	99	scarf
+
+MBase	item125	item125v1a	49	80
+MBase	item125	item125v1b	80	73	scarf
+FBase	item125	item125v2a	55	93
+FBase	item125	item125v2b	72	83	scarf
+Minotaur	item125	item125v1a	40	119
+Minotaur	item125	item125v1b	65	114	scarf
+Troll	item125	item125v1a	44	97
+Troll	item125	item125v1b	65	95	scarf
+
+MBase	item126	item126v1a	57	82
+MBase	item126	item126v1b	64	57	scarf
+MBase	item126	item126v1c	64	57	scarf2
+FBase	item126	item126v2a	54	95
+FBase	item126	item126v2b	51	64	scarf
+FBase	item126	item126v2c	51	64	scarf2
+Minotaur	item126	item126v1a	40	123
+Minotaur	item126	item126v1b	48	104	scarf
+Minotaur	item126	item126v1c	48	104	scarf2
+Troll	item126	item126v1a	44	88
+Troll	item126	item126v1b	47	78	scarf
+Troll	item126	item126v1c	47	78	scarf2
+
+MBase	item260	item260v1a	51	78
+MBase	item260	item260v1b	81	64	scarf
+FBase	item260	item260v2a	53	94
+FBase	item260	item260v2b	72	76	scarf
+Minotaur	item260	item260v1a	40	120
+Minotaur	item260	item260v1b	68	105	scarf
+Troll	item260	item260v1a	41	94
+Troll	item260	item260v1b	61	84	scarf
+
+							Armor:
+Base	item084		0	0
+MBase	item084	item084v1	47	78	arm1
+MBase	item084	item084v1a	47	78	arm1f
+FBase	item084	item084v2	50	93	arm1
+FBase	item084	item084v2a	50	93	arm1f
+Minotaur	item084	item084v3	44	108
+Troll	item084	item084v4	0	0
+
+Base	item085		0	0
+MBase	item085	item085v1	30	84	arm1
+MBase	item085	item085v1a	30	84	arm1f
+FBase	item085	item085v2	60	95	arm1
+FBase	item085	item085v2a	60	95	arm1f
+Minotaur	item085	item085v3	45	111
+Troll	item085	item085v4	0	0
+
+Base	item086		0	0
+MBase	item086	item086v1	29	72	arm1
+MBase	item086	item086v1a	29	72	arm1f
+FBase	item086	item086v2	57	86	arm1
+FBase	item086	item086v2a	57	86	arm1f
+Minotaur	item086	item086v3	40	101
+Troll	item086	item086v4	0	0
+
+Base	item087		0	0
+MBase	item087	item087v1	29	78	arm1
+MBase	item087	item087v1a	29	78	arm1f
+FBase	item087	item087v2	47	90	arm1
+FBase	item087	item087v2a	47	90	arm1f
+Minotaur	item087	item087v3	29	107
+Troll	item087	item087v4	0	0
+
+Base	item088		0	0
+MBase	item088	item088v1	46	78	arm1
+MBase	item088	item088v1a	46	78	arm1f
+FBase	item088	item088v2	42	88	arm1
+FBase	item088	item088v2a	42	88	arm1f
+Minotaur	item088	item088v3	38	103
+Troll	item088	item088v4	0	0
+
+Base	item089		0	0
+MBase	item089	item089v1	61	82	arm1
+MBase	item089	item089v1a	61	82	arm1f
+FBase	item089	item089v2	61	98	arm1
+FBase	item089	item089v2a	61	98	arm1f
+Minotaur	item089	item089v3	46	111
+Troll	item089	item089v4	0	0
+
+Base	item090		0	0
+MBase	item090	item090v1	55	82	arm1
+MBase	item090	item090v1a	55	82	arm1f
+FBase	item090	item090v2	60	98	arm1
+FBase	item090	item090v2a	60	98	arm1f
+Minotaur	item090	item090v3	45	116
+Troll	item090	item090v4	0	0
+
+Base	item091		0	0
+MBase	item091	item091v1	45	76	arm1
+MBase	item091	item091v1a	45	76	arm1f
+FBase	item091	item091v2	56	89	arm1
+FBase	item091	item091v2a	56	89	arm1f
+Minotaur	item091	item091v3	46	107
+Troll	item091	item091v4	0	0
+
+Base	item092		0	0
+MBase	item092	item092v1	49	76	arm1
+MBase	item092	item092v1a	49	76	arm1f
+FBase	item092	item092v2	52	90	arm1
+FBase	item092	item092v2a	52	90	arm1f
+Minotaur	item092	item092v3	36	100
+Troll	item092	item092v4	0	0
+
+Base	item093		0	0
+MBase	item093	item093v1	49	76	arm1
+MBase	item093	item093v1a	49	76	arm1f
+FBase	item093	item093v2	43	84	arm1
+FBase	item093	item093v2a	43	84	arm1f
+Minotaur	item093	item093v3	28	105
+Troll	item093	item093v4	0	0
+
+Base	item094		0	0
+MBase	item094	item094v1	62	81	arm1
+MBase	item094	item094v1a	62	81	arm1f
+FBase	item094	item094v2	52	94	arm1
+FBase	item094	item094v2a	52	94	arm1f
+Minotaur	item094	item094v3	41	115
+
+Base	item095		0	0
+MBase	item095	item095v1	55	79	arm1
+MBase	item095	item095v1a	55	79	arm1f
+FBase	item095	item095v2	51	91	arm1
+FBase	item095	item095v2a	51	91	arm1f
+Minotaur	item095	item095v3	39	109
+
+Base	item096		0	0
+MBase	item096	item096v1	46	73	arm1
+MBase	item096	item096v1a	46	73	arm1f
+FBase	item096	item096v2	47	90	arm1
+FBase	item096	item096v2a	47	90	arm1f
+Minotaur	item096	item096v3	34	109
+
+Base	item097		0	0
+MBase	item097	item097v1	50	60	arm1
+MBase	item097	item097v1a	50	60	arm1f
+FBase	item097	item097v2	54	65	arm1
+FBase	item097	item097v2a	54	65	arm1f
+Minotaur	item097	item097v3	39	96
+
+Base	item098		0	0
+MBase	item098	item098v1	53	70	arm1
+MBase	item098	item098v1a	53	70	arm1f
+FBase	item098	item098v2	48	82	arm1
+FBase	item098	item098v2a	48	82	arm1f
+Minotaur	item098	item098v3	39	100
+
+Base	item251		0	0
+MBase	item251	item251v1	29	57	arm1
+MBase	item251	item251v1a	29	57	arm1f
+FBase	item251	item251v2	47	70	arm1
+FBase	item251	item251v2a	47	70	arm1f
+Minotaur	item251	item251v3	27	100
+Troll	item251	item251v4	0	0
+
+Base	item252		0	0
+MBase	item252	item252v1	29	68	arm1
+MBase	item252	item252v1a	29	68	arm1f
+FBase	item252	item252v2	49	86	arm1
+FBase	item252	item252v2a	49	86	arm1f
+Minotaur	item252	item252v3	36	103
+Troll	item252	item252v4	0	0
+
+Base	item253		0	0
+MBase	item253	item253v1	30	69	arm1
+MBase	item253	item253v1a	30	69	arm1f
+FBase	item253	item253v2	52	82	arm1
+FBase	item253	item253v2a	52	82	arm1f
+Minotaur	item253	item253v3	32	107
+
+							Belts:
+MBase	item117	item117v1	64	147
+FBase	item117	item117v2	68	151
+Minotaur	item117	item117v1	55	194
+Troll	item117	item117v1	58	182
+
+MBase	item118	item118v1	66	147
+FBase	item118	item118v2	70	154
+Minotaur	item118	item118v1	57	194
+Troll	item118	item118v1	55	178
+
+MBase	item119	item119v1	63	146
+FBase	item119	item119v2	71	155
+Minotaur	item119	item119v1	54	193
+Troll	item119	item119v1	52	185
+
+MBase	item120	item120v1	67	138
+FBase	item120	item120v2	70	154
+Minotaur	item120	item120v1	58	190
+Troll	item120	item120v1	58	175
+
+MBase	item121	item121v1	65	151
+FBase	item121	item121v2	72	153
+Minotaur	item121	item121v1	58	198
+Troll	item121	item121v1	55	183
+
+							Helms:
+MBase	item109	item109v1	87	28
+FBase	item109	item109v2	72	41
+Troll	item109	item109v4	77	42
+
+MBase	item110	item110v1	79	24
+FBase	item110	item110v2	65	35
+Troll	item110	item110v4	64	30
+
+MBase	item111	item111v1	85	27
+FBase	item111	item111v2	74	45
+Troll	item111	item111v4	68	41
+
+MBase	item112	item112v1	57	8
+FBase	item112	item112v2	49	25
+Troll	item112	item112v4	43	13
+
+MBase	item113	item113v1	77	18
+FBase	item113	item113v2	62	28
+Troll	item113	item113v4	50	18
+
+MBase	item114	item114v1	85	26
+FBase	item114	item114v1	72	42
+Troll	item114	item114v4	78	40
+
+MBase	item115	item115v1	78	14
+FBase	item115	item115v1	66	30
+Troll	item115	item115v4	74	35
+
+MBase	item116	item116v1	88	30
+FBase	item116	item116v1	72	42
+Troll	item116	item116v4	78	38
+
+MBase	item256	item256v1	77	6
+FBase	item256	item256v2	68	26
+Troll	item256	item256v4	61	17
+
+MBase	item257	item257v1	83	30
+FBase	item257	item257v1	68	47
+Troll	item257	item257v4	70	50
+
+MBase	item258	item258v1	81	0
+FBase	item258	item258v2	67	-5
+Troll	item258	item258v4	77	12
+
+							Boots:
+MBase	item132	item132v1	46	261
+FBase	item132	item132v2	75	260
+Troll	item132	item132v4	46	290
+
+MBase	item133	item133v1	40	255
+FBase	item133	item133v2	73	260
+Troll	item133	item133v4	44	278
+
+MBase	item134	item134v1	31	250
+FBase	item134	item134v2	64	255
+Troll	item134	item134v4	45	269
+
+MBase	item135	item135v1	30	250
+FBase	item135	item135v2	64	257
+Troll	item135	item135v4	45	268
+
+MBase	item136	item136v1	26	241
+FBase	item136	item136v2	57	242
+Troll	item136	item136v4	45	250
+
+MBase	item262	item262v1	41	254
+FBase	item262	item262v2	70	250
+Troll	item262	item262v4	47	272

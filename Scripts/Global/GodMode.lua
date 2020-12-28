@@ -44,3 +44,12 @@ function god(lev)
 	
 	Game.NeedRedraw = true
 end
+
+function godSkill(lev)
+	for _, pl in Party do
+		for i, v in pl.Skills do
+			local skill = math.max(SplitSkill(v), 10)
+			pl.Skills[i] = JoinSkill(skill, const.GM)
+		end
+	end
+end

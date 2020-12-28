@@ -173,8 +173,8 @@ function internal.OnLoadMap()
 		internal.ResetEvtPlayer()
 		events.cocall("LoadMapScripts", WasInGame)
 	end
-	-- 'NoScripts' = 'true' if map scripts execution was cancelled by #CancelLoadingMapScripts:events.CancelLoadingMapScripts# event.
 	internal.ResetEvtPlayer()
+	-- 'NoScripts' = 'true' if map scripts execution was cancelled by #CancelLoadingMapScripts:events.CancelLoadingMapScripts# event.
 	events.cocall("LoadMap", WasInGame, NoScripts)
 	UpdateEventJustHint()
 	MayShow = 1

@@ -1,0 +1,145 @@
+Doll	ItemPicture	Image	X	Y	Piece	Comments
+1	PlayerBody	mlabod	495	52		main piece, always drawn
+2	PlayerBody	mlbbod	495	53
+3	PlayerBody	mlcbod	495	52
+4	PlayerBody	mldbod	495	52
+5	PlayerBody	mlebod	495	52
+6	PlayerBody	mlfbod	495	52
+7	PlayerBody	mlgbod	494	53
+8	PlayerBody	mlhbod	495	51
+9	PlayerBody	grlabod	497	52
+10	PlayerBody	grlbbod	493	52
+11	PlayerBody	grlcbod	495	52
+12	PlayerBody	grldbod	495	51
+1	PlayerBody	mlaarm1	587	106	arm2	2nd arm drawn without 2-handed weapon
+2	PlayerBody	mlbarm1	579	100	arm2
+3	PlayerBody	mlcarm1	574	107	arm2
+4	PlayerBody	mldarm1	588	102	arm2
+5	PlayerBody	mlearm1	592	102	arm2
+6	PlayerBody	mlfarm1	584	105	arm2
+7	PlayerBody	mlgarm1	582	100	arm2
+8	PlayerBody	mlharm1	585	104	arm2
+9	PlayerBody	grlaarm1	585	104	arm2
+10	PlayerBody	grlbarm1	583	103	arm2
+11	PlayerBody	grlcarm1	586	102	arm2
+12	PlayerBody	grldarm1	584	101	arm2
+1	PlayerBody	mlaarm2	513	104	hand2h	2nd arm drawn with 2-handed weapon
+2	PlayerBody	mlbarm2	513	99	hand2h
+3	PlayerBody	mlcarm2	513	103	hand2h
+4	PlayerBody	mldarm2	513	102	hand2h
+5	PlayerBody	mlearm2	513	100	hand2h
+6	PlayerBody	mlfarm2	513	104	hand2h
+7	PlayerBody	mlgarm2	513	107	hand2h
+8	PlayerBody	mlharm2	513	106	hand2h
+9	PlayerBody	grlaarm2	513	105	hand2h
+10	PlayerBody	grlbarm2	513	104	hand2h
+11	PlayerBody	grlcarm2	513	107	hand2h
+12	PlayerBody	grldarm2	513	101	hand2h	note: numbered PlayerBody takes precedence over simple PlayerBody
+	PlayerBody	RTHAND	606	186	hand2	2nd hand drawn when dual-wielding (can also be used to shift weapon position in 2nd hand)
+	PlayerBody	LEFTHAND	513	160	hand1	main hand, always drawn
+	ItemExtraHand		572	26	hand2	2nd hand weapon offset (such offsets can be followed by player face number)
+						piece 'shield' is used for drawing shield, so ItemExtraHand with piece 4 can set shield offset
+						piece 'scarf' can be used for cloaks, then it's drawn above the head and helmet
+	
+						Armor:
+	lr1icon	LR1BOD	534	98
+	lr2icon	LR2BOD	516	94
+	lr3icon	LR3BOD	514	93
+	lr4icon	LR4BOD	510	92
+	lr5icon	LR5BOD	525	93
+	chn1icon	CHN1BOD	523	92
+	chn2icon	CHN2BOD	521	91
+	chn3icon	CHN3BOD	506	94
+	chn4icon	CHN4BOD	508	94
+	chn5icon	CHN5BOD	497	94
+	chnAicon	CHNABOD	497	94
+	chnRicon	CHNRBOD	497	94
+	pl1icon	PL1BOD	494	102
+	pl2icon	PL2BOD	494	101
+	pl3icon	PL3BOD	495	97
+	plAicon	PLABOD	495	97
+	plRicon	PLRBOD	495	97
+	lr1icon	LR1ARM1	569	98	arm2	(not 2-handed weapon)
+	lr2icon	LR2ARM1	568	96	arm2
+	lr3icon	LR3ARM1	569	97	arm2
+	lr4icon	LR4ARM1	569	96	arm2
+	lr5icon	LR5ARM1	577	96	arm2
+	chn1icon	CHN1ARM1	577	96	arm2
+	chn2icon	CHN2ARM1	576	95	arm2
+	chn3icon	CHN3ARM1	568	95	arm2
+	chn4icon	CHN4ARM1	569	97	arm2
+	chn5icon	CHN5ARM1	572	96	arm2
+	chnAicon	CHNAARM1	572	96	arm2
+	chnRicon	CHNRARM1	572	96	arm2
+	pl1icon	PL1ARM1	580	103	arm2
+	pl2icon	PL2ARM1	583	103	arm2
+	pl3icon	PL3ARM1	582	104	arm2
+	plAicon	PLAARM1	582	104	arm2
+	plRicon	PLRARM1	582	104	arm2
+	lr1icon	LR1ARM2	563	98	hand2h	(2-handed weapon)
+	lr2icon	LR2ARM2	568	96	hand2h
+	lr3icon	LR3ARM2	569	99	hand2h
+	lr4icon	LR4ARM2	572	95	hand2h
+	lr5icon	LR5ARM2	566	97	hand2h
+	chn1icon	CHN1ARM2	565	95	hand2h
+	chn2icon	CHN2ARM2	564	94	hand2h
+	chn3icon	CHN3ARM2	568	94	hand2h
+	chn4icon	CHN4ARM2	568	97	hand2h
+	chn5icon	CHN5ARM2	568	97	hand2h
+	chnAicon	CHNAARM2	568	97	hand2h
+	chnRicon	CHNRARM2	568	97	hand2h
+	pl1icon	PL1ARM2	513	103	hand2h
+	pl2icon	PL2ARM2	513	104	hand2h
+	pl3icon	PL3ARM2	513	103	hand2h
+	plAicon	PLAARM2	513	103	hand2h
+	plRicon	PLRARM2	513	103	hand2h
+						Helms:
+	helm1	helm1
+	hlm2icon	helm2
+	hlm3icon	helm3
+	hlm4icon	helm4
+	hlm5icon	helm5
+	hat1a	hat1b
+	hat2a	hat2b
+	hat3a	hat3b
+	crown1a	crown1b
+	crown2a	crown2b
+	crown3a	crown3b
+	crownAa	crownAb
+	crownRa	crownRb
+						Belts:
+	belt1a	BELT1B
+	belt2a	BELT2B
+	belt3a	BELT3B
+	belt4a	BELT4B
+	belt5a	BELT5B
+						Cloaks:
+	cape1a	cape1b
+	cape2a	cape2b
+	cape3a	cape3b
+	cape4a	cape4b
+	cape5a	cape5b
+	capeAa	capeAb
+	capeRa	capeRb
+						Dual-wielding:
+	lsword1	lsword1	500	6	hand2
+	lsword2	lsword2	503	8	hand2
+	lsword3	lsword3	507	9	hand2
+	lsword4	lsword4	506	3	hand2
+	lsword5	lsword5	504	7	hand2
+	lswordR	lswordR	504	7	hand2
+	brsword1	brsword1	506	17	hand2
+	brsword2	brsword2	503	15	hand2
+	brsword3	brsword3	505	2	hand2
+	brswordA	brswordA	505	2	hand2
+	cutlass1	cutlass1	504	3	hand2
+	cutlass2	cutlass2	507	13	hand2
+	cutlass3	cutlass3	503	13	hand2
+	dagger3	dagger3	507	68	hand2
+	dagger4	dagger4	511	83	hand2
+	dagger5	dagger5	505	80	hand2
+	ldagger1	ldagger1	505	43	hand2
+	ldagger2	ldagger2	507	48	hand2
+	ldagger3	ldagger3	505	60	hand2
+	ldaggerA	ldaggerA	505	60	hand2
+			

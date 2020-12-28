@@ -10,7 +10,7 @@ local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
 
-local _KNOWNGLOBALS = Party, Game, Map, VFlipUnfixed, FixVFlip, HookManager, structs, GetCurrentNPC
+local _KNOWNGLOBALS = Party, Game, Map, VFlipUnfixed, FixVFlip, HookManager, structs, GetCurrentNPC, GameInitialized1, GameInitialized2
 
 
 do
@@ -244,11 +244,13 @@ function internal.SetFogRange()
 end
 
 function internal.GameInitialized1()
+	GameInitialized1 = true
 	-- loaded .bin data
 	events.cocalls("GameInitialized1")
 end
 
 function internal.GameInitialized2()
+	GameInitialized2 = true
 	-- loaded .txt data
 	events.cocalls("GameInitialized2")
 end
