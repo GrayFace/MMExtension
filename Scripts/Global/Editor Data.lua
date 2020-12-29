@@ -1,5 +1,5 @@
 Editor = Editor or {}
-local _KNOWNGLOBALS = FacetRefsLimit, BitmapsHDScale, ProblemFacet, SelectProblemFacet
+local _KNOWNGLOBALS = FacetRefsLimit, BitmapsHDScale
 
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
 local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar
@@ -399,18 +399,7 @@ local function WriteFacet(a, t)
 		-- table.copy(t.ExactData, a, true)
 		for k, v in pairs(t.ExactData) do
 			if v ~= a[k] and (k:sub(1,3) == 'Min' or k:sub(1,3) == 'Max') then --k:lower() > "m" and k:lower() < "n" then
-				-- a[k] = v
-				ProblemFacet = ProblemFacet or {}
-				if ProblemFacet[#ProblemFacet] ~= t then
-					ProblemFacet[#ProblemFacet + 1] = t
-					print('---')
-					print(dump(t))
-					local vd = Editor.NeedDoorCache()
-					for _, v in ipairs(t.Vertexes) do
-						print(vd[v])
-					end
-				end
-				print(k, a[k], v)
+				a[k] = v
 			end
 		end
 	end
@@ -426,18 +415,6 @@ local function WriteFacet(a, t)
 	else
 		a.Room = FacetRooms[t]
 	end
-end
-
-function SelectProblemFacet(i)
-	i = i or 1
-	Editor.ClearSelection()
-	Editor.SelectionKind = skFacet
-	local f = ProblemFacet[i]
-	Editor.SelectSingleFacet(Editor.FacetIds[f])
-	Map.Facets[Editor.FacetIds[f]].IsPortal = false
-	XYZ(Party, XYZ(f.Vertexes[1]))
-	Editor.SelectionChanged = true
-	Editor.UpdateSelectionState()
 end
 
 -----------------------------------------------------
@@ -899,12 +876,14 @@ local function AssignEntityToRooms(rooms, t, r2)
 end
 
 local function AssignSpriteToRooms(t)
-	local i = Map.RoomFromPoint(XYZ(t))
+	local x, y, z = XYZ(t)
+	local i = Map.RoomFromPoint(x, y, z)
+	if i == 0 then
+		i = Map.RoomFromPoint(x, y, z + 10)
+	end
 	if i == 0 then
 		-- print('failed', XYZ(t))
-		return AssignEntityToRooms(RoomSprites, t, 0)
-	else
-		-- print('success', XYZ(t))
+		return AssignEntityToRooms(RoomSprites, t, 1024^2)
 	end
 	-- found
 	for _, a in pairs(RoomSprites) do
@@ -1768,7 +1747,6 @@ Editor.profile = profile
 
 function Editor.UpdateMap(CompileFile)
 	Editor.DoorCache = nil
-	ProblemFacet = nil
 	Editor.Selection = {}
 	mem.dll.user32.BringWindowToTop(Game.WindowHandle)
 	local bin = {}
@@ -1785,7 +1763,6 @@ function Editor.UpdateMap(CompileFile)
 		return
 	end
 	
-	local lastAllocPtr = allocPtr
 	state.Rooms = state.Rooms or {}
 	state.Rooms[1] = state.Rooms[1] or {Facets = {}}
 	if not Game.IsD3D or CompileFile then
@@ -1797,7 +1774,6 @@ function Editor.UpdateMap(CompileFile)
 	end
 	profile "PrepareLists"
 	PrepareLists(CompileFile)
-	assert(lastAllocPtr == allocPtr)  -- just make sure nothing is allocated while populating lists
 	-- prepare to allocate
 	mem.fill(allocBuf, allocPtr - allocBuf, 0)
 	allocPtr = allocStart
@@ -1920,8 +1896,8 @@ function Editor.UpdateMap(CompileFile)
 	for _, o in Map.Outlines do
 		o.Visible = true
 	end
-	-- InitRoomEntityList("Sprites")
-	-- InitRoomEntityList("Lights")
+	InitRoomEntityList("Sprites")
+	InitRoomEntityList("Lights")
 	profile(nil)
 	-- return standard struct behavior
 	Editor.RemoveListSpeedup(Map.Vertexes)
