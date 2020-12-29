@@ -1,5 +1,5 @@
 Editor = Editor or {}
-local _KNOWNGLOBALS = FacetRefsLimit, BitmapsHDScale
+local _KNOWNGLOBALS = FacetRefsLimit, BitmapsHDScale, ProblemFacet, SelectProblemFacet
 
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
 local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar
@@ -261,22 +261,25 @@ end
 
 local function UpdateFacetMinMax(a, t)
 	local v = t.Vertexes
-	local door = t.Door or {}
 	if not v[1] then
 		return  -- for exact mode
 	end
+	local vd, vnd
+	if t.Door or t.IsPortal then
+		vd, vnd = Editor.NeedDoorCache()
+	end
 	-- BBox
 	local function minmax(coord)
-		local m1, m2 = v[1][coord], v[1][coord]
-		for i = 2, #v do
-			m1 = min(m1, v[i][coord])
-			m2 = max(m2, v[i][coord])
-		end
-		local d = (door["Direction"..coord] or 0)*(door.MoveLength or 0)
-		if d >= 0 then
-			m2 = m2 + d
-		else
-			m1 = m1 + d
+		local m1, m2 = math.huge, -math.huge
+		for i, a in ipairs(v) do
+			m1 = min(m1, a[coord])
+			m2 = max(m2, a[coord])
+			local door = vd and vd[a]
+			if door and (not vnd[a] or door == t.Door or t.IsPortal or t.MultiDoor) then
+				local d = (door["Direction"..coord] or 0)*(door.MoveLength or 0)
+				m1 = min(m1, a[coord] + d)
+				m2 = max(m2, a[coord] + d)
+			end
 		end
 		a["Min"..coord] = round(m1) - 5
 		a["Max"..coord] = round(m2) + 5
@@ -380,8 +383,6 @@ local function WriteFacet(a, t)
 	a.YInterceptDisplacement[n] = a.YInterceptDisplacement[0]
 	a.ZInterceptDisplacement[n] = a.ZInterceptDisplacement[0]
 	
-	UpdateFacetMinMax(a, t)
-	
 	-- other properties
 	a.HasData = t.Door ~= nil and (mmver > 6 or not t.DoorStaticBmp)
 	-- print(#FacetData, a.HasData)
@@ -391,13 +392,25 @@ local function WriteFacet(a, t)
 			break
 		end
 	end
+
+	UpdateFacetMinMax(a, t)
 	
 	if t.ExactData then
 		-- table.copy(t.ExactData, a, true)
 		for k, v in pairs(t.ExactData) do
-			if v ~= a[k] and k:sub(1,3) == 'Min' or k:sub(1,3) == 'Max' then --k:lower() > "m" and k:lower() < "n" then
-				-- print(k, a[k], v)
-				a[k] = v
+			if v ~= a[k] and (k:sub(1,3) == 'Min' or k:sub(1,3) == 'Max') then --k:lower() > "m" and k:lower() < "n" then
+				-- a[k] = v
+				ProblemFacet = ProblemFacet or {}
+				if ProblemFacet[#ProblemFacet] ~= t then
+					ProblemFacet[#ProblemFacet + 1] = t
+					print('---')
+					print(dump(t))
+					local vd = Editor.NeedDoorCache()
+					for _, v in ipairs(t.Vertexes) do
+						print(vd[v])
+					end
+				end
+				print(k, a[k], v)
 			end
 		end
 	end
@@ -413,6 +426,18 @@ local function WriteFacet(a, t)
 	else
 		a.Room = FacetRooms[t]
 	end
+end
+
+function SelectProblemFacet(i)
+	i = i or 1
+	Editor.ClearSelection()
+	Editor.SelectionKind = skFacet
+	local f = ProblemFacet[i]
+	Editor.SelectSingleFacet(Editor.FacetIds[f])
+	Map.Facets[Editor.FacetIds[f]].IsPortal = false
+	XYZ(Party, XYZ(f.Vertexes[1]))
+	Editor.SelectionChanged = true
+	Editor.UpdateSelectionState()
 end
 
 -----------------------------------------------------
@@ -874,11 +899,18 @@ local function AssignEntityToRooms(rooms, t, r2)
 end
 
 local function AssignSpriteToRooms(t)
-	-- local i = Map.RoomFromPoint(XYZ(t))
-	-- if i == 0 then
+	local i = Map.RoomFromPoint(XYZ(t))
+	if i == 0 then
+		-- print('failed', XYZ(t))
 		return AssignEntityToRooms(RoomSprites, t, 0)
-	-- end
-	-- RoomSprites[Editor.State.Rooms[i + 1]][t] = true
+	else
+		-- print('success', XYZ(t))
+	end
+	-- found
+	for _, a in pairs(RoomSprites) do
+		a[t] = nil
+	end
+	RoomSprites[Editor.State.Rooms[i + 1]][t] = true
 	-- return AssignEntityToRooms(RoomSprites, t, 1024^2)
 end
 
@@ -1367,6 +1399,7 @@ end
 
 -- must be followed by a call to Editor.UpdateDoorsBounds
 function Editor.RecreateDoors(list)
+	Editor.DoorCache = nil
 	for door in pairs(list) do
 		local id = Editor.DoorIds[door]
 		local a = id and Map.Doors[id]
@@ -1399,6 +1432,28 @@ function Editor.RecreateDoors(list)
 		Editor.ResetMoveByDoor()
 	end
 	Editor.CheckDoorsUpdate()
+end
+
+function Editor.NeedDoorCache()
+	if not Editor.DoorCache then
+		Editor.DoorCache, Editor.DoorCacheN = {}, {}
+		local doors = {}
+		for f in pairs(FacetIds) do
+			if f.Door then
+				doors[f.Door] = true
+			end
+		end
+		for door in pairs(doors) do
+			local vert, nvert = Editor.GetDoorVertexLists(door)
+			for v in pairs(vert) do
+				Editor.DoorCache[v] = door
+				if nvert[v] then
+					Editor.DoorCacheN[v] = true
+				end
+			end
+		end
+	end
+	return Editor.DoorCache, Editor.DoorCacheN
 end
 
 -----------------------------------------------------
@@ -1712,15 +1767,16 @@ end
 Editor.profile = profile
 
 function Editor.UpdateMap(CompileFile)
-	
+	Editor.DoorCache = nil
+	ProblemFacet = nil
 	Editor.Selection = {}
 	mem.dll.user32.BringWindowToTop(Game.WindowHandle)
-	mem.fill(allocBuf, allocPtr - allocBuf, 0)
-	allocPtr = allocStart
 	local bin = {}
 	Editor.BinInfo = bin
 
 	if not Map.IsIndoor() then
+		mem.fill(allocBuf, allocPtr - allocBuf, 0)
+		allocPtr = allocStart
 		return Editor.UpdateOdm(CompileFile)
 	end
 	
@@ -1729,17 +1785,22 @@ function Editor.UpdateMap(CompileFile)
 		return
 	end
 	
+	local lastAllocPtr = allocPtr
 	state.Rooms = state.Rooms or {}
 	state.Rooms[1] = state.Rooms[1] or {Facets = {}}
 	if not Game.IsD3D or CompileFile then
 		profile "BuildBSP"
 		Editor.BuildBSP(true)
 	end
-	-- if CompileFile and not Editor.StateSync then
-	-- 	Editor.UpdateMap()  -- need RoomFromPoint for sprites
-	-- end
+	if CompileFile and not Editor.StateSync then
+		Editor.UpdateMap()  -- need RoomFromPoint for sprites
+	end
 	profile "PrepareLists"
 	PrepareLists(CompileFile)
+	assert(lastAllocPtr == allocPtr)  -- just make sure nothing is allocated while populating lists
+	-- prepare to allocate
+	mem.fill(allocBuf, allocPtr - allocBuf, 0)
+	allocPtr = allocStart
 
 	-- vertexes
 	profile "vertexes"
@@ -1859,8 +1920,8 @@ function Editor.UpdateMap(CompileFile)
 	for _, o in Map.Outlines do
 		o.Visible = true
 	end
-	InitRoomEntityList("Sprites")
-	InitRoomEntityList("Lights")
+	-- InitRoomEntityList("Sprites")
+	-- InitRoomEntityList("Lights")
 	profile(nil)
 	-- return standard struct behavior
 	Editor.RemoveListSpeedup(Map.Vertexes)

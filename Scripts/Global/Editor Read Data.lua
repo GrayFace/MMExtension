@@ -968,6 +968,7 @@ function Editor.ReadMapCommon(state)
 end
 
 function Editor.ReadMap()
+	Editor.DoorCache = nil
 	if not Map.IsIndoor() then
 		return Editor.ReadOdm()
 	end
