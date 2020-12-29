@@ -665,6 +665,7 @@ function Editor.LoadObj(file, AsObjects)
 		BuildModels()
 		Editor.SetState(state)
 	end
+	Editor.DoorCache = nil
 	-- if BuildRooms() then
 		-- Editor.State = state
 	-- else

@@ -17,6 +17,12 @@ local CHK_BACK = 2
 local CHK_INTERSECT = 3
 local CHK_COPLANAR = 4
 local CHK_DOOR = 5
+local ChkName = {}
+ChkName[CHK_FRONT] = 'front'
+ChkName[CHK_BACK] = 'back'
+ChkName[CHK_INTERSECT] = 'intersect'
+ChkName[CHK_COPLANAR] = 'coplanar'
+ChkName[CHK_DOOR] = 'door'
 
 local function FacetPlane(a)
 	return a.NormalX, a.NormalY, a.NormalZ, a.NormalDistance
@@ -84,9 +90,95 @@ local function CheckFacet(a, nx, ny, nz, d, f)  -- checks if 'a' can be split by
 	return DoorCheck(DoCheckFacet2, a, nx, ny, nz, d, dd)
 end
 
+
+
+local function DoCheckFacet2(a, nx, ny, nz, d, doors)
+	local front, back
+	for _, v in ipairs(a.Vertexes) do
+		local dist = v.X*nx + v.Y*ny + v.Z*nz + d
+		local q = doors and Editor.GetVertexDoor(a, v)
+		if q and doors[q] then
+			dist = dist + q.MoveLength*(q.DirectionX*nx + q.DirectionY*ny + q.DirectionZ*nz)
+		end
+		if dist > Delta then
+			front = true
+		elseif dist < -Delta then
+			back = true
+		end
+	end
+	if front and back then
+		return a.IsPortal and CHK_DOOR or CHK_INTERSECT  -- intersect
+	elseif front then
+		return CHK_FRONT  -- front
+	elseif back then
+		return CHK_BACK  -- back
+	else
+		return CHK_COPLANAR  -- coplanar
+	end
+end
+
+local function CombineChecks(r1, r2)
+	if r1 == CHK_INTERSECT or r2 == CHK_INTERSECT then
+		return CHK_DOOR
+	elseif r1 == r2 or r2 == CHK_COPLANAR then
+		return r1
+	elseif r1 == CHK_COPLANAR then
+		return r2
+	else
+		return CHK_DOOR
+	end
+end
+
+local function CheckFacetFix(a, nx, ny, nz, d, f)  -- checks if 'a' can be split by 'f' with respect to both doors
+	-- test with no doors moved:
+	local r = DoCheckFacet2(a, nx, ny, nz, d)
+	local q = DoorNonStatic(f)
+	if q == DoorNonStatic(a) and q == a.Door and not a.MultiDoor then
+		return r
+	elseif r == CHK_DOOR or r == CHK_INTERSECT then
+		return CHK_DOOR
+	end
+	local doors = {}
+	if a.Door or a.IsPortal then
+		for _, v in ipairs(a.Vertexes) do
+			local door = Editor.GetVertexDoor(a, v)
+			if door then
+				doors[door] = true
+			end
+		end
+	end
+	-- test with all doors moved:
+	local dd = q and -q.MoveLength*(q.DirectionX*nx + q.DirectionY*ny + q.DirectionZ*nz) or 0
+	r = CombineChecks(r, DoCheckFacet2(a, nx, ny, nz, d + dd, doors))
+	-- test with all but plane's door moved:
+	doors[q] = nil
+	if r == CHK_DOOR or dd == 0 or not next(doors) then
+		return r
+	end
+	r = CombineChecks(r, DoCheckFacet2(a, nx, ny, nz, d, doors))
+	-- test with only plane's door moved:
+	if r == CHK_DOOR then
+		return r
+	end
+	return CombineChecks(r, DoCheckFacet2(a, nx, ny, nz, d + dd, {[q] = true}))
+end
+
+local function CheckFacetFix2(a, nx, ny, nz, d, f)
+	local r2 = CheckFacetFix(a, nx, ny, nz, d, f)
+	-- if not Editor.ImportIndex then
+	-- 	return r2
+	-- end
+	local r1 = CheckFacet(a, nx, ny, nz, d, f)
+	if r1 ~= r2 then
+		print('facet:', Editor.ImportIndex[a], 'plane:', Editor.ImportIndex[f], 'old:', ChkName[r1], 'new:', ChkName[r2])
+	end
+	return r2
+end
+Editor.ImportIndex = true
+
 local function QuickCheckFacet(a, nx, ny, nz, d, f)
-	if a.IsPortal or DoorNonStatic(f) ~= DoorNonStatic(a) then
-		return CheckFacet(a, nx, ny, nz, d, f)
+	if a.IsPortal or a.MultiDoor or DoorNonStatic(f) ~= DoorNonStatic(a) then
+		return CheckFacetFix2(a, nx, ny, nz, d, f)
 	end
 	local IsCop = (abs(a.nx*nx + a.ny*ny + a.nz*nz) >= 0.999)
 	local front, back
@@ -386,6 +478,7 @@ end
 -----------------------------------------------------
 
 function Editor.BuildBSP(DifferErrors)
+	Editor.DoorCache = nil
 	UniqueVertex = Editor.AddUnique()
 	DoorVerts = {}
 	for i, r in ipairs(Editor.State.Rooms) do
