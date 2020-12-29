@@ -221,6 +221,7 @@ local FacetBits = table.copy(const.FacetBits, {
 	DoorStaticBmp = true,
 	MovedByDoor = true,
 	MultiDoor = true,
+	UntouchableMM6 = true,
 }, true)
 
 local IsFacetDataProp = {
@@ -355,6 +356,7 @@ local FacetProps = MakeProps{
 	mm7o "TriggerByObject",
 	mm7 "IsSecret",  -- show in red with Perception
 	
+	mm6o "UntouchableMM6",
 	"Untouchable",
 	"Invisible",
 	"DontShowOnMap",

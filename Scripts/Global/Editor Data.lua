@@ -386,6 +386,9 @@ local function WriteFacet(a, t)
 			break
 		end
 	end
+	if t.UntouchableMM6 and mmver == 6 then
+		a.Untouchable = true
+	end
 
 	UpdateFacetMinMax(a, t)
 	

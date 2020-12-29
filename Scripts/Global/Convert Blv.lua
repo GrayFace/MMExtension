@@ -45,6 +45,10 @@ local PostRead = {
 			t.NPC_ID = nil
 		end
 	end,
+	MapFacet = |a, t| if mmver == 6 and t.Untouchable and (t.NormalZ or 0) ~= 0 then
+		t.UntouchableMM6 = true
+		t.Untouchable = nil
+	end,
 	FacetData = |a, t| t.Id = mmver ~= 6 and t.Id or t.FacetIndex,
 	MapLight = |a, t, idx| t.Id = t.Id or idx,
 }
@@ -70,6 +74,9 @@ local PostWrite = {
 		a.NormalFY = t.NormalFY or a.NormalY/0x10000
 		a.NormalFZ = t.NormalFZ or a.NormalZ/0x10000
 		a.NormalFDistance = t.NormalFDistance or a.NormalDistance/0x10000
+		if mmver == 6 then
+			a.Untouchable = t.Untouchable or t.UntouchableMM6
+		end
 		t.Bits = a.Bits  -- for dlv
 	end,
 	MapSprite = |a, t| t.Bits = a.Bits,  -- for dlv

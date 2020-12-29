@@ -52,6 +52,7 @@ const.FacetBits = {
 	FlipV = 0x01000000,
 	TriggerByClick = 0x02000000,
 	TriggerByStep = 0x04000000,
+	Untouchable = 0x20000000,  -- great for vertical facets of stairs. [MM7+] Shouldn't be used for sloped floor, like it's used in MM6.
 	IsLava = 0x40000000,
 	HasData = 0x80000000,
 }
@@ -67,7 +68,6 @@ if mmver > 6 then
 		AlignLeft = 0x00001000,  -- align door texture in D3D
 		AlignRight = 0x00008000,  -- align door texture in D3D
 		AlignBottom = 0x00020000,  -- align door texture in D3D
-		Untouchable = 0x20000000,
 	}, const.FacetBits, true)
 end
 if mmver < 8 then
