@@ -59,6 +59,13 @@ local function CombineChecks(r1, r2)
 	end
 end
 
+local function DoorNonStatic(f)  -- ignore static facets that can't be stretched
+	local a = f.Door
+	if a and (f.MovedByDoor or math.abs(f.nx*a.DirectionX + f.ny*a.DirectionY + f.nz*a.DirectionZ) > Editor.DoorMinCos) then
+		return a
+	end
+end
+
 local function CheckFacet(a, nx, ny, nz, d, f)  -- checks if 'a' can be split by 'f' with respect to both doors
 	-- test with no doors moved:
 	local r = DoCheckFacet(a, nx, ny, nz, d)
@@ -68,14 +75,17 @@ local function CheckFacet(a, nx, ny, nz, d, f)  -- checks if 'a' can be split by
 	elseif r == CHK_DOOR or r == CHK_INTERSECT then
 		return CHK_DOOR
 	end
+	-- make a list of all doors of 'a'
 	local doors = {}
-	if a.Door or a.IsPortal then
+	if a.MultiDoor or a.IsPortal then
 		for _, v in ipairs(a.Vertexes) do
 			local door = Editor.GetVertexDoor(a, v)
 			if door then
 				doors[door] = true
 			end
 		end
+	elseif a.Door then
+		doors[a.Door] = true
 	end
 	-- test with all doors moved:
 	local dd = q and -q.MoveLength*(q.DirectionX*nx + q.DirectionY*ny + q.DirectionZ*nz) or 0
