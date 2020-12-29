@@ -260,33 +260,27 @@ function Editor.WriteInterceptDisplacement(a, v)
 end
 
 local function UpdateFacetMinMax(a, t)
-	local v = t.Vertexes
-	if not v[1] then
+	local vert = t.Vertexes
+	if not vert[1] then
 		return  -- for exact mode
 	end
-	local vd, vnd
-	if t.Door or t.IsPortal then
-		vd, vnd = Editor.NeedDoorCache()
-	end
+	local NeedDoors = t.Door or t.IsPortal or t.MultiDoor
 	-- BBox
-	local function minmax(coord)
+	for coord in XYZ do
 		local m1, m2 = math.huge, -math.huge
-		for i, a in ipairs(v) do
-			m1 = min(m1, a[coord])
-			m2 = max(m2, a[coord])
-			local door = vd and vd[a]
-			if door and (not vnd[a] or door == t.Door or t.IsPortal or t.MultiDoor) then
+		for i, v in ipairs(vert) do
+			m1 = min(m1, v[coord])
+			m2 = max(m2, v[coord])
+			local door = NeedDoors and Editor.GetVertexDoor(t, v)
+			if door then
 				local d = (door["Direction"..coord] or 0)*(door.MoveLength or 0)
-				m1 = min(m1, a[coord] + d)
-				m2 = max(m2, a[coord] + d)
+				m1 = min(m1, v[coord] + d)
+				m2 = max(m2, v[coord] + d)
 			end
 		end
 		a["Min"..coord] = round(m1) - 5
 		a["Max"..coord] = round(m2) + 5
 	end
-	minmax("X")
-	minmax("Y")
-	minmax("Z")
 end
 
 function Editor.LoadBitmap(name)
@@ -1082,13 +1076,14 @@ function Editor.DoorVertexFilter.Free(t, move, maybe, static, other)
 end
 
 function Editor.DoorVertexFilter.CheckShift(t, move, maybe, static, other)
-	local sh
-	for v in pairs(move) do
-		if not static[v] then
-			sh = v.Shift
-			break
+	local function enum(t)
+		for v in pairs(t) do
+			if v.Shift and not static[v] then
+				return v.Shift
+			end
 		end
 	end
+	local sh = enum(move) or enum(maybe)
 	if not sh then
 		return move, maybe, static, other
 	end
@@ -1413,27 +1408,35 @@ function Editor.RecreateDoors(list)
 	Editor.CheckDoorsUpdate()
 end
 
-function Editor.NeedDoorCache()
-	if not Editor.DoorCache then
-		Editor.DoorCache, Editor.DoorCacheN = {}, {}
-		local doors = {}
-		for f in pairs(FacetIds) do
-			if f.Door then
-				doors[f.Door] = true
-			end
+function Editor.MakeDoorCache()
+	Editor.DoorCache, Editor.DoorCacheN = {}, {}
+	local doors = {}
+	for f in pairs(FacetIds) do
+		if f.Door then
+			doors[f.Door] = true
 		end
-		for door in pairs(doors) do
-			local vert, nvert = Editor.GetDoorVertexLists(door)
-			for v in pairs(vert) do
-				Editor.DoorCache[v] = door
-				if nvert[v] then
-					Editor.DoorCacheN[v] = true
-				end
+	end
+	for door in pairs(doors) do
+		local vert, nvert = Editor.GetDoorVertexLists(door)
+		for v in pairs(vert) do
+			Editor.DoorCache[v] = door
+			if nvert[v] then
+				Editor.DoorCacheN[v] = true
 			end
 		end
 	end
-	return Editor.DoorCache, Editor.DoorCacheN
+	return Editor.DoorCache
 end
+
+function Editor.GetVertexDoor(t, v)
+	local vd = Editor.DoorCache or Editor.MakeDoorCache()
+	local vnd = Editor.DoorCacheN
+	local door = vd[v]
+	if door and (not vnd[v] or door == t.Door or t.MultiDoor or door.ClosePortal and t.IsPortal) then
+		return door
+	end
+end
+
 
 -----------------------------------------------------
 -- WriteChests
