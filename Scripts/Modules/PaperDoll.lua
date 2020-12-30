@@ -1,3 +1,12 @@
+--[=[!File
+To use, first place the PaperDol.txt file from https://github.com/GrayFace/MMExtension/tree/master/Misc corresponding to your game of choice into DataFiles folder (create it right next to Data folder of the game if it doesn't exist). Modifiy it as needed. You'll later distribute this file inside your mod's LOD achive.
+
+Including the module:
+!LUA[[
+require'PaperDoll'
+]]
+
+]=]
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
 local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar
 
@@ -9,11 +18,17 @@ local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
 
+--!v Maps category name to a !lua[[function(i)]] that returns 'true' if player face number 'i' belongs to the category. Use #PaperDollAddBodies:# or #PaperDollAddRace:# to populate.
 PaperDollCategories = {}
 PaperDollGraphics = {}
+--!v Pieces of the doll that can be hidden or replaced by specifying corresponding piece of an item. Default (hair that can be hidden by helmets):
+-- !Lua[[{hair = true, hair2 = true}]]
 PaperDollContitionalPieces = {hair = true, hair2 = true}
+--!v Specifies which pieces inherit item graphics by default. Default:
+-- !Lua[[{ItemExtraHand = {hand2 = true, shield = true}}]]
 PaperDollDirectPieces = {ItemExtraHand = {hand2 = true, shield = true}}
 local PaperDollDirectPiecesStd = {[''] = true}
+--!v
 PaperDollCount = mmv(12, 25, 28)
 local CurDollGraphics
 
@@ -35,9 +50,12 @@ function PaperDollAddRace(name, races)
 	end
 end
 
-function PaperDollAddBodies()
-	local t = {base = true}
-	for i, s in pairs(PaperDollSpecialBodies) do
+-- Defines doll categories for 'bodies' array together with male and female variations of each.
+-- If 'bodies' table isn't specified, uses #PaperDollSpecialBodies:# table and defines the "Base" paper dolls as well.
+function PaperDollAddBodies(bodies)
+	local t = bodies and {} or {base = true}
+	bodies = bodies or PaperDollSpecialBodies
+	for i, s in pairs(bodies) do
 		t[s:lower()] = true
 	end
 	for sex, ssex in pairs(sex) do
@@ -46,7 +64,7 @@ function PaperDollAddBodies()
 				local pl = Party.PlayersArray[0]
 				local old1, old2 = pl.Face, pl.Voice
 				pl.Face, pl.Voice = i, i
-				local r = (PaperDollSpecialBodies[i] or 'base'):lower() == s and (sex == 1 or (pl:GetSex() ~= 0) == sex)
+				local r = (bodies[i] or 'base'):lower() == s and (sex == 1 or (pl:GetSex() ~= 0) == sex)
 				pl.Face, pl.Voice = old1, old2
 				return r
 			end
@@ -59,12 +77,20 @@ if mmver == 7 then
 	for k, v in pairs(const.Race) do
 		PaperDollAddRace(k, {[v] = true})
 	end
-	PaperDollBaseRace = {[0] = true, true, true}
+	--!v [MM7] Races that share the "Base" paper doll. Default:
+	-- !Lua[[{[const.Race.Human] = true, [const.Race.Goblin] = true, [const.Race.Elf] = true}]]
+	-- After altering call this command:
+	-- !Lua[[PaperDollAddRace('Base', PaperDollBaseRace)]]
+	PaperDollBaseRace = PaperDollBaseRace or {[0] = true, true, true}
+	-- [MM7]
 	PaperDollAddRace('base', PaperDollBaseRace)
 elseif mmver == 8 then
-	PaperDollSpecialBodies = {[20] = 'Minotaur', [21] = 'Minotaur', [22] = 'Troll', [23] = 'Troll', [24] = 'Dragon', [25] = 'Dragon'}
+	--!v After altering call #PaperDollAddBodies:#. Here are default MM8 values:
+	-- !Lua[[{[20] = 'Minotaur', [21] = 'Minotaur', [22] = 'Troll', [23] = 'Troll', [24] = 'Dragon', [25] = 'Dragon'}]]
+	PaperDollSpecialBodies = PaperDollSpecialBodies or {[20] = 'Minotaur', [21] = 'Minotaur', [22] = 'Troll', [23] = 'Troll', [24] = 'Dragon', [25] = 'Dragon'}
 	PaperDollAddBodies()
 end
+PaperDollSpecialBodies = PaperDollSpecialBodies or {}
 
 local function GetCats(s)
 	local q = s:lower():split(', *')
@@ -88,6 +114,9 @@ local function GetCats(s)
 	return t
 end
 
+-- 't' can be a string following the "PaperDol.txt" convention or a table that's similar to the result of calling #ParseNamedColTable:# for such file.
+-- Example - loading additional paper doll file for mods:
+-- !Lua[[events.ReloadPaperDollGraphics = || AddPaperDollGraphics(Game.LoadTextFileFromLod'PaperMod.txt')]]
 function AddPaperDollGraphics(t)
 	if type(t) == 'string' then
 		t = ParseNamedColTable(t)
@@ -115,10 +144,12 @@ function AddPaperDollGraphics(t)
 	end
 end
 
+-- Reloads "PaperDol.txt" and calls #ReloadPaperDollGraphics:events.ReloadPaperDollGraphics# event. Very handy while tweaking "PaperDol.txt"
 function ReloadPaperDollGraphics()
 	PaperDollGraphics = {}
 	AddPaperDollGraphics(Game.LoadTextFileFromLod'PaperDol.txt')
-	events.ReloadPaperDollGraphics()
+	-- when corresponding function is called
+	events.cocall('ReloadPaperDollGraphics')
 end
 
 if GameInitialized2 then
@@ -127,10 +158,37 @@ else
 	events.GameInitialized2 = ReloadPaperDollGraphics
 end
 
+--!v Defaults to #Game.Version:#. If set to '6' prior to including 'PaperDoll' module, #PaperDollDrawOrder:# would be different. If set to '8', spears aren't treated as a 2-handed weapon.
 PaperDollMode = PaperDollMode or mmver
 local mm6 = (PaperDollMode == 6)
 
-PaperDollDrawOrder = {'ItemBow', 'ItemCloak', 'PlayerBody', 'PlayerBody.arm1', 'PlayerBody.arm1f', 'PlayerBody.arm2hb', 'PlayerBody.arm2f',  'PlayerBody.shield', 'ItemHelm.hair2', 'ItemHelm.hair', mm6 and 'ItemHelm' or 'ItemHelm.mm6', mm6 and 'ItemBoots' or 'ItemBoots.mm6', 'ItemArmor', 'ItemArmor.arm1', 'ItemArmor.arm1f', mm6 and 'ItemBoots.boots' or 'ItemBoots', 'ItemBelt', 'PlayerBody.arm2', 'PlayerBody.arm2h', 'ItemArmor.arm2', 'ItemArmor.arm2h', 'ItemCloak.scarf', 'PlayerBody.scarf', mm6 and 'ItemHelm.scarf' or 'ItemHelm', 'ItemCloak.scarf2', 'ItemMainHand', 'ItemExtraHand.hand2', 'ItemExtraHand.shield', 'PlayerBody.hand2', 'ItemArmor.hand2', 'PlayerBody.hand1', 'PlayerBody.hand1x', 'ItemArmor.hand1', 'ItemArmor.hand1x', 'PlayerBody.hand2h', 'ItemArmor.hand2h'}
+--!v Default (depending on #PaperDollMode:#):
+-- !Lua[[{'ItemBow', 'ItemCloak',
+-- 	'PlayerBody', 'PlayerBody.arm1', 'PlayerBody.arm1f', 'PlayerBody.arm2hb', 'PlayerBody.arm2f', 'PlayerBody.shield', 'ItemHelm.hair2', 'ItemHelm.hair',
+-- 	mm6 and 'ItemHelm' or 'ItemHelm.mm6', mm6 and 'ItemBoots' or 'ItemBoots.mm6',
+-- 	'ItemArmor', 'ItemArmor.arm1', 'ItemArmor.arm1f',
+-- 	mm6 and 'ItemBoots.boots' or 'ItemBoots',
+-- 	'ItemBelt',
+-- 	'PlayerBody.arm2', 'PlayerBody.arm2h', 'ItemArmor.arm2', 'ItemArmor.arm2h',
+-- 	'ItemCloak.scarf', 'PlayerBody.scarf', mm6 and 'ItemHelm.scarf' or 'ItemHelm', 'ItemCloak.scarf2',
+-- 	'ItemMainHand',
+-- 	'PlayerBody.hand1', 'PlayerBody.hand1x', 'ItemArmor.hand1', 'ItemArmor.hand1x',
+-- 	'ItemExtraHand.hand2', 'ItemExtraHand.shield',
+-- 	'PlayerBody.hand2', 'PlayerBody.hand2h', 'ItemArmor.hand2', 'ItemArmor.hand2h',
+-- }]]
+PaperDollDrawOrder = {'ItemBow', 'ItemCloak',
+	'PlayerBody', 'PlayerBody.arm1', 'PlayerBody.arm1f', 'PlayerBody.arm2hb', 'PlayerBody.arm2f', 'PlayerBody.shield', 'ItemHelm.hair2', 'ItemHelm.hair',
+	mm6 and 'ItemHelm' or 'ItemHelm.mm6', mm6 and 'ItemBoots' or 'ItemBoots.mm6',
+	'ItemArmor', 'ItemArmor.arm1', 'ItemArmor.arm1f',
+	mm6 and 'ItemBoots.boots' or 'ItemBoots',
+	'ItemBelt',
+	'PlayerBody.arm2', 'PlayerBody.arm2h', 'ItemArmor.arm2', 'ItemArmor.arm2h',
+	'ItemCloak.scarf', 'PlayerBody.scarf', mm6 and 'ItemHelm.scarf' or 'ItemHelm', 'ItemCloak.scarf2',
+	'ItemMainHand',
+	'PlayerBody.hand1', 'PlayerBody.hand1x', 'ItemArmor.hand1', 'ItemArmor.hand1x',
+	'ItemExtraHand.hand2', 'ItemExtraHand.shield',
+	'PlayerBody.hand2', 'PlayerBody.hand2h', 'ItemArmor.hand2', 'ItemArmor.hand2h',
+}
 
 local function Is2Handed(it)
 	local a = it:T()
@@ -191,14 +249,21 @@ end
 
 local function GetHiddenPieces(pl)
 	local hide = {}
+	-- 2nd arm for 2-handed weapon
 	hide.arm2h = true  -- dual wield off by default
+	-- 1st hand always drawn
+	hide.hand1 = nil
 	if pl.ItemExtraHand == 0 then
+		-- 2nd hand for dual-wielding
 		hide.hand2 = true  -- 2nd hand off
+		-- drawn when holding a shield
 		hide.shield = true  -- hand under shield off
 		local n = pl.ItemMainHand
 		if n ~= 0 and Is2Handed(pl.Items[n]) then
-			hide.arm2 = true  -- 2nd arm not in dual wield mode off
-			hide.arm2h = nil  -- dual wield on
+			-- 2nd arm without 2-handed weapon
+			hide.arm2 = true
+			hide.arm2h = nil
+			-- 2nd arm when not holding anything, drawn behind armor
 			hide.arm2f = true  -- no free hand
 		end
 	else
@@ -206,17 +271,21 @@ local function GetHiddenPieces(pl)
 		hide.hand2 = IsShield(pl.Items[pl.ItemExtraHand])  -- 2nd hand
 		hide.shield = not hide.hand2  -- hand under shield
 	end
-	-- for MM7+ paper dolls:
+	-- 2nd hand for 2-handed weapon
 	hide.hand2h = hide.arm2h
+	-- 2nd arm for 2-handed weapon, drawn behind armor
 	hide.arm2hb = hide.arm2h
-	-- for MM8 paper dolls:
+	-- 1st arm when holding a weapon
 	hide.arm1 = pl.ItemMainHand == 0
+	-- 1st arm when not holding a weapon
 	hide.arm1f = not hide.arm1
+	-- 1st hand when holding a weapon
 	hide.hand1x = hide.arm1
-	-- wetsuit
 	local i = pl.ItemArmor
+	-- hidden if wearing Wetsuit
 	hide.PlayerBody = (mmver == 7 and i ~= 0 and pl.Items[i].Number == 604)
-	events.cocall('PaperDollHiddenPieces', hide)  -- full control for modders
+	-- Here I've described pieces that 'PaperDoll' module handles automatically. You can define your own pieces through #PaperDollDrawOrder:# array and hide them conditionally here.
+	events.cocall('PaperDollHiddenPieces', hide)
 	return hide
 end
 
@@ -240,10 +309,10 @@ local function DrawDoll(pl)
 		elseif pl[s] ~= 0 then
 			local it = pl.Items[pl[s]]
 			local a = GetItemGraphics(it)
-			if PaperDollContitionalPieces[piece] then
-				a = not t[a.Image] and t.playerbody
-			elseif t[a.Image] then
+			if t[a.Image] then
 				table.copy(t[a.Image], a, true)
+			elseif PaperDollContitionalPieces[piece] then
+				a = t.playerbody
 			elseif not (PaperDollDirectPieces[s] or PaperDollDirectPiecesStd)[piece] then
 				a = nil
 			end
@@ -260,7 +329,7 @@ local function DrawDoll(pl)
 		i4[EffectTime] = time
 		if time == 0 then
 			i4[mm78(0x50C824, 0x51E0FC)] = 0
-			it.Condition = it.Condition:AndNot(0xf0)
+			EffectItem.Condition = EffectItem.Condition:AndNot(0xf0)
 		end
 	end
 end

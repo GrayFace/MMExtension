@@ -45,7 +45,7 @@ local PostRead = {
 			t.NPC_ID = nil
 		end
 	end,
-	MapFacet = |a, t| if mmver == 6 and t.Untouchable and (t.NormalZ or 0) ~= 0 then
+	MapFacet = |a, t| if mmver == 6 and t.Untouchable and not t.Invisible and (t.NormalZ or 0) ~= 0 then
 		t.UntouchableMM6 = true
 		t.Untouchable = nil
 	end,

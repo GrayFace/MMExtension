@@ -500,9 +500,9 @@ function structs.f.GameStructure(define)
 	end
 	define.Info{Sig = "Name"}
 	function define.f.GetCurrentHouse()
-		local p = mem.u4[mmv(0x4D50C4, 0x507A40, 0x519328)]
+		local p = u4[mmv(0x4D50C4, 0x507A40, 0x519328)]
 		if p ~= 0 then
-			return mem.i4[p + 0x1C]
+			return (mmver == 6 and i2 or i4)[p + 0x1C]
 		end
 	end
 end

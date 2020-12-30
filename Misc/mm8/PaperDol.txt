@@ -31,7 +31,7 @@ Doll	ItemPicture	Image	X	Y	Piece	Mul	Comments
 MBase	PlayerBody	pc%.2dLHu	138	150	hand2		dual-wielding hand
 MBase	PlayerBody	pc%.2dLHu	138	150	shield		arm drawn behind armor when holding shield
 MBase	PlayerBody	pc%.2dLHo	132	150	arm2f		arm drawn behind armor when not holding anything
-MBase	PlayerBody	pc%.2dLHu	138	150	arm2hb		arm drawn behind armor when not holding 2-handed weapon
+MBase	PlayerBody	pc%.2dLHu	138	150	arm2hb		arm drawn behind armor when holding 2-handed weapon
 MBase	PlayerBody	pc%.2dRHb	27	118	hand1x		hand1 drawn only when holding weapon
 MBase	PlayerBody	pc%.2dRHd	29	110	arm1f		arm1 when not holding weapon
 MBase	PlayerBody	pc%.2dRHu	27	117	arm1		arm1 drawn only when holding weapon

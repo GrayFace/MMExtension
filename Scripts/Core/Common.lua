@@ -804,3 +804,5 @@ end
 _G.debug.FunctionFile = FunctionFile
 
 dofile(CoreScriptsPath.."EventsList.lua")
+internal.EventsSetup = _G.events.setup
+_G.events.setup = nil

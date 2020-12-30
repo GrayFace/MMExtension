@@ -95,23 +95,22 @@ do
 
 end
 
-local ConditionalHooks = {}
+local OnEventUsed = {}
+internal.OnEventUsed = OnEventUsed
 
-local function Conditional(hooks, name)
-	ConditionalHooks[name] = hooks
-	hooks.Switch(false)
-end
-
-events.setup{
+internal.EventsSetup{
 	EventUsed = function(name, on)
-		local t = ConditionalHooks[name]
-		if t then
-			t.Switch(on)
+		local f = OnEventUsed[name]
+		if f then
+			f(on, name)
 		end
 	end,
 }
-internal.EventsSetup = events.setup
-events.setup = nil
+
+local function Conditional(hooks, name)
+	OnEventUsed[name] = hooks.Switch
+	hooks.Switch(false)
+end
 
 
 mem.IgnoreProtection(true)
@@ -405,8 +404,10 @@ local function NPCTopicsHook(p)
 		local start = not CurrentNPC
 		CurrentNPC = i
 		if start then
+			-- Known issue: You shouldn't call any evt.* commands from inside a handler of this event
 			events.cocalls("EnterNPC", i)
 		end
+		-- Known issue: You shouldn't call any evt.* commands from inside a handler of this event
 		events.cocalls("ShowNPCTopics", i)
 	end
 end
@@ -650,7 +651,7 @@ if mmver == 7 then  -- make room for PopulateHouseDialog hook
 end
 
 mem.hookfunction(mmv(0x498490, 0x4B3AA5, 0x4B250A), 1, 0, function(d, def, type)
-	local t = {PicType = type, House = mem[mmv('i2', 'i4', 'i4')][u4[mmv(0x4D50C4, 0x507A40, 0x519328)] + 0x1C], Result = nil}
+	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = nil}
 	events.cocalls("PopulateHouseDialog", t)
 	if not t.Result then
 		return def(type)
@@ -678,7 +679,7 @@ if mmver > 6 then
 		for i = 1, i4[pn] do
 			t[i] = i4[p + i*4 - 4] - 36
 		end
-		t = {Result = t, PicType = Game.HousePicType, House = mem[mmv('i2', 'i4', 'i4')][u4[mmv(0x4D50C4, 0x507A40, 0x519328)] + 0x1C]}
+		t = {Result = t, PicType = Game.HousePicType, House = Game.GetCurrentHouse()}
 		events.cocalls("PopulateLearnSkillsDialog", t)
 		t = t.Result
 		if #t > mm78(3, 5) then

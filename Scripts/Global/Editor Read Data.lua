@@ -286,7 +286,7 @@ function Editor.ReadFacet(a, _, Verts)
 		t.ExactData = MakeExact(a)
 	end
 	
-	if mmver == 6 and t.Untouchable and nz ~= 0 then
+	if mmver == 6 and t.Untouchable and not t.Invisible and nz ~= 0 then
 		t.UntouchableMM6 = true
 		t.Untouchable = nil
 	end

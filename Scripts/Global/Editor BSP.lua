@@ -361,7 +361,7 @@ local function BuildRoomBSP(rid, r, DifferErrors)
 			return
 		elseif bestI == math.huge then
 			if DifferErrors then
-				Editor.LastError = "BSP compilation failed due to doors"
+				Editor.LastError = "BSP compilation done with issues due to doors"
 				Editor.LastErrorFacets = table.copy(facets)
 			else
 				local v = facets[best].Vertexes[1]

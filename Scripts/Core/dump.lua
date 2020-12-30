@@ -11,7 +11,7 @@ do
 end
 
 -- Useful for debugging and experiments. Shows 't', expanding all tables in it up to the 'depth' level. In 'exact' = 'true' mode outputs proper Lua code.
-function dump(t, depth, exact, detectClones)
+function dump(t, depth, exact, detectClones, limit)
 	local buf = {}
 	local bufn = 0
 	local ShowN
@@ -19,6 +19,7 @@ function dump(t, depth, exact, detectClones)
 	local ptrs = {}
 	local ShowTable
 	depth = depth and depth * 2 or math.huge
+	limit = limit or DumpLimit
 
 	local function Write(str)
 		bufn = bufn + 1
@@ -57,7 +58,7 @@ function dump(t, depth, exact, detectClones)
 			if exact then
 				return tostring2(v)
 			end
-			return '"'..v..'"'
+			return '"'..v:gsub("%z", "\\0")..'"'
 		else
 			return mystring(v)
 		end
@@ -139,7 +140,7 @@ function dump(t, depth, exact, detectClones)
 	end
 	
 	function ShowTable(t, space)
-		if bufn > DumpLimit then
+		if bufn > limit then
 			return Write(space.."  ...")
 		end
 		ShowN = bufn

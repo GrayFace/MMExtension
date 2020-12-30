@@ -118,6 +118,7 @@ local function make_events(evt)
 	local onset
 	local function setup(t)
 		onset = t.EventUsed == nil and onset or t.EventUsed
+		return t
 	end
 	
 	local function call(a, ...)

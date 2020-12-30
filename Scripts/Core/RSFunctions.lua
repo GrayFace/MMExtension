@@ -216,20 +216,20 @@ function io.load(path, translate)
 	return s
 end
 
+local function print1(t, n, arg, ...)
+	if n ~= 0 then
+		t[#t + 1] = tostring(arg)
+		if n ~= 1 then
+			t[#t + 1] = "\t"
+			return print1(t, n - 1, ...)
+		end
+	end
+end
+
 -- Makes 'print' function write into a file specified by 'fname'. Specifying 'Windows = true' forces use of \r\n and speeds it up a bit on Windows. Returns a function that returns current state of the log when called: 'SomethingWritten', 'fname'
 function PrintToFile(fname, Windows, preserve)
 
 	local opened
-	
-	local function print1(t, n, arg, ...)
-		if n ~= 0 then
-			t[#t + 1] = tostring(arg)
-			if n ~= 1 then
-				t[#t + 1] = "\t"
-				return print1(t, n - 1, ...)
-			end
-		end
-	end
 	
 	local function doprint(...)
 		local f = assert(io_open(fname, (opened and "a" or "w")..(Windows and "b" or "t")))
@@ -250,6 +250,13 @@ function PrintToFile(fname, Windows, preserve)
 end
 
 -- string
+
+-- returns the string that 'print' function would normally print out
+function string.print(...)
+	local t = {}
+	print1(t, select('#', ...), ...)
+	return table_concat(t)
+end
 
 -- Returns a table of strings. 'delim' can be a plain string ('plain' = 'true') or a pattern
 function string.split(str, delim, plain)
