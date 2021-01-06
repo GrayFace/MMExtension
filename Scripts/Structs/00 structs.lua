@@ -58,6 +58,17 @@ function structs.f.GameStructure(define)
 	end)
 	[mmv(0x4C2750, 0x4EDD80, 0x4FDF88)].array(13).i2  'SkillRecoveryTimes'
 	 .Info{Sig = "[skill:const.Skills]"}
+	[mmv(0x42A239, 0x42EFC9, 0x42DA52)].CustomType('MinMeleeRecoveryTime', 1, function(o, obj, name, val)
+		if val == nil then
+			return i1[o]
+		else
+			mem.prot(true)
+			i1[o] = val
+			i1[mmv(0x406886, 0x406498, 0x406BB9) + 2] = val
+			;(mmver == 6 and i4 or i1)[mmv(0x40688B, 0x40649D, 0x406BBE) + 1] = val
+			mem.prot(false)
+		end
+	end)
 	[mmv(0x4BCDD8, 0x4E28D8, 0x4F37D8)].i4  'CurrentScreen'
 	[mmv(0x4D4714, 0x506DC8, 0x5185A8)].i4  'CurrentCharScreen'
 	[mmv(0x52D0E4, 0x576CEC, 0x587914)].b4  'LoadingScreen'
