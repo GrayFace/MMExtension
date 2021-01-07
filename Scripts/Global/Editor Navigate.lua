@@ -25,7 +25,28 @@ end
 
 local DLL = mem.dll[DevPath.."ExeMods\\MMExtension\\MMEditorDlg.dll"]
 
+local HookManager = HookManager
 local TmpHooks = HookManager()
+if not TmpHooks.AddEx then  -- support older MMExt versions just in case
+	local old = HookManager
+	function HookManager(...)
+		local t = old(...)
+		local add = t.Add
+		function t.Add(memf, ...)
+			if memf ~= mem.hook and memf ~= mem.hookjmp then
+				return add(memf, ...)
+			end
+			local ret
+			add(function(...)
+				ret = memf(...)
+			end, ...)
+			return ret
+		end
+		return t
+	end
+	TmpHooks = HookManager()
+end
+
 events.LeaveGame = TmpHooks.Clear
 
 local function TmpHookManager(...)
@@ -44,6 +65,13 @@ local function TmpAlloc(size)
 	return p
 end
 
+local WorkModeHooks = TmpHookManager{}
+
+local function WorkHookManager(...)
+	local t = HookManager(...)
+	WorkModeHooks[#WorkModeHooks + 1] = t.Switch
+	return t
+end
 
 -----------------------------------------------------
 -- Editor.SetWorkMode
@@ -88,6 +116,7 @@ function Editor.SetWorkMode(mode)
 	Editor.Time = Game.Time
 	Editor.WorkMode = mode
 	SwitchPatchOptions(mode)
+	WorkModeHooks.Switch(mode)
 	if mode then
 		-- Party.NeedRender = false
 		Party.Drowning = false
@@ -138,10 +167,6 @@ function Editor.ProcessDoors()
 	mem.call(mmv(0x4603E0, 0x46F22C, 0x46DD08))
 end
 
-local p = mmv(0x453B5E, 0x463471, 0x461451)
-local std = Editor.MovementHookStd or mem.hook(p, function() end)
-Editor.MovementHookStd = std
-
 local deltaX, deltaY, deltaZ = 0, 0, 0
 
 function Editor.GetPartyDirection()
@@ -183,34 +208,30 @@ function Editor.GetPartyRightDirection()
 	return math.cos(a), math.sin(a), 0
 end
 
-mem.hooks[p] = function(data)
-	if Editor.WorkMode then
-		local d = i4[offsets.TimeStruct1 + 0x1C]*8
-		if Keys.IsPressed(const.Keys.CTRL) then
-			d = 0
-		elseif Keys.IsPressed(const.Keys.SHIFT) then
-			d = d*2
-		end
-		local x, y, z = deltaX, deltaY, deltaZ
-		do
-			local x1, y1, z1 = Editor.GetPartyDirection()
-			local d = d*((Keys.IsPressed(const.Keys.W) and 1 or 0) - (Keys.IsPressed(const.Keys.S) and 1 or 0))
-			x, y, z = x + x1*d, y + y1*d, z + z1*d
-		end
-		do
-			local x1, y1 = Editor.GetPartyRightDirection()
-			local d = d/2*((Keys.IsPressed(const.Keys.D) and 1 or 0) - (Keys.IsPressed(const.Keys.A) and 1 or 0))
-			x, y = x + x1*d, y + y1*d
-		end
-		deltaX, deltaY, deltaZ = x%1, y%1, z%1
-		Party.X, Party.Y, Party.Z = Party.X + x - deltaX, Party.Y + y - deltaY, Party.Z + z - deltaZ
-
-		Editor.ProcessDoors()
-		u4[data.esp] = u4[data.esp] + 5  -- skip movement
-	else
-		mem.call(std, 0)
+WorkModeHooks.hook(mmv(0x453B5E, 0x463471, 0x461451), function(data)
+	local d = i4[offsets.TimeStruct1 + 0x1C]*8
+	if Keys.IsPressed(const.Keys.CTRL) then
+		d = 0
+	elseif Keys.IsPressed(const.Keys.SHIFT) then
+		d = d*2
 	end
-end
+	local x, y, z = deltaX, deltaY, deltaZ
+	do
+		local x1, y1, z1 = Editor.GetPartyDirection()
+		local d = d*((Keys.IsPressed(const.Keys.W) and 1 or 0) - (Keys.IsPressed(const.Keys.S) and 1 or 0))
+		x, y, z = x + x1*d, y + y1*d, z + z1*d
+	end
+	do
+		local x1, y1 = Editor.GetPartyRightDirection()
+		local d = d/2*((Keys.IsPressed(const.Keys.D) and 1 or 0) - (Keys.IsPressed(const.Keys.A) and 1 or 0))
+		x, y = x + x1*d, y + y1*d
+	end
+	deltaX, deltaY, deltaZ = x%1, y%1, z%1
+	Party.X, Party.Y, Party.Z = Party.X + x - deltaX, Party.Y + y - deltaY, Party.Z + z - deltaZ
+
+	Editor.ProcessDoors()
+	u4[data.esp] = u4[data.esp] + 5  -- skip movement
+end)
 
 function events.WindowMessage(t)
 	-- mouse wheel
@@ -292,24 +313,21 @@ end
 
 local LastRoom
 
-local p = mmv(0x4344F8, 0x44086E, 0x43D7D6)
-if not mem.hooks[p] then
-	mem.autohook(p, function(d)
-		if d.eax == 0 then
-			local x, y, z = Party.X, Party.Y, Party.Z
-			local room, dist = LastRoom, LastRoom and LastRoom <= Map.Rooms.high and CalcRoomDist(Map.Rooms[LastRoom], x, y, z) or math.huge
-			for i, r in Map.Rooms do
-				local d = CalcRoomDist(r, x, y, z)
-				if d < dist then
-					room, dist = i, d
-				end
+WorkModeHooks.autohook(mmv(0x4344F8, 0x44086E, 0x43D7D6), function(d)
+	if d.eax == 0 then
+		local x, y, z = Party.X, Party.Y, Party.Z
+		local room, dist = LastRoom, LastRoom and LastRoom <= Map.Rooms.high and CalcRoomDist(Map.Rooms[LastRoom], x, y, z) or math.huge
+		for i, r in Map.Rooms do
+			local d = CalcRoomDist(r, x, y, z)
+			if d < dist then
+				room, dist = i, d
 			end
-			i4[d.esi + 0x1C] = room
-		else
-			LastRoom = d.eax
 		end
-	end)
-end
+		i4[d.esi + 0x1C] = room
+	else
+		LastRoom = d.eax
+	end
+end)
 
 
 -- ROOM = 1
@@ -455,12 +473,10 @@ function Editor.DeselectFacet(id)
 end
 
 
-local p = mmv(0x42D4E6, 0x434F45, 0x4328D2)
-local std = Editor.ClickHookStd or mem.hook(p, function() end)
-Editor.ClickHookStd = std
-
 -- Left Click - Select facets and objects
-mem.hooks[p] = function()
+local std
+
+std = TmpHooks.hook(mmv(0x42D4E6, 0x434F45, 0x4328D2), function()
 	Editor.LButtonPressed = true
 	if Editor.WorkMode and Editor.StateSync and (Editor.TileBrushSize == 0 or Map.IsIndoor()) then
 		local obj = Mouse.GetTarget()
@@ -495,7 +511,7 @@ mem.hooks[p] = function()
 	else
 		mem.call(std, 0)
 	end
-end
+end)
 
 function events.WindowMessage(t)
 	if t.Msg == 0x203 and Editor.WorkMode and Editor.StateSync then  -- WM_LBUTTONDBLCLK
@@ -896,7 +912,7 @@ do
 	local BaseScale = 80000/Game.SFTBin[Game.DecListBin[Game.LoadDecSprite(DecName)].SFTIndex].Scale
 	
 	local function hookf(d)
-		if not Editor.WorkMode or not Editor.StateSync then
+		if not Editor.StateSync then
 			return
 		end
 		local DrawMax = u4[mmv(0x4338AB, 0x43FC72, 0x43CBF6)]
@@ -993,8 +1009,8 @@ do
 		Map.Sprites.Count = n
 	end
 	
-	hooks.autohook(mmv(0x433187, 0x43F525, 0x43C40A), hookf)  -- indoor
-	hooks.autohook(mmv(0x46A242, 0x47A808, 0x4799FF), hookf)  -- outdoor
+	WorkModeHooks.autohook(mmv(0x433187, 0x43F525, 0x43C40A), hookf)  -- indoor
+	WorkModeHooks.autohook(mmv(0x46A242, 0x47A808, 0x4799FF), hookf)  -- outdoor
 	
 	--hooks.asmhook(0x43C415
 end
@@ -1040,20 +1056,17 @@ end
 -- Avoid idclip effect in SW
 -----------------------------------------------------
 
-local p = mmv(0x4371AD, 0x441D04, 0x43E95B)
-if not mem.hooks[p] and not Game.IsD3D then
-	mem.autohook(p, function(d)
-		if Editor.WorkMode then
-			local p = d.ecx
-			local x1 = i4[p + 0x2C]*2
-			local w = i4[p + 0x34]*2 - x1
-			local dy = i4[p + 0x24]*2
-			local buf = u4[p + 0x20] + x1
-			local buf2 = u4[p + 0x40] + x1*2
-			for y = i4[p + 0x30], i4[p + 0x38] do
-				mem.fill(buf + dy*y, w)
-				mem.fill(buf2 + dy*y*2, w*2)
-			end
+if not Game.IsD3D then
+	WorkModeHooks.autohook(mmv(0x4371AD, 0x441D04, 0x43E95B), function(d)
+		local p = d.ecx
+		local x1 = i4[p + 0x2C]*2
+		local w = i4[p + 0x34]*2 - x1
+		local dy = i4[p + 0x24]*2
+		local buf = u4[p + 0x20] + x1
+		local buf2 = u4[p + 0x40] + x1*2
+		for y = i4[p + 0x30], i4[p + 0x38] do
+			mem.fill(buf + dy*y, w)
+			mem.fill(buf2 + dy*y*2, w*2)
 		end
 	end)
 end
@@ -1063,23 +1076,40 @@ end
 -----------------------------------------------------
 
 Editor.LoadedBlv = Editor.LoadedBlv or nullproc
-local p = mmv(0x48C37B, 0x49AB56, 0x49806A)
-if not mem.hooks[p] then
-	mem.autohook(p, function(d)
-		Editor.LoadedBlv()
-	end)
-end
+TmpHooks.autohook(mmv(0x48C37B, 0x49AB56, 0x49806A), function(d)
+	Editor.LoadedBlv()
+end)
 
 -----------------------------------------------------
 -- Load clean ddm 
 -----------------------------------------------------
 
-local p = mmv(0x46E063, 0x47EBDC, 0x47E129)
-if not mem.hooks[p] then
-	mem.autohook(p, function(d)
-		-- print(Map.Name, dump(Map.OutdoorHeader), dump(Map.OutdoorExtra))
-		Editor.LoadedBlv()
-	end)
+TmpHooks.autohook(mmv(0x46E063, 0x47EBDC, 0x47E129), function(d)
+	-- print(Map.Name, dump(Map.OutdoorHeader), dump(Map.OutdoorExtra))
+	Editor.LoadedBlv()
+end)
+
+-----------------------------------------------------
+-- Clean Portals display
+-----------------------------------------------------
+
+local function CleanPortals()
+	mem.IgnoreProtection(true)
+	if mmver == 7 then
+		u2[0x49CD37] = 0xE990
+		u1[0x49CC23] = 0xEB
+		u1[0x49CAF7] = 0xEB
+		u1[0x49C5AE] = 0xEB
+		u1[0x49C64D] = 0xEB
+	elseif mmver == 8 then
+		u2[0x49A216] = 0xE990
+		u1[0x499FD6] = 0xEB
+		u1[0x49A102] = 0xEB
+		u1[0x499A8D] = 0xEB
+		u1[0x499B2C] = 0xEB
+	end
+	mem.IgnoreProtection(false)
+	CleanPortals = nil
 end
 
 -----------------------------------------------------
@@ -1096,29 +1126,12 @@ function Editor.UpdateGameBits()
 		bit(8, Editor.ShowPortals and Editor.VisibleGUI)
 		-- bit(2, Editor.NoShades and Editor.VisibleGUI)
 		mem.u4[p] = v
+		if Editor.ShowPortals and Editor.VisibleGUI and CleanPortals then
+			CleanPortals()
+		end
 	end
 	mem.u4[mmv(0x52D2A8, 0x576EB8, 0x587AE8)] = Editor.ShowPortals and Editor.VisibleGUI and 1 or 0
 end
-
------------------------------------------------------
--- Clean Portals display
------------------------------------------------------
-
-mem.IgnoreProtection(true)
-if mmver == 7 then
-	u2[0x49CD37] = 0xE990
-	u1[0x49CC23] = 0xEB
-	u1[0x49CAF7] = 0xEB
-	u1[0x49C5AE] = 0xEB
-	u1[0x49C64D] = 0xEB
-elseif mmver == 8 then
-	u2[0x49A216] = 0xE990
-	u1[0x499FD6] = 0xEB
-	u1[0x49A102] = 0xEB
-	u1[0x499A8D] = 0xEB
-	u1[0x499B2C] = 0xEB
-end
-mem.IgnoreProtection(false)
 
 -----------------------------------------------------
 -- Disable saving game and loading map scripts
@@ -1135,3 +1148,9 @@ function events.CancelLoadingMapScripts()
 		return true
 	end
 end
+
+-----------------------------------------------------
+-- Done: switch all work mode hooks off
+-----------------------------------------------------
+
+WorkModeHooks.Switch(false)
