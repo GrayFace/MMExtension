@@ -17,8 +17,8 @@ do
 	-- HookManager (only these functions so far)
 	
 	local procs = {
-		hook = true,
-		hookjmp = true,
+		hook = false,
+		hookjmp = false,
 		autohook = true,
 		autohook2 = true,
 		bytecodehook = true,
@@ -34,15 +34,16 @@ do
 
 	function HookManager(ref)
 		local t = {}
-		function t.Add(memf, addr, hookf, size, ...)
+		function t.AddEx(RetMem, memf, addr, hookf, size, ...)
 			local size1 = size and size >= 5 and size or mem.GetHookSize(addr)
 			local std = mem.string(addr, size1, true)
 			local delmem = memf(addr, hookf, size or size1, ...)
 			local delhook = mem.hooks[addr]
-			local mine = mem.string(addr, size1, true)
+			size = (RetMem and not delmem) and size or size1
+			local mine = mem.string(addr, size, true)
 			t[#t + 1] = function(on)
 				if on == "off" then
-					if delmem then
+					if RetMem and delmem then
 						mem.hookfree(delmem)
 					end
 					if delhook then
@@ -51,9 +52,13 @@ do
 					on = false
 				end
 				mem.IgnoreProtection(true)
-				mem.copy(addr, on and mine or std, size1)
+				mem.copy(addr, on and mine or std, size)
 				mem.IgnoreProtection(false)
 			end
+			return delmem
+		end
+		function t.Add(memf, addr, hookf, size, ...)
+			return t.AddEx(true, memf, addr, hookf, size, ...)
 		end
 		function t.Switch(on)
 			if on == "off" then
@@ -77,14 +82,14 @@ do
 		function t.asm(code)
 			return mem.asm(t.ProcessAsm(code))
 		end
-		for proc in pairs(procs) do
+		for proc, RetMem in pairs(procs) do
 			t[proc] = function(...)
-				t.Add(mem[proc], ...)
+				return t.AddEx(RetMem, mem[proc], ...)
 			end
 		end
-		for proc in pairs(asmprocs) do
+		for proc, RetMem in pairs(asmprocs) do
 			t[proc] = function(addr, code, ...)
-				t.Add(mem[proc], addr, t.ProcessAsm(code), ...)
+				return t.AddEx(RetMem, mem[proc], addr, t.ProcessAsm(code), ...)
 			end
 		end
 		t.asmproc = function(code)
