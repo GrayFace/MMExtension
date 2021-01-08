@@ -878,6 +878,28 @@ const.CharScreens = {
 	Inventory = 103,
 }
 
+const.HouseScreens = {
+	Teacher = -1,
+	ChoosePerson = 0,
+	Main = 1,
+	BuyStandard = 2,
+	Sell = 3,
+	Identify = 4,
+	Repair = 5,
+	BankDeposit = 7,
+	BankWithdraw = 8,
+	BuySpells = 18,
+	DisplayInventory = 94,
+	BuySpecial = 95,
+	LearnSkills = 96,
+	BountyHunt = 99,
+	PayFine = 100,
+	ArcomageMenu = 101,
+	ArcomageRules = 102,
+	ArcomageConditions = 103,
+	Arcomage = 104,
+}
+
 const.FaceAnimation = {
 	KillSmallEnemy = 1,
 	KillBigEnemy = 2,

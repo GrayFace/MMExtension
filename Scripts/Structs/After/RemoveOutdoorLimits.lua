@@ -3,7 +3,7 @@ local mmver = offsets.MMVersion
 mem.IgnoreProtection(true)
 
 local OldCount = 2000
-local NewCount = (FacetRefsLimit or 8192) + 6000
+local NewCount = (FacetRefsLimit or 8192) + 64*128  -- support drawing all facets and half of all tiles at once
 
 if mmver == 6 then
 

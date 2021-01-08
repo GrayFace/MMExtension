@@ -231,6 +231,7 @@ function structs.f.GameStructure(define)
 		 .Info "!Lua[[MonClass = (Id + 2):div(3)]]"
 	end
 	define
+	[mmv(0x4BD10C, 0x4E2B50, 0x4F3A80)].array(mmv(60, 88, 66)).i1  'MonsterClassInfoY'
 	[offsets.TimeStruct1 + 4].b4  'Paused'
 	 .Info "pauses game logic"
 	[offsets.TimeStruct2 + 4].b4  'Paused2'
@@ -1160,6 +1161,12 @@ function structs.f.GameScreen(define)
 	.i4  'cy2'
 	[mmv(0x40024, 0x400EC, 0x400EC)].u4  'Buffer'
 	[mmv(0x40028, 0x40034, 0x40034)].u4  'ObjectByPixel'
+	.method{p = mmv(0x48D130, 0x49F14C, 0x49C7C0), name = "SaveToPcx", must = 1; '', unpack(mmver == 6 and {0, 0, 640, 480} or {})}
+	 .Info{Sig = "name, x, y, width, height"; "'x', 'y', 'width', 'height' are only used in MM6. MM7 and MM8 save a shot of whole screen area."}
+	if mmver > 6 then
+		define.method{p = mm78(0x49F845, 0x49CEB9), name = "SaveBufferToPcx", must = 2; '', 0, 640, 480}
+		 .Info{Sig = "name, x, y, width, height"; "'x', 'y', 'width', 'height' are only used in MM6. MM7 and MM8 save a shot of whole screen area."}
+	end
 	
 	function define.f:Draw(x, y, pic, style, rotate, EnglishD)
 		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
@@ -1194,10 +1201,10 @@ end
 function structs.f.PatchOptions(define)
 	local off, n = 0, PatchOptionsPtr and i4[PatchOptionsPtr] or 0
 	
-	local present = {}
+	local addr = {}
 	local function def(kind, name, sz)
 		if off < n then
-			present[name] = true
+			addr[name] = PatchOptionsPtr + off
 			define[off][kind](name)
 		end
 		off = off + (sz or 4)
@@ -1301,11 +1308,17 @@ function structs.f.PatchOptions(define)
 	bool  'EnableAttackSpell'
 	int  'ShooterMode'
 	int  'MaxMLookUpAngle'
+	bool  'FixIceBoltBlast'  Info "[MM7+]"
+	int  'MonSpritesSizeMul'  Info "Default is 0 - disabled. 0x10000 stands for 1.0."
 	
 	function define.f.Present(name)
-		return present[name]
+		return not not addr[name]
 	end
 	 define.Info{Sig ="name"; "Returns 'true' if the option is supported by patch version being used"}
+	function define.f.Ptr(name)
+		return addr[name]
+	end
+	 define.Info{Sig ="name"; "Returns address of an option if it's supported by patch version being used"}
 	function define.f.UILayoutActive()
 		return (Game.PatchOptions.UILayout or "") ~= "" and Game.Windowed ~= 0
 	end

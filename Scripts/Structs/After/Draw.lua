@@ -37,21 +37,21 @@ function DrawScreenEffectD3D(BitmapIndex, u, v, du, dv, x1, y1, x2, y2, cl, cl2,
 	local SetRenderState = u4[vt + 88]
 	local DrawPrimitive = u4[vt + 112]
 	local SetTextureStageState = u4[vt + 0xA0]
-	call(SetTextureStageState, 0, dev, 0, 12, 1)
+	call(SetTextureStageState, 0, dev, 0, 12, 1)  -- D3DTSS_ADDRESS
 	call(SetTexture, 0, dev, 0, Game.BitmapsLod.D3D_Textures[BitmapIndex])
 	
-	call(SetRenderState, 0, dev, 28, 0)
-	call(SetRenderState, 0, dev, 27, 1)
-	call(SetRenderState, 0, dev, 14, 0)
-	call(SetRenderState, 0, dev, 19, 2)
-	call(SetRenderState, 0, dev, 20, 2)
-	call(SetRenderState, 0, dev, 26, 0)
-	call(SetRenderState, 0, dev, 23, 8)
+	call(SetRenderState, 0, dev, 28, 0)  -- D3DRENDERSTATE_FOGENABLE
+	call(SetRenderState, 0, dev, 27, 1)  -- D3DRENDERSTATE_ALPHABLENDENABLE
+	call(SetRenderState, 0, dev, 14, 0)  -- D3DRENDERSTATE_ZWRITEENABLE
+	call(SetRenderState, 0, dev, 19, 2)  -- D3DRENDERSTATE_SRCBLEND
+	call(SetRenderState, 0, dev, 20, 2)  -- D3DRENDERSTATE_DESTBLEND
+	call(SetRenderState, 0, dev, 26, 0)  -- D3DRENDERSTATE_DITHERENABLE
+	call(SetRenderState, 0, dev, 23, 8)  -- D3DRENDERSTATE_ZFUNC
 	call(DrawPrimitive, 0, dev, 6, 452, poly, 4, 28)
-	call(SetRenderState, 0, dev, 19, 2)
-	call(SetRenderState, 0, dev, 20, 1)
-	call(SetRenderState, 0, dev, 27, 0)
-	call(SetRenderState, 0, dev, 14, 1)
-	call(SetRenderState, 0, dev, 26, 1)
-	call(SetRenderState, 0, dev, 23, 2)
+	call(SetRenderState, 0, dev, 19, 2)  -- D3DRENDERSTATE_SRCBLEND
+	call(SetRenderState, 0, dev, 20, 1)  -- D3DRENDERSTATE_DESTBLEND
+	call(SetRenderState, 0, dev, 27, 0)  -- D3DRENDERSTATE_ALPHABLENDENABLE
+	call(SetRenderState, 0, dev, 14, 1)  -- D3DRENDERSTATE_ZWRITEENABLE
+	call(SetRenderState, 0, dev, 26, 1)  -- D3DRENDERSTATE_DITHERENABLE
+	call(SetRenderState, 0, dev, 23, 2)  -- D3DRENDERSTATE_ZFUNC
 end

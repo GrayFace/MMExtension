@@ -1438,34 +1438,38 @@ end
 
 -- Regeneration
 
-mem[mmver == 7 and 'hook' or 'autohook'](mmv(0x487F74, 0x493DC0, 0x49216B), function(d)
-	if mmver == 7 and d.zf then
-		u4[d.esp] = 0x493E76
-	end
-	local t = {HP = 0, SP = 0}
-	t.PlayerIndex, t.Player = GetPlayer(d.esi)
-	local pl, c = t.Player, const.Condition
-	if pl.Dead ~= 0 or pl.Eradicated ~= 0 then
-		return
-	end
-	-- 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes care of conditions
-	events.cocall('Regeneration', t)
-	if t.HP ~= 0 then
-		local v = pl.HP
-		v = min(v + t.HP, max(v, pl:GetFullHP()))
-		pl.HP = v
-		if v > 0 and pl.Unconscious ~= 0 then
-			pl.Unconscious = 0
-			Game.NeedRedraw = true
+do
+	local hooks = HookManager{}
+	hooks[mmver == 7 and 'hook' or 'autohook'](mmv(0x487F74, 0x493DC0, 0x49216B), function(d)
+		if mmver == 7 and d.zf then
+			u4[d.esp] = 0x493E76
 		end
-	end
-	
-	if t.SP > 0 then
-		pl.SP = min(pl.SP + t.SP, max(pl.SP, pl:GetFullSP()))
-	elseif t.SP < 0 then
-		pl.SP = max(pl.SP + t.SP, 0)
-	end
-end)
+		local t = {HP = 0, SP = 0}
+		t.PlayerIndex, t.Player = GetPlayer(d.esi)
+		local pl, c = t.Player, const.Condition
+		if pl.Dead ~= 0 or pl.Eradicated ~= 0 then
+			return
+		end
+		-- 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes care of conditions
+		events.cocall('Regeneration', t)
+		if t.HP ~= 0 then
+			local v = pl.HP
+			v = min(v + t.HP, max(v, pl:GetFullHP()))
+			pl.HP = v
+			if v > 0 and pl.Unconscious ~= 0 then
+				pl.Unconscious = 0
+				Game.NeedRedraw = true
+			end
+		end
+		
+		if t.SP > 0 then
+			pl.SP = min(pl.SP + t.SP, max(pl.SP, pl:GetFullSP()))
+		elseif t.SP < 0 then
+			pl.SP = max(pl.SP + t.SP, 0)
+		end
+	end)
+	Conditional(hooks, "Regeneration")
+end
 
 -- ModifyItemDamage
 local function ModifyItemDamage(dmg, mon, pl, slot)

@@ -1117,20 +1117,21 @@ end
 -----------------------------------------------------
 
 function Editor.UpdateGameBits()
+	local portals = Editor.ShowPortals and Editor.VisibleGUI
 	if Game.Version > 6 then
 		local p = 0xE20 + mem.u4[mmv(nil, 0x71FE94, 0x75CE00)]
 		local v = mem.u4[p]
 		local function bit(n, on)
 			v = on and v:Or(n) or v:AndNot(n)
 		end
-		bit(8, Editor.ShowPortals and Editor.VisibleGUI)
+		bit(8, portals)
 		-- bit(2, Editor.NoShades and Editor.VisibleGUI)
 		mem.u4[p] = v
-		if Editor.ShowPortals and Editor.VisibleGUI and CleanPortals then
+		if portals and CleanPortals then
 			CleanPortals()
 		end
 	end
-	mem.u4[mmv(0x52D2A8, 0x576EB8, 0x587AE8)] = Editor.ShowPortals and Editor.VisibleGUI and 1 or 0
+	mem.u4[mmv(0x52D2A8, 0x576EB8, 0x587AE8)] = portals and 1 or 0
 end
 
 -----------------------------------------------------

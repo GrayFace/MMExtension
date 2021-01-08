@@ -75,13 +75,15 @@ function Editor.UpdateVisibility(full)
 	
 	set(0x6F3004, Editor.TileBrushSize == 0 and 15000 or 25000)
 	if full then
-		set(0x6F3084, 200)
-		set(0x6F3088, 200)
-		set(0x6F308C, 200)
-		-- set(0x4800DF, 0x9090, u2)
-		-- set(0x4808F2, 0xEB, u1)
-		if Map.IsOutdoor() then
-			mem.call(0x464A86, 0)
+		if on or last[0x6F3084] then
+			set(0x6F3084, 200)
+			set(0x6F3088, 200)
+			set(0x6F308C, 200)
+			-- set(0x4800DF, 0x9090, u2)
+			-- set(0x4808F2, 0xEB, u1)
+			if Map.IsOutdoor() then
+				mem.call(0x464A86, 0)
+			end
 		end
 		
 		mem.copy(addr, on and CodeMine or CodeStd, 6)
@@ -89,4 +91,4 @@ function Editor.UpdateVisibility(full)
 	mem.IgnoreProtection(false)
 end
 
-Editor.UpdateVisibility(false)
+Editor.UpdateVisibility(true)
