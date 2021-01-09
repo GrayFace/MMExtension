@@ -77,13 +77,15 @@ local function NewLoc(t)
 	})
 end
 
---!vt(function)(t, over) Possible values of 'over':
+--!vt(function)(t, over) See #Localization:#.
+-- Possible values of 'over':
 --   true:  permanent setup - overwrite all (used in !b[[Localization]] scripts only)
 --   false:  temporary setup - overwrite temporary setup only
 --   "update":  remove all previous temporary setup, overwrite temporary setup only
 LocalizeAll = NewLoc(TXT)
 
---!(t, over, lev = 1) Possible values of 'over':
+--!(t, over, lev = 1) See #Localization:#.
+-- Possible values of 'over':
 --   true:  permanent setup - overwrite all (used in !b[[Localization]] scripts only)
 --   false:  temporary setup - overwrite temporary setup only
 --   "update":  remove all previous temporary setup, overwrite temporary setup only
@@ -405,12 +407,13 @@ local function RegisterQuest(t)
 		end
 	end
 	
-	-- Switches dialog branch to 'branch', but returns to current branch upon pressing Esc
+	-- Switches dialog branch to 'branch', but returns to current branch upon pressing Esc.
 	function QuestBranchScreen(branch)
 		BranchStack[#BranchStack + 1] = CurrentBranch
 		CurrentBranch = branch or ""
 	end
 	
+	-- Exits current branch opened with #QuestBranchScreen:#. If no branch screens are left open, simulates Esc press to exit the dialog.
 	function ExitQuestBranch()
 		if BranchStack[1] then
 			CurrentBranch = BranchStack[#BranchStack]
@@ -418,6 +421,11 @@ local function RegisterQuest(t)
 		else
 			Game.Actions.Add(113)
 		end
+	end
+
+	-- Returns a table with branch names stored by #QuestBranchScreen:# function (on each call it adds previous branch to the end of this table).
+	function GetQuestBranchStack()
+		return BranchStack
 	end
 
 	function events.CanExitNPC(t)
