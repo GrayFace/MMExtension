@@ -5,7 +5,7 @@ For example, to edit an MM6 outdoor map do this:
 
 - Open extracted ODM using MM6odm template.
 
-- Open extracted DDM right after using MMddm template. Information extracted from last loaded ODM will be used to read it.
+- Right after that open extracted DDM using MMddm template. Information extracted from last loaded ODM will be used to read it.
 
 
 Evt
