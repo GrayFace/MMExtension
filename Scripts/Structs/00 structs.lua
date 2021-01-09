@@ -391,6 +391,7 @@ function structs.f.GameStructure(define)
 	define.i4  'ExitLevelCode'
 	 .Info "0 = in game, 2 = load other map, 8 = death"
 	[mmv(0x6107E3, 0x6BE1EF, 0x6F39AF)].i4  'SoundVolume'
+	[mmv(0x4C22F0, 0x4ED280, 0x4FD660)].array(mmv(103, 110, 110)).struct(structs.PlayerAnimationInfo)  'PlayerAnimations'
 	
 	-- stditems, spcitems, rnditems
 

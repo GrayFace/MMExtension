@@ -158,8 +158,10 @@ local function update()
 	end
 	if Game.Version > 6 then
 		local hdr = NameHeader({[-1] = "Monster"}, Game.MonListBin)
-		DataTable('Monster Kinds', StructsArray(Game.MonsterKinds, nil, {Resisable = false, RowHeaders = hdr}), true)
+		DataTable('Monster Kinds', StructsArray(Game.MonsterKinds, nil, {Resisable = false, RowHeaders = hdr}))
 	end
+	-- DataTable('Player Animations', StructsArray(Game.PlayerAnimations, nil, {Resisable = false, IgnoreFields = {Sounds = true, Expressions = true}}))
+	events.DataTablesUpdate1(DataTable)
 	FixFileTimes()  -- just to be sure
 end
 
@@ -176,6 +178,7 @@ local function update2()
 		{Resisable = false, RowHeaders = {[Game.TransportIndex.low - 1] = "2D Event"}}))
 	DataTable('Transport Locations', StructsArray(Game.TransportLocations, nil,
 		{Resisable = false, IgnoreFields = {MapIndex = true}}))
+	events.DataTablesUpdate2(DataTable)
 	FixFileTimes()  -- just to be sure
 	events.DataTablesLoaded()
 end

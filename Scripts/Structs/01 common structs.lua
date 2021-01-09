@@ -2523,3 +2523,17 @@ function structs.f.FogChances(define)
 	.u1  'Light'
 	.size = mmv(3, 4, 4)
 end
+
+function structs.f.PlayerAnimationInfo(define)
+	define
+	.alt.array(1, 2).u1  'Sounds'
+	.u1  'Sound1'
+	.u1  'Sound2'
+	.skip(1)
+	.alt.array(1, 5).u1  'Expressions'
+	.u1  'Expression1'
+	.u1  'Expression2'
+	.u1  'Expression3'
+	.u1  'Expression4'
+	.u1  'Expression5'
+end
