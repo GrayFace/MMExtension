@@ -1,4 +1,0 @@
-#define mm7
-#include "MM7evtInclude.bt"
-#include "MMevtIncludeCommon.bt"
-#include "MMevtCommon.bt"

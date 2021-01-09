@@ -1,7 +1,0 @@
-event 1
-  110: GoTo  {jump = 0}
-
-      function events.LoadMap()
-  1:  ForPlayer  ("All")
-  2:  Set  {"Eradicated", Value = 0}
-end
