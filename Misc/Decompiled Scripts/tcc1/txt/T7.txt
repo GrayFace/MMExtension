@@ -1,0 +1,450 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Exit"
+str[3] = "Chest"
+str[4] = "Sign"
+str[5] = "Scroll"
+str[6] = "Expert Perception is the key and the doors of Chaos will let you be.                                                                                                                                                                                                                  The Spiral then each head, talk to Baa or you'll be dead."
+str[7] = "Chaos Idol"
+str[8] = "You've defaced the idol!"
+str[9] = "Chaos Idol"
+str[10] = "You've defaced the idol!"
+str[11] = "Chaos Idol"
+str[12] = "You've defaced the idol!"
+str[13] = "Chaos Idol"
+str[14] = "You've defaced the idol!"
+str[15] = "Chaos laughs at you!"
+str[16] = "Almighty Idol of Chaos."
+str[17] = "Chaos laughs at you!"
+str[18] = "You defaced the idol!  +250,000 Experience."
+str[19] = "The Idol is defaced!"
+str[20] = "Book Case"
+str[21] = "Podium"
+str[22] = "Chest Is locked."
+str[23] = "Lava pool"
+str[24] = "The Temple of Chaos"
+str[25] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+      MazeInfo = str[24]  -- "The Temple of Chaos"
+  0:  ForPlayer  ("Current")
+  1:  CheckSkill  {const.Skills.Perception, Mastery = const.Novice, Level = 8,   jump(>=) = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 6, State = 1}
+end
+
+event 7
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 9, State = 1}
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 11, State = 1}
+end
+
+event 12
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 12, State = 1}
+end
+
+event 13
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 13, State = 1}
+end
+
+event 14
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 14, State = 1}
+end
+
+event 15
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 15, State = 1}
+end
+
+event 16
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 16, State = 1}
+end
+
+event 17
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 17, State = 1}
+end
+
+event 18
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 18, State = 1}
+end
+
+event 19
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 19, State = 1}
+  1:  Cmp  {"MapVar12", Value = 1,   jump = 4}
+  2:  Set  {"MapVar8", Value = 1}
+  3:  Exit  {}
+
+  4:  Set  {"MapVar14", Value = 1}
+end
+
+event 20
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 20, State = 1}
+end
+
+event 21
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"PerceptionSkill", Value = 4,   jump = 4}
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 50}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 21, State = 1}
+end
+
+event 27
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 28
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 29
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 34
+      Hint = str[9]  -- "Chaos Idol"
+  0:  Exit  {}
+end
+
+event 36
+      Hint = str[21]  -- "Podium"
+  0:  SetMessage  {Str = 6}         -- "Expert Perception is the key and the doors of Chaos will let you be.                                                                                                                                                                                                                  The Spiral then each head, talk to Baa or you'll be dead."
+  1:  SimpleMessage  {}
+end
+
+event 38
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 39
+      Hint = str[3]  -- "Chest"
+  0:  Cmp  {"PerceptionSkill", Value = 2,   jump = 3}
+  1:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 200}
+  2:  Exit  {}
+
+  3:  OpenChest  {Id = 3}
+end
+
+event 40
+      Hint = str[3]  -- "Chest"
+  0:  Cmp  {"MapVar19", Value = 1,   jump = 16}
+  1:  ForPlayer  ("All")
+  2:  Cmp  {"Inventory", Value = 567,   jump = 5}         -- "High Cleric's Key"
+  3:  StatusText  {Str = 22}         -- "Chest Is locked."
+  4:  GoTo  {jump = 9}
+
+  5:  Cmp  {"Inventory", Value = 492,   jump = 14}         -- "High Sorcerer's Key"
+  6:  StatusText  {Str = 22}         -- "Chest Is locked."
+  7:  GoTo  {jump = 9}
+
+  8:  Exit  {}
+
+  9:  Cmp  {"MapVar10", Value = 1,   jump = 13}
+  10: Set  {"MapVar10", Value = 1}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -2240, Y = -3168, Z = 0}
+  12: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -320, Y = -3232, Z = 0}
+  13: Exit  {}
+
+  14: Cmp  {"QBits", Value = 8,   jump = 22}         --  8 T7, given when you find the smoking gun
+  15: Set  {"MapVar19", Value = 1}
+  16: OpenChest  {Id = 7}
+  17: Subtract  {"Inventory", Value = 567}         -- "High Cleric's Key"
+  18: Subtract  {"Inventory", Value = 492}         -- "High Sorcerer's Key"
+  19: Set  {"QBits", Value = 8}         --  8 T7, given when you find the smoking gun
+  20: Set  {"QBits", Value = 190}         -- Quest item bits for seer
+  21: Exit  {}
+
+  22: OpenChest  {Id = 8}
+end
+
+event 42
+      Hint = str[20]  -- "Book Case"
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 3}
+  1:  Set  {"MapVar4", Value = 1}
+  2:  Add  {"Inventory", Value = 388}         -- "Reanimate"
+  3:  Exit  {}
+end
+
+event 45
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 60
+  0:  MoveToMap  {X = -19914, Y = -18118, Z = 65, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "OutA3.Odm"}
+end
+
+event 61
+  0:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -6272, FromY = 6272, FromZ = 250, ToX = -6272, ToY = 6272, ToZ = 100}         -- "Sparks"
+end
+
+event 62
+  0:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -6272, FromY = 6272, FromZ = 250, ToX = -6272, ToY = 6272, ToZ = 100}         -- "Sparks"
+  1:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -9984, FromY = 5792, FromZ = -50, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 63
+  0:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -8768, FromY = 6176, FromZ = -50, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  1:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -11552, FromY = 3904, FromZ = -50, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 64
+  0:  CastSpell  {Spell = 6, Mastery = const.Master, Skill = 5, FromX = -11552, FromY = -3648, FromZ = -125, ToX = -11712, ToY = 2656, ToZ = -126}         -- "Fireball"
+end
+
+event 65
+  0:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -11488, FromY = -3616, FromZ = -50, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  1:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -11904, FromY = -7360, FromZ = -50, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 66
+  0:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -11680, FromY = -6140, FromZ = -20, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  1:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -11776, FromY = -9824, FromZ = -400, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 67
+  0:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -10560, FromY = -11872, FromZ = -520, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  1:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -8160, FromY = -11424, FromZ = -540, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 68
+  0:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -7744, FromY = -8320, FromZ = -100, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  1:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -10496, FromY = -9760, FromZ = 200, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 69
+  0:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -8800, FromY = -12864, FromZ = 250, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  1:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -5504, FromY = -11520, FromZ = 220, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 70
+  0:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -5344, FromY = -10240, FromZ = 250, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  1:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 3, FromX = -7232, FromY = -7008, FromZ = 230, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 74
+      Hint = str[7]  -- "Chaos Idol"
+  0:  StatusText  {Str = 8}         -- "You've defaced the idol!"
+  1:  Cmp  {"MapVar9", Value = 1,   jump = 3}
+  2:  Set  {"MapVar9", Value = 1}
+  3:  Exit  {}
+end
+
+event 72
+      Hint = str[9]  -- "Chaos Idol"
+  0:  Cmp  {"MapVar9", Value = 1,   jump = 4}
+  1:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 20}
+  2:  StatusText  {Str = 15}         -- "Chaos laughs at you!"
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 10}         -- "You've defaced the idol!"
+  5:  Set  {"MapVar10", Value = 1}
+end
+
+event 73
+      Hint = str[11]  -- "Chaos Idol"
+  0:  Cmp  {"MapVar10", Value = 1,   jump = 4}
+  1:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 20}
+  2:  StatusText  {Str = 15}         -- "Chaos laughs at you!"
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "You've defaced the idol!"
+  5:  Set  {"MapVar11", Value = 1}
+end
+
+event 71
+      Hint = str[13]  -- "Chaos Idol"
+  0:  Cmp  {"MapVar11", Value = 1,   jump = 4}
+  1:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 20}
+  2:  StatusText  {Str = 15}         -- "Chaos laughs at you!"
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 14}         -- "You've defaced the idol!"
+  5:  Set  {"MapVar12", Value = 1}
+  6:  Cmp  {"MapVar8", Value = 1,   jump = 9}
+  7:  Set  {"MapVar14", Value = 1}
+  8:  Exit  {}
+
+  9:  Set  {"MapVar14", Value = 1}
+end
+
+event 75
+      Hint = str[16]  -- "Almighty Idol of Chaos."
+  0:  Cmp  {"MapVar14", Value = 1,   jump = 4}
+  1:  StatusText  {Str = 17}         -- "Chaos laughs at you!"
+  2:  DamagePlayer  {Player = "Current", DamageType = const.Damage.Fire, Damage = 100}
+  3:  Exit  {}
+
+  4:  Cmp  {"PlayerBits", Value = 41,   jump = 17}
+  5:  StatusText  {Str = 18}         -- "You defaced the idol!  +250,000 Experience."
+  6:  ForPlayer  ("All")
+  7:  Subtract  {"QBits", Value = 125}         -- "Deface  the Idols in the Temple of Chaos, destroy the inhabitants, and return to The Seer."
+  8:  Set  {"Awards", Value = 38}         -- "Defaced the Idols of Chaos"
+  9:  Add  {"Experience", Value = 250000}
+  10: Add  {"ReputationIs", Value = 500}
+  11: Set  {"QBits", Value = 446}         -- Destroyed Chaos Idols
+  12: SetNPCTopic  {NPC = 9, Index = 1, Event = 32}         -- "The Seer" : "Welcome back, adventurers!"
+  13: Set  {"PlayerBits", Value = 41}
+  14: ForPlayer  ("Current")
+  15: Add  {"Inventory", Value = 466}         -- "Crystal Skull"
+  16: Exit  {}
+
+  17: StatusText  {Str = 19}         -- "The Idol is defaced!"
+end
+
+event 76
+      Hint = str[23]  -- "Lava pool"
+  0:  DamagePlayer  {Player = "All", DamageType = const.Damage.Magic, Damage = 30}
+end

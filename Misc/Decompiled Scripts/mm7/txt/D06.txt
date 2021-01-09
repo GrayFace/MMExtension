@@ -1,0 +1,329 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Leave the Temple of the Moon"
+str[3] = "Chest"
+str[4] = "Button"
+str[5] = "Lever"
+str[6] = "Vault"
+str[7] = "Cabinet"
+str[8] = "Switch"
+str[9] = ""
+str[10] = "Bookcase"
+str[11] = ""
+str[12] = ""
+str[13] = ""
+str[14] = "You Successfully disarm the trap"
+str[15] = ""
+str[16] = "Take a Drink"
+str[17] = "Not Very Refreshing"
+str[18] = "Refreshing"
+str[19] = ""
+str[20] = ""
+str[21] = ""
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = ""
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = ""
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = ""
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = ""
+str[51] = ""
+str[52] = ""
+str[53] = ""
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 3, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 1, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 2, State = 2}         -- switch state
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 9, State = 1}
+  1:  SetDoorState  {Id = 5, State = 0}
+  2:  SetDoorState  {Id = 6, State = 0}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 1}
+  1:  SetDoorState  {Id = 7, State = 0}
+  2:  SetDoorState  {Id = 8, State = 0}
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 0}
+end
+
+event 21
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+  1:  Exit  {}
+end
+
+event 22
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+  1:  Exit  {}
+end
+
+event 23
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+  1:  Exit  {}
+end
+
+event 24
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+  1:  Exit  {}
+end
+
+event 25
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+  1:  Exit  {}
+end
+
+event 26
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+  1:  Exit  {}
+end
+
+event 27
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+  1:  Exit  {}
+end
+
+event 28
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+  1:  Exit  {}
+end
+
+event 29
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 3}
+  1:  Set  {"MapVar0", Value = 1}
+  2:  Add  {"Inventory", Value = 400}         -- "Torch Light"
+  3:  Exit  {}
+end
+
+event 30
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 3}
+  1:  Set  {"MapVar1", Value = 1}
+  2:  Add  {"Inventory", Value = 422}         -- "Awaken"
+  3:  Exit  {}
+end
+
+event 31
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 3}
+  1:  Set  {"MapVar2", Value = 1}
+  2:  Add  {"Inventory", Value = 302}         -- "Fire Resistance"
+  3:  Exit  {}
+end
+
+event 32
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar3", Value = 1,   jump = 3}
+  1:  Set  {"MapVar3", Value = 1}
+  2:  Add  {"Inventory", Value = 311}         -- "Wizard Eye"
+  3:  Exit  {}
+end
+
+event 33
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 3}
+  1:  Set  {"MapVar4", Value = 1}
+  2:  Add  {"Inventory", Value = 301}         -- "Fire Bolt"
+  3:  Exit  {}
+end
+
+event 34
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar5", Value = 1,   jump = 3}
+  1:  Set  {"MapVar5", Value = 1}
+  2:  Add  {"Inventory", Value = 323}         -- "Poison Spray"
+  3:  Exit  {}
+end
+
+event 35
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 3}
+  1:  Set  {"MapVar6", Value = 1}
+  2:  Add  {"Inventory", Value = 300}         -- "Torch Light"
+  3:  Exit  {}
+end
+
+event 36
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 3}
+  1:  Set  {"MapVar7", Value = 1}
+  2:  Add  {"Inventory", Value = 300}         -- "Torch Light"
+  3:  Exit  {}
+end
+
+event 37
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar8", Value = 1,   jump = 3}
+  1:  Set  {"MapVar8", Value = 1}
+  2:  Add  {"Inventory", Value = 300}         -- "Torch Light"
+  3:  Exit  {}
+end
+
+event 38
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar9", Value = 1,   jump = 3}
+  1:  Set  {"MapVar9", Value = 1}
+  2:  Add  {"Inventory", Value = 300}         -- "Torch Light"
+  3:  Exit  {}
+end
+
+event 39
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar10", Value = 1,   jump = 3}
+  1:  Set  {"MapVar10", Value = 1}
+  2:  Add  {"Inventory", Value = 300}         -- "Torch Light"
+  3:  Exit  {}
+end
+
+event 40
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar11", Value = 1,   jump = 3}
+  1:  Set  {"MapVar11", Value = 1}
+  2:  Add  {"Inventory", Value = 311}         -- "Wizard Eye"
+  3:  Exit  {}
+end
+
+event 41
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar12", Value = 1,   jump = 3}
+  1:  Set  {"MapVar12", Value = 1}
+  2:  Add  {"Inventory", Value = 311}         -- "Wizard Eye"
+  3:  Exit  {}
+end
+
+event 42
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar13", Value = 1,   jump = 3}
+  1:  Set  {"MapVar13", Value = 1}
+  2:  Add  {"Inventory", Value = 311}         -- "Wizard Eye"
+  3:  Exit  {}
+end
+
+event 43
+      Hint = str[10]  -- "Bookcase"
+  0:  Cmp  {"MapVar14", Value = 1,   jump = 3}
+  1:  Set  {"MapVar14", Value = 1}
+  2:  Add  {"Inventory", Value = 311}         -- "Wizard Eye"
+  3:  Exit  {}
+end
+
+event 51
+  0:  OnTimer  {IntervalInHalfMinutes = 5}
+  1:  CastSpell  {Spell = 2, Mastery = const.Novice, Skill = 2, FromX = -2619, FromY = 7850, FromZ = -95, ToX = -2619, ToY = 4008, ToZ = -95}         -- "Fire Bolt"
+  2:  CastSpell  {Spell = 2, Mastery = const.Novice, Skill = 2, FromX = -2619, FromY = 4050, FromZ = -95, ToX = -2619, ToY = 7896, ToZ = -95}         -- "Fire Bolt"
+end
+
+event 100
+      Hint = str[2]  -- "Leave the Temple of the Moon"
+  0:  MoveToMap  {X = 15816, Y = 12161, Z = 1133, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 4, Name = "Out01.Odm"}
+  1:  Exit  {}
+end

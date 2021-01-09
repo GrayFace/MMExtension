@@ -1,0 +1,258 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Bed"
+str[3] = "Chest"
+str[4] = "Cabinet"
+str[5] = "Sewer Grate"
+str[6] = "Someone's hiding under the bed!"
+str[7] = "Torch"
+str[8] = "Trash"
+str[9] = "Something's stashed here!"
+str[10] = "Ouch!"
+str[11] = "The door is locked."
+str[12] = "Exit"
+str[13] = "Cylinder"
+str[14] = "+10 Hit points restored."
+str[15] = "Refreshing!"
+str[16] = "Well"
+str[17] = "Free Haven Sewer"
+str[18] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+      MazeInfo = str[17]  -- "Free Haven Sewer"
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+  0:  SetDoorState  {Id = 6, State = 1}
+end
+
+event 7
+  0:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+  0:  Cmp  {"QBits", Value = 170,   jump = 6}         -- NPC
+  1:  Cmp  {"QBits", Value = 98,   jump = 3}         -- "Capture the Prince of Thieves and bring him to Lord Anthony Stone at Castle Stone."
+  2:  GoTo  {jump = 6}
+
+  3:  SpeakNPC  {NPC = 17}         -- "The Prince of Thieves"
+  4:  Set  {"NPCs", Value = 17}         -- "The Prince of Thieves"
+  5:  Set  {"QBits", Value = 170}         -- NPC
+  6:  Exit  {}
+end
+
+event 9
+      Hint = str[7]  -- "Torch"
+  0:  SetSprite  {SpriteId = 112, Visible = 1, Name = "torch"}
+  1:  SetLight  {Id = 0, On = true}
+end
+
+event 10
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+end
+
+event 11
+      Hint = str[4]  -- "Cabinet"
+  0:  OpenChest  {Id = 1}
+end
+
+event 12
+      Hint = str[5]  -- "Sewer Grate"
+  0:  Cmp  {"MapVar3", Value = 1,   jump = 5}
+  1:  Add  {"Inventory", Value = 578}         -- "Sewer Key"
+  2:  StatusText  {Str = 9}         -- "Something's stashed here!"
+  3:  Set  {"MapVar3", Value = 1}
+  4:  Exit  {}
+
+  5:  Cmp  {"MapVar0", Value = 12,   jump = 9}
+  6:  RandomGoTo  {jumpA = 7, jumpB = 10, jumpC = 14, jumpD = 17, jumpE = 18, jumpF = 0}
+  7:  Add  {"MapVar0", Value = 1}
+  8:  RandomGoTo  {jumpA = 19, jumpB = 23, jumpC = 19, jumpD = 0, jumpE = 0, jumpF = 0}
+  9:  Exit  {}
+
+  10: Add  {"MapVar0", Value = 2}
+  11: Add  {"GoldAddRandom", Value = 2000}
+  12: StatusText  {Str = 9}         -- "Something's stashed here!"
+  13: Exit  {}
+
+  14: Add  {"GoldAddRandom", Value = 1000}
+  15: StatusText  {Str = 9}         -- "Something's stashed here!"
+  16: Add  {"MapVar0", Value = 1}
+  17: Exit  {}
+
+  18: Exit  {}
+
+  19: DamagePlayer  {Player = "All", DamageType = const.Damage.Cold, Damage = 30}
+  20: StatusText  {Str = 10}         -- "Ouch!"
+  21: Add  {"MapVar0", Value = 1}
+  22: Exit  {}
+
+  23: Add  {"MapVar0", Value = 1}
+  24: Exit  {}
+end
+
+event 13
+      Hint = str[1]  -- "Door"
+  0:  Cmp  {"Inventory", Value = 578,   jump = 3}         -- "Sewer Key"
+  1:  StatusText  {Str = 11}         -- "The door is locked."
+  2:  Exit  {}
+
+  3:  SetDoorState  {Id = 8, State = 1}
+  4:  Subtract  {"Inventory", Value = 578}         -- "Sewer Key"
+end
+
+event 14
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 15
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 16
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 17
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 18
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 19
+      Hint = str[16]  -- "Well"
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 15}         -- "Refreshing!"
+  2:  GoTo  {jump = 6}
+
+  3:  Subtract  {"MapVar2", Value = 1}
+  4:  Add  {"HP", Value = 10}
+  5:  StatusText  {Str = 14}         -- "+10 Hit points restored."
+  6:  Set  {"AutonotesBits", Value = 96}         -- "+10 Hit points restored south west of the main Sewer chamber."
+
+  7:  OnRefillTimer  {Second = 1}
+  8:  Set  {"MapVar2", Value = 20}
+end
+
+event 20
+      Hint = str[12]  -- "Exit"
+  0:  MoveToMap  {X = 5322, Y = 16780, Z = 256, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "outc2.odm"}
+end
+
+event 21
+      Hint = str[12]  -- "Exit"
+  0:  MoveToMap  {X = 10592, Y = 16625, Z = 161, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "outc2.odm"}
+end
+
+event 22
+      Hint = str[12]  -- "Exit"
+  0:  MoveToMap  {X = 12226, Y = 11741, Z = 1, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "outc2.odm"}
+end
+
+event 23
+      Hint = str[12]  -- "Exit"
+  0:  MoveToMap  {X = 12322, Y = 8748, Z = 256, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "outc2.odm"}
+end
+
+event 24
+      Hint = str[12]  -- "Exit"
+  0:  MoveToMap  {X = 9465, Y = 8037, Z = 256, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "outc2.odm"}
+end
+
+event 25
+      Hint = str[12]  -- "Exit"
+  0:  MoveToMap  {X = 3770, Y = 7549, Z = 256, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "outc2.odm"}
+end
+
+event 26
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 9, State = 1}
+end
+
+event 27
+      Hint = str[13]  -- "Cylinder"
+  0:  Cmp  {"QBits", Value = 176,   jump = 2}         -- NPC
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 21, State = 0}
+end
+
+event 28
+  0:  Cmp  {"QBits", Value = 176,   jump = 2}         -- NPC
+  1:  Exit  {}
+
+  2:  MoveToMap  {X = -3078, Y = 2819, Z = 2049, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 5, Name = "t6.blv"}
+end
+
+event 30
+      Hint = str[5]  -- "Sewer Grate"
+  0:  Cmp  {"MapVar5", Value = 4,   jump = 3}
+  1:  Add  {"MapVar5", Value = 1}
+  2:  Add  {"Inventory", Value = 163}         -- "Potion Bottle"
+  3:  Exit  {}
+end
+
+event 31
+      Hint = str[5]  -- "Sewer Grate"
+  0:  Cmp  {"MapVar6", Value = 4,   jump = 3}
+  1:  Add  {"MapVar6", Value = 1}
+  2:  Add  {"Inventory", Value = 164}         -- "Cure Wounds"
+  3:  Exit  {}
+end
+
+event 32
+      Hint = str[5]  -- "Sewer Grate"
+  0:  Cmp  {"MapVar7", Value = 4,   jump = 3}
+  1:  Add  {"MapVar7", Value = 1}
+  2:  Add  {"Inventory", Value = 165}         -- "Magic Potion"
+  3:  Exit  {}
+end
+
+event 33
+      Hint = str[5]  -- "Sewer Grate"
+  0:  Cmp  {"MapVar8", Value = 4,   jump = 3}
+  1:  Add  {"MapVar8", Value = 1}
+  2:  Add  {"Inventory", Value = 166}         -- "Energy"
+  3:  Exit  {}
+end
+
+event 34
+  0:  OnTimer  {IntervalInHalfMinutes = 10}
+  1:  CastSpell  {Spell = 90, Mastery = const.Novice, Skill = 6, FromX = -4864, FromY = 3904, FromZ = 200, ToX = -4000, ToY = 3904, ToZ = 200}         -- "Toxic Cloud"
+  2:  CastSpell  {Spell = 90, Mastery = const.Novice, Skill = 6, FromX = -1280, FromY = 1152, FromZ = 142, ToX = -1280, ToY = 3000, ToZ = 142}         -- "Toxic Cloud"
+  3:  CastSpell  {Spell = 90, Mastery = const.Novice, Skill = 6, FromX = 2688, FromY = 5760, FromZ = 142, ToX = 2000, ToY = 5760, ToZ = 142}         -- "Toxic Cloud"
+  4:  CastSpell  {Spell = 90, Mastery = const.Novice, Skill = 6, FromX = 2624, FromY = 1216, FromZ = 142, ToX = -2304, ToY = 6016, ToZ = 142}         -- "Toxic Cloud"
+  5:  CastSpell  {Spell = 90, Mastery = const.Novice, Skill = 6, FromX = 1536, FromY = 6144, FromZ = 142, ToX = 1536, ToY = 4000, ToZ = 142}         -- "Toxic Cloud"
+  6:  CastSpell  {Spell = 90, Mastery = const.Novice, Skill = 6, FromX = 384, FromY = 3328, FromZ = 1700, ToX = 384, ToY = 3328, ToZ = 0}         -- "Toxic Cloud"
+end

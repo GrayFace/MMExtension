@@ -1,0 +1,107 @@
+local int mm, mm7, mm8;
+
+// -----------------------------------------------------------------------------
+// Types & functions 
+// -----------------------------------------------------------------------------
+
+//  THeader
+
+typedef struct
+{
+	int LevelNumber;
+	char Name[60];
+	char unk_1[40];
+	int FacetsSize;
+	int RoomDataSize;
+	int RoomLightDataSize;
+	int DoorDataSize;
+	int Palette[4]; // unknown
+	
+} THeader;
+
+//------------------------------------------------------
+//  TMonster
+
+typedef struct
+{
+	local int pos = FTell();
+	char Name[32];
+	
+	if (mm == 6)
+		FSeek(pos + 0x224);
+	else if (mm == 7)
+		FSeek(pos + 0x344);
+	else
+		FSeek(pos + 0x3CC);
+	
+} TMonster;
+
+//------------------------------------------------------
+//  TObject
+
+typedef struct
+{
+	local int pos = FTell();
+	
+	
+	FSeek(pos + (mm7 ? 0x70 : 0x64));
+		
+} TObject;
+
+//------------------------------------------------------
+//  TItem
+
+typedef struct
+{
+	int Number;
+	byte unk[mm7 ? 0x20 : 0x18];
+		
+} TItem;
+
+//------------------------------------------------------
+//  TChest
+
+typedef struct
+{
+	short Picture;
+	short Flags;
+	TItem Items[140];
+	short Inventory[140];
+		
+} TChest;
+
+// -----------------------------------------------------------------------------
+// File 
+// -----------------------------------------------------------------------------
+
+LittleEndian();
+BitfieldEnablePadding();
+
+local int FacesCount;
+local int SpritesCount;
+
+local int ClipIndex = GetClipboardIndex();
+SetClipboardIndex(3);
+local string clip = GetClipboardString();
+SScanf(clip, "%d %d %d", mm, FacesCount, SpritesCount);
+SetClipboardIndex(ClipIndex);
+mm7 = (mm > 6);
+mm8 = (mm > 7);
+
+char Header[mm7 ? 40 : 8];
+byte VisibleMap1[0x3C8];
+byte VisibleMap2[0x3C8];
+
+if (mm7)
+	uint FacetBits[FacesCount];
+if (mm7)
+	ushort SpriteBits[SpritesCount];
+int MonstersCount;
+TMonster Monsters[MonstersCount];
+int ObjectsCount;
+TObject Objects[ObjectsCount];
+int ChestsCount;
+TChest Chests[ChestsCount];
+byte MapVariables[200];
+int64 LastVisitTime;
+// ...

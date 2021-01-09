@@ -1,0 +1,1032 @@
+str[0] = " "
+str[1] = "Chest"
+str[2] = "Drink from Well."
+str[3] = "+2 Might permanent"
+str[4] = "Look Out!"
+str[5] = "Drink from Fountain"
+str[6] = "+25 Hit points restored."
+str[7] = "Drink from Trough."
+str[8] = "Hic…"
+str[9] = "Refreshing!"
+str[10] = "Port Sleigon"
+str[11] = "Shrine of Endurance"
+str[12] = "You pray at the shrine."
+str[13] = "+25 Endurance permanent"
+str[14] = "+5 Endurance permanent"
+str[15] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            mnfts_t_srrnoohtl"
+str[16] = "Obelisk"
+str[17] = "Port Sleigon"
+str[18] = "Glastonbury Tor"
+str[19] = "Temple of Carmen"
+str[20] = "Bog of Tuonela"
+str[21] = "Guild of Aqua"
+str[22] = "Armory"
+str[23] = "Temple"
+str[24] = "Cumbria"
+str[25] = "Jorgsborg"
+str[26] = "Temple of Tranquility"
+str[27] = "Cheroburg"
+str[28] = "Guild of Mentis"
+str[29] = "Due to troubles in the North, services are temporarily suspended."
+str[30] = "You hand the Sacred Chalice to the monks of the temple who ensconce it in the main altar."
+str[31] = "The tomb is locked."
+str[32] = "You must be Master Skill Level may use this Guild."
+str[33] = "Sir Zeddicus Z'ul V is in council and cannot be disturbed."
+str[34] = "You cannot enter at this time."
+str[35] = ""
+
+
+event 2
+      Hint = str[7]  -- "Drink from Trough."
+      MazeInfo = str[10]  -- "Port Sleigon"
+  0:  EnterHouse  {Id = 7}         -- "The Sharpening Stone"
+end
+
+event 3
+      Hint = str[7]  -- "Drink from Trough."
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 7}         -- "The Sharpening Stone"
+end
+
+event 4
+      Hint = str[8]  -- "Hic…"
+  0:  EnterHouse  {Id = 8}         -- "Feathers and String"
+end
+
+event 5
+      Hint = str[8]  -- "Hic…"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 8}         -- "Feathers and String"
+end
+
+event 6
+      Hint = str[20]  -- "Bog of Tuonela"
+  0:  EnterHouse  {Id = 20}         -- "The Foundry"
+end
+
+event 7
+      Hint = str[20]  -- "Bog of Tuonela"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 20}         -- "The Foundry"
+end
+
+event 8
+      Hint = str[25]  -- "Jorgsborg"
+  0:  EnterHouse  {Id = 25}         -- "The Footman's Friend"
+end
+
+event 9
+      Hint = str[25]  -- "Jorgsborg"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 25}         -- "The Footman's Friend"
+end
+
+event 10
+      Hint = str[39]
+  0:  EnterHouse  {Id = 39}         -- "Alchemy and Incantations"
+end
+
+event 11
+      Hint = str[39]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 39}         -- "Alchemy and Incantations"
+end
+
+event 12
+      Hint = str[45]
+  0:  EnterHouse  {Id = 45}         -- "Abdul's Discount Goods"
+end
+
+event 13
+      Hint = str[45]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 45}         -- "Abdul's Discount Goods"
+end
+
+event 14
+      Hint = str[50]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 29}         -- "Due to troubles in the North, services are temporarily suspended."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 50}         -- "Port Sleigon Travel East"
+end
+
+event 15
+      Hint = str[50]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 50}         -- "Port Sleigon Travel East"
+end
+
+event 16
+      Hint = str[51]
+  0:  EnterHouse  {Id = 51}         -- "Port Sleigon Travel West"
+end
+
+event 17
+      Hint = str[51]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 51}         -- "Port Sleigon Travel West"
+end
+
+event 18
+      Hint = str[62]
+  0:  EnterHouse  {Id = 62}         -- "Windrunner"
+end
+
+event 19
+      Hint = str[70]
+  0:  EnterHouse  {Id = 70}         -- "Sleigon Temple"
+  1:  Exit  {}
+
+  10: Cmp  {"QBits", Value = 107,   jump = 16}         -- "Purge the Disordered Sanctum in Norseland and return to King Jaffar with the Cloak of the High Priestess."
+  11: Cmp  {"QBits", Value = 106,   jump = 12}         -- NPC
+  2:  Cmp  {"HasNPCProfession", Value = const.NPCProfession.StoneCutter,   jump = 4}
+  3:  GoTo  {jump = 10}
+
+  4:  Cmp  {"HasNPCProfession", Value = const.NPCProfession.Carpenter,   jump = 6}
+  5:  GoTo  {jump = 10}
+
+  6:  Set  {"QBits", Value = 106}         -- NPC
+  7:  Subtract  {"HasNPCProfession", Value = const.NPCProfession.Carpenter}
+  8:  Subtract  {"HasNPCProfession", Value = const.NPCProfession.StoneCutter}
+  9:  SetMessage  {Str = 29}         -- "Due to troubles in the North, services are temporarily suspended."
+  10: EnterHouse  {Id = 551}         -- "Sleigon Temple"
+  11: Exit  {}
+
+  12: Cmp  {"QBits", Value = 105,   jump = 10}         -- "Find and judge (1) Avarice, (2) Oppression, (3) Adultery, (4) Lying, and  (5) Self-Righteousness.   Then return to King Jaffar in Kat'an."
+  13: SetMessage  {Str = 30}         -- "You hand the Sacred Chalice to the monks of the temple who ensconce it in the main altar."
+  14: EnterHouse  {Id = 70}         -- "Sleigon Temple"
+  15: Exit  {}
+
+  16: ForPlayer  ("All")
+  17: Cmp  {"Inventory", Value = 434,   jump = 19}         -- "Sacred Chalice"
+  18: GoTo  {jump = 14}
+
+  19: Subtract  {"Inventory", Value = 434}         -- "Sacred Chalice"
+  20: Subtract  {"QBits", Value = 188}         -- Quest item bits for seer
+  21: Set  {"QBits", Value = 108}         -- NPC
+  22: EnterHouse  {Id = 70}         -- "Sleigon Temple"
+end
+
+event 20
+      Hint = str[80]
+  0:  EnterHouse  {Id = 80}         -- "The Academy"
+end
+
+event 21
+      Hint = str[80]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 80}         -- "The Academy"
+end
+
+event 22
+      Hint = str[105]
+  0:  EnterHouse  {Id = 105}         -- "The Echoing Whisper"
+end
+
+event 23
+      Hint = str[105]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 105}         -- "The Echoing Whisper"
+end
+
+event 24
+      Hint = str[104]
+  0:  EnterHouse  {Id = 104}         -- "Viktor's Hall"
+end
+
+event 25
+      Hint = str[104]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 104}         -- "Viktor's Hall"
+end
+
+event 26
+      Hint = str[106]
+  0:  EnterHouse  {Id = 106}         -- "Rockham's Pride"
+end
+
+event 27
+      Hint = str[106]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 106}         -- "Rockham's Pride"
+end
+
+event 28
+      Hint = str[116]
+  0:  EnterHouse  {Id = 116}         -- "Foreign Exchange"
+end
+
+event 29
+      Hint = str[116]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 116}         -- "Foreign Exchange"
+end
+
+event 30
+      Hint = str[120]
+  0:  Cmp  {"FireSkill", Value = 88,   jump = 3}
+  1:  StatusText  {Str = 32}         -- "You must be Master Skill Level may use this Guild."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 120}         -- "Adept Guild of Ignis"
+end
+
+event 31
+      Hint = str[120]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 120}         -- "Adept Guild of Ignis"
+end
+
+event 32
+      Hint = str[122]
+  0:  Cmp  {"AirSkill", Value = 132,   jump = 3}
+  1:  StatusText  {Str = 32}         -- "You must be Master Skill Level may use this Guild."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 122}         -- "Adept Guild of Aeros"
+end
+
+event 33
+      Hint = str[122]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 122}         -- "Adept Guild of Aeros"
+end
+
+event 34
+      Hint = str[124]
+  0:  Cmp  {"WaterSkill", Value = 136,   jump = 3}
+  1:  StatusText  {Str = 32}         -- "You must be Master Skill Level may use this Guild."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 124}         -- "Adept Guild of Aqua Magics"
+end
+
+event 35
+      Hint = str[124]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 124}         -- "Adept Guild of Aqua Magics"
+end
+
+event 36
+      Hint = str[126]
+  0:  Cmp  {"EarthSkill", Value = 136,   jump = 3}
+  1:  StatusText  {Str = 32}         -- "You must be Master Skill Level may use this Guild."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 126}         -- "Adept Guild of Terra Magics"
+end
+
+event 37
+      Hint = str[126]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 126}         -- "Adept Guild of Terra Magics"
+end
+
+event 38
+      Hint = str[128]
+  0:  EnterHouse  {Id = 128}         -- "Adept Guild of Animus"
+end
+
+event 39
+      Hint = str[128]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 128}         -- "Adept Guild of Animus"
+end
+
+event 40
+      Hint = str[130]
+  0:  EnterHouse  {Id = 130}         -- "Adept Guild of the Mentis"
+end
+
+event 41
+      Hint = str[130]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 130}         -- "Adept Guild of the Mentis"
+end
+
+event 42
+      Hint = str[132]
+  0:  EnterHouse  {Id = 132}         -- "Adept Guild of Corpus"
+end
+
+event 43
+      Hint = str[132]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 132}         -- "Adept Guild of Corpus"
+end
+
+event 44
+      Hint = str[144]
+  0:  EnterHouse  {Id = 144}         -- "Duelists' Edge"
+end
+
+event 45
+      Hint = str[144]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 144}         -- "Duelists' Edge"
+end
+
+event 46
+      Hint = str[151]
+  0:  EnterHouse  {Id = 151}         -- "Smugglers' Guild"
+end
+
+event 47
+      Hint = str[151]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 151}         -- "Smugglers' Guild"
+end
+
+event 48
+      Hint = str[157]
+  0:  EnterHouse  {Id = 157}         -- "Z'ul Keep"
+end
+
+event 49
+      Hint = str[157]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 33}         -- "Sir Zeddicus Z'ul V is in council and cannot be disturbed."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 158}         -- "Z'ul Keep"
+  10: MoveToMap  {X = 0, Y = 0, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 157, Icon = 1, Name = "0"}         -- "Z'ul Keep"
+  11: EnterHouse  {Id = 158}         -- "Z'ul Keep"
+  10: Hint  {Str = 165}
+  10: EnterHouse  {Id = 165}         -- "High Council"
+end
+
+event 50
+      Hint = str[165]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 165}         -- "High Council"
+end
+
+event 52
+      Hint = str[68]
+  0:  EnterHouse  {Id = 68}         -- "Enterprise"
+end
+
+event 53
+      Hint = str[78]
+  0:  EnterHouse  {Id = 78}         -- "Temple Carmen"
+end
+
+event 54
+      Hint = str[37]
+  0:  EnterHouse  {Id = 37}         -- "The Sorcerer's Shoppe"
+end
+
+event 55
+      Hint = str[37]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 37}         -- "The Sorcerer's Shoppe"
+end
+
+event 56
+      Hint = str[27]  -- "Cheroburg"
+  0:  EnterHouse  {Id = 283}         -- "House"
+end
+
+event 57
+      Hint = str[28]  -- "Guild of Mentis"
+  0:  EnterHouse  {Id = 284}         -- "House"
+end
+
+event 58
+      Hint = str[29]  -- "Due to troubles in the North, services are temporarily suspended."
+  0:  EnterHouse  {Id = 285}         -- "House"
+end
+
+event 59
+      Hint = str[30]  -- "You hand the Sacred Chalice to the monks of the temple who ensconce it in the main altar."
+  0:  EnterHouse  {Id = 286}         -- "House"
+end
+
+event 60
+      Hint = str[31]  -- "The tomb is locked."
+  0:  EnterHouse  {Id = 287}         -- "House"
+end
+
+event 61
+      Hint = str[32]  -- "You must be Master Skill Level may use this Guild."
+  0:  EnterHouse  {Id = 288}         -- "House"
+end
+
+event 62
+      Hint = str[33]  -- "Sir Zeddicus Z'ul V is in council and cannot be disturbed."
+  0:  EnterHouse  {Id = 289}         -- "House"
+end
+
+event 63
+      Hint = str[34]  -- "You cannot enter at this time."
+  0:  EnterHouse  {Id = 290}         -- "House"
+end
+
+event 64
+      Hint = str[35]  -- ""
+  0:  EnterHouse  {Id = 291}         -- "House"
+end
+
+event 65
+      Hint = str[36]
+  0:  EnterHouse  {Id = 292}         -- "House"
+end
+
+event 66
+      Hint = str[37]
+  0:  EnterHouse  {Id = 293}         -- "House"
+end
+
+event 67
+      Hint = str[38]
+  0:  EnterHouse  {Id = 294}         -- "House"
+end
+
+event 68
+      Hint = str[39]
+  0:  EnterHouse  {Id = 295}         -- "O'Farrell Residence"
+end
+
+event 69
+      Hint = str[40]
+  0:  EnterHouse  {Id = 296}         -- "House"
+end
+
+event 70
+      Hint = str[41]
+  0:  EnterHouse  {Id = 297}         -- "Tierney Quinn's Place"
+end
+
+event 71
+      Hint = str[42]
+  0:  EnterHouse  {Id = 298}         -- "House"
+end
+
+event 72
+      Hint = str[43]
+  0:  EnterHouse  {Id = 299}         -- "House"
+end
+
+event 73
+      Hint = str[44]
+  0:  EnterHouse  {Id = 300}         -- "House"
+end
+
+event 74
+      Hint = str[45]
+  0:  EnterHouse  {Id = 301}         -- "Mallt's House"
+end
+
+event 75
+      Hint = str[46]
+  0:  EnterHouse  {Id = 302}         -- "House"
+end
+
+event 76
+      Hint = str[47]
+  0:  EnterHouse  {Id = 303}         -- "House"
+end
+
+event 77
+      Hint = str[48]
+  0:  EnterHouse  {Id = 304}         -- "House"
+end
+
+event 78
+      Hint = str[49]
+  0:  EnterHouse  {Id = 305}         -- "House"
+end
+
+event 79
+      Hint = str[50]
+  0:  EnterHouse  {Id = 306}         -- "House"
+end
+
+event 80
+      Hint = str[51]
+  0:  EnterHouse  {Id = 307}         -- "House"
+end
+
+event 81
+      Hint = str[52]
+  0:  EnterHouse  {Id = 308}         -- "House"
+end
+
+event 82
+      Hint = str[53]
+  0:  EnterHouse  {Id = 309}         -- "House"
+end
+
+event 83
+      Hint = str[54]
+  0:  EnterHouse  {Id = 310}         -- "House"
+end
+
+event 84
+      Hint = str[55]
+  0:  EnterHouse  {Id = 311}         -- "House"
+end
+
+event 85
+      Hint = str[56]
+  0:  EnterHouse  {Id = 312}         -- "House"
+end
+
+event 86
+      Hint = str[57]
+  0:  EnterHouse  {Id = 313}         -- "House"
+end
+
+event 87
+      Hint = str[58]
+  0:  EnterHouse  {Id = 314}         -- "House"
+end
+
+event 88
+      Hint = str[59]
+  0:  EnterHouse  {Id = 315}         -- "House"
+end
+
+event 89
+      Hint = str[60]
+  0:  EnterHouse  {Id = 316}         -- "House"
+end
+
+event 90
+      Hint = str[61]
+  0:  EnterHouse  {Id = 317}         -- "House"
+end
+
+event 91
+      Hint = str[62]
+  0:  EnterHouse  {Id = 318}         -- "House"
+end
+
+event 92
+      Hint = str[63]
+  0:  EnterHouse  {Id = 319}         -- "House"
+end
+
+event 93
+      Hint = str[64]
+  0:  EnterHouse  {Id = 320}         -- "House"
+end
+
+event 94
+      Hint = str[65]
+  0:  EnterHouse  {Id = 321}         -- "House"
+end
+
+event 95
+      Hint = str[66]
+  0:  EnterHouse  {Id = 322}         -- "House"
+end
+
+event 96
+      Hint = str[67]
+  0:  EnterHouse  {Id = 323}         -- "House"
+end
+
+event 97
+      Hint = str[68]
+  0:  EnterHouse  {Id = 324}         -- "House"
+end
+
+event 98
+      Hint = str[69]
+  0:  EnterHouse  {Id = 325}         -- "House"
+end
+
+event 99
+      Hint = str[70]
+  0:  EnterHouse  {Id = 326}         -- "House"
+end
+
+event 100
+      Hint = str[71]
+  0:  EnterHouse  {Id = 327}         -- "House"
+end
+
+event 101
+      Hint = str[72]
+  0:  EnterHouse  {Id = 328}         -- "House"
+end
+
+event 102
+      Hint = str[73]
+  0:  EnterHouse  {Id = 329}         -- "House"
+end
+
+event 103
+      Hint = str[74]
+  0:  EnterHouse  {Id = 330}         -- "House"
+end
+
+event 104
+      Hint = str[75]
+  0:  EnterHouse  {Id = 331}         -- "House"
+end
+
+event 105
+      Hint = str[76]
+  0:  EnterHouse  {Id = 332}         -- "House"
+end
+
+event 106
+      Hint = str[77]
+  0:  EnterHouse  {Id = 333}         -- "House"
+end
+
+event 107
+      Hint = str[7]  -- "Drink from Trough."
+  0:  EnterHouse  {Id = 519}         -- "House"
+end
+
+event 108
+      Hint = str[8]  -- "Hic…"
+  0:  EnterHouse  {Id = 520}         -- "House"
+end
+
+event 109
+      Hint = str[9]  -- "Refreshing!"
+  0:  EnterHouse  {Id = 521}         -- "House"
+end
+
+event 110
+      Hint = str[10]  -- "Port Sleigon"
+  0:  EnterHouse  {Id = 522}         -- "House"
+end
+
+event 111
+      Hint = str[11]  -- "Shrine of Endurance"
+  0:  EnterHouse  {Id = 523}         -- "House"
+end
+
+event 112
+      Hint = str[12]  -- "You pray at the shrine."
+  0:  EnterHouse  {Id = 524}         -- "House"
+end
+
+event 113
+      Hint = str[13]  -- "+25 Endurance permanent"
+  0:  EnterHouse  {Id = 525}         -- "House"
+end
+
+event 114
+      Hint = str[14]  -- "+5 Endurance permanent"
+  0:  EnterHouse  {Id = 526}         -- "House"
+end
+
+event 115
+      Hint = str[15]  -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            mnfts_t_srrnoohtl"
+  0:  EnterHouse  {Id = 527}         -- "House"
+end
+
+event 116
+      Hint = str[16]  -- "Obelisk"
+  0:  EnterHouse  {Id = 528}         -- "House"
+end
+
+event 117
+      Hint = str[17]  -- "Port Sleigon"
+  0:  EnterHouse  {Id = 529}         -- "House"
+end
+
+event 118
+      Hint = str[18]  -- "Glastonbury Tor"
+  0:  EnterHouse  {Id = 530}         -- "House"
+end
+
+event 119
+      Hint = str[19]  -- "Temple of Carmen"
+  0:  EnterHouse  {Id = 531}         -- "House"
+end
+
+event 122
+      Hint = str[17]  -- "Port Sleigon"
+  0:  StatusText  {Str = 17}         -- "Port Sleigon"
+end
+
+event 123
+      Hint = str[18]  -- "Glastonbury Tor"
+  0:  StatusText  {Str = 18}         -- "Glastonbury Tor"
+end
+
+event 124
+      Hint = str[19]  -- "Temple of Carmen"
+  0:  StatusText  {Str = 19}         -- "Temple of Carmen"
+end
+
+event 125
+      Hint = str[17]  -- "Port Sleigon"
+  0:  StatusText  {Str = 17}         -- "Port Sleigon"
+end
+
+event 126
+      Hint = str[20]  -- "Bog of Tuonela"
+  0:  StatusText  {Str = 20}         -- "Bog of Tuonela"
+end
+
+event 127
+      Hint = str[18]  -- "Glastonbury Tor"
+  0:  StatusText  {Str = 18}         -- "Glastonbury Tor"
+end
+
+event 128
+      Hint = str[21]  -- "Guild of Aqua"
+  0:  StatusText  {Str = 21}         -- "Guild of Aqua"
+end
+
+event 129
+      Hint = str[22]  -- "Armory"
+  0:  StatusText  {Str = 22}         -- "Armory"
+end
+
+event 130
+      Hint = str[23]  -- "Temple"
+  0:  StatusText  {Str = 23}         -- "Temple"
+end
+
+event 131
+      Hint = str[17]  -- "Port Sleigon"
+  0:  StatusText  {Str = 17}         -- "Port Sleigon"
+end
+
+event 132
+      Hint = str[24]  -- "Cumbria"
+  0:  StatusText  {Str = 24}         -- "Cumbria"
+end
+
+event 133
+      Hint = str[27]  -- "Cheroburg"
+  0:  StatusText  {Str = 27}         -- "Cheroburg"
+end
+
+event 134
+      Hint = str[24]  -- "Cumbria"
+  0:  StatusText  {Str = 24}         -- "Cumbria"
+end
+
+event 135
+      Hint = str[28]  -- "Guild of Mentis"
+  0:  StatusText  {Str = 28}         -- "Guild of Mentis"
+end
+
+event 136
+  0:  StatusText  {Str = 0}         -- " "
+end
+
+event 137
+      Hint = str[17]  -- "Port Sleigon"
+  0:  StatusText  {Str = 17}         -- "Port Sleigon"
+end
+
+event 138
+      Hint = str[25]  -- "Jorgsborg"
+  0:  StatusText  {Str = 25}         -- "Jorgsborg"
+end
+
+event 139
+      Hint = str[26]  -- "Temple of Tranquility"
+  0:  StatusText  {Str = 26}         -- "Temple of Tranquility"
+end
+
+event 120
+      Hint = str[1]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 121
+      Hint = str[1]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 150
+  10: StatusText  {Str = 31}         -- "The tomb is locked."
+  11: Exit  {}
+
+  0:  MoveToMap  {X = -127, Y = 4190, Z = 0, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 180, Icon = 5, Name = "D12.Blv"}         -- "Dragoons' Keep"
+  1:  Exit  {}
+
+  2:  EnterHouse  {Id = 180}         -- "Dragoons' Keep"
+end
+
+event 151
+      Hint = str[184]
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 425,   jump = 5}         -- Luftka's Tomb once
+  2:  Cmp  {"Inventory", Value = 577,   jump = 5}         -- "Key to Luftka's Tomb"
+  3:  StatusText  {Str = 31}         -- "The tomb is locked."
+  4:  Exit  {}
+
+  5:  MoveToMap  {X = -118, Y = -1640, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 184, Icon = 5, Name = "D14.Blv"}         -- "Tomb of Luftka the Kruel"
+  6:  Exit  {}
+
+  7:  EnterHouse  {Id = 184}         -- "Tomb of Luftka the Kruel"
+end
+
+event 152
+  10: StatusText  {Str = 31}         -- "The tomb is locked."
+  11: Exit  {}
+
+  0:  MoveToMap  {X = 0, Y = -2135, Z = 125, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 195, Icon = 5, Name = "T5.Blv"}         -- "Temple of the Moon"
+  1:  Exit  {}
+
+  2:  EnterHouse  {Id = 195}         -- "Temple of the Moon"
+end
+
+event 153
+  0:  StatusText  {Str = 31}         -- "The tomb is locked."
+  1:  Exit  {}
+
+  10: MoveToMap  {X = 7059, Y = -6153, Z = 1, Direction = 128, LookAngle = 0, SpeedZ = 0, HouseId = 170, Icon = 5, Name = "Oracle.Blv"}         -- "The Oracle"
+  11: Exit  {}
+
+  2:  EnterHouse  {Id = 170}         -- "The Oracle"
+end
+
+event 161
+      Hint = str[2]  -- "Drink from Well."
+  0:  Cmp  {"BaseMight", Value = 15,   jump = 2}
+  1:  Cmp  {"MapVar0", Value = 1,   jump = 4}
+  2:  StatusText  {Str = 9}         -- "Refreshing!"
+  3:  Exit  {}
+
+  4:  Subtract  {"MapVar0", Value = 1}
+  5:  Add  {"BaseMight", Value = 2}
+  6:  StatusText  {Str = 3}         -- "+2 Might permanent"
+  7:  Set  {"AutonotesBits", Value = 30}         -- "2 Points of permanent might from the fountain in the northeast of Port Sleigon."
+  8:  Exit  {}
+
+      RefillTimer(<function>, const.Month, true)
+  10: Set  {"MapVar0", Value = 8}
+end
+
+event 162
+      Hint = str[2]  -- "Drink from Well."
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 8}
+  1:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -13168, Y = 19504, Z = 160}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -13696, Y = 17408, Z = 160}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -10960, Y = 18016, Z = 160}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -9840, Y = 19280, Z = 160}
+  5:  Set  {"MapVar4", Value = 1}
+  6:  StatusText  {Str = 4}         -- "Look Out!"
+  7:  Exit  {}
+
+  8:  StatusText  {Str = 9}         -- "Refreshing!"
+  9:  Exit  {}
+
+      RefillTimer(<function>, const.Month, true)
+  11: Set  {"MapVar4", Value = 0}
+end
+
+event 163
+      Hint = str[5]  -- "Drink from Fountain"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 9}         -- "Refreshing!"
+  2:  GoTo  {jump = 6}
+
+  3:  Subtract  {"MapVar1", Value = 1}
+  4:  Add  {"HP", Value = 25}
+  5:  StatusText  {Str = 6}         -- "+25 Hit points restored."
+  6:  Set  {"AutonotesBits", Value = 31}         -- "25 Hit points restored from the central fountain in Port Sleigon."
+  7:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Second)
+  9:  Set  {"MapVar1", Value = 30}
+end
+
+event 164
+      Hint = str[7]  -- "Drink from Trough."
+  0:  Set  {"Drunk", Value = 0}
+  1:  StatusText  {Str = 8}         -- "Hic…"
+end
+
+event 209
+      Timer(<function>, 5*const.Minute)
+  1:  Cmp  {"QBits", Value = 159,   jump = 3}         -- NPC
+  2:  Cmp  {"Flying", Value = 0,   jump = 4}
+  3:  Exit  {}
+
+  4:  CastSpell  {Spell = 6, Mastery = const.Master, Skill = 5, FromX = 3823, FromY = 10974, FromZ = 2700, ToX = 0, ToY = 0, ToZ = 0}         -- "Fireball"
+end
+
+event 210
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 159,   jump = 3}         -- NPC
+  2:  Cmp  {"Inventory", Value = 486,   jump = 4}         -- "Dragon Tower Keys"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 159}         -- NPC
+  5:  SetTextureOutdoors  {Model = 116, Facet = 42, Name = "T1swBu"}
+end
+
+event 211
+      Hint = str[179]
+  20: StatusText  {Str = 33}         -- "Sir Zeddicus Z'ul V is in council and cannot be disturbed."
+  0:  MoveToMap  {X = -3714, Y = 1250, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 179, Icon = 1, Name = "D09.Blv"}         -- "Glastonbury Tor"
+  1:  Exit  {}
+
+  2:  EnterHouse  {Id = 179}         -- "Glastonbury Tor"
+  10: Hint  {Str = 157}
+  10: MoveToMap  {X = 0, Y = 0, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 157, Icon = 1, Name = "0"}         -- "Z'ul Keep"
+  11: EnterHouse  {Id = 158}         -- "Z'ul Keep"
+end
+
+event 212
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 178,   jump = 3}         -- NPC
+  2:  Set  {"QBits", Value = 178}         -- NPC
+  3:  Exit  {}
+end
+
+event 213
+      Hint = str[16]  -- "Obelisk"
+  0:  SetMessage  {Str = 15}         -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            mnfts_t_srrnoohtl"
+  1:  SimpleMessage  {}
+  2:  Set  {"QBits", Value = 367}         -- NPC
+  3:  Set  {"AutonotesBits", Value = 86}         -- "Obelisk Message # 8:  mnfts_t_srrnoohtl"
+end
+
+event 214
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 159,   jump = 3}         -- NPC
+  2:  Exit  {}
+
+  3:  SetTextureOutdoors  {Model = 116, Facet = 42, Name = "T1swBu"}
+end
+
+event 261
+      Hint = str[11]  -- "Shrine of Endurance"
+  0:  Cmp  {"MonthIs", Value = 3,   jump = 3}
+  1:  StatusText  {Str = 12}         -- "You pray at the shrine."
+  2:  Exit  {}
+
+  3:  Cmp  {"QBits", Value = 206,   jump = 1}         -- NPC
+  4:  Set  {"QBits", Value = 206}         -- NPC
+  5:  Cmp  {"QBits", Value = 211,   jump = 11}         -- NPC
+  6:  Set  {"QBits", Value = 211}         -- NPC
+  7:  ForPlayer  ("All")
+  8:  Add  {"BaseEndurance", Value = 25}
+  9:  StatusText  {Str = 13}         -- "+25 Endurance permanent"
+  10: Exit  {}
+
+  11: ForPlayer  ("All")
+  12: Add  {"BaseEndurance", Value = 5}
+  13: StatusText  {Str = 14}         -- "+5 Endurance permanent"
+end
+
+event 262
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 421,   jump = 13}         -- Port Sleigon once
+  2:  Cmp  {"QBits", Value = 508,   jump = 4}         -- Warrior
+  3:  Exit  {}
+
+  4:  Add  {"QBits", Value = 421}         -- Port Sleigon once
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 7, X = 12510, Y = -22038, Z = 160}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 7, X = -22312, Y = 14554, Z = 161}
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 7, X = 16639, Y = 21844, Z = 160}
+  8:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 16033, Y = 21693, Z = 160}
+  9:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = 10472, Y = 22066, Z = 262}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 6, X = 3841, Y = 22180, Z = 257}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 3123, Y = 22012, Z = 170}
+  12: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 4, X = 4679, Y = 21731, Z = 256}
+  13: Cmp  {"QBits", Value = 507,   jump = 15}         -- Death Wish
+  14: Exit  {}
+
+  15: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = 12630, Y = -20957, Z = 160}
+  16: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 13228, Y = -20272, Z = 160}
+  17: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = -22024, Y = 14837, Z = 161}
+  18: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -22281, Y = 14329, Z = 161}
+  19: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = 15626, Y = 21471, Z = 201}
+  20: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = 14498, Y = 21741, Z = 256}
+  21: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = 4679, Y = 21731, Z = 256}
+  22: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 3, X = 6118, Y = 22029, Z = 256}
+  23: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = 7306, Y = 21402, Z = 225}
+end

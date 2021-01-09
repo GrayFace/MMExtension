@@ -1,0 +1,107 @@
+str[0] = " "
+str[1] = "Visit my four sisters and return to me.  Then I will activate the Exit to Creation's Land."
+str[2] = "Andrea"
+str[3] = "Juniper"
+str[4] = "Xavaria"
+str[5] = "Cumin"
+str[6] = "Neroli"
+str[7] = "Void Msg #1.  You must first find the Rock of Translation."
+str[8] = "Void Msg #2.  It is in the middle of the  Black Diamond of Ash."
+str[9] = "Void Msg#3.  The  Black  Diamond of Ash lies in The Unchartered Seas."
+str[10] = "Void Msg #4.  Once you touch the Rock of Translation  you will then begin to understand. "
+str[11] = "Well done.  You may now use the Exit Fount."
+str[12] = "Exit to Creation's Land"
+str[13] = "Autonote added."
+str[14] = "Creation's Fount"
+str[15] = ""
+str[16] = ""
+
+
+event 1
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 511,   jump = 10}         -- SOG Void Teleport
+  2:  ForPlayer  ("All")
+  3:  Set  {"Awards", Value = 1}         -- "Entered The VOID"
+  4:  Set  {"Food", Value = 0}
+  5:  Set  {"QBits", Value = 82}         -- "Find and destroy the Chalice of the Gods"
+  6:  Set  {"Gold", Value = 0}
+  7:  Set  {"QBits", Value = 330}         -- NPC
+  8:  MoveToMap  {X = 277, Y = -52, Z = 3000, Direction = 984, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  9:  Exit  {}
+
+  10: ForPlayer  ("All")
+  11: Set  {"Eradicated", Value = 0}
+  12: Exit  {}
+end
+
+event 2
+      Hint = str[2]  -- "Andrea"
+  0:  Set  {"QBits", Value = 509}         -- Void Fountain1
+  1:  SetMessage  {Str = 7}         -- "Void Msg #1.  You must first find the Rock of Translation."
+  2:  SimpleMessage  {}
+  3:  Set  {"AutonotesBits", Value = 54}         -- "Void Msg #1.  You must first find the Rock of Translation."
+  4:  StatusText  {Str = 13}         -- "Autonote added."
+  5:  Exit  {}
+end
+
+event 3
+      Hint = str[3]  -- "Juniper"
+  0:  Set  {"QBits", Value = 508}         -- Void Fountain2
+  1:  SetMessage  {Str = 8}         -- "Void Msg #2.  It is in the middle of the  Black Diamond of Ash."
+  2:  SimpleMessage  {}
+  3:  Set  {"AutonotesBits", Value = 55}         -- "Void Msg #2.  It is in the middle of the  Black Diamond of Ash."
+  4:  StatusText  {Str = 13}         -- "Autonote added."
+  5:  Exit  {}
+end
+
+event 4
+      Hint = str[4]  -- "Xavaria"
+  0:  SetMessage  {Str = 9}         -- "Void Msg#3.  The  Black  Diamond of Ash lies in The Unchartered Seas."
+  1:  SimpleMessage  {}
+  2:  Set  {"AutonotesBits", Value = 56}         -- "Void Msg#3.  The  Black  Diamond of Ash lies in The Unchartered Seas."
+  3:  Set  {"QBits", Value = 507}         -- Void Fountain3
+  4:  StatusText  {Str = 13}         -- "Autonote added."
+  5:  Exit  {}
+end
+
+event 5
+      Hint = str[5]  -- "Cumin"
+  0:  Set  {"QBits", Value = 506}         -- Void Fountain4
+  1:  SetMessage  {Str = 10}         -- "Void Msg #4.  Once you touch the Rock of Translation  you will then begin to understand. "
+  2:  SimpleMessage  {}
+  3:  Set  {"AutonotesBits", Value = 57}         -- "Void Msg #4.  Once you touch the Rock of Translation  you will then begin to understand. "
+  4:  StatusText  {Str = 13}         -- "Autonote added."
+  5:  Exit  {}
+end
+
+event 6
+      Hint = str[6]  -- "Neroli"
+  0:  Cmp  {"QBits", Value = 506,   jump = 4}         -- Void Fountain4
+  1:  SetMessage  {Str = 1}         -- "Visit my four sisters and return to me.  Then I will activate the Exit to Creation's Land."
+  2:  SimpleMessage  {}
+  3:  Exit  {}
+
+  4:  Cmp  {"QBits", Value = 507,   jump = 6}         -- Void Fountain3
+  5:  GoTo  {jump = 1}
+
+  6:  Cmp  {"QBits", Value = 508,   jump = 8}         -- Void Fountain2
+  7:  GoTo  {jump = 1}
+
+  8:  Cmp  {"QBits", Value = 509,   jump = 10}         -- Void Fountain1
+  9:  GoTo  {jump = 1}
+
+  10: SetMessage  {Str = 11}         -- "Well done.  You may now use the Exit Fount."
+  11: SimpleMessage  {}
+  12: Set  {"QBits", Value = 510}         -- SOG Teleport Authorization
+  13: Exit  {}
+end
+
+event 100
+      Hint = str[12]  -- "Exit to Creation's Land"
+  0:  Cmp  {"QBits", Value = 510,   jump = 2}         -- SOG Teleport Authorization
+  1:  Exit  {}
+
+  2:  Set  {"QBits", Value = 511}         -- SOG Void Teleport
+  3:  MoveToMap  {X = 3669, Y = 16904, Z = 96, Direction = 2040, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "Oute3.odm"}
+  4:  Exit  {}
+end

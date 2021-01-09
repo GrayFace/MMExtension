@@ -1,0 +1,165 @@
+str[0] = " "
+str[1] = "Switch"
+str[2] = "Elevator platform"
+str[3] = "Chest"
+str[4] = "Door"
+str[5] = "Pushing this switch gives you a bad feeling."
+str[6] = "Uh oh...."
+str[7] = "Here we go again…."
+str[8] = "The switch doesn’t seem to work.."
+str[9] = "Exit"
+str[10] = "Chandelier"
+str[11] = "Cauldron"
+str[12] = "+50 Intellect permanent."
+str[13] = "Agar's Laboratory"
+str[14] = ""
+
+
+event 2
+      Hint = str[1]  -- "Switch"
+      MazeInfo = str[13]  -- "Agar's Laboratory"
+  0:  SetDoorState  {Id = 2, State = 0}
+  1:  SetDoorState  {Id = 16, State = 2}         -- switch state
+end
+
+event 3
+      Hint = str[1]  -- "Switch"
+  0:  SetDoorState  {Id = 3, State = 0}
+  1:  SetDoorState  {Id = 15, State = 2}         -- switch state
+end
+
+event 4
+      Hint = str[1]  -- "Switch"
+  0:  Set  {"MapVar1", Value = 1}
+  1:  SetDoorState  {Id = 4, State = 1}
+  2:  SetDoorState  {Id = 5, State = 1}
+  3:  SetDoorState  {Id = 6, State = 1}
+  4:  FaceExpression  {Player = "All", Frame = 39}
+  5:  Cmp  {"MapVar0", Value = 1,   jump = 7}
+  6:  Exit  {}
+
+  7:  SetDoorState  {Id = 18, State = 1}
+end
+
+event 7
+      Hint = str[1]  -- "Switch"
+  0:  Set  {"MapVar0", Value = 1}
+  1:  SetDoorState  {Id = 7, State = 1}
+  2:  SetDoorState  {Id = 8, State = 1}
+  3:  SetDoorState  {Id = 9, State = 1}
+  4:  FaceExpression  {Player = "All", Frame = 39}
+  5:  Cmp  {"MapVar1", Value = 1,   jump = 7}
+  6:  Exit  {}
+
+  7:  SetDoorState  {Id = 18, State = 1}
+end
+
+event 10
+      Hint = str[1]  -- "Switch"
+  0:  SetDoorState  {Id = 10, State = 1}
+  1:  SetDoorState  {Id = 11, State = 1}
+  2:  SetDoorState  {Id = 12, State = 1}
+  3:  FaceExpression  {Player = "All", Frame = 48}
+end
+
+event 13
+  0:  Cmp  {"MapVar19", Value = 1,   jump = 4}
+  1:  StatusText  {Str = 6}         -- "Uh oh...."
+  2:  SetDoorState  {Id = 13, State = 1}
+  3:  Add  {"MapVar19", Value = 1}
+  4:  Exit  {}
+end
+
+event 14
+      Hint = str[4]  -- "Door"
+  0:  SetDoorState  {Id = 14, State = 2}         -- switch state
+end
+
+event 15
+      Hint = str[1]  -- "Switch"
+  0:  SetDoorState  {Id = 15, State = 1}
+  1:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 16
+  0:  SetDoorState  {Id = 16, State = 1}
+end
+
+event 17
+  0:  Exit  {}
+end
+
+event 18
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+end
+
+event 19
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 20
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 21
+  0:  OnTimer  {IntervalInHalfMinutes = 5}
+  1:  CastSpell  {Spell = 32, Mastery = const.Master, Skill = 7, FromX = -2048, FromY = 9712, FromZ = -2282, ToX = -2048, ToY = 9050, ToZ = -2282}         -- "Ice Blast"
+end
+
+event 25
+      Hint = str[10]  -- "Chandelier"
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 3}
+  1:  Set  {"MapVar4", Value = 1}
+  2:  Add  {"Inventory", Value = 436}         -- "Diamond"
+  3:  Exit  {}
+end
+
+event 26
+      Hint = str[10]  -- "Chandelier"
+  0:  Cmp  {"MapVar5", Value = 1,   jump = 3}
+  1:  Set  {"MapVar5", Value = 1}
+  2:  Add  {"Inventory", Value = 436}         -- "Diamond"
+  3:  Exit  {}
+end
+
+event 27
+      Hint = str[10]  -- "Chandelier"
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 3}
+  1:  Set  {"MapVar6", Value = 1}
+  2:  Add  {"Inventory", Value = 436}         -- "Diamond"
+  3:  Exit  {}
+end
+
+event 30
+  0:  SetDoorState  {Id = 16, State = 0}
+  1:  SetDoorState  {Id = 2, State = 0}
+end
+
+event 31
+      Hint = str[1]  -- "Switch"
+  0:  SetDoorState  {Id = 15, State = 0}
+  1:  SetDoorState  {Id = 3, State = 0}
+end
+
+event 35
+      Hint = str[11]  -- "Cauldron"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"Cursed", Value = 0,   jump = 4}
+  2:  Set  {"Dead", Value = 0}
+  3:  Exit  {}
+
+  4:  Cmp  {"PlayerBits", Value = 36,   jump = 3}
+  5:  Add  {"BaseIntellect", Value = 50}
+  6:  Set  {"PlayerBits", Value = 36}
+  7:  StatusText  {Str = 12}         -- "+50 Intellect permanent."
+      Hint = str[11]  -- "Cauldron"
+  0:  Set  {"Cursed", Value = 0}
+end
+
+event 50
+      Hint = str[9]  -- "Exit"
+  0:  MoveToMap  {X = 7762, Y = 16306, Z = 449, Direction = 1664, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutB1.Odm"}
+end

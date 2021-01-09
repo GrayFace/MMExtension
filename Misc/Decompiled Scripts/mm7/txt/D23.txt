@@ -1,0 +1,962 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Leave the Lincoln"
+str[3] = "Chest"
+str[4] = "Button"
+str[5] = "Lever"
+str[6] = "Vault"
+str[7] = "Cabinet"
+str[8] = "Switch"
+str[9] = ""
+str[10] = "Bookcase"
+str[11] = "Power Restored"
+str[12] = ""
+str[13] = ""
+str[14] = "You Successfully disarm the trap"
+str[15] = ""
+str[16] = "Take a Drink"
+str[17] = "Not Very Refreshing"
+str[18] = "Refreshing"
+str[19] = ""
+str[20] = "You must all be wearing your wetsuits to exit the ship"
+str[21] = ""
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = ""
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = ""
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = ""
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = ""
+str[51] = ""
+str[52] = ""
+str[53] = ""
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+  0:  OnLoadMap  {}
+  1:  Set  {"MapVar0", Value = 2}
+  2:  Set  {"MapVar1", Value = 2}
+  3:  SetLight  {Id = 1, On = false}
+  4:  SetLight  {Id = 2, On = false}
+end
+
+event 3
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 10, State = 0}
+  3:  SetDoorState  {Id = 11, State = 0}
+end
+
+event 4
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 10, State = 1}
+  3:  SetDoorState  {Id = 11, State = 1}
+end
+
+event 6
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 12, State = 0}
+  3:  SetDoorState  {Id = 13, State = 0}
+end
+
+event 7
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 12, State = 1}
+  3:  SetDoorState  {Id = 13, State = 1}
+end
+
+event 8
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 15, State = 2}         -- switch state
+  3:  SetDoorState  {Id = 16, State = 2}         -- switch state
+end
+
+event 9
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 15, State = 1}
+  3:  SetDoorState  {Id = 16, State = 1}
+end
+
+event 10
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 19, State = 0}
+  3:  SetDoorState  {Id = 20, State = 0}
+end
+
+event 11
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 23, State = 0}
+end
+
+event 12
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 23, State = 1}
+end
+
+event 13
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 24, State = 0}
+  3:  SetDoorState  {Id = 25, State = 0}
+end
+
+event 14
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 24, State = 1}
+  3:  SetDoorState  {Id = 25, State = 1}
+end
+
+event 15
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 26, State = 0}
+end
+
+event 16
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 26, State = 1}
+end
+
+event 17
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 27, State = 0}
+end
+
+event 18
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 28, State = 1}
+  3:  SetDoorState  {Id = 37, State = 1}
+  4:  SetDoorState  {Id = 27, State = 0}
+end
+
+event 19
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 28, State = 0}
+end
+
+event 20
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 27, State = 1}
+  3:  SetDoorState  {Id = 37, State = 0}
+  4:  SetDoorState  {Id = 28, State = 0}
+end
+
+event 21
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 29, State = 0}
+  3:  SetDoorState  {Id = 30, State = 0}
+end
+
+event 22
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 29, State = 1}
+  3:  SetDoorState  {Id = 30, State = 1}
+end
+
+event 23
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 31, State = 0}
+  3:  SetDoorState  {Id = 32, State = 0}
+end
+
+event 24
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 31, State = 1}
+  3:  SetDoorState  {Id = 32, State = 1}
+end
+
+event 25
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 33, State = 0}
+  3:  SetDoorState  {Id = 34, State = 0}
+end
+
+event 26
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 33, State = 1}
+  3:  SetDoorState  {Id = 34, State = 1}
+end
+
+event 27
+  0:  SetDoorState  {Id = 35, State = 0}
+  1:  SetDoorState  {Id = 36, State = 0}
+end
+
+event 28
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 35, State = 1}
+  3:  SetDoorState  {Id = 36, State = 1}
+end
+
+event 29
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 37, State = 2}         -- switch state
+end
+
+event 30
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 39, State = 0}
+  3:  SetDoorState  {Id = 40, State = 0}
+end
+
+event 31
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 39, State = 1}
+  3:  SetDoorState  {Id = 40, State = 1}
+end
+
+event 32
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 45, State = 0}
+  3:  SetDoorState  {Id = 46, State = 0}
+end
+
+event 33
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 45, State = 1}
+  3:  SetDoorState  {Id = 46, State = 1}
+end
+
+event 34
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 48, State = 0}
+  3:  SetDoorState  {Id = 49, State = 0}
+  4:  SetDoorState  {Id = 47, State = 1}
+end
+
+event 35
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 48, State = 1}
+  3:  SetDoorState  {Id = 49, State = 1}
+end
+
+event 36
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 51, State = 0}
+end
+
+event 37
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 51, State = 0}
+end
+
+event 38
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 59, State = 0}
+end
+
+event 39
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 59, State = 1}
+end
+
+event 40
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 60, State = 0}
+end
+
+event 41
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 60, State = 1}
+end
+
+event 42
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 61, State = 0}
+  3:  SetDoorState  {Id = 62, State = 0}
+end
+
+event 43
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 61, State = 1}
+  3:  SetDoorState  {Id = 62, State = 1}
+end
+
+event 44
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 63, State = 0}
+  3:  SetDoorState  {Id = 64, State = 0}
+end
+
+event 45
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 63, State = 1}
+  3:  SetDoorState  {Id = 64, State = 1}
+end
+
+event 46
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 65, State = 0}
+  3:  SetDoorState  {Id = 66, State = 0}
+end
+
+event 47
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 65, State = 1}
+  3:  SetDoorState  {Id = 66, State = 1}
+end
+
+event 49
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 67, State = 0}
+  3:  SetDoorState  {Id = 68, State = 0}
+end
+
+event 50
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 67, State = 1}
+  3:  SetDoorState  {Id = 68, State = 1}
+end
+
+event 51
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 73, State = 0}
+  3:  SetDoorState  {Id = 74, State = 0}
+end
+
+event 52
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 75, State = 0}
+  3:  SetDoorState  {Id = 76, State = 0}
+end
+
+event 53
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 69, State = 0}
+  3:  SetDoorState  {Id = 70, State = 0}
+end
+
+event 54
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 71, State = 0}
+  3:  SetDoorState  {Id = 72, State = 0}
+end
+
+event 55
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 69, State = 1}
+  3:  SetDoorState  {Id = 70, State = 1}
+  4:  SetDoorState  {Id = 73, State = 1}
+  5:  SetDoorState  {Id = 74, State = 1}
+end
+
+event 56
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 71, State = 1}
+  3:  SetDoorState  {Id = 72, State = 1}
+  4:  SetDoorState  {Id = 75, State = 1}
+  5:  SetDoorState  {Id = 76, State = 1}
+end
+
+event 151
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"MapVar0", Value = 2,   jump = 7}
+  3:  SetDoorState  {Id = 9, State = 0}
+  4:  SetDoorState  {Id = 38, State = 0}
+  5:  Set  {"MapVar0", Value = 2}
+  6:  Exit  {}
+
+  7:  SetDoorState  {Id = 9, State = 1}
+  8:  SetDoorState  {Id = 38, State = 1}
+  9:  Set  {"MapVar0", Value = 1}
+end
+
+event 152
+  0:  SetDoorState  {Id = 17, State = 2}         -- switch state
+end
+
+event 153
+  0:  SetDoorState  {Id = 18, State = 2}         -- switch state
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 47, State = 1}
+  3:  SetDoorState  {Id = 26, State = 1}
+end
+
+event 154
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 47, State = 0}
+  3:  SetDoorState  {Id = 48, State = 1}
+  4:  SetDoorState  {Id = 49, State = 1}
+end
+
+event 155
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 50, State = 1}
+  3:  SetDoorState  {Id = 51, State = 1}
+end
+
+event 156
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 50, State = 0}
+  3:  SetDoorState  {Id = 26, State = 1}
+end
+
+event 157
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 77, State = 0}
+end
+
+event 158
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 78, State = 0}
+end
+
+event 159
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 79, State = 0}
+end
+
+event 176
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 177
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 178
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 179
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 180
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 181
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 182
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+end
+
+event 183
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+end
+
+event 184
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+end
+
+event 185
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 10}
+end
+
+event 186
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 11}
+end
+
+event 187
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+end
+
+event 188
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+end
+
+event 189
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+end
+
+event 190
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+end
+
+event 191
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+end
+
+event 192
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+end
+
+event 193
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+end
+
+event 194
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+end
+
+event 195
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+end
+
+event 376
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 121,   jump = 9}         -- Got the sci-fi part
+  1:  Cmp  {"MapVar2", Value = 1,   jump = 3}
+  2:  Exit  {}
+
+  3:  Cmp  {"Inventory", Value = 605,   jump = 9}         -- "Oscillation Overthruster"
+  4:  Add  {"Inventory", Value = 605}         -- "Oscillation Overthruster"
+  5:  Set  {"QBits", Value = 121}         -- Got the sci-fi part
+  6:  Add  {"QBits", Value = 236}         -- Final Part - I lost it
+  7:  SetDoorState  {Id = 80, State = 1}
+  8:  Set  {"MapVar3", Value = 1}
+  9:  SetLight  {Id = 1, On = false}
+  10: SetLight  {Id = 2, On = true}
+  11: Exit  {}
+end
+
+event 451
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 1, State = 2}         -- switch state
+  3:  SetDoorState  {Id = 5, State = 2}         -- switch state
+end
+
+event 452
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 2, State = 2}         -- switch state
+  3:  SetDoorState  {Id = 6, State = 2}         -- switch state
+end
+
+event 453
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 3, State = 2}         -- switch state
+  3:  SetDoorState  {Id = 7, State = 2}         -- switch state
+end
+
+event 454
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 4, State = 2}         -- switch state
+  3:  SetDoorState  {Id = 8, State = 2}         -- switch state
+end
+
+event 455
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 14, State = 2}         -- switch state
+end
+
+event 456
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 44, State = 2}         -- switch state
+end
+
+event 457
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  MoveToMap  {X = 7165, Y = -1629, Z = 1037, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 458
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  MoveToMap  {X = 1536, Y = -1909, Z = 1037, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 459
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 52, State = 0}
+end
+
+event 460
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 52, State = 1}
+end
+
+event 461
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 53, State = 0}
+end
+
+event 462
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 53, State = 1}
+end
+
+event 463
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 54, State = 0}
+end
+
+event 464
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 54, State = 1}
+end
+
+event 465
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 55, State = 0}
+end
+
+event 466
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 55, State = 1}
+end
+
+event 467
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 56, State = 0}
+end
+
+event 468
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 56, State = 1}
+end
+
+event 469
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 57, State = 0}
+end
+
+event 470
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 57, State = 1}
+end
+
+event 471
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 58, State = 0}
+end
+
+event 472
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 58, State = 1}
+end
+
+event 473
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 50, State = 1}
+  3:  SetDoorState  {Id = 47, State = 0}
+  4:  SetDoorState  {Id = 26, State = 0}
+end
+
+event 474
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 50, State = 0}
+  3:  SetDoorState  {Id = 51, State = 0}
+end
+
+event 475
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 5}
+  1:  Set  {"MapVar2", Value = 1}
+  2:  SetLight  {Id = 1, On = true}
+  3:  SetTexture  {Facet = 15, Name = "sfpnlon"}
+  4:  StatusText  {Str = 11}         -- "Power Restored"
+  5:  Exit  {}
+end
+
+event 476
+  0:  OnTimer  {IntervalInHalfMinutes = 4}
+  1:  Cmp  {"MapVar3", Value = 1,   jump = 3}
+  2:  Exit  {}
+
+  3:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 4448, FromY = -9376, FromZ = 2272, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  4:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 2816, FromY = -8480, FromZ = 1792, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  5:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 3104, FromY = -5600, FromZ = 1888, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  6:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 3104, FromY = -1888, FromZ = 320, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 477
+  0:  OnTimer  {IntervalInHalfMinutes = 2}
+  1:  Cmp  {"MapVar3", Value = 1,   jump = 3}
+  2:  Exit  {}
+
+  3:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 224, FromY = 1376, FromZ = 992, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  4:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 5856, FromY = -8512, FromZ = 1792, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  5:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 5600, FromY = -5664, FromZ = 1888, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  6:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 4896, FromY = -3808, FromZ = 1888, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  7:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 3104, FromY = -3680, FromZ = 320, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  8:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 512, FromY = -736, FromZ = 992, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+  9:  CastSpell  {Spell = 15, Mastery = const.Master, Skill = 20, FromX = 512, FromY = 1344, FromZ = 992, ToX = 0, ToY = 0, ToZ = 0}         -- "Sparks"
+end
+
+event 501
+      Hint = str[2]  -- "Leave the Lincoln"
+  0:  ForPlayer  (0)
+  1:  Cmp  {"IsWearingItem", Value = 604,   jump = 3}
+  2:  GoTo  {jump = 14}
+
+  3:  ForPlayer  (1)
+  4:  Cmp  {"IsWearingItem", Value = 604,   jump = 6}
+  5:  GoTo  {jump = 14}
+
+  6:  ForPlayer  (2)
+  7:  Cmp  {"IsWearingItem", Value = 604,   jump = 9}
+  8:  GoTo  {jump = 14}
+
+  9:  ForPlayer  (3)
+  10: Cmp  {"IsWearingItem", Value = 604,   jump = 12}
+  11: GoTo  {jump = 14}
+
+  12: MoveToMap  {X = -7005, Y = 7856, Z = 225, Direction = 128, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 8, Name = "out15.odm"}
+  13: Exit  {}
+
+  14: StatusText  {Str = 20}         -- "You must all be wearing your wetsuits to exit the ship"
+end

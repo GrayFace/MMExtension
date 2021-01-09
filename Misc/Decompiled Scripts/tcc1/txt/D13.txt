@@ -1,0 +1,345 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Statue"
+str[3] = "Strange tree"
+str[4] = "Temple of Agrona's Faithful"
+str[5] = "Sacred Pool"
+str[6] = "Altar of Agrona"
+str[7] = "Chest"
+str[8] = "Nice Flower"
+str[9] = "The door will not budge."
+str[10] = "You search the tree and find something."
+str[11] = "+75 Personality permanent!"
+str[12] = "The statue shifts as your touch it."
+str[13] = "The rock shifts at your touch."
+str[14] = "The pool shimmers as you touch it."
+str[15] = "The monolith feels strange to the touch."
+str[16] = "You find nothing."
+str[17] = "The tree shakes at your touch."
+str[18] = "The flowers smell nice."
+str[19] = "Exit"
+str[20] = "Strange rock"
+str[21] = "Temple of Agorna's Faithful"
+str[22] = ""
+
+
+event 1
+      Hint = str[20]  -- "Strange rock"
+      MazeInfo = str[21]  -- "Temple of Agorna's Faithful"
+  0:  StatusText  {Str = 13}         -- "The rock shifts at your touch."
+  1:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[20]  -- "Strange rock"
+  0:  StatusText  {Str = 13}         -- "The rock shifts at your touch."
+  1:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[4]  -- "Temple of Agrona's Faithful"
+  0:  StatusText  {Str = 15}         -- "The monolith feels strange to the touch."
+  1:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 4
+      Hint = str[3]  -- "Strange tree"
+  0:  StatusText  {Str = 17}         -- "The tree shakes at your touch."
+  1:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+  0:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+      Hint = str[20]  -- "Strange rock"
+  0:  StatusText  {Str = 13}         -- "The rock shifts at your touch."
+  1:  SetDoorState  {Id = 6, State = 1}
+end
+
+event 7
+      Hint = str[4]  -- "Temple of Agrona's Faithful"
+  0:  StatusText  {Str = 15}         -- "The monolith feels strange to the touch."
+  1:  SetDoorState  {Id = 7, State = 2}         -- switch state
+end
+
+event 8
+      Hint = str[8]  -- "Nice Flower"
+  0:  StatusText  {Str = 18}         -- "The flowers smell nice."
+  1:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+      Hint = str[2]  -- "Statue"
+  0:  StatusText  {Str = 12}         -- "The statue shifts as your touch it."
+  1:  SetDoorState  {Id = 9, State = 1}
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+  0:  SetDoorState  {Id = 7, State = 0}
+end
+
+event 12
+      Hint = str[5]  -- "Sacred Pool"
+  0:  StatusText  {Str = 14}         -- "The pool shimmers as you touch it."
+  1:  SetDoorState  {Id = 12, State = 2}         -- switch state
+end
+
+event 13
+      Hint = str[7]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+end
+
+event 14
+      Hint = str[7]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 15
+      Hint = str[3]  -- "Strange tree"
+  0:  StatusText  {Str = 17}         -- "The tree shakes at your touch."
+  1:  SetDoorState  {Id = 15, State = 1}
+end
+
+event 16
+      Hint = str[3]  -- "Strange tree"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 10}         -- "You search the tree and find something."
+  2:  Add  {"GoldAddRandom", Value = 1000}
+  3:  Add  {"MapVar0", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 16}         -- "You find nothing."
+  6:  Exit  {}
+end
+
+event 17
+      Hint = str[3]  -- "Strange tree"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 10}         -- "You search the tree and find something."
+  2:  Add  {"GoldAddRandom", Value = 1500}
+  3:  Add  {"MapVar1", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 16}         -- "You find nothing."
+  6:  Exit  {}
+end
+
+event 18
+      Hint = str[3]  -- "Strange tree"
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 10}         -- "You search the tree and find something."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar2", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 16}         -- "You find nothing."
+  6:  Exit  {}
+end
+
+event 19
+      Hint = str[3]  -- "Strange tree"
+  0:  Cmp  {"MapVar3", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 10}         -- "You search the tree and find something."
+  2:  Add  {"GoldAddRandom", Value = 2500}
+  3:  Add  {"MapVar3", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 16}         -- "You find nothing."
+  6:  Exit  {}
+end
+
+event 20
+      Hint = str[3]  -- "Strange tree"
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 10}         -- "You search the tree and find something."
+  2:  Add  {"GoldAddRandom", Value = 3000}
+  3:  Add  {"MapVar4", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 16}         -- "You find nothing."
+  6:  Exit  {}
+end
+
+event 21
+      Hint = str[3]  -- "Strange tree"
+  0:  Cmp  {"MapVar5", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 10}         -- "You search the tree and find something."
+  2:  Add  {"GoldAddRandom", Value = 3500}
+  3:  Add  {"MapVar5", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 16}         -- "You find nothing."
+  6:  Exit  {}
+end
+
+event 22
+      Hint = str[4]  -- "Temple of Agrona's Faithful"
+  0:  StatusText  {Str = 15}         -- "The monolith feels strange to the touch."
+  1:  CastSpell  {Spell = 91, Mastery = const.Expert, Skill = 3, FromX = 0, FromY = 0, FromZ = 0, ToX = 0, ToY = 0, ToZ = 0}         -- "Mass Curse"
+end
+
+event 23
+      Hint = str[3]  -- "Strange tree"
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 10}         -- "You search the tree and find something."
+  2:  Add  {"Gold", Value = 5000}
+  3:  Add  {"MapVar6", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 16}         -- "You find nothing."
+  6:  Exit  {}
+end
+
+event 24
+      Hint = str[6]  -- "Altar of Agrona"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 23,   jump = 3}         -- 23 D13, Given when Altar is desecrated
+  2:  Cmp  {"Inventory", Value = 528,   jump = 4}         -- "Ceridwen’s Elixir of Wisdom"
+  3:  Exit  {}
+
+  4:  SetTexture  {Facet = 949, Name = "d6florA"}
+  5:  SetTexture  {Facet = 947, Name = "d6florA"}
+  6:  SetTexture  {Facet = 927, Name = "d6florA"}
+  7:  SetTexture  {Facet = 928, Name = "d6florA"}
+  8:  SetTexture  {Facet = 929, Name = "d6florA"}
+  9:  SetTexture  {Facet = 948, Name = "d6florA"}
+  10: SetTexture  {Facet = 945, Name = "d6florA"}
+  11: SetTexture  {Facet = 946, Name = "d6florA"}
+  12: SetTexture  {Facet = 944, Name = "d6florA"}
+  13: SetTexture  {Facet = 943, Name = "d6florA"}
+  14: SetTexture  {Facet = 942, Name = "d6florA"}
+  15: StatusText  {Str = 11}         -- "+75 Personality permanent!"
+  16: Subtract  {"Inventory", Value = 528}         -- "Ceridwen’s Elixir of Wisdom"
+  17: Subtract  {"QBits", Value = 139}         -- "Purify the Alter of Agrona."
+  18: Set  {"Awards", Value = 47}         -- "Purified Alter of Agrona"
+  19: Add  {"BasePersonality", Value = 75}
+  20: Set  {"QBits", Value = 23}         -- 23 D13, Given when Altar is desecrated
+  23: ForPlayer  (0)
+  24: Cmp  {"ClassIs", Value = const.Class.Cleric,   jump = 16}
+  25: Cmp  {"MapVar7", Value = 0,   jump = 17}
+  26: Add  {"BasePersonality", Value = 5}
+  27: ForPlayer  (1)
+  28: Cmp  {"ClassIs", Value = const.Class.Cleric,   jump = 20}
+  29: Cmp  {"MapVar7", Value = 0,   jump = 21}
+  30: Add  {"BasePersonality", Value = 5}
+  31: ForPlayer  (2)
+  32: Cmp  {"ClassIs", Value = const.Class.Cleric,   jump = 24}
+  33: Cmp  {"MapVar7", Value = 0,   jump = 25}
+  34: Add  {"BasePersonality", Value = 5}
+  35: ForPlayer  (3)
+  36: Cmp  {"ClassIs", Value = const.Class.Cleric,   jump = 28}
+  37: Cmp  {"MapVar7", Value = 0,   jump = 29}
+  38: Add  {"BasePersonality", Value = 5}
+  39: ForPlayer  (0)
+  40: Cmp  {"ClassIs", Value = const.Class.Druid,   jump = 32}
+  41: Cmp  {"MapVar7", Value = 0,   jump = 33}
+  42: Add  {"BasePersonality", Value = 5}
+  43: ForPlayer  (1)
+  44: Cmp  {"ClassIs", Value = const.Class.Druid,   jump = 36}
+  45: Cmp  {"MapVar7", Value = 0,   jump = 37}
+  46: Add  {"BasePersonality", Value = 5}
+  47: ForPlayer  (2)
+  48: Cmp  {"ClassIs", Value = const.Class.Druid,   jump = 40}
+  49: Cmp  {"MapVar7", Value = 0,   jump = 41}
+  50: Add  {"BasePersonality", Value = 5}
+  51: ForPlayer  (3)
+  52: Cmp  {"ClassIs", Value = const.Class.Druid,   jump = 44}
+  53: Cmp  {"MapVar7", Value = 0,   jump = 46}
+  54: Add  {"BasePersonality", Value = 5}
+  55: ForPlayer  ("All")
+  56: Set  {"QBits", Value = 23}         -- 23 D13, Given when Altar is desecrated
+  57: Exit  {}
+end
+
+event 25
+      Hint = str[1]  -- "Door"
+  0:  StatusText  {Str = 9}         -- "The door will not budge."
+end
+
+event 26
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 23,   jump = 3}         -- 23 D13, Given when Altar is desecrated
+  2:  Exit  {}
+
+  3:  SetTexture  {Facet = 949, Name = "d6florA"}
+  4:  SetTexture  {Facet = 947, Name = "d6florA"}
+  5:  SetTexture  {Facet = 927, Name = "d6florA"}
+  6:  SetTexture  {Facet = 928, Name = "d6florA"}
+  7:  SetTexture  {Facet = 929, Name = "d6florA"}
+  8:  SetTexture  {Facet = 948, Name = "d6florA"}
+  9:  SetTexture  {Facet = 945, Name = "d6florA"}
+  10: SetTexture  {Facet = 946, Name = "d6florA"}
+  11: SetTexture  {Facet = 944, Name = "d6florA"}
+  12: SetTexture  {Facet = 943, Name = "d6florA"}
+  13: SetTexture  {Facet = 942, Name = "d6florA"}
+end
+
+event 50
+      Hint = str[19]  -- "Exit"
+  0:  MoveToMap  {X = -533, Y = -2681, Z = 944, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutD1.Odm"}
+end
+
+event 51
+      Hint = str[20]  -- "Strange rock"
+  0:  Cmp  {"MapVar20", Value = 1,   jump = 7}
+  1:  Cmp  {"MapVar19", Value = 1,   jump = 18}
+  2:  Cmp  {"MapVar17", Value = 1,   jump = 16}
+  3:  Cmp  {"MapVar15", Value = 1,   jump = 14}
+  4:  Cmp  {"MapVar13", Value = 1,   jump = 12}
+  5:  Cmp  {"MapVar11", Value = 1,   jump = 10}
+  6:  Cmp  {"MapVar9", Value = 1,   jump = 8}
+  7:  Exit  {}
+
+  8:  Set  {"MapVar10", Value = 1}
+  9:  Exit  {}
+
+  10: Set  {"MapVar12", Value = 1}
+  11: Exit  {}
+
+  12: Set  {"MapVar14", Value = 1}
+  13: Exit  {}
+
+  14: Set  {"MapVar16", Value = 1}
+  15: Exit  {}
+
+  16: Set  {"MapVar18", Value = 1}
+  17: Exit  {}
+
+  18: GiveItem  {Strength = 6, Type = const.ItemType.Shield_, Id = 0}
+  19: GiveItem  {Strength = 6, Type = const.ItemType.Boots_, Id = 0}
+  20: Add  {"Inventory", Value = 375}         -- "Flying Fist"
+  21: Set  {"MapVar20", Value = 1}
+end
+
+event 52
+      Hint = str[20]  -- "Strange rock"
+  0:  Cmp  {"MapVar18", Value = 1,   jump = 15}
+  1:  Cmp  {"MapVar16", Value = 1,   jump = 13}
+  2:  Cmp  {"MapVar14", Value = 1,   jump = 11}
+  3:  Cmp  {"MapVar12", Value = 1,   jump = 9}
+  4:  Cmp  {"MapVar10", Value = 1,   jump = 7}
+  5:  Set  {"MapVar9", Value = 1}
+  6:  Exit  {}
+
+  7:  Set  {"MapVar11", Value = 1}
+  8:  Exit  {}
+
+  9:  Set  {"MapVar13", Value = 1}
+  10: Exit  {}
+
+  11: Set  {"MapVar15", Value = 1}
+  12: Exit  {}
+
+  13: Set  {"MapVar17", Value = 1}
+  14: Exit  {}
+
+  15: Set  {"MapVar19", Value = 1}
+  16: Exit  {}
+end

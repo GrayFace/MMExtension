@@ -1,0 +1,29 @@
+str[0] = " "
+str[1] = "Skull Door"
+str[2] = "Chest"
+str[3] = "Switch"
+str[4] = "Exit"
+str[5] = "I am Sir John Silver.  I was most foully murdered by my Lieutenant when I discovered that he was involved with his sorcererous brother and a senior priest in the Temple of Baa in a conspiracy against King Roland.  There are no good men left in the order, and it sickens my soul to say so."
+str[6] = "I am Sir John Silver.  I was most foully murdered by my Lieutenant when I discovered that he was involved with his sorcererous brother and a senior priest in the Temple of Baa in a conspiracy against King Roland.  I am grateful for the rescue of my niece, Melody, from my treacherous Lieutenant by you.  I will open a secret door to a nearby treasure room for you as a reward for your heroism."
+str[7] = "Mercenary Stronghold"
+str[8] = "Skull Door 1"
+str[9] = "Skull Door 2"
+str[10] = "Skull Door 3"
+str[11] = "Skull Door 4"
+str[12] = "Skull Door 5"
+str[13] = "Skull Door 6"
+str[14] = "Skull Door 7"
+str[15] = "Skull Door 8"
+str[16] = "Skull Door 9"
+str[17] = "Skull Door 10"
+str[18] = ""
+str[19] = ""
+
+
+event 1
+  86: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

@@ -1,0 +1,780 @@
+str[0] = " "
+str[1] = "Chest "
+str[2] = "Barrel"
+str[3] = "Well"
+str[4] = "Drink from the Well"
+str[5] = "Fountain"
+str[6] = "Drink from the Fountain"
+str[7] = "House"
+str[8] = "The entrance has been sealed by a rock slide"
+str[9] = "Tent"
+str[10] = "Hut"
+str[11] = "Refreshing!"
+str[12] = "Boat"
+str[13] = "Dock"
+str[14] = "Drink"
+str[15] = "Button"
+str[16] = ""
+str[17] = ""
+str[18] = ""
+str[19] = ""
+str[20] = ""
+str[21] = "This Door is Locked"
+str[22] = "You need the Home Key to use this teleporter."
+str[23] = ""
+str[24] = ""
+str[25] = "Wine Cellar"
+str[26] = "The Mercenary Guild "
+str[27] = "Tidewater Caverns"
+str[28] = "Lord Markham's Manor"
+str[29] = ""
+str[30] = "Enter the Wine Cellar"
+str[31] = "Enter the Mercenary Guild"
+str[32] = "Enter the Tidewater Caverns"
+str[33] = "Enter Lord Markham's Manor"
+str[34] = "Enter the Cave"
+str[35] = "Temple"
+str[36] = "Guilds"
+str[37] = "Stables"
+str[38] = "Wharf"
+str[39] = "Shops"
+str[40] = ""
+str[41] = "Castle Harmondy"
+str[42] = "East to Steadwick"
+str[43] = "North "
+str[44] = "Tatalia"
+str[45] = "South "
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = "Obelisk"
+str[51] = "e_laru_a"
+str[52] = "Shrine"
+str[53] = "Altar"
+str[54] = "You Pray"
+str[55] = "Stone"
+str[56] = "Home Portal"
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = "You do not feel well."
+str[71] = "+2 Speed (Permanent)"
+str[72] = "+20 Air Resistance (Temporary)"
+str[73] = "+20 AC (Temporary)"
+str[74] = "You decide it would be a bad idea to try that again."
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 100,   jump = 3}         -- Chose the path of Dark
+  2:  Exit  {}
+
+  3:  SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = true}         -- "Generic Monster Group for Dungeons"
+  4:  SetMonGroupBit  {NPCGroup = 4, Bit = const.MonsterBits.Hostile, On = true}         -- "Guards"
+end
+
+event 3
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 22}         -- "The Missing Link"
+end
+
+event 4
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 22}         -- "The Missing Link"
+end
+
+event 5
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 59}         -- "Dry Saddles"
+end
+
+event 6
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 59}         -- "Dry Saddles"
+end
+
+event 7
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 69}         -- "Narwhale"
+end
+
+event 8
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 69}         -- "Narwhale"
+end
+
+event 9
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 83}         -- "The Order of Tatalia"
+end
+
+event 10
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 83}         -- "The Order of Tatalia"
+end
+
+event 11
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 96}         -- "Training Essentials"
+end
+
+event 12
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 96}         -- "Training Essentials"
+end
+
+event 13
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 118}         -- "The Loyal Mercenary"
+end
+
+event 14
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 118}         -- "The Loyal Mercenary"
+end
+
+event 15
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 133}         -- "The Depository"
+end
+
+event 16
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 133}         -- "The Depository"
+end
+
+event 17
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 161}         -- "Master Guild of Mind"
+end
+
+event 18
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 161}         -- "Master Guild of Mind"
+end
+
+event 19
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 8}         -- "Vander's Blades & Bows"
+end
+
+event 20
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 8}         -- "Vander's Blades & Bows"
+end
+
+event 21
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 12}         -- "Alloyed Weapons"
+end
+
+event 22
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 12}         -- "Alloyed Weapons"
+end
+
+event 23
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 26}         -- "Alloyed Armor and Shields"
+end
+
+event 24
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 26}         -- "Alloyed Armor and Shields"
+end
+
+event 30
+      Hint = str[56]  -- "Home Portal"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 670,   jump = 4}         -- "Home Key"
+  2:  StatusText  {Str = 22}         -- "You need the Home Key to use this teleporter."
+  3:  Exit  {}
+
+  4:  MoveToMap  {X = -9853, Y = 8656, Z = -1024, Direction = 2047, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "Out03.Odm"}
+  5:  Exit  {}
+end
+
+event 51
+      Hint = str[7]  -- "House"
+  0:  Exit  {}
+end
+
+event 52
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 387}         -- "Steele Residence"
+end
+
+event 53
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 388}         -- "Conscience Home"
+end
+
+event 54
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 389}         -- "Everil's House"
+end
+
+event 57
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 392}         -- "Tricia's House"
+end
+
+event 58
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 393}         -- "Isram's House"
+end
+
+event 59
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 394}         -- "Stonecleaver Residence"
+end
+
+event 61
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 396}         -- "Calindra's Home"
+end
+
+event 62
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 397}         -- "Brother Bombah's"
+end
+
+event 63
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 398}         -- "Redding Residence"
+end
+
+event 65
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 400}         -- "Fist's House"
+end
+
+event 66
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 401}         -- "Wacko's"
+end
+
+event 67
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 402}         -- "Weldric's Home"
+end
+
+event 69
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 404}         -- "Visconti Residence"
+end
+
+event 70
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 405}         -- "Arin Residence"
+end
+
+event 73
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 408}         -- "Sampson Residence"
+end
+
+event 75
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 410}         -- "Taren's House"
+end
+
+event 76
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 411}         -- "Moore Residence"
+end
+
+event 77
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 412}         -- "Rothham's House"
+end
+
+event 78
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 367}         -- "Greydawn Residence"
+end
+
+event 79
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 368}         -- "Stormeye's House"
+end
+
+event 80
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 369}         -- "Bremen Residence"
+end
+
+event 81
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 351}         -- "Riverstone House"
+end
+
+event 151
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 1}
+end
+
+event 152
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 2}
+end
+
+event 153
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 3}
+end
+
+event 154
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 4}
+end
+
+event 155
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 5}
+end
+
+event 156
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 6}
+end
+
+event 157
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 7}
+end
+
+event 158
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 8}
+end
+
+event 159
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 9}
+end
+
+event 160
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 10}
+end
+
+event 161
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 11}
+end
+
+event 162
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 12}
+end
+
+event 163
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 13}
+end
+
+event 164
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 14}
+end
+
+event 165
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 15}
+end
+
+event 166
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 16}
+end
+
+event 167
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 17}
+end
+
+event 168
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 18}
+end
+
+event 169
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 19}
+end
+
+event 170
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 0}
+  1:  Cmp  {"QBits", Value = 70,   jump = 4}         -- Placed Golem left leg
+  2:  Cmp  {"QBits", Value = 221,   jump = 4}         -- Right arm - I lost it
+  3:  Add  {"QBits", Value = 221}         -- Right arm - I lost it
+  4:  Exit  {}
+end
+
+event 201
+      Hint = str[3]  -- "Well"
+  0:  Exit  {}
+end
+
+event 202
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"PlayerBits", Value = 21,   jump = 7}
+  1:  Cmp  {"AutonotesBits", Value = 29,   jump = 3}         -- "20 points of temporary Armor Class from the well in the northern village in Tatalia."
+  2:  Add  {"AutonotesBits", Value = 29}         -- "20 points of temporary Armor Class from the well in the northern village in Tatalia."
+  3:  Add  {"ArmorClassBonus", Value = 20}
+  4:  Add  {"PlayerBits", Value = 21}
+  5:  StatusText  {Str = 73}         -- "+20 AC (Temporary)"
+  6:  GoTo  {jump = 8}
+
+  7:  StatusText  {Str = 11}         -- "Refreshing!"
+  8:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Hour)
+  10: ForPlayer  ("All")
+  11: Subtract  {"PlayerBits", Value = 21}
+end
+
+event 203
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"PlayerBits", Value = 20,   jump = 7}
+  1:  Cmp  {"AutonotesBits", Value = 28,   jump = 3}         -- "20 points of temporary Air resistance from the well in the eastern section of Tidewater in Tatalia."
+  2:  Add  {"AutonotesBits", Value = 28}         -- "20 points of temporary Air resistance from the well in the eastern section of Tidewater in Tatalia."
+  3:  Add  {"AirResBonus", Value = 20}
+  4:  Add  {"PlayerBits", Value = 20}
+  5:  StatusText  {Str = 72}         -- "+20 Air Resistance (Temporary)"
+  6:  GoTo  {jump = 8}
+
+  7:  StatusText  {Str = 11}         -- "Refreshing!"
+  8:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Hour)
+  10: ForPlayer  ("All")
+  11: Subtract  {"PlayerBits", Value = 20}
+end
+
+event 204
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"PlayerBits", Value = 19,   jump = 7}
+  1:  Cmp  {"AutonotesBits", Value = 27,   jump = 3}         -- "2 points of permanent Speed from the well in the western section of Tidewater in Tatalia."
+  2:  Add  {"AutonotesBits", Value = 27}         -- "2 points of permanent Speed from the well in the western section of Tidewater in Tatalia."
+  3:  Add  {"BaseSpeed", Value = 2}
+  4:  Add  {"PlayerBits", Value = 19}
+  5:  StatusText  {Str = 71}         -- "+2 Speed (Permanent)"
+  6:  GoTo  {jump = 8}
+
+  7:  StatusText  {Str = 11}         -- "Refreshing!"
+  8:  Exit  {}
+end
+
+event 205
+      Hint = str[26]  -- "The Mercenary Guild "
+  0:  Exit  {}
+end
+
+event 206
+      Hint = str[27]  -- "Tidewater Caverns"
+  0:  Exit  {}
+end
+
+event 207
+      Hint = str[28]  -- "Lord Markham's Manor"
+  0:  Exit  {}
+end
+
+event 208
+      Hint = str[44]  -- "Tatalia"
+  0:  Exit  {}
+end
+
+event 209
+      Hint = str[42]  -- "East to Steadwick"
+  0:  Exit  {}
+end
+
+event 210
+      Hint = str[38]  -- "Wharf"
+  0:  Exit  {}
+end
+
+event 211
+      Hint = str[35]  -- "Temple"
+  0:  Exit  {}
+end
+
+event 212
+      Hint = str[37]  -- "Stables"
+  0:  Exit  {}
+end
+
+event 213
+      Hint = str[55]  -- "Stone"
+  0:  Exit  {}
+end
+
+event 214
+      Hint = str[14]  -- "Drink"
+  0:  Cmp  {"DiseasedGreen", Value = 0,   jump = 12}
+  1:  Cmp  {"DiseasedYellow", Value = 0,   jump = 12}
+  2:  Cmp  {"DiseasedRed", Value = 0,   jump = 12}
+  3:  RandomGoTo  {jumpA = 5, jumpB = 7, jumpC = 9, jumpD = 0, jumpE = 0, jumpF = 0}
+  4:  GoTo  {jump = 0}
+
+  5:  Set  {"DiseasedGreen", Value = 0}
+  6:  GoTo  {jump = 10}
+
+  7:  Set  {"DiseasedYellow", Value = 0}
+  8:  GoTo  {jump = 10}
+
+  9:  Set  {"DiseasedRed", Value = 0}
+  10: StatusText  {Str = 70}         -- "You do not feel well."
+  11: GoTo  {jump = 13}
+
+  12: StatusText  {Str = 74}         -- "You decide it would be a bad idea to try that again."
+  13: Exit  {}
+end
+
+event 215
+      Hint = str[43]  -- "North "
+  0:  Exit  {}
+end
+
+event 401
+      Hint = str[53]  -- "Altar"
+  0:  Cmp  {"QBits", Value = 49,   jump = 2}         -- "Visit the three stonehenge monoliths in Tatalia, the Evenmorn Islands, and Avlee, then return to Anthony Green in the Tularean Forest."
+  1:  GoTo  {jump = 16}
+
+  2:  Cmp  {"QBits", Value = 50,   jump = 16}         -- Visited all stonehenges
+  3:  Cmp  {"QBits", Value = 52,   jump = 16}         -- Visited stonehenge 2 (area 13)
+  4:  StatusText  {Str = 56}         -- "Home Portal"
+  5:  ForPlayer  ("All")
+  6:  Set  {"QBits", Value = 52}         -- Visited stonehenge 2 (area 13)
+  7:  ForPlayer  ("All")
+  8:  Add  {"QBits", Value = 245}         -- "Congratulations"
+  9:  Subtract  {"QBits", Value = 245}         -- "Congratulations"
+  10: Cmp  {"QBits", Value = 51,   jump = 12}         -- Visited stonehenge 1 (area 9)
+  11: GoTo  {jump = 16}
+
+  12: Cmp  {"QBits", Value = 53,   jump = 14}         -- Visited stonehenge 3 (area 14)
+  13: GoTo  {jump = 16}
+
+  14: ForPlayer  ("All")
+  15: Set  {"QBits", Value = 50}         -- Visited all stonehenges
+  16: Exit  {}
+end
+
+event 451
+      Hint = str[52]  -- "Shrine"
+  0:  Exit  {}
+end
+
+event 452
+      Hint = str[53]  -- "Altar"
+  0:  Cmp  {"QBits", Value = 202,   jump = 9}         -- Place item 618 in out13(statue)
+  1:  Cmp  {"QBits", Value = 200,   jump = 3}         -- "Retrieve the three statuettes and place them on the shrines in the Bracada Desert, Tatalia, and Avlee, then return to Thom Lumbra in the Tularean Forest."
+  2:  GoTo  {jump = 9}
+
+  3:  ForPlayer  ("All")
+  4:  Cmp  {"Inventory", Value = 618,   jump = 6}         -- "Eagle Statuette"
+  5:  GoTo  {jump = 9}
+
+  6:  SetSprite  {SpriteId = 25, Visible = 1, Name = "0"}
+  7:  Subtract  {"Inventory", Value = 618}         -- "Eagle Statuette"
+  8:  Set  {"QBits", Value = 202}         -- Place item 618 in out13(statue)
+  9:  Exit  {}
+end
+
+event 453
+      Hint = str[50]  -- "Obelisk"
+  0:  Cmp  {"QBits", Value = 175,   jump = 5}         -- Visited Obelisk in Area 13
+  1:  StatusText  {Str = 51}         -- "e_laru_a"
+  2:  Add  {"AutonotesBits", Value = 125}         -- "Obelisk message #12: e_laru_a"
+  3:  ForPlayer  ("All")
+  4:  Add  {"QBits", Value = 175}         -- Visited Obelisk in Area 13
+  5:  Exit  {}
+end
+
+event 454
+      Hint = str[100]  -- ""
+
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 14,   jump = 3}         -- Accepted Fireball wand from Malwick
+  2:  GoTo  {jump = 15}
+
+  3:  Cmp  {"QBits", Value = 190,   jump = 15}         -- Finished with Malwick & Assc.
+  4:  Cmp  {"QBits", Value = 183,   jump = 15}         -- Failed either goto or do guild quest
+  5:  Cmp  {"QBits", Value = 182,   jump = 10}         -- "Steal the Tapestry from your associate's Castle and return it to Niles Stantley in the Mercenary Guild in Tatalia."
+  6:  Cmp  {"QBits", Value = 181,   jump = 8}         -- "Go to the Mercenary Guild in Tatalia and talk to Niles Stantley within two weeks."
+  7:  GoTo  {jump = 15}
+
+  8:  Cmp  {"Counter5", Value = 336,   jump = 12}
+  9:  GoTo  {jump = 15}
+
+  10: Cmp  {"Counter5", Value = 672,   jump = 12}
+  11: GoTo  {jump = 15}
+
+  12: ForPlayer  ("All")
+  13: Set  {"QBits", Value = 183}         -- Failed either goto or do guild quest
+  14: SpeakNPC  {NPC = 98}         -- "Messenger"
+  15: Exit  {}
+end
+
+event 455
+      Hint = str[8]  -- "The entrance has been sealed by a rock slide"
+  0:  Exit  {}
+end
+
+event 500
+      Hint = str[100]  -- ""
+  0:  CheckSeason  {Season = 3,   jump(ok) = 5}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  CheckSeason  {Season = 1,   jump(ok) = 9}
+  3:  CheckSeason  {Season = 0,   jump(ok) = 11}
+  4:  Exit  {}
+
+  5:  Exit  {}
+
+  6:  Exit  {}
+
+  7:  Exit  {}
+
+  8:  Exit  {}
+
+  9:  Exit  {}
+
+  10: Exit  {}
+
+  11: Exit  {}
+
+  12: Exit  {}
+end
+
+event 501
+      Hint = str[30]  -- "Enter the Wine Cellar"
+  0:  MoveToMap  {X = 601, Y = -512, Z = 1, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 215, Icon = 2, Name = "D16.blv"}         -- "Wine Cellar"
+end
+
+event 502
+      Hint = str[31]  -- "Enter the Mercenary Guild"
+  0:  Cmp  {"QBits", Value = 14,   jump = 2}         -- Accepted Fireball wand from Malwick
+  1:  GoTo  {jump = 6}
+
+  2:  Cmp  {"QBits", Value = 190,   jump = 6}         -- Finished with Malwick & Assc.
+  3:  Cmp  {"QBits", Value = 183,   jump = 14}         -- Failed either goto or do guild quest
+  4:  Cmp  {"QBits", Value = 181,   jump = 8}         -- "Go to the Mercenary Guild in Tatalia and talk to Niles Stantley within two weeks."
+  5:  Cmp  {"QBits", Value = 182,   jump = 10}         -- "Steal the Tapestry from your associate's Castle and return it to Niles Stantley in the Mercenary Guild in Tatalia."
+  6:  MoveToMap  {X = 886, Y = 2601, Z = 1, Direction = 474, LookAngle = 0, SpeedZ = 0, HouseId = 213, Icon = 9, Name = "D20.blv"}         -- "Mercenary Guild"
+  7:  GoTo  {jump = 18}
+
+  8:  Cmp  {"Counter5", Value = 336,   jump = 12}
+  9:  GoTo  {jump = 17}
+
+  10: Cmp  {"Counter5", Value = 672,   jump = 12}
+  11: GoTo  {jump = 17}
+
+  12: ForPlayer  ("All")
+  13: Set  {"QBits", Value = 183}         -- Failed either goto or do guild quest
+  14: SetNPCGreeting  {NPC = 99, Greeting = 168}         -- "Niles Stantley" : "Your lack of punctuality has cost yourselves and your town grievously.  I think you may find your bank account somewhat… pinched.  Consider this an important lesson learned.  Good day."
+  15: Subtract  {"QBits", Value = 181}         -- "Go to the Mercenary Guild in Tatalia and talk to Niles Stantley within two weeks."
+  16: Subtract  {"QBits", Value = 182}         -- "Steal the Tapestry from your associate's Castle and return it to Niles Stantley in the Mercenary Guild in Tatalia."
+  17: SpeakNPC  {NPC = 99}         -- "Niles Stantley"
+  18: Exit  {}
+end
+
+event 503
+      Hint = str[32]  -- "Enter the Tidewater Caverns"
+  0:  MoveToMap  {X = -1944, Y = -2052, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 214, Icon = 9, Name = "D17.blv"}         -- "Tidewater Caverns"
+end
+
+event 504
+      Hint = str[33]  -- "Enter Lord Markham's Manor"
+  0:  MoveToMap  {X = -33, Y = -600, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 9, Name = "D18.blv"}
+end
+
+event 505
+      Hint = str[34]  -- "Enter the Cave"
+  0:  StatusText  {Str = 8}         -- "The entrance has been sealed by a rock slide"
+end

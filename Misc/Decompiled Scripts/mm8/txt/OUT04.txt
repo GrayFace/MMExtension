@@ -1,0 +1,713 @@
+str[0] = " "
+str[1] = "Ironsand Desert"
+str[2] = ""
+str[3] = "Chest"
+str[4] = ""
+str[5] = "Well"
+str[6] = "Drink from the well"
+str[7] = "Fountain"
+str[8] = "Drink from the fountain"
+str[9] = "Refreshing"
+str[10] = "That was not so refreshing"
+str[11] = ""
+str[12] = "thornskey"
+str[13] = ""
+str[14] = ""
+str[15] = "The door is locked"
+str[16] = ""
+str[17] = ""
+str[18] = ""
+str[19] = ""
+str[20] = "Fruit Tree"
+str[21] = "You receive an apple"
+str[22] = "Berry Bush"
+str[23] = "You receive some berries"
+str[24] = ""
+str[25] = "North"
+str[26] = "West"
+str[27] = "East"
+str[28] = "South"
+str[29] = ""
+str[30] = "Shrine"
+str[31] = "Altar"
+str[32] = "You Pray"
+str[33] = "Obelisk"
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = "Destroyed Building"
+str[40] = "Cactus"
+str[41] = "Rock"
+str[42] = ""
+str[43] = ""
+str[44] = "Tomb Stone"
+str[45] = "Troll Tomb"
+str[46] = "Cyclops Larder"
+str[47] = "Chain of Fire"
+str[48] = "A Cave"
+str[49] = "Gate to the Plane of Fire"
+str[50] = "Enter the Troll Tomb"
+str[51] = "Enter the Cyclops Larder"
+str[52] = "Enter the Chain of Fire"
+str[53] = "Enter the Cave"
+str[54] = "Enter the Plane of Fire"
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = "Endurance +2 (Permanent)"
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 60,   jump = 5}         -- Party visits Ironsand After QuestBit 25 set.
+  2:  Cmp  {"QBits", Value = 25,   jump = 4}         -- "Find a witness to the lake of fire's formation. Bring him back to the merchant guild in Alvar."
+  3:  GoTo  {jump = 5}
+
+  4:  Set  {"QBits", Value = 60}         -- Party visits Ironsand After QuestBit 25 set.
+  5:  Exit  {}
+end
+
+event 2
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 3
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 4
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 6
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 7
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 8
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 9
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 10
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 11
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 177}         -- "Overdune's House"
+  1:  Exit  {}
+end
+
+event 12
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 177}         -- "Overdune's House"
+  2:  Exit  {}
+end
+
+event 13
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 337}         -- "Pole's Hovel"
+  1:  Exit  {}
+end
+
+event 14
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 337}         -- "Pole's Hovel"
+  2:  Exit  {}
+end
+
+event 15
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 336}         -- "Hovel of Greenstorm"
+  1:  Exit  {}
+end
+
+event 16
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 336}         -- "Hovel of Greenstorm"
+  2:  Exit  {}
+end
+
+event 17
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 335}         -- "Hobert's Hovel"
+  1:  Exit  {}
+end
+
+event 18
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 335}         -- "Hobert's Hovel"
+  2:  Exit  {}
+end
+
+event 19
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 334}         -- "Hovel of Mist"
+  1:  Exit  {}
+end
+
+event 20
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 334}         -- "Hovel of Mist"
+  2:  Exit  {}
+end
+
+event 21
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 333}         -- "Talion's Hovel"
+  1:  Exit  {}
+end
+
+event 22
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 333}         -- "Talion's Hovel"
+  2:  Exit  {}
+end
+
+event 23
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 331}         -- "Stone's Hovel"
+  1:  Exit  {}
+end
+
+event 24
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 331}         -- "Stone's Hovel"
+  2:  Exit  {}
+end
+
+event 25
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 332}         -- "Hearthsworn Hovel"
+  1:  Exit  {}
+end
+
+event 26
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 332}         -- "Hearthsworn Hovel"
+  2:  Exit  {}
+end
+
+event 27
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 339}         -- "Schmecker's Hovel"
+  1:  Exit  {}
+end
+
+event 28
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 339}         -- "Schmecker's Hovel"
+  2:  Exit  {}
+end
+
+event 29
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 338}         -- "Tarent Hovel"
+  1:  Exit  {}
+end
+
+event 30
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 338}         -- "Tarent Hovel"
+  2:  Exit  {}
+end
+
+event 31
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 479}         -- "Thistlebone Residence"
+  1:  Exit  {}
+end
+
+event 32
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 479}         -- "Thistlebone Residence"
+  2:  Exit  {}
+end
+
+event 81
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+  1:  Exit  {}
+end
+
+event 82
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+  1:  Exit  {}
+end
+
+event 83
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+  1:  Exit  {}
+end
+
+event 84
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+  1:  Exit  {}
+end
+
+event 85
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+  1:  Exit  {}
+end
+
+event 86
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+  1:  Exit  {}
+end
+
+event 87
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+  1:  Exit  {}
+end
+
+event 88
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+  1:  Exit  {}
+end
+
+event 89
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+  1:  Exit  {}
+end
+
+event 90
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+  1:  Exit  {}
+end
+
+event 91
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 10}
+  1:  Exit  {}
+end
+
+event 92
+      Hint = str[41]  -- "Rock"
+  0:  OpenChest  {Id = 11}
+  1:  Exit  {}
+end
+
+event 93
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+  1:  Exit  {}
+end
+
+event 94
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+  1:  Exit  {}
+end
+
+event 95
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+  1:  Exit  {}
+end
+
+event 96
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+  1:  Exit  {}
+end
+
+event 97
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+  1:  Exit  {}
+end
+
+event 98
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+  1:  Exit  {}
+end
+
+event 99
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+  1:  Exit  {}
+end
+
+event 100
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+  1:  Exit  {}
+end
+
+event 101
+      Hint = str[6]  -- "Drink from the well"
+  0:  Cmp  {"BaseEndurance", Value = 16,   jump = 5}
+  1:  Add  {"BaseEndurance", Value = 2}
+  2:  StatusText  {Str = 60}         -- "Endurance +2 (Permanent)"
+  3:  Add  {"AutonotesBits", Value = 254}         -- "Well in the village of Rust gives a permanent Endurance bonus up to an Endurance of 16."
+  4:  GoTo  {jump = 6}
+
+  5:  StatusText  {Str = 9}         -- "Refreshing"
+  6:  Exit  {}
+end
+
+event 102
+      Hint = str[6]  -- "Drink from the well"
+  0:  Cmp  {"MapVar29", Value = 2,   jump = 7}
+  1:  Cmp  {"Gold", Value = 199,   jump = 7}
+  2:  Cmp  {"BankGold", Value = 99,   jump = 7}
+  3:  Add  {"Gold", Value = 200}
+  4:  Add  {"MapVar29", Value = 1}
+  5:  Add  {"AutonotesBits", Value = 255}         -- "Fountain in the village of Rust in the Ironsand Desert gives 200 gold if the total gold on party and in the bank is less than 100."
+  6:  GoTo  {jump = 8}
+
+  7:  StatusText  {Str = 9}         -- "Refreshing"
+  8:  Exit  {}
+end
+
+event 103
+      Hint = str[6]  -- "Drink from the well"
+  0:  StatusText  {Str = 9}         -- "Refreshing"
+  1:  Exit  {}
+end
+
+event 150
+      Hint = str[33]  -- "Obelisk"
+  0:  Cmp  {"QBits", Value = 189,   jump = 4}         -- Obelisk Area 4
+  1:  StatusText  {Str = 12}         -- "thornskey"
+  2:  Add  {"AutonotesBits", Value = 19}         -- "Obelisk message #3: thornskey"
+  3:  Add  {"QBits", Value = 189}         -- Obelisk Area 4
+  4:  Exit  {}
+end
+
+event 179
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 141}         -- "Self Study"
+  1:  Exit  {}
+end
+
+event 180
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 141}         -- "Self Study"
+  2:  Exit  {}
+end
+
+event 181
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 56}         -- "Guild Caravans"
+  1:  Exit  {}
+end
+
+event 182
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 56}         -- "Guild Caravans"
+  2:  Exit  {}
+end
+
+event 189
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 104}         -- "Placeholder"
+  1:  Exit  {}
+end
+
+event 190
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 104}         -- "Placeholder"
+  2:  Exit  {}
+end
+
+event 191
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 110}         -- "Parched Throat"
+  1:  Exit  {}
+end
+
+event 192
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 110}         -- "Parched Throat"
+  2:  Exit  {}
+end
+
+event 401
+      Hint = str[45]  -- "Troll Tomb"
+  0:  Exit  {}
+end
+
+event 402
+      Hint = str[46]  -- "Cyclops Larder"
+  0:  Exit  {}
+end
+
+event 403
+      Hint = str[47]  -- "Chain of Fire"
+  0:  Exit  {}
+end
+
+event 404
+      Hint = str[48]  -- "A Cave"
+  0:  Exit  {}
+end
+
+event 405
+      Hint = str[49]  -- "Gate to the Plane of Fire"
+  0:  Exit  {}
+end
+
+event 406
+      Hint = str[39]  -- "Destroyed Building"
+  0:  Exit  {}
+end
+
+event 479
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 20}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 4, jumpC = 6, jumpD = 8, jumpE = 10, jumpF = 12}
+  2:  PlaySound  {Id = 327, X = -8128, Y = -2496}
+  3:  GoTo  {jump = 12}
+
+  4:  PlaySound  {Id = 327, X = -2048, Y = 1344}
+  5:  GoTo  {jump = 12}
+
+  6:  PlaySound  {Id = 327, X = -1216, Y = -7680}
+  7:  GoTo  {jump = 12}
+
+  8:  PlaySound  {Id = 327, X = -10528, Y = -15168}
+  9:  GoTo  {jump = 12}
+
+  10: PlaySound  {Id = 327, X = 3520, Y = -14112}
+  11: GoTo  {jump = 12}
+
+  12: Exit  {}
+end
+
+event 490
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 15}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 2, jumpC = 3, jumpD = 3, jumpE = 3, jumpF = 3}
+  2:  PlaySound  {Id = 325, X = -6848, Y = 3776}
+  3:  Exit  {}
+end
+
+event 494
+      Hint = str[40]  -- "Cactus"
+  0:  Cmp  {"QBits", Value = 278,   jump = 16}         -- Reagant spout area 4
+  1:  Cmp  {"PerceptionSkill", Value = 3,   jump = 3}
+  2:  GoTo  {jump = 16}
+
+  3:  RandomGoTo  {jumpA = 5, jumpB = 7, jumpC = 9, jumpD = 11, jumpE = 13, jumpF = 0}
+  4:  GoTo  {jump = 16}
+
+  5:  SummonObject  {Item = 200, X = -7616, Y = -4160, Z = 504, Speed = 1000, Count = 1, RandomAngle = true}         -- "Widowsweep Berries" : "Widowsweep Berries"
+  6:  GoTo  {jump = 15}
+
+  7:  SummonObject  {Item = 205, X = -7616, Y = -4160, Z = 504, Speed = 1000, Count = 1, RandomAngle = true}         -- "Phima Root" : "Phima Root"
+  8:  GoTo  {jump = 15}
+
+  9:  SummonObject  {Item = 210, X = -7616, Y = -4160, Z = 504, Speed = 1000, Count = 1, RandomAngle = true}         -- "Poppy Pod" : "Poppy Pod"
+  10: GoTo  {jump = 15}
+
+  11: SummonObject  {Item = 215, X = -7616, Y = -4160, Z = 504, Speed = 1000, Count = 1, RandomAngle = true}         -- "Mushroom" : "Mushroom"
+  12: GoTo  {jump = 15}
+
+  13: SummonObject  {Item = 220, X = -7616, Y = -4160, Z = 504, Speed = 1000, Count = 1, RandomAngle = true}         -- "Potion Bottle" : "Potion Bottle"
+  14: GoTo  {jump = 15}
+
+  15: Add  {"QBits", Value = 278}         -- Reagant spout area 4
+  16: Exit  {}
+end
+
+event 495
+      Hint = str[41]  -- "Rock"
+  0:  Cmp  {"QBits", Value = 277,   jump = 14}         -- Reagant spout area 4
+  1:  Cmp  {"PerceptionSkill", Value = 5,   jump = 3}
+  2:  GoTo  {jump = 14}
+
+  3:  RandomGoTo  {jumpA = 5, jumpB = 7, jumpC = 9, jumpD = 11, jumpE = 0, jumpF = 0}
+  4:  GoTo  {jump = 14}
+
+  5:  SummonObject  {Item = 2138, X = 1728, Y = -3776, Z = 1008, Speed = 1000, Count = 1, RandomAngle = true}         -- "Gold Ring" : not found!
+  6:  GoTo  {jump = 13}
+
+  7:  SummonObject  {Item = 2139, X = 1728, Y = -3776, Z = 1008, Speed = 1000, Count = 1, RandomAngle = true}         -- "Pearl Ring" : not found!
+  8:  GoTo  {jump = 13}
+
+  9:  SummonObject  {Item = 2140, X = 1728, Y = -3776, Z = 1008, Speed = 1000, Count = 1, RandomAngle = true}         -- "Gemstone Ring" : not found!
+  10: GoTo  {jump = 13}
+
+  11: SummonObject  {Item = 2141, X = 1728, Y = -3776, Z = 1008, Speed = 1000, Count = 1, RandomAngle = true}         -- "Amethyst Ring" : not found!
+  12: GoTo  {jump = 13}
+
+  13: Add  {"QBits", Value = 277}         -- Reagant spout area 4
+  14: Exit  {}
+end
+
+event 501
+      Hint = str[50]  -- "Enter the Troll Tomb"
+  0:  MoveToMap  {X = -672, Y = 768, Z = -28, Direction = 256, LookAngle = 0, SpeedZ = 0, HouseId = 199, Icon = 1, Name = "d13.blv"}         -- "Troll Tomb"
+  1:  Exit  {}
+end
+
+event 502
+      Hint = str[51]  -- "Enter the Cyclops Larder"
+  0:  MoveToMap  {X = 0, Y = 0, Z = 1, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 200, Icon = 1, Name = "d14.blv"}         -- "Cyclops Larder"
+  1:  Exit  {}
+end
+
+event 503
+      Hint = str[52]  -- "Enter the Chain of Fire"
+  0:  MoveToMap  {X = -288, Y = -768, Z = 0, Direction = 520, LookAngle = 0, SpeedZ = 0, HouseId = 201, Icon = 1, Name = "d15.blv"}         -- "Chain of Fire"
+  1:  Exit  {}
+end
+
+event 504
+      Hint = str[54]  -- "Enter the Plane of Fire"
+  0:  MoveToMap  {X = 99, Y = -22056, Z = 3057, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 220, Icon = 1, Name = "ElemF.odm"}         -- "Gateway to the Plane of Fire"
+  1:  Exit  {}
+end
+
+event 505
+      Hint = str[52]  -- "Enter the Chain of Fire"
+  0:  MoveToMap  {X = -12423, Y = 4347, Z = -135, Direction = 1544, LookAngle = 0, SpeedZ = 0, HouseId = 201, Icon = 1, Name = "d15.blv"}         -- "Chain of Fire"
+  1:  Exit  {}
+end
+
+event 506
+      Hint = str[53]  -- "Enter the Cave"
+  0:  MoveToMap  {X = 2116, Y = 9631, Z = 1, Direction = 1296, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 3, Name = "D48.blv"}
+  1:  Exit  {}
+end

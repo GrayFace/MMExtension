@@ -1,0 +1,543 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Leave the Pit"
+str[3] = "Chest"
+str[4] = "Button"
+str[5] = "Lever"
+str[6] = "Vault"
+str[7] = "Cabinet"
+str[8] = "Switch"
+str[9] = "House"
+str[10] = "Bookcase"
+str[11] = ""
+str[12] = ""
+str[13] = ""
+str[14] = "You Successfully disarm the trap"
+str[15] = ""
+str[16] = "Take a Drink"
+str[17] = "Not Very Refreshing"
+str[18] = "Refreshing"
+str[19] = ""
+str[20] = ""
+str[21] = "This Door is Locked"
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = "Castle Gloaming"
+str[26] = "Temple of the Dark"
+str[27] = "The Breeding Zone"
+str[28] = ""
+str[29] = ""
+str[30] = "Enter Castle Gloaming"
+str[31] = "Enter The Temple of the Dark"
+str[32] = "Enter the Breeding Zone"
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = ""
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = ""
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = "Obelisk"
+str[51] = "srhtfnut"
+str[52] = ""
+str[53] = ""
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+      function events.LoadMap()
+  1:  GoTo  {jump = 19}
+
+  2:  Add  {"QBits", Value = 210}         -- The Pit - Town Portal
+  3:  Cmp  {"QBits", Value = 100,   jump = 5}         -- Chose the path of Dark
+  4:  GoTo  {jump = 8}
+
+  5:  Cmp  {"QBits", Value = 270,   jump = 12}         -- Your friends are mad at you 
+  6:  Cmp  {"MapVar4", Value = 2,   jump = 9}
+  7:  GoTo  {jump = 11}
+
+  8:  Set  {"MapVar4", Value = 2}
+  9:  SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = true}         -- "Generic Monster Group for Dungeons"
+  10: SetMonGroupBit  {NPCGroup = 4, Bit = const.MonsterBits.Hostile, On = true}         -- "Guards"
+  11: Exit  {}
+
+  12: Cmp  {"Counter10", Value = 720,   jump = 14}
+  13: GoTo  {jump = 8}
+
+  14: Subtract  {"QBits", Value = 270}         -- Your friends are mad at you 
+  15: Set  {"MapVar4", Value = 0}
+  16: SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = false}         -- "Generic Monster Group for Dungeons"
+  17: SetMonGroupBit  {NPCGroup = 4, Bit = const.MonsterBits.Hostile, On = false}         -- "Guards"
+  18: Exit  {}
+
+  19: Cmp  {"QBits", Value = 293,   jump = 16}         -- Return to NWC
+  20: Cmp  {"QBits", Value = 210,   jump = 3}         -- The Pit - Town Portal
+  21: GoTo  {jump = 2}
+end
+
+event 176
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 177
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 178
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 179
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 180
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 181
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 182
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+end
+
+event 183
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+end
+
+event 184
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+end
+
+event 185
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 10}
+end
+
+event 186
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 11}
+end
+
+event 187
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+end
+
+event 188
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+end
+
+event 189
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+end
+
+event 190
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+end
+
+event 191
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+end
+
+event 192
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+end
+
+event 193
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+end
+
+event 194
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+end
+
+event 195
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+end
+
+event 376
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 100,   jump = 26}         -- Chose the path of Dark
+  1:  Cmp  {"QBits", Value = 302,   jump = 26}         -- Small House only Once
+  2:  GoTo  {jump = 22}
+
+  3:  Cmp  {"QBits", Value = 111,   jump = 5}         -- Finished Necro Task 2 - Temple of Light
+  4:  GoTo  {jump = 18}
+
+  5:  Cmp  {"QBits", Value = 112,   jump = 7}         -- Finished Necro Task 3 - Soul Jars
+  6:  GoTo  {jump = 18}
+
+  7:  Cmp  {"QBits", Value = 113,   jump = 9}         -- Finished Necro Task 4 - Clanker's Lab
+  8:  GoTo  {jump = 18}
+
+  9:  Cmp  {"QBits", Value = 118,   jump = 18}         -- Killed Good MM3 Person
+  10: Cmp  {"QBits", Value = 198,   jump = 18}         -- Archibald in Clankers Lab now
+  11: SetNPCGreeting  {NPC = 87, Greeting = 133}         -- "Tolberti" : "Welcome, friends."
+  12: Add  {"QBits", Value = 198}         -- Archibald in Clankers Lab now
+  13: SetNPCGreeting  {NPC = 88, Greeting = 135}         -- "Archibald Ironfist" : "Good to see you again, my friends.  You are welcome to visit anytime."
+  14: MoveNPC  {NPC = 88, HouseId = 0}         -- "Archibald Ironfist"
+  15: MoveNPC  {NPC = 84, HouseId = 184}         -- "Kastore" -> "Throne Room"
+  16: SetNPCTopic  {NPC = 84, Index = 4, Event = 262}         -- "Kastore" : "Dark Magic Grandmaster"
+  17: SetNPCTopic  {NPC = 88, Index = 1, Event = 0}         -- "Archibald Ironfist"
+  18: EnterHouse  {Id = 433}         -- "Hostel"
+  19: Exit  {}
+
+  20: MoveToMap  {X = 0, Y = 3808, Z = 129, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 9, Name = "MDT15.blv"}
+  21: Exit  {}
+
+  22: Cmp  {"QBits", Value = 303,   jump = 25}         -- Reward
+  23: Cmp  {"QBits", Value = 299,   jump = 20}         -- "Clear out the Strange Temple,  retrieve the ancient weapons, and return to Maximus in The Pit"
+  24: Exit  {}
+
+  25: MoveToMap  {X = -15360, Y = 3808, Z = 129, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 9, Name = "MDT15.blv"}
+  26: Exit  {}
+end
+
+event 415
+      Hint = str[50]  -- "Obelisk"
+  0:  Cmp  {"QBits", Value = 170,   jump = 5}         -- Visited Obelisk in Area 8
+  1:  StatusText  {Str = 51}         -- "srhtfnut"
+  2:  Add  {"AutonotesBits", Value = 120}         -- "Obelisk message #7: srhtfnut"
+  3:  ForPlayer  ("All")
+  4:  Add  {"QBits", Value = 170}         -- Visited Obelisk in Area 8
+  5:  Exit  {}
+end
+
+event 416
+      Hint = str[9]  -- "House"
+  0:  Exit  {}
+end
+
+event 417
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 20}         -- "Shields of Malice"
+end
+
+event 418
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 20}         -- "Shields of Malice"
+end
+
+event 419
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 6}         -- "Blades of Spite"
+end
+
+event 420
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 6}         -- "Blades of Spite"
+end
+
+event 421
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 132}         -- "Frozen Assets"
+end
+
+event 422
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 132}         -- "Frozen Assets"
+end
+
+event 423
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 36}         -- "Eldritch Influences"
+end
+
+event 424
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 36}         -- "Eldritch Influences"
+end
+
+event 425
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 154}         -- "Paramount Guild of Earth"
+end
+
+event 426
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 154}         -- "Paramount Guild of Earth"
+end
+
+event 427
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 170}         -- "Guild of Night"
+end
+
+event 428
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 170}         -- "Guild of Night"
+end
+
+event 429
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 49}         -- "Infernal Temptations"
+end
+
+event 430
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 49}         -- "Infernal Temptations"
+end
+
+event 431
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 106}         -- "Hall of Midnight"
+end
+
+event 432
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 106}         -- "Hall of Midnight"
+end
+
+event 433
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 94}         -- "Perdition's Flame"
+end
+
+event 434
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 94}         -- "Perdition's Flame"
+end
+
+event 435
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 114}         -- "The Vampyre Lounge "
+end
+
+event 436
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 114}         -- "The Vampyre Lounge "
+end
+
+event 438
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 443}         -- "Hostel"
+end
+
+event 439
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 441}         -- "Hostel"
+end
+
+event 440
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 434}         -- "Hostel"
+end
+
+event 441
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 198,   jump = 3}         -- Archibald in Clankers Lab now
+  1:  EnterHouse  {Id = 442}         -- "Hostel"
+  2:  Exit  {}
+
+  3:  StatusText  {Str = 21}         -- "This Door is Locked"
+  4:  FaceAnimation  {Player = "Current", Animation = 18}
+  5:  Exit  {}
+end
+
+event 442
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 435}         -- "House Umberpool"
+end
+
+event 443
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 437}         -- "Sand Residence"
+end
+
+event 444
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 436}         -- "Darkenmore Residence"
+end
+
+event 445
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 438}         -- "Hostel"
+end
+
+event 446
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 444}         -- "Hostel"
+end
+
+event 447
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 439}         -- "Hostel"
+end
+
+event 448
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 440}         -- ""
+end
+
+event 452
+  0:  MoveToMap  {X = -1873, Y = -8516, Z = 64, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 453
+  0:  MoveToMap  {X = -1824, Y = -7136, Z = 33, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 454
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -26354, Y = -10440, Z = 689, Direction = 1664, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 455
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -2854, Y = -23128, Z = 625, Direction = 541, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 456
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = 6196, Y = -10401, Z = -362, Direction = 832, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 457
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = 9683, Y = -5602, Z = -19, Direction = 1600, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 501
+      Hint = str[2]  -- "Leave the Pit"
+  0:  MoveToMap  {X = 498, Y = 16198, Z = 161, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 1, Name = "T04.blv"}
+end
+
+event 502
+      Hint = str[31]  -- "Enter The Temple of the Dark"
+  0:  EnterHouse  {Id = 81}         -- "Temple of Dark"
+end
+
+event 503
+      Hint = str[32]  -- "Enter the Breeding Zone"
+  0:  MoveToMap  {X = -320, Y = -1216, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 2, Name = "D10.blv"}
+end
+
+event 504
+      Hint = str[30]  -- "Enter Castle Gloaming"
+  0:  MoveToMap  {X = 96, Y = 3424, Z = 1, Direction = 1088, LookAngle = 0, SpeedZ = 0, HouseId = 179, Icon = 9, Name = "d03.blv"}         -- "Castle Gloaming"
+end
+
+event 505
+      Hint = str[30]  -- "Enter Castle Gloaming"
+  0:  MoveToMap  {X = 874, Y = -261, Z = -377, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 179, Icon = 9, Name = "d03.blv"}         -- "Castle Gloaming"
+end

@@ -1,0 +1,908 @@
+str[0] = " "
+str[1] = "Regna"
+str[2] = ""
+str[3] = "Chest"
+str[4] = ""
+str[5] = "Well"
+str[6] = "Drink from the well"
+str[7] = "Fountain"
+str[8] = "Drink from the fountain"
+str[9] = "Refreshing"
+str[10] = "That was not so refreshing"
+str[11] = "You hear a low rumbling noise"
+str[12] = "gholdsold"
+str[13] = "Fire the cannon !"
+str[14] = "Door"
+str[15] = "The door is locked"
+str[16] = "Regnan Ship"
+str[17] = "Sunk Regnan Ship"
+str[18] = "You do not see the right kind of ammunition anywhere"
+str[19] = ""
+str[20] = "Fruit Tree"
+str[21] = "You receive an apple"
+str[22] = "Berry Bush"
+str[23] = "You receive some berries"
+str[24] = ""
+str[25] = "North"
+str[26] = "West"
+str[27] = "East"
+str[28] = "South"
+str[29] = ""
+str[30] = "Shrine"
+str[31] = "Altar"
+str[32] = "You Pray"
+str[33] = "Obelisk"
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = "Tree"
+str[41] = ""
+str[42] = ""
+str[43] = "Tower"
+str[44] = "Enter the Tower"
+str[45] = "Pirate Stronghold"
+str[46] = "Abandoned Pirate Keep"
+str[47] = "Tunnel"
+str[48] = "Small Sub Pen"
+str[49] = "A Cave"
+str[50] = "Enter the Pirate Stronghold"
+str[51] = "Enter the Abandoned Pirate Keep"
+str[52] = "Enter the Tunnel"
+str[53] = "Enter the Small Sub Pen"
+str[54] = "Enter the Cave"
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = "Speed +2 (Permanent)"
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 2
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 3
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 4
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 6
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 7
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 8
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 9
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 10
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 11
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 423}         -- "Dragontracker Hall"
+  1:  Exit  {}
+end
+
+event 12
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 423}         -- "Dragontracker Hall"
+  2:  Exit  {}
+end
+
+event 13
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 424}         -- "Nirses Loot"
+  1:  Exit  {}
+end
+
+event 14
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 424}         -- "Nirses Loot"
+  2:  Exit  {}
+end
+
+event 15
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 425}         -- "Burnkindle's Spoils"
+  1:  Exit  {}
+end
+
+event 16
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 425}         -- "Burnkindle's Spoils"
+  2:  Exit  {}
+end
+
+event 17
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 426}         -- "Cleareye Hall"
+  1:  Exit  {}
+end
+
+event 18
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 426}         -- "Cleareye Hall"
+  2:  Exit  {}
+end
+
+event 19
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 427}         -- "Shadowrunner's Vault"
+  1:  Exit  {}
+end
+
+event 20
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 427}         -- "Shadowrunner's Vault"
+  2:  Exit  {}
+end
+
+event 21
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 428}         -- "Lifter's Lockup"
+  1:  Exit  {}
+end
+
+event 22
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 428}         -- "Lifter's Lockup"
+  2:  Exit  {}
+end
+
+event 23
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 429}         -- "Steelcoif Hall"
+  1:  Exit  {}
+end
+
+event 24
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 429}         -- "Steelcoif Hall"
+  2:  Exit  {}
+end
+
+event 25
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 430}         -- "Jawblower Manor"
+  1:  Exit  {}
+end
+
+event 26
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 430}         -- "Jawblower Manor"
+  2:  Exit  {}
+end
+
+event 27
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 431}         -- "Marmon Domicile"
+  1:  Exit  {}
+end
+
+event 28
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 431}         -- "Marmon Domicile"
+  2:  Exit  {}
+end
+
+event 29
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 432}         -- "One-eye's Lair"
+  1:  Exit  {}
+end
+
+event 30
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 432}         -- "One-eye's Lair"
+  2:  Exit  {}
+end
+
+event 31
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 433}         -- "Paul's Estate"
+  1:  Exit  {}
+end
+
+event 32
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 433}         -- "Paul's Estate"
+  2:  Exit  {}
+end
+
+event 33
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 434}         -- "Terrence's Home"
+  1:  Exit  {}
+end
+
+event 34
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 434}         -- "Terrence's Home"
+  2:  Exit  {}
+end
+
+event 35
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 435}         -- "Ferne Lair"
+  1:  Exit  {}
+end
+
+event 36
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 435}         -- "Ferne Lair"
+  2:  Exit  {}
+end
+
+event 37
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 436}         -- "Pavel's Place"
+  1:  Exit  {}
+end
+
+event 38
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 436}         -- "Pavel's Place"
+  2:  Exit  {}
+end
+
+event 39
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 437}         -- "Nalani's Hall"
+  1:  Exit  {}
+end
+
+event 40
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 437}         -- "Nalani's Hall"
+  2:  Exit  {}
+end
+
+event 41
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 438}         -- "Mercer Domicile"
+  1:  Exit  {}
+end
+
+event 42
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 438}         -- "Mercer Domicile"
+  2:  Exit  {}
+end
+
+event 81
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+  1:  Exit  {}
+end
+
+event 82
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+  1:  Exit  {}
+end
+
+event 83
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+  1:  Exit  {}
+end
+
+event 84
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+  1:  Exit  {}
+end
+
+event 85
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+  1:  Exit  {}
+end
+
+event 86
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+  1:  Exit  {}
+end
+
+event 87
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+  1:  Exit  {}
+end
+
+event 88
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+  1:  Exit  {}
+end
+
+event 89
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+  1:  Exit  {}
+end
+
+event 90
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+  1:  Exit  {}
+end
+
+event 91
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 10}
+  1:  Exit  {}
+end
+
+event 92
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 11}
+  1:  Exit  {}
+end
+
+event 93
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+  1:  Exit  {}
+end
+
+event 94
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+  1:  Exit  {}
+end
+
+event 95
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+  1:  Exit  {}
+end
+
+event 96
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+  1:  Exit  {}
+end
+
+event 97
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+  1:  Exit  {}
+end
+
+event 98
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+  1:  Exit  {}
+end
+
+event 99
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+  1:  Exit  {}
+end
+
+event 100
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+  1:  Exit  {}
+end
+
+event 101
+      Hint = str[6]  -- "Drink from the well"
+  0:  Cmp  {"BaseSpeed", Value = 16,   jump = 5}
+  1:  Add  {"BaseSpeed", Value = 2}
+  2:  StatusText  {Str = 60}         -- "Speed +2 (Permanent)"
+  3:  Add  {"AutonotesBits", Value = 271}         -- "Well on the Island of Regna gives a permanent Speed bonus up to a Speed of 16."
+  4:  GoTo  {jump = 6}
+
+  5:  StatusText  {Str = 9}         -- "Refreshing"
+  6:  Exit  {}
+end
+
+event 102
+      Hint = str[6]  -- "Drink from the well"
+  0:  StatusText  {Str = 9}         -- "Refreshing"
+  1:  Exit  {}
+end
+
+event 103
+      Hint = str[6]  -- "Drink from the well"
+  0:  StatusText  {Str = 9}         -- "Refreshing"
+  1:  Exit  {}
+end
+
+event 104
+      Hint = str[8]  -- "Drink from the fountain"
+  0:  StatusText  {Str = 9}         -- "Refreshing"
+  1:  Cmp  {"QBits", Value = 183,   jump = 3}         -- Hareckburg Town Portal
+  2:  Add  {"QBits", Value = 183}         -- Hareckburg Town Portal
+  3:  GoTo  {jump = 4}
+
+  4:  Exit  {}
+end
+
+event 150
+      Hint = str[33]  -- "Obelisk"
+  0:  Cmp  {"QBits", Value = 194,   jump = 4}         -- Obelisk Area 13
+  1:  StatusText  {Str = 12}         -- "gholdsold"
+  2:  Add  {"AutonotesBits", Value = 18}         -- "Obelisk message #2: gholdsold"
+  3:  Add  {"QBits", Value = 194}         -- Obelisk Area 13
+  4:  Exit  {}
+end
+
+event 171
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 7}         -- "Custom Cutlass"
+  1:  Exit  {}
+end
+
+event 172
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 7}         -- "Custom Cutlass"
+  2:  Exit  {}
+end
+
+event 173
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 21}         -- "Karr Battlegear"
+  1:  Exit  {}
+end
+
+event 174
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 21}         -- "Karr Battlegear"
+  2:  Exit  {}
+end
+
+event 175
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 35}         -- "Gifts of Regna"
+  1:  Exit  {}
+end
+
+event 176
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 35}         -- "Gifts of Regna"
+  2:  Exit  {}
+end
+
+event 177
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 46}         -- "Poultices and Cures"
+  1:  Exit  {}
+end
+
+event 178
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 46}         -- "Poultices and Cures"
+  2:  Exit  {}
+end
+
+event 179
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 146}         -- "Protective Magic"
+  1:  Exit  {}
+end
+
+event 180
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 146}         -- "Protective Magic"
+  2:  Exit  {}
+end
+
+event 183
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 68}         -- "Spindrift"
+  1:  Exit  {}
+end
+
+event 184
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 68}         -- "Spindrift"
+  2:  Exit  {}
+end
+
+event 185
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 80}         -- "The Blessed Sea"
+  1:  Exit  {}
+end
+
+event 186
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 80}         -- "The Blessed Sea"
+  2:  Exit  {}
+end
+
+event 191
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 115}         -- "Pirate's Rest"
+  1:  Exit  {}
+end
+
+event 192
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 115}         -- "Pirate's Rest"
+  2:  Exit  {}
+end
+
+event 401
+      Hint = str[45]  -- "Pirate Stronghold"
+  0:  Exit  {}
+end
+
+event 402
+      Hint = str[46]  -- "Abandoned Pirate Keep"
+  0:  Exit  {}
+end
+
+event 403
+      Hint = str[43]  -- "Tower"
+  0:  Exit  {}
+end
+
+event 404
+      Hint = str[48]  -- "Small Sub Pen"
+  0:  Exit  {}
+end
+
+event 405
+      Hint = str[49]  -- "A Cave"
+  0:  Exit  {}
+end
+
+event 406
+      Hint = str[16]  -- "Regnan Ship"
+  0:  Exit  {}
+end
+
+event 407
+      Hint = str[17]  -- "Sunk Regnan Ship"
+  0:  Exit  {}
+end
+
+event 449
+      Hint = str[7]  -- "Fountain"
+  0:  Exit  {}
+end
+
+event 450
+      Hint = str[5]  -- "Well"
+  0:  Exit  {}
+end
+
+event 451
+      Hint = str[13]  -- "Fire the cannon !"
+  0:  Cmp  {"QBits", Value = 37,   jump = 11}         -- Regnan Pirate Fleet is sunk.
+  1:  ForPlayer  ("All")
+  2:  Cmp  {"Inventory", Value = 662,   jump = 4}         -- "Cannonball of Dominion"
+  3:  GoTo  {jump = 11}
+
+  4:  Subtract  {"Inventory", Value = 662}         -- "Cannonball of Dominion"
+  5:  ForPlayer  ("Current")
+  6:  StatusText  {Str = 11}         -- "You hear a low rumbling noise"
+  7:  Add  {"MapVar39", Value = 1}
+  8:  PlaySound  {Id = 473, X = -12945, Y = 12015}
+  9:  Subtract  {"QBits", Value = 224}         -- Cannonball of Dominion - I lost it
+  10: GoTo  {jump = 12}
+
+  11: StatusText  {Str = 18}         -- "You do not see the right kind of ammunition anywhere"
+  12: Exit  {}
+end
+
+event 452
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 2}
+  1:  Cmp  {"QBits", Value = 37,   jump = 52}         -- Regnan Pirate Fleet is sunk.
+  2:  Cmp  {"MapVar39", Value = 3,   jump = 42}
+  3:  Cmp  {"MapVar39", Value = 2,   jump = 18}
+  4:  Cmp  {"MapVar39", Value = 1,   jump = 6}
+  5:  GoTo  {jump = 52}
+
+  6:  CastSpell  {Spell = 6, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13371, ToY = 13740, ToZ = 2793}         -- "Fireball"
+  7:  CastSpell  {Spell = 6, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13600, ToY = 13740, ToZ = 2793}         -- "Fireball"
+  8:  CastSpell  {Spell = 6, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13250, ToY = 13740, ToZ = 2793}         -- "Fireball"
+  9:  CastSpell  {Spell = 6, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13371, ToY = 13600, ToZ = 2793}         -- "Fireball"
+  10: CastSpell  {Spell = 6, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13371, ToY = 13820, ToZ = 3000}         -- "Fireball"
+  11: CastSpell  {Spell = 6, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13371, ToY = 13740, ToZ = 2250}         -- "Fireball"
+  12: CastSpell  {Spell = 6, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13371, ToY = 13800, ToZ = 2500}         -- "Fireball"
+  13: CastSpell  {Spell = 6, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13100, ToY = 13740, ToZ = 3000}         -- "Fireball"
+  14: Add  {"MapVar39", Value = 1}
+  15: Jump  {Direction = 1736, ZAngle = 256, Speed = 2000}
+  16: PlaySound  {Id = 472, X = -13305, Y = 12958}
+  17: GoTo  {jump = 52}
+
+  18: Add  {"MapVar39", Value = 1}
+  19: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -19692, FromY = 14204, FromZ = 4000, ToX = -19692, ToY = 14204, ToZ = 0}         -- "Meteor Shower"
+  20: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -16984, FromY = 15783, FromZ = 4000, ToX = -16984, ToY = 15783, ToZ = 0}         -- "Meteor Shower"
+  21: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -12333, FromY = 18364, FromZ = 4000, ToX = -12333, ToY = 18364, ToZ = 0}         -- "Meteor Shower"
+  22: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -13102, FromY = 20346, FromZ = 4000, ToX = -13102, ToY = 20346, ToZ = 0}         -- "Meteor Shower"
+  23: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -15489, FromY = 18406, FromZ = 4000, ToX = -15489, ToY = 18406, ToZ = 0}         -- "Meteor Shower"
+  24: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -19300, FromY = 18374, FromZ = 4000, ToX = -19300, ToY = 18374, ToZ = 0}         -- "Meteor Shower"
+  25: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -17229, FromY = 20297, FromZ = 4000, ToX = -17229, ToY = 20297, ToZ = 0}         -- "Meteor Shower"
+  26: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -13235, FromY = 20616, FromZ = 4000, ToX = -13235, ToY = 20616, ToZ = 0}         -- "Meteor Shower"
+  27: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -16787, FromY = 13839, FromZ = 4000, ToX = -16787, ToY = 13839, ToZ = 0}         -- "Meteor Shower"
+  28: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -12748, FromY = 14383, FromZ = 4000, ToX = -12748, ToY = 14383, ToZ = 0}         -- "Meteor Shower"
+  29: CastSpell  {Spell = 9, Mastery = const.GM, Skill = 3, FromX = -15107, FromY = 13092, FromZ = 4000, ToX = -15107, ToY = 13092, ToZ = 0}         -- "Meteor Shower"
+  30: CastSpell  {Spell = 18, Mastery = const.GM, Skill = 3, FromX = -16984, FromY = 15783, FromZ = 4000, ToX = -16984, ToY = 15783, ToZ = 0}         -- "Lightning Bolt"
+  31: CastSpell  {Spell = 18, Mastery = const.GM, Skill = 3, FromX = -12333, FromY = 18364, FromZ = 4000, ToX = -12333, ToY = 18364, ToZ = 0}         -- "Lightning Bolt"
+  32: CastSpell  {Spell = 18, Mastery = const.GM, Skill = 3, FromX = -13102, FromY = 20346, FromZ = 4000, ToX = -13102, ToY = 20346, ToZ = 0}         -- "Lightning Bolt"
+  33: CastSpell  {Spell = 18, Mastery = const.GM, Skill = 3, FromX = -15489, FromY = 18406, FromZ = 4000, ToX = -15489, ToY = 18406, ToZ = 0}         -- "Lightning Bolt"
+  34: CastSpell  {Spell = 18, Mastery = const.GM, Skill = 3, FromX = -19300, FromY = 18374, FromZ = 4000, ToX = -19300, ToY = 18374, ToZ = 0}         -- "Lightning Bolt"
+  35: CastSpell  {Spell = 18, Mastery = const.GM, Skill = 3, FromX = -17229, FromY = 20297, FromZ = 4000, ToX = -17229, ToY = 20297, ToZ = 0}         -- "Lightning Bolt"
+  36: CastSpell  {Spell = 18, Mastery = const.GM, Skill = 3, FromX = -13235, FromY = 20616, FromZ = 4000, ToX = -13235, ToY = 20616, ToZ = 0}         -- "Lightning Bolt"
+  37: CastSpell  {Spell = 43, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -15743, ToY = 15989, ToZ = 2731}         -- "Death Blossom"
+  38: CastSpell  {Spell = 43, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -12022, ToY = 19402, ToZ = 2728}         -- "Death Blossom"
+  39: CastSpell  {Spell = 43, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13168, ToY = 15608, ToZ = 2725}         -- "Death Blossom"
+  40: CastSpell  {Spell = 43, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -14622, ToY = 15778, ToZ = 2724}         -- "Death Blossom"
+  41: GoTo  {jump = 52}
+
+  42: Add  {"QBits", Value = 37}         -- Regnan Pirate Fleet is sunk.
+  43: MoveNPC  {NPC = 77, HouseId = 276}         -- "Derrin Delver" -> "Hostel"
+  44: MoveNPC  {NPC = 24, HouseId = 277}         -- "Queen Catherine" -> "Hostel"
+  45: MoveNPC  {NPC = 25, HouseId = 277}         -- "King Roland" -> "Hostel"
+  46: Add  {"History13", Value = 0}
+  47: Set  {"MapVar39", Value = 0}
+  48: SetFacetBit  {Id = 31, Bit = const.FacetBits.Invisible, On = false}
+  49: SetFacetBit  {Id = 31, Bit = const.FacetBits.Untouchable, On = false}
+  50: SetFacetBit  {Id = 30, Bit = const.FacetBits.Invisible, On = true}
+  51: SetFacetBit  {Id = 30, Bit = const.FacetBits.Untouchable, On = true}
+  52: Exit  {}
+end
+
+event 453
+      Hint = str[100]  -- ""
+  0:  CastSpell  {Spell = 6, Mastery = const.GM, Skill = 3, FromX = -13312, FromY = 12864, FromZ = 2432, ToX = -13371, ToY = 13740, ToZ = 2793}         -- "Fireball"
+  1:  Exit  {}
+end
+
+event 454
+      Hint = str[40]  -- "Tree"
+  0:  Cmp  {"QBits", Value = 285,   jump = 3}         -- Got the Tele scroll in area 13
+  1:  Add  {"Inventory", Value = 341}         -- "Telekinesis"
+  2:  Add  {"QBits", Value = 285}         -- Got the Tele scroll in area 13
+  3:  Exit  {}
+end
+
+event 479
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 20}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 4, jumpC = 6, jumpD = 8, jumpE = 10, jumpF = 12}
+  2:  PlaySound  {Id = 351, X = -11712, Y = -10784}
+  3:  GoTo  {jump = 12}
+
+  4:  PlaySound  {Id = 351, X = 5568, Y = -16352}
+  5:  GoTo  {jump = 12}
+
+  6:  PlaySound  {Id = 351, X = -1248, Y = 12480}
+  7:  GoTo  {jump = 12}
+
+  8:  PlaySound  {Id = 336, X = -800, Y = -2432}
+  9:  GoTo  {jump = 12}
+
+  10: PlaySound  {Id = 338, X = 3704, Y = 1024}
+  11: GoTo  {jump = 12}
+
+  12: Exit  {}
+end
+
+event 490
+      Hint = str[14]  -- "Door"
+  0:  FaceAnimation  {Player = "Current", Animation = 18}
+  1:  StatusText  {Str = 15}         -- "The door is locked"
+  2:  Exit  {}
+end
+
+event 494
+      Hint = str[40]  -- "Tree"
+  0:  CheckItemsCount  {MinItemIndex = 221, MaxItemIndex = 271, Count = 1,   jump(>=) = 2}         -- "Catalyst"..."Rejuvenation"
+  1:  GoTo  {jump = 4}
+
+  2:  RemoveItems  {MinItemIndex = 221, MaxItemIndex = 271, Count = 1}         -- "Catalyst"..."Rejuvenation"
+  3:  Add  {"Inventory", Value = 220}         -- "Potion Bottle"
+  4:  Exit  {}
+end
+
+event 501
+      Hint = str[50]  -- "Enter the Pirate Stronghold"
+  0:  MoveToMap  {X = -554, Y = 3682, Z = 1, Direction = 520, LookAngle = 0, SpeedZ = 0, HouseId = 209, Icon = 1, Name = "D31.blv"}         -- "Pirate Stronghold"
+  1:  Exit  {}
+end
+
+event 502
+      Hint = str[51]  -- "Enter the Abandoned Pirate Keep"
+  0:  MoveToMap  {X = -6520, Y = -6512, Z = 129, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 210, Icon = 1, Name = "d32.blv"}         -- "Abandoned Pirate Keep"
+  1:  Exit  {}
+end
+
+event 503
+      Hint = str[44]  -- "Enter the Tower"
+  0:  Cmp  {"QBits", Value = 197,   jump = 3}         -- Door to the passage under regna from the northern watch tower is unlocked
+  1:  FaceAnimation  {Player = "Current", Animation = 18}
+  2:  GoTo  {jump = 4}
+
+  3:  MoveToMap  {X = 5892, Y = 4632, Z = 1853, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 1, Name = "d33.blv"}
+  4:  Exit  {}
+end
+
+event 504
+      Hint = str[54]  -- "Enter the Cave"
+  0:  MoveToMap  {X = -28, Y = -193, Z = 57, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 211, Icon = 3, Name = "d34.blv"}         -- "Small Sub Pen"
+  1:  Exit  {}
+end
+
+event 505
+      Hint = str[54]  -- "Enter the Cave"
+  0:  MoveToMap  {X = 1328, Y = -1576, Z = 4, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 1, Name = "D47.blv"}
+  1:  Exit  {}
+end
+
+event 506
+      Hint = str[44]  -- "Enter the Tower"
+  0:  Cmp  {"QBits", Value = 198,   jump = 3}         -- Door to the passage under regna from the southern watch tower is unlocked
+  1:  FaceAnimation  {Player = "Current", Animation = 18}
+  2:  GoTo  {jump = 4}
+
+  3:  MoveToMap  {X = 1926, Y = -7682, Z = 1572, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 1, Name = "d33.blv"}
+  4:  Exit  {}
+end

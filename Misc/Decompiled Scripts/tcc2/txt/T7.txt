@@ -1,0 +1,35 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Exit"
+str[3] = "Chest"
+str[4] = "Sign"
+str[5] = "Scroll"
+str[6] = "Expert Perception is the key and the doors of Chaos will let you be.                                                                                                                                                                                                                  The Spiral then each head, talk to Baa or you'll be dead."
+str[7] = "Chaos Idol"
+str[8] = "You've defaced the idol!"
+str[9] = "Chaos Idol"
+str[10] = "You've defaced the idol!"
+str[11] = "Chaos Idol"
+str[12] = "You've defaced the idol!"
+str[13] = "Chaos Idol"
+str[14] = "You've defaced the idol!"
+str[15] = "Chaos laughs at you!"
+str[16] = "Almighty Idol of Chaos."
+str[17] = "Chaos laughs at you!"
+str[18] = "You defaced the idol!  +250,000 Experience."
+str[19] = "The Idol is defaced!"
+str[20] = "Book Case"
+str[21] = "Podium"
+str[22] = "Chest Is locked."
+str[23] = "Lava pool"
+str[24] = "The Temple of Chaos"
+str[25] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

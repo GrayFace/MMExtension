@@ -1,0 +1,578 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Leave the Walls of Mist"
+str[3] = "Chest"
+str[4] = "Button"
+str[5] = "Lever"
+str[6] = "Vault"
+str[7] = "Cabinet"
+str[8] = "Switch"
+str[9] = ""
+str[10] = "Bookcase"
+str[11] = ""
+str[12] = ""
+str[13] = ""
+str[14] = "You Successfully disarm the trap"
+str[15] = ""
+str[16] = "Take a Drink"
+str[17] = "Not Very Refreshing"
+str[18] = "Refreshing"
+str[19] = ""
+str[20] = ""
+str[21] = ""
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = ""
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = ""
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = ""
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = ""
+str[51] = ""
+str[52] = ""
+str[53] = ""
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Set  {"MapVar18", Value = 0}
+  2:  SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = true}         -- "Generic Monster Group for Dungeons"
+end
+
+event 3
+  0:  SetDoorState  {Id = 28, State = 2}         -- switch state
+end
+
+event 4
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 5}
+  1:  SetDoorState  {Id = 5, State = 2}         -- switch state
+  2:  Set  {"MapVar1", Value = 0}
+  3:  Set  {"MapVar4", Value = 1}
+  4:  Exit  {}
+
+  5:  Set  {"MapVar4", Value = 0}
+  6:  Set  {"MapVar1", Value = 1}
+  7:  SetDoorState  {Id = 5, State = 2}         -- switch state
+end
+
+event 5
+  0:  Cmp  {"MapVar5", Value = 1,   jump = 5}
+  1:  SetDoorState  {Id = 6, State = 2}         -- switch state
+  2:  Add  {"MapVar0", Value = 1}
+  3:  Add  {"MapVar5", Value = 1}
+  4:  Exit  {}
+
+  5:  Subtract  {"MapVar5", Value = 1}
+  6:  Subtract  {"MapVar0", Value = 1}
+  7:  SetDoorState  {Id = 6, State = 2}         -- switch state
+end
+
+event 6
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 5}
+  1:  SetDoorState  {Id = 7, State = 2}         -- switch state
+  2:  Set  {"MapVar1", Value = 0}
+  3:  Set  {"MapVar6", Value = 1}
+  4:  Exit  {}
+
+  5:  Set  {"MapVar6", Value = 0}
+  6:  Set  {"MapVar1", Value = 1}
+  7:  SetDoorState  {Id = 7, State = 2}         -- switch state
+end
+
+event 7
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 5}
+  1:  SetDoorState  {Id = 8, State = 2}         -- switch state
+  2:  Set  {"MapVar1", Value = 0}
+  3:  Set  {"MapVar7", Value = 1}
+  4:  Exit  {}
+
+  5:  Set  {"MapVar7", Value = 0}
+  6:  Set  {"MapVar1", Value = 1}
+  7:  SetDoorState  {Id = 8, State = 2}         -- switch state
+end
+
+event 8
+  0:  Cmp  {"MapVar8", Value = 1,   jump = 5}
+  1:  SetDoorState  {Id = 9, State = 2}         -- switch state
+  2:  Add  {"MapVar0", Value = 1}
+  3:  Add  {"MapVar8", Value = 1}
+  4:  Exit  {}
+
+  5:  Subtract  {"MapVar8", Value = 1}
+  6:  Subtract  {"MapVar0", Value = 1}
+  7:  SetDoorState  {Id = 9, State = 2}         -- switch state
+end
+
+event 9
+  0:  Cmp  {"MapVar9", Value = 1,   jump = 5}
+  1:  SetDoorState  {Id = 10, State = 2}         -- switch state
+  2:  Set  {"MapVar1", Value = 0}
+  3:  Set  {"MapVar9", Value = 1}
+  4:  Exit  {}
+
+  5:  Set  {"MapVar9", Value = 0}
+  6:  Set  {"MapVar1", Value = 1}
+  7:  SetDoorState  {Id = 10, State = 2}         -- switch state
+end
+
+event 10
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 4}
+  1:  Cmp  {"MapVar4", Value = 1,   jump = 5}
+  2:  Cmp  {"MapVar6", Value = 1,   jump = 5}
+  3:  Cmp  {"MapVar9", Value = 1,   jump = 5}
+  4:  Cmp  {"MapVar0", Value = 2,   jump = 6}
+  5:  Exit  {}
+
+  6:  SetDoorState  {Id = 3, State = 2}         -- switch state
+  7:  SetDoorState  {Id = 4, State = 2}         -- switch state
+  8:  SetDoorState  {Id = 11, State = 2}         -- switch state
+  9:  Set  {"MapVar0", Value = 0}
+  10: Set  {"MapVar5", Value = 0}
+  11: Set  {"MapVar8", Value = 0}
+end
+
+event 11
+  0:  SetDoorState  {Id = 29, State = 2}         -- switch state
+end
+
+event 12
+  0:  SetDoorState  {Id = 30, State = 2}         -- switch state
+end
+
+event 151
+  0:  SetDoorState  {Id = 12, State = 2}         -- switch state
+end
+
+event 152
+  0:  SetDoorState  {Id = 13, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 14, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 15, State = 2}         -- switch state
+end
+
+event 176
+      Hint = str[3]  -- "Chest"
+  0:  Cmp  {"MapVar98", Value = 1,   jump = 4}
+  1:  Cmp  {"QBits", Value = 48,   jump = 4}         -- "Retrieve the lich jars from the Proving Grounds in Celeste and bring them back to Halfgild Wynac in the Pit."
+  2:  OpenChest  {Id = 1}
+  3:  Exit  {}
+
+  4:  OpenChest  {Id = 0}
+  5:  Set  {"MapVar98", Value = 1}
+  6:  Add  {"QBits", Value = 148}         -- Got Lich Jar from Walls of Mist
+  7:  Exit  {}
+end
+
+event 177
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 178
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 179
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 180
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 181
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 182
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+end
+
+event 183
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+end
+
+event 184
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+end
+
+event 185
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 10}
+end
+
+event 186
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 11}
+end
+
+event 187
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+end
+
+event 188
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+end
+
+event 189
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+end
+
+event 190
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+end
+
+event 191
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+end
+
+event 192
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+end
+
+event 193
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+end
+
+event 194
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+end
+
+event 195
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+  1:  Subtract  {"QBits", Value = 229}         -- Lich Jar (Empty) - I lost it
+end
+
+event 376
+  0:  Cmp  {"MapVar15", Value = 1,   jump = 3}
+  1:  Cmp  {"Inventory", Value = 652,   jump = 4}         -- "West Pillar Key"
+  2:  Cmp  {"MapVar18", Value = 3,   jump = 10}
+  3:  Exit  {}
+
+  4:  Subtract  {"Inventory", Value = 652}         -- "West Pillar Key"
+  5:  SetDoorState  {Id = 31, State = 2}         -- switch state
+  6:  Set  {"MapVar15", Value = 1}
+  7:  Add  {"MapVar18", Value = 1}
+  8:  Cmp  {"MapVar18", Value = 3,   jump = 10}
+  9:  Exit  {}
+
+  10: SetDoorState  {Id = 1, State = 0}
+  11: SetDoorState  {Id = 2, State = 0}
+end
+
+event 377
+  0:  Cmp  {"MapVar16", Value = 1,   jump = 3}
+  1:  Cmp  {"Inventory", Value = 653,   jump = 4}         -- "Central Pillar Key"
+  2:  Cmp  {"MapVar18", Value = 3,   jump = 10}
+  3:  Exit  {}
+
+  4:  Subtract  {"Inventory", Value = 653}         -- "Central Pillar Key"
+  5:  SetDoorState  {Id = 32, State = 2}         -- switch state
+  6:  Set  {"MapVar16", Value = 1}
+  7:  Add  {"MapVar18", Value = 1}
+  8:  Cmp  {"MapVar18", Value = 3,   jump = 10}
+  9:  Exit  {}
+
+  10: SetDoorState  {Id = 1, State = 0}
+  11: SetDoorState  {Id = 2, State = 0}
+end
+
+event 378
+  0:  Cmp  {"MapVar17", Value = 1,   jump = 3}
+  1:  Cmp  {"Inventory", Value = 654,   jump = 4}         -- "East Pillar Key"
+  2:  Cmp  {"MapVar18", Value = 3,   jump = 10}
+  3:  Exit  {}
+
+  4:  Subtract  {"Inventory", Value = 654}         -- "East Pillar Key"
+  5:  SetDoorState  {Id = 33, State = 2}         -- switch state
+  6:  Set  {"MapVar17", Value = 1}
+  7:  Add  {"MapVar18", Value = 1}
+  8:  Cmp  {"MapVar18", Value = 3,   jump = 10}
+  9:  Exit  {}
+
+  10: SetDoorState  {Id = 1, State = 0}
+  11: SetDoorState  {Id = 2, State = 0}
+end
+
+event 452
+  0:  MoveToMap  {X = -10880, Y = 7424, Z = 96, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 453
+  0:  MoveToMap  {X = -1792, Y = -128, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 454
+  0:  MoveToMap  {X = -896, Y = -128, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 455
+  0:  MoveToMap  {X = 8448, Y = -21120, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 456
+  0:  MoveToMap  {X = 13568, Y = -6528, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 457
+  0:  MoveToMap  {X = 1, Y = -128, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 458
+  0:  MoveToMap  {X = 13280, Y = 1152, Z = 160, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 459
+  0:  MoveToMap  {X = 13312, Y = 704, Z = 160, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 460
+  0:  MoveToMap  {X = 13248, Y = 2976, Z = 160, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 461
+  0:  MoveToMap  {X = 13248, Y = 3456, Z = 160, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 462
+  0:  MoveToMap  {X = 12384, Y = 2144, Z = 160, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 463
+  0:  MoveToMap  {X = 11936, Y = 2144, Z = 160, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 464
+  0:  MoveToMap  {X = 14240, Y = 2048, Z = 160, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 465
+  0:  MoveToMap  {X = 14944, Y = 2080, Z = 160, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 466
+  0:  Cmp  {"MapVar11", Value = 1,   jump = 9}
+  1:  SetDoorState  {Id = 16, State = 2}         -- switch state
+  2:  SetFacetBit  {Id = 1, Bit = const.FacetBits.IsWater, On = true}
+  3:  SetTexture  {Facet = 1, Name = "wtrtyl"}
+  4:  SetDoorState  {Id = 17, State = 2}         -- switch state
+  5:  Add  {"MapVar11", Value = 1}
+  6:  Cmp  {"MapVar10", Value = 1,   jump = 10}
+  7:  SetDoorState  {Id = 24, State = 2}         -- switch state
+  8:  Add  {"MapVar10", Value = 1}
+  9:  Exit  {}
+
+  10: Cmp  {"MapVar10", Value = 2,   jump = 14}
+  11: SetDoorState  {Id = 25, State = 2}         -- switch state
+  12: Add  {"MapVar10", Value = 1}
+  13: Exit  {}
+
+  14: Cmp  {"MapVar10", Value = 3,   jump = 18}
+  15: SetDoorState  {Id = 26, State = 2}         -- switch state
+  16: Add  {"MapVar10", Value = 1}
+  17: Exit  {}
+
+  18: SetFacetBit  {Id = 5, Bit = const.FacetBits.Untouchable, On = true}
+  19: SetFacetBit  {Id = 5, Bit = const.FacetBits.Invisible, On = true}
+  20: SetDoorState  {Id = 27, State = 2}         -- switch state
+end
+
+event 467
+  0:  Cmp  {"MapVar12", Value = 1,   jump = 9}
+  1:  SetDoorState  {Id = 18, State = 2}         -- switch state
+  2:  SetFacetBit  {Id = 2, Bit = const.FacetBits.IsWater, On = true}
+  3:  SetTexture  {Facet = 2, Name = "wtrtyl"}
+  4:  SetDoorState  {Id = 19, State = 2}         -- switch state
+  5:  Add  {"MapVar12", Value = 1}
+  6:  Cmp  {"MapVar10", Value = 1,   jump = 10}
+  7:  SetDoorState  {Id = 24, State = 2}         -- switch state
+  8:  Add  {"MapVar10", Value = 1}
+  9:  Exit  {}
+
+  10: Cmp  {"MapVar10", Value = 2,   jump = 14}
+  11: SetDoorState  {Id = 25, State = 2}         -- switch state
+  12: Add  {"MapVar10", Value = 1}
+  13: Exit  {}
+
+  14: Cmp  {"MapVar10", Value = 3,   jump = 18}
+  15: SetDoorState  {Id = 26, State = 2}         -- switch state
+  16: Add  {"MapVar10", Value = 1}
+  17: Exit  {}
+
+  18: SetFacetBit  {Id = 5, Bit = const.FacetBits.Untouchable, On = true}
+  19: SetFacetBit  {Id = 5, Bit = const.FacetBits.Invisible, On = true}
+  20: SetDoorState  {Id = 27, State = 2}         -- switch state
+end
+
+event 468
+  0:  Cmp  {"MapVar13", Value = 1,   jump = 9}
+  1:  SetDoorState  {Id = 20, State = 2}         -- switch state
+  2:  SetFacetBit  {Id = 3, Bit = const.FacetBits.IsWater, On = true}
+  3:  SetTexture  {Facet = 3, Name = "wtrtyl"}
+  4:  SetDoorState  {Id = 21, State = 2}         -- switch state
+  5:  Add  {"MapVar13", Value = 1}
+  6:  Cmp  {"MapVar10", Value = 1,   jump = 10}
+  7:  SetDoorState  {Id = 24, State = 2}         -- switch state
+  8:  Add  {"MapVar10", Value = 1}
+  9:  Exit  {}
+
+  10: Cmp  {"MapVar10", Value = 2,   jump = 14}
+  11: SetDoorState  {Id = 25, State = 2}         -- switch state
+  12: Add  {"MapVar10", Value = 1}
+  13: Exit  {}
+
+  14: Cmp  {"MapVar10", Value = 3,   jump = 18}
+  15: SetDoorState  {Id = 26, State = 2}         -- switch state
+  16: Add  {"MapVar10", Value = 1}
+  17: Exit  {}
+
+  18: SetFacetBit  {Id = 5, Bit = const.FacetBits.Untouchable, On = true}
+  19: SetFacetBit  {Id = 5, Bit = const.FacetBits.Invisible, On = true}
+  20: SetDoorState  {Id = 27, State = 2}         -- switch state
+end
+
+event 469
+  0:  Cmp  {"MapVar14", Value = 1,   jump = 9}
+  1:  SetDoorState  {Id = 22, State = 2}         -- switch state
+  2:  SetFacetBit  {Id = 4, Bit = const.FacetBits.IsWater, On = true}
+  3:  SetTexture  {Facet = 4, Name = "wtrtyl"}
+  4:  SetDoorState  {Id = 23, State = 2}         -- switch state
+  5:  Add  {"MapVar14", Value = 1}
+  6:  Cmp  {"MapVar10", Value = 1,   jump = 10}
+  7:  SetDoorState  {Id = 24, State = 2}         -- switch state
+  8:  Add  {"MapVar10", Value = 1}
+  9:  Exit  {}
+
+  10: Cmp  {"MapVar10", Value = 2,   jump = 14}
+  11: SetDoorState  {Id = 25, State = 2}         -- switch state
+  12: Add  {"MapVar10", Value = 1}
+  13: Exit  {}
+
+  14: Cmp  {"MapVar10", Value = 3,   jump = 18}
+  15: SetDoorState  {Id = 26, State = 2}         -- switch state
+  16: Add  {"MapVar10", Value = 1}
+  17: Exit  {}
+
+  18: SetFacetBit  {Id = 5, Bit = const.FacetBits.Untouchable, On = true}
+  19: SetFacetBit  {Id = 5, Bit = const.FacetBits.Invisible, On = true}
+  20: SetDoorState  {Id = 27, State = 2}         -- switch state
+end
+
+event 501
+      Hint = str[2]  -- "Leave the Walls of Mist"
+  0:  MoveToMap  {X = 1728, Y = 3648, Z = 97, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 8, Name = "D25.blv"}
+end
+
+event 502
+      Hint = str[2]  -- "Leave the Walls of Mist"
+  0:  CheckMonstersKilled  {CheckType = 1, Id = 1, Count = 1,   jump(>=) = 3}
+  1:  ForPlayer  ("All")
+  2:  Set  {"QBits", Value = 102}         -- Completed Proving Grounds without killing a single creature
+  3:  MoveToMap  {X = 1728, Y = 3648, Z = 97, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 8, Name = "D25.blv"}
+end

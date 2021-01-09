@@ -1,0 +1,41 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Exit"
+str[3] = "Chest"
+str[4] = "The door is locked."
+str[5] = "The door is locked."
+str[6] = "The door is locked."
+str[7] = "Zap!"
+str[8] = "The door is locked."
+str[9] = "The door is locked."
+str[10] = "The door is locked."
+str[11] = "The door is locked."
+str[12] = "Refreshing."
+str[13] = "Harbor Grace"
+str[14] = ""
+str[15] = ""
+str[16] = ""
+str[17] = ""
+str[18] = "A wooden sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+str[19] = "The haunted sounds of tortured souls assail your ears."
+str[20] = "A silver sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+str[21] = "A copper sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+str[22] = "A lapis sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+str[23] = "Sign"
+str[24] = "Found something!"
+str[25] = "You scoop away a handful of someone's hopes and dreams."
+str[26] = "Fountain"
+str[27] = "You toss a few coins into the fountain."
+str[28] = " +20 Hit points restored."
+str[29] = "Statue"
+str[30] = "The door clicks."
+str[31] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

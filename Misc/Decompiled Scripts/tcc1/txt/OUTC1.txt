@@ -1,0 +1,789 @@
+str[0] = " "
+str[1] = "Drink from Well."
+str[2] = "Look Out!"
+str[3] = "Drink from Fountain"
+str[4] = "+20 Accuracy and Speed temporary."
+str[5] = "+20 Armor class temporary."
+str[6] = "+10 Level temporary."
+str[7] = "+30 Might temporary."
+str[8] = "+5 Might permanent."
+str[9] = "+5 Endurance permanent."
+str[10] = "Refreshing!"
+str[11] = "Norseland"
+str[12] = "Shrine of Accuracy"
+str[13] = "You pray at the shrine."
+str[14] = "+10 Accuracy permanent"
+str[15] = "+3 Accuracy permanent"
+str[16] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            _a,uef;re_oottg_l"
+str[17] = "Obelisk"
+str[18] = "Castle Birka"
+str[19] = "Jorgsborg"
+str[20] = "Cumbria/Port Sleigon"
+str[21] = "Locked.  The proprietor has fled to the mountains."
+str[22] = "The Lord is in council and cannot be disturbed."
+str[23] = "You need the proper key to enter the keep."
+str[24] = "You cannot enter at this time"
+str[25] = "This entrance is magically warded."
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+
+
+event 2
+      Hint = str[12]  -- "Shrine of Accuracy"
+  0:  Cmp  {"Awards", Value = 3,   jump = 4}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  MazeInfo  {Str = 11}         -- "Norseland"
+  4:  EnterHouse  {Id = 12}         -- "Ullr's Arrows"
+end
+
+event 3
+      Hint = str[12]  -- "Shrine of Accuracy"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 12}         -- "Ullr's Arrows"
+end
+
+event 4
+      Hint = str[27]  -- ""
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 27}         -- "Bruar's Armor"
+end
+
+event 5
+      Hint = str[27]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 27}         -- "Bruar's Armor"
+end
+
+event 6
+      Hint = str[35]  -- ""
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 35}         -- "Apples, Thorns, and Potions"
+end
+
+event 7
+      Hint = str[35]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 35}         -- "Apples, Thorns, and Potions"
+end
+
+event 8
+      Hint = str[46]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 46}         -- "General Store"
+end
+
+event 9
+      Hint = str[46]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 46}         -- "General Store"
+end
+
+event 10
+      Hint = str[73]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 73}         -- "Jorgsborg Temple"
+end
+
+event 11
+      Hint = str[88]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 88}         -- "Riverside Academy"
+end
+
+event 12
+      Hint = str[88]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 88}         -- "Riverside Academy"
+end
+
+event 13
+      Hint = str[108]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 108}         -- "The Frosty Tankard"
+end
+
+event 14
+      Hint = str[108]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 108}         -- "The Frosty Tankard"
+end
+
+event 15
+      Hint = str[107]
+  0:  EnterHouse  {Id = 107}         -- "Tordoff Inn"
+end
+
+event 16
+      Hint = str[107]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 107}         -- "Tordoff Inn"
+end
+
+event 17
+      Hint = str[117]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 117}         -- "Secure Trust"
+end
+
+event 18
+      Hint = str[117]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 117}         -- "Secure Trust"
+end
+
+event 19
+      Hint = str[135]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 135}         -- "Initiate Guild of Dark"
+end
+
+event 20
+      Hint = str[135]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 135}         -- "Initiate Guild of Dark"
+end
+
+event 21
+      Hint = str[138]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 138}         -- "Adept Guild of the Creation Magics"
+end
+
+event 22
+      Hint = str[138]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 138}         -- "Adept Guild of the Creation Magics"
+end
+
+event 23
+      Hint = str[145]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 145}         -- "Dagger's Tip"
+end
+
+event 24
+      Hint = str[145]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 145}         -- "Dagger's Tip"
+end
+
+event 25
+      Hint = str[149]
+  0:  EnterHouse  {Id = 149}         -- "Hiln's Agency"
+end
+
+event 26
+      Hint = str[149]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 149}         -- "Hiln's Agency"
+end
+
+event 27
+      Hint = str[9]  -- "+5 Endurance permanent."
+  0:  EnterHouse  {Id = 9}         -- "Tyr's Staffs"
+end
+
+event 28
+      Hint = str[9]  -- "+5 Endurance permanent."
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 9}         -- "Tyr's Staffs"
+end
+
+event 29
+      Hint = str[23]  -- "You need the proper key to enter the keep."
+  0:  EnterHouse  {Id = 23}         -- "Forseti's Forge"
+end
+
+event 30
+      Hint = str[23]  -- "You need the proper key to enter the keep."
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 23}         -- "Forseti's Forge"
+end
+
+event 31
+      Hint = str[54]
+  0:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  1:  StatusText  {Str = 21}         -- "Locked.  The proprietor has fled to the mountains."
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 54}         -- "Jorgsborg Transport Co."
+end
+
+event 32
+      Hint = str[54]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 54}         -- "Jorgsborg Transport Co."
+end
+
+event 33
+  0:  MoveToMap  {X = 21169, Y = 1920, Z = -689, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 200, Icon = 5, Name = "CD2.Blv"}         -- "Castle Darkmoor"
+  1:  Exit  {}
+
+  10: Hint  {Str = 159}
+  10: MoveToMap  {X = 0, Y = 0, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 159, Icon = 2, Name = "0"}         -- "Temple of Tranquility"
+  11: EnterHouse  {Id = 160}         -- "Temple of Tranquility"
+end
+
+event 34
+      Hint = str[163]
+  0:  Cmp  {"QBits", Value = 85,   jump = 13}         -- "Enter Castle Birka in Demonclaw and talk with Lord Godwinson."
+  1:  Cmp  {"QBits", Value = 86,   jump = 9}         -- "Raise the siege of Birka and secure Jorgsburg."
+  2:  Cmp  {"QBits", Value = 486,   jump = 14}         -- Birka Entrance after Bona Fide
+  3:  Cmp  {"Inventory", Value = 515,   jump = 14}         -- "Bona  Fide"
+  4:  StatusText  {Str = 22}         -- "The Lord is in council and cannot be disturbed."
+  5:  Exit  {}
+
+  6:  Set  {"QBits", Value = 486}         -- Birka Entrance after Bona Fide
+  7:  MoveToMap  {X = 0, Y = 0, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 163, Icon = 1, Name = "0"}         -- "Castle Birka"
+  8:  EnterHouse  {Id = 164}         -- "Castle Birka"
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 8, X = -12760, Y = 14065, Z = 97}
+  10: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 7, X = -13575, Y = 15569, Z = 97}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 7, X = -15893, Y = 16608, Z = 430}
+  12: GoTo  {jump = 14}
+
+  13: Set  {"QBits", Value = 486}         -- Birka Entrance after Bona Fide
+  14: EnterHouse  {Id = 164}         -- "Castle Birka"
+end
+
+event 35
+      Hint = str[18]  -- "Castle Birka"
+  0:  StatusText  {Str = 18}         -- "Castle Birka"
+end
+
+event 36
+      Hint = str[19]  -- "Jorgsborg"
+  0:  StatusText  {Str = 19}         -- "Jorgsborg"
+end
+
+event 37
+      Hint = str[20]  -- "Cumbria/Port Sleigon"
+  0:  StatusText  {Str = 20}         -- "Cumbria/Port Sleigon"
+end
+
+event 50
+      Hint = str[12]  -- "Shrine of Accuracy"
+  0:  EnterHouse  {Id = 268}         -- "House"
+end
+
+event 51
+      Hint = str[13]  -- "You pray at the shrine."
+  0:  EnterHouse  {Id = 269}         -- "House"
+end
+
+event 52
+      Hint = str[14]  -- "+10 Accuracy permanent"
+  0:  EnterHouse  {Id = 270}         -- "House"
+end
+
+event 53
+      Hint = str[15]  -- "+3 Accuracy permanent"
+  0:  EnterHouse  {Id = 271}         -- "House"
+end
+
+event 54
+      Hint = str[16]  -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            _a,uef;re_oottg_l"
+  0:  EnterHouse  {Id = 272}         -- "House"
+end
+
+event 55
+      Hint = str[17]  -- "Obelisk"
+  0:  EnterHouse  {Id = 273}         -- "House"
+end
+
+event 56
+      Hint = str[18]  -- "Castle Birka"
+  0:  EnterHouse  {Id = 274}         -- "House"
+end
+
+event 57
+      Hint = str[19]  -- "Jorgsborg"
+  0:  EnterHouse  {Id = 275}         -- "House"
+end
+
+event 58
+      Hint = str[20]  -- "Cumbria/Port Sleigon"
+  0:  EnterHouse  {Id = 276}         -- "House"
+end
+
+event 59
+      Hint = str[21]  -- "Locked.  The proprietor has fled to the mountains."
+  0:  EnterHouse  {Id = 277}         -- "House"
+end
+
+event 60
+      Hint = str[22]  -- "The Lord is in council and cannot be disturbed."
+  0:  EnterHouse  {Id = 278}         -- "House"
+end
+
+event 61
+      Hint = str[23]  -- "You need the proper key to enter the keep."
+  0:  EnterHouse  {Id = 279}         -- "House"
+end
+
+event 62
+      Hint = str[24]  -- "You cannot enter at this time"
+  0:  EnterHouse  {Id = 280}         -- "House"
+end
+
+event 63
+      Hint = str[25]  -- "This entrance is magically warded."
+  0:  EnterHouse  {Id = 281}         -- "House"
+end
+
+event 64
+      Hint = str[26]  -- ""
+  0:  EnterHouse  {Id = 282}         -- "House"
+end
+
+event 65
+      Hint = str[243]
+  0:  EnterHouse  {Id = 499}         -- "House"
+end
+
+event 66
+      Hint = str[244]
+  0:  EnterHouse  {Id = 500}         -- "House"
+end
+
+event 67
+      Hint = str[245]
+  0:  EnterHouse  {Id = 501}         -- "House"
+end
+
+event 68
+      Hint = str[246]
+  0:  EnterHouse  {Id = 502}         -- "House"
+end
+
+event 69
+      Hint = str[247]
+  0:  EnterHouse  {Id = 503}         -- "House"
+end
+
+event 70
+      Hint = str[248]
+  0:  EnterHouse  {Id = 504}         -- "House"
+end
+
+event 71
+      Hint = str[108]
+  0:  EnterHouse  {Id = 108}         -- "The Frosty Tankard"
+end
+
+event 72
+      Hint = str[73]
+  0:  EnterHouse  {Id = 73}         -- "Jorgsborg Temple"
+end
+
+event 73
+      Hint = str[251]
+  0:  EnterHouse  {Id = 507}         -- "House"
+end
+
+event 74
+      Hint = str[252]
+  0:  EnterHouse  {Id = 508}         -- "House"
+end
+
+event 75
+      Hint = str[253]
+  0:  EnterHouse  {Id = 509}         -- "House"
+end
+
+event 76
+      Hint = str[254]
+  0:  EnterHouse  {Id = 510}         -- "House"
+end
+
+event 77
+      Hint = str[255]
+  0:  EnterHouse  {Id = 511}         -- "House"
+end
+
+event 78
+  0:  EnterHouse  {Id = 512}         -- "House"
+end
+
+event 79
+      Hint = str[1]  -- "Drink from Well."
+  0:  EnterHouse  {Id = 513}         -- "House"
+end
+
+event 80
+      Hint = str[2]  -- "Look Out!"
+  0:  EnterHouse  {Id = 514}         -- "House"
+end
+
+event 81
+      Hint = str[3]  -- "Drink from Fountain"
+  0:  EnterHouse  {Id = 515}         -- "House"
+end
+
+event 82
+      Hint = str[4]  -- "+20 Accuracy and Speed temporary."
+  0:  EnterHouse  {Id = 516}         -- "House"
+end
+
+event 83
+      Hint = str[5]  -- "+20 Armor class temporary."
+  0:  EnterHouse  {Id = 517}         -- "House"
+end
+
+event 84
+      Hint = str[6]  -- "+10 Level temporary."
+  0:  EnterHouse  {Id = 518}         -- "Royal Guest Chambers"
+end
+
+event 85
+  0:  OpenChest  {Id = 1}
+end
+
+event 86
+  0:  OpenChest  {Id = 2}
+end
+
+event 90
+  10: StatusText  {Str = 24}         -- "You cannot enter at this time"
+  11: Exit  {}
+
+      Hint = str[174]
+  0:  Cmp  {"Awards", Value = 39,   jump = 4}         -- "Delivered the four skulls to Magnus"
+  1:  Cmp  {"QBits", Value = 128,   jump = 4}         -- "Recover the Bronze skull from the Forbidden Vault and return to Magnus."
+  2:  StatusText  {Str = 25}         -- "This entrance is magically warded."
+  3:  Exit  {}
+
+  4:  MoveToMap  {X = -1792, Y = -19, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 171, Icon = 5, Name = "D04.Blv"}         -- "Goblinwatch"
+  5:  Exit  {}
+
+  6:  EnterHouse  {Id = 174}         -- "Forbidden Vault"
+end
+
+event 91
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 482,   jump = 5}         -- The Barracks Once
+  2:  Cmp  {"Inventory", Value = 490,   jump = 5}         -- "Barracks Key"
+  3:  StatusText  {Str = 23}         -- "You need the proper key to enter the keep."
+  4:  Exit  {}
+
+  5:  MoveToMap  {X = -495, Y = -219, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 185, Icon = 5, Name = "D15.Blv"}         -- "Barracks  Keep"
+  6:  Exit  {}
+
+  7:  EnterHouse  {Id = 185}         -- "Barracks  Keep"
+end
+
+event 100
+      Hint = str[1]  -- "Drink from Well."
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 7}
+  1:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = 15024, Y = -4720, Z = 96}
+  2:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = 16960, Y = -3936, Z = 96}
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = 16320, Y = -1648, Z = 224}
+  4:  Set  {"MapVar0", Value = 1}
+  5:  StatusText  {Str = 2}         -- "Look Out!"
+  6:  Exit  {}
+
+  7:  StatusText  {Str = 10}         -- "Refreshing!"
+  8:  Exit  {}
+
+      RefillTimer(<function>, const.Month, true)
+  10: Set  {"MapVar0", Value = 0}
+end
+
+event 101
+      Hint = str[1]  -- "Drink from Well."
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 7}
+  1:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -5136, Y = 15968, Z = 96}
+  2:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -6912, Y = 13952, Z = 96}
+  3:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -5152, Y = 13648, Z = 96}
+  4:  Set  {"MapVar1", Value = 1}
+  5:  StatusText  {Str = 2}         -- "Look Out!"
+  6:  Exit  {}
+
+  7:  StatusText  {Str = 10}         -- "Refreshing!"
+  8:  Exit  {}
+
+      RefillTimer(<function>, const.Month, true)
+  10: Set  {"MapVar1", Value = 0}
+end
+
+event 102
+      Hint = str[3]  -- "Drink from Fountain"
+  0:  Cmp  {"AccuracyBonus", Value = 20,   jump = 6}
+  1:  Set  {"AccuracyBonus", Value = 20}
+  2:  Set  {"SpeedBonus", Value = 20}
+  3:  StatusText  {Str = 4}         -- "+20 Accuracy and Speed temporary."
+  4:  Set  {"AutonotesBits", Value = 32}         -- "20 Points of temporary speed and accuracy from the west fountain in Icewind Lake."
+  5:  Exit  {}
+
+  6:  StatusText  {Str = 10}         -- "Refreshing!"
+  7:  Exit  {}
+end
+
+event 103
+      Hint = str[3]  -- "Drink from Fountain"
+  0:  Cmp  {"ArmorClassBonus", Value = 20,   jump = 5}
+  1:  Set  {"ArmorClassBonus", Value = 20}
+  2:  StatusText  {Str = 5}         -- "+20 Armor class temporary."
+  3:  Set  {"AutonotesBits", Value = 33}         -- "20 Points of temporary armor class from the east fountain in Icewind Lake."
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "Refreshing!"
+  6:  Exit  {}
+end
+
+event 104
+      Hint = str[3]  -- "Drink from Fountain"
+  0:  Cmp  {"LevelBonus", Value = 10,   jump = 5}
+  1:  Set  {"LevelBonus", Value = 10}
+  2:  StatusText  {Str = 6}         -- "+10 Level temporary."
+  3:  Set  {"AutonotesBits", Value = 34}         -- "10 Temporary levels from the fountain northeast of Castle Stone."
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "Refreshing!"
+  6:  Exit  {}
+end
+
+event 105
+      Hint = str[3]  -- "Drink from Fountain"
+  0:  Cmp  {"MightBonus", Value = 30,   jump = 5}
+  1:  Set  {"MightBonus", Value = 30}
+  2:  StatusText  {Str = 7}         -- "+30 Might temporary."
+  3:  Set  {"AutonotesBits", Value = 35}         -- "30 Points of temporary might from the fountain west of Castle Birka."
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "Refreshing!"
+  6:  Exit  {}
+end
+
+event 106
+      Hint = str[3]  -- "Drink from Fountain"
+  0:  Cmp  {"PlayerBits", Value = 1,   jump = 7}
+  1:  Set  {"PlayerBits", Value = 1}
+  2:  Add  {"BaseMight", Value = 5}
+  3:  Set  {"Dead", Value = 0}
+  4:  StatusText  {Str = 8}         -- "+5 Might permanent."
+  5:  Set  {"AutonotesBits", Value = 36}         -- "5 Points of permanent might from the north fountain east of Jorgsborg Temple."
+  6:  Exit  {}
+
+  7:  Set  {"Dead", Value = 0}
+end
+
+event 107
+      Hint = str[3]  -- "Drink from Fountain"
+  0:  Cmp  {"PlayerBits", Value = 2,   jump = 7}
+  1:  Set  {"PlayerBits", Value = 2}
+  2:  Add  {"BaseEndurance", Value = 5}
+  3:  Set  {"Dead", Value = 0}
+  4:  StatusText  {Str = 9}         -- "+5 Endurance permanent."
+  5:  Set  {"AutonotesBits", Value = 37}         -- "5 Points of permanent endurance from the south fountain east of Jorgsborg Temple."
+  6:  Exit  {}
+
+  7:  Set  {"Dead", Value = 0}
+end
+
+event 209
+      Timer(<function>, 5*const.Minute)
+  1:  Cmp  {"QBits", Value = 161,   jump = 3}         -- NPC
+  2:  Cmp  {"Flying", Value = 0,   jump = 4}
+  3:  Exit  {}
+
+  4:  CastSpell  {Spell = 6, Mastery = const.Master, Skill = 5, FromX = -6606, FromY = 15546, FromZ = 2550, ToX = 0, ToY = 0, ToZ = 0}         -- "Fireball"
+end
+
+event 210
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 161,   jump = 3}         -- NPC
+  2:  Cmp  {"Inventory", Value = 486,   jump = 4}         -- "Dragon Tower Keys"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 161}         -- NPC
+  5:  SetTextureOutdoors  {Model = 114, Facet = 42, Name = "T1swBu"}
+end
+
+event 211
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 228,   jump = 3}         -- NPC
+  2:  SetSnow  {EffectId = 0, On = true}
+  3:  Exit  {}
+end
+
+event 213
+      Hint = str[17]  -- "Obelisk"
+  0:  SetMessage  {Str = 16}         -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            _a,uef;re_oottg_l"
+  1:  SimpleMessage  {}
+  2:  Set  {"QBits", Value = 366}         -- NPC
+  3:  Set  {"AutonotesBits", Value = 85}         -- "Obelisk Message # 7:  _a,uef;re_oottg_l"
+end
+
+event 214
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 161,   jump = 3}         -- NPC
+  2:  Exit  {}
+
+  3:  SetTextureOutdoors  {Model = 114, Facet = 42, Name = "T1swBu"}
+end
+
+event 261
+      Hint = str[12]  -- "Shrine of Accuracy"
+  0:  Cmp  {"MonthIs", Value = 4,   jump = 3}
+  1:  StatusText  {Str = 13}         -- "You pray at the shrine."
+  2:  Exit  {}
+
+  3:  Cmp  {"QBits", Value = 206,   jump = 1}         -- NPC
+  4:  Set  {"QBits", Value = 206}         -- NPC
+  5:  Cmp  {"QBits", Value = 210,   jump = 11}         -- NPC
+  6:  Set  {"QBits", Value = 210}         -- NPC
+  7:  ForPlayer  ("All")
+  8:  Add  {"BaseAccuracy", Value = 10}
+  9:  StatusText  {Str = 14}         -- "+10 Accuracy permanent"
+  10: Exit  {}
+
+  11: ForPlayer  ("All")
+  12: Add  {"BaseAccuracy", Value = 3}
+  13: StatusText  {Str = 15}         -- "+3 Accuracy permanent"
+end
+
+event 262
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 487,   jump = 29}         -- Demonclaw Reload
+  2:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 7, X = -4725, Y = 15551, Z = 97}
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 4, X = -3735, Y = 16118, Z = 97}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 5, X = -7467, Y = 18362, Z = 97}
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 7, X = -10662, Y = 13523, Z = 97}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 5, X = 6283, Y = 17094, Z = 161}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 6, X = 10328, Y = 22523, Z = 0}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 5, X = 7978, Y = 21373, Z = 0}
+  9:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 5, X = 12506, Y = -3215, Z = 0}
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 5, X = 21291, Y = -1044, Z = 0}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 4, X = 18936, Y = -3352, Z = 0}
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 7, X = 8520, Y = 3859, Z = 2805}
+  13: Cmp  {"QBits", Value = 508,   jump = 16}         -- Warrior
+  14: Set  {"QBits", Value = 487}         -- Demonclaw Reload
+  15: Exit  {}
+
+  16: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = 12441, Y = -2439, Z = 0}
+  17: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = 20828, Y = -8961, Z = 0}
+  18: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = 16776, Y = -21566, Z = 0}
+  19: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = 10200, Y = 11400, Z = 0}
+  20: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = -11349, Y = 17574, Z = 97}
+  21: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -8253, Y = 15583, Z = 97}
+  22: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 4, X = -10548, Y = 15711, Z = 288}
+  23: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = -7717, Y = 12574, Z = 97}
+  24: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -8888, Y = 17907, Z = 97}
+  25: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = 5600, Y = 20403, Z = 0}
+  26: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 3, X = 6460, Y = 15697, Z = 0}
+  27: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 2, X = -259, Y = 5153, Z = 0}
+  28: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 3, X = -5932, Y = 12049, Z = 97}
+  29: Cmp  {"QBits", Value = 507,   jump = 32}         -- Death Wish
+  30: Set  {"QBits", Value = 487}         -- Demonclaw Reload
+  31: Exit  {}
+
+  32: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = -13143, Y = 17068, Z = 0}
+  33: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 12557, Y = -3827, Z = 0}
+  34: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 20524, Y = -10570, Z = 0}
+  35: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = -8989, Y = 13803, Z = 0}
+  36: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = 5690, Y = 11714, Z = 0}
+  37: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = 18798, Y = -1443, Z = 0}
+  38: Set  {"QBits", Value = 487}         -- Demonclaw Reload
+  39: Exit  {}
+
+  40: Subtract  {"QBits", Value = 487}         -- Demonclaw Reload
+  41: Exit  {}
+
+  42: Subtract  {"HasFullSP", Value = 0}
+end
+
+event 263
+      function events.LoadMap()
+  1:  Cmp  {"Awards", Value = 3,   jump = 3}         -- "Saviors of Demonclaw"
+  2:  Exit  {}
+
+  3:  MoveNPC  {NPC = 354, HouseId = 510}         -- "Ray Boswell" -> "House"
+  4:  MoveNPC  {NPC = 353, HouseId = 509}         -- "Svarktel Jorgen" -> "House"
+  5:  MoveNPC  {NPC = 351, HouseId = 507}         -- "Abe Markoviac" -> "House"
+  6:  MoveNPC  {NPC = 352, HouseId = 508}         -- "Shel Stineway" -> "House"
+  7:  MoveNPC  {NPC = 36, HouseId = 274}         -- "Fredrick Piles" -> "House"
+  8:  MoveNPC  {NPC = 356, HouseId = 512}         -- "Marc Teagan" -> "House"
+  9:  MoveNPC  {NPC = 357, HouseId = 513}         -- "Harper Nike" -> "House"
+  10: MoveNPC  {NPC = 359, HouseId = 515}         -- "Gerrold Dane" -> "House"
+  11: MoveNPC  {NPC = 358, HouseId = 514}         -- "Trevor Jones" -> "House"
+  12: MoveNPC  {NPC = 355, HouseId = 511}         -- "Sly Silverstone" -> "House"
+  13: MoveNPC  {NPC = 278, HouseId = 278}         -- "Becky Holmes" -> "House"
+  14: MoveNPC  {NPC = 360, HouseId = 516}         -- "Peace Stringer" -> "House"
+  15: MoveNPC  {NPC = 96, HouseId = 273}         -- "Sure Valla" -> "House"
+  16: MoveNPC  {NPC = 69, HouseId = 278}         -- "Warren Holmes" -> "House"
+  17: MoveNPC  {NPC = 263, HouseId = 279}         -- "Rachel Herzl" -> "House"
+  18: MoveNPC  {NPC = 282, HouseId = 279}         -- "Jennifer Herzl" -> "House"
+end
+
+event 264
+      Timer(<function>, 95*const.Minute)
+  1:  Cmp  {"QBits", Value = 85,   jump = 4}         -- "Enter Castle Birka in Demonclaw and talk with Lord Godwinson."
+  2:  Cmp  {"QBits", Value = 485,   jump = 4}         -- LG 2nd Jorgsburg
+  3:  Add  {"QBits", Value = 86}         -- "Raise the siege of Birka and secure Jorgsburg."
+  4:  Exit  {}
+end
+
+event 265
+      Timer(<function>, 45*const.Minute)
+  1:  Cmp  {"QBits", Value = 406,   jump = 3}         -- Birka Timer1
+  2:  Exit  {}
+
+  3:  Add  {"QBits", Value = 485}         -- LG 2nd Jorgsburg
+  0:  Exit  {}
+end

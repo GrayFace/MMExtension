@@ -1,0 +1,411 @@
+str[0] = " "
+str[1] = "Strange Stone"
+str[2] = "Stone Marker"
+str[3] = "\
+\
+                         Warning!\
+\
+Passage to the Garden of Stones is forbidden!\
+\
+                Enter at your own risk."
+str[4] = "How dare you disturb our rest!!"
+str[5] = ""
+str[6] = "You must talk with all of the Squiggies first."
+str[7] = "You may now use the Tunnel to Desolation's End."
+str[8] = "Tree of Passage"
+str[9] = "Autonote added."
+str[10] = "Healing Pedestal"
+str[11] = "You have depleted the pedestal"
+str[12] = "Aw shucks, I was just kiddin'.  Here's your  message.  Squiggie Msg#1.  To enter The Pyramid, you'll need the key."
+str[13] = "Heh Heh. I was just pullin' your leg.  Here's your  message.  Squiggie Msg#2.  The key is in the shape of a pyramid."
+str[14] = "Gotcha, huh? Here's your  message.  Squiggie Msg#3.  The key is guarded by the Matron Symlac."
+str[15] = "Bingo! I was just stringin' ya along.  Here's your  message.  Squiggie Msg#4.  The Matron Symlac rules Desolation's End."
+str[16] = "Funny, huh? I was just joshin' with ya.    Here's your  message.  Squiggie Msg#5.  You must now talk with the Tree of Passage to activate the Tunnel to Desolation's End."
+str[17] = "Stoned Pedestal"
+str[18] = ""
+str[19] = ""
+str[20] = ""
+str[21] = ""
+str[22] = ""
+str[23] = ""
+
+
+event 1
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 511,   jump = 5}         -- SOG Void Teleport
+  2:  ForPlayer  ("All")
+  3:  Set  {"Eradicated", Value = 0}
+  4:  Exit  {}
+
+  5:  Cmp  {"QBits", Value = 330,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 2}
+
+  7:  Exit  {}
+end
+
+event 2
+      Hint = str[11]  -- "You have depleted the pedestal"
+      MazeInfo = str[5]  -- ""
+  0:  EnterHouse  {Id = 11}         -- "Singing Steel"
+end
+
+event 3
+      Hint = str[10]  -- "Healing Pedestal"
+  0:  Cmp  {"MapVar16", Value = 5,   jump = 6}
+  1:  Add  {"MapVar16", Value = 1}
+  2:  ForPlayer  ("All")
+  3:  Set  {"HasFullHP", Value = 0}
+  4:  Set  {"HasFullSP", Value = 0}
+  5:  Exit  {}
+
+  6:  StatusText  {Str = 11}         -- "You have depleted the pedestal"
+  7:  Exit  {}
+end
+
+event 4
+      Hint = str[17]  -- "Stoned Pedestal"
+  0:  ForPlayer  ("All")
+  1:  Subtract  {"Stoned", Value = 0}
+  2:  Exit  {}
+end
+
+event 10
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20012, Y = -16961, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -18412, Y = -16961, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19212, Y = 17761, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19212, Y = 16161, Z = 3009}
+end
+
+event 11
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SetMessage  {Str = 12}         -- "Aw shucks, I was just kiddin'.  Here's your  message.  Squiggie Msg#1.  To enter The Pyramid, you'll need the key."
+  3:  SimpleMessage  {}
+  4:  Add  {"QBits", Value = 490}         -- Sutters Bay Tarvel Scroll Once
+  5:  Add  {"AutonotesBits", Value = 97}         -- "Squiggie Msg#1.  To enter The Pyramid, you'll need the key."
+  6:  StatusText  {Str = 9}         -- "Autonote added."
+  7:  Exit  {}
+end
+
+event 12
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20012, Y = -17493, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -18412, Y = -17493, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19212, Y = -18273, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19212, Y = -16673, Z = 3009}
+  6:  Exit  {}
+end
+
+event 13
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20012, Y = -18497, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -18412, Y = -18497, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19212, Y = -19297, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19212, Y = -17697, Z = 3009}
+end
+
+event 14
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20012, Y = -19009, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -18412, Y = -19009, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19212, Y = -19809, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19212, Y = -18209, Z = 3009}
+  6:  Exit  {}
+end
+
+event 15
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SetMessage  {Str = 13}         -- "Heh Heh. I was just pullin' your leg.  Here's your  message.  Squiggie Msg#2.  The key is in the shape of a pyramid."
+  3:  SimpleMessage  {}
+  4:  Add  {"QBits", Value = 489}         -- Kat'an Travel Once
+  5:  Add  {"AutonotesBits", Value = 98}         -- "Squiggie Msg#2.  The key is in the shape of a pyramid."
+  6:  StatusText  {Str = 9}         -- "Autonote added."
+  7:  Exit  {}
+end
+
+event 16
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20524, Y = -17473, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -18924, Y = -17473, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19724, Y = -18273, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19724, Y = -16673, Z = 3009}
+  6:  Exit  {}
+end
+
+event 17
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20524, Y = -17985, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -18924, Y = -17985, Z = 2009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19724, Y = -17185, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19724, Y = -18785, Z = 3009}
+  6:  Exit  {}
+end
+
+event 18
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20524, Y = -18497, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -18924, Y = -18497, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -19724, Y = -19297, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19724, Y = -17697, Z = 3009}
+  6:  Exit  {}
+end
+
+event 19
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20524, Y = -19009, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -18924, Y = -19009, Z = 3009}
+end
+
+event 18
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19724, Y = -18209, Z = 3009}
+end
+
+event 19
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19724, Y = -19809, Z = 3009}
+  6:  Exit  {}
+end
+
+event 20
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21036, Y = -16961, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -19436, Y = -16961, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20236, Y = -17761, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20236, Y = -16161, Z = 3009}
+  6:  Exit  {}
+end
+
+event 21
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -21036, Y = -17473, Z = 0}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -18924, Y = -17473, Z = 0}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -20236, Y = -18273, Z = 0}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -20236, Y = -16673, Z = 0}
+  6:  Exit  {}
+end
+
+event 22
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21036, Y = -17985, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -18924, Y = -17985, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20236, Y = -17185, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20236, Y = -18785, Z = 3009}
+  6:  Exit  {}
+end
+
+event 23
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21036, Y = -18497, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -18924, Y = -18497, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20236, Y = -19297, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20236, Y = -17697, Z = 3009}
+  6:  Exit  {}
+end
+
+event 24
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21036, Y = -19009, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19436, Y = -19009, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20236, Y = -19809, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20236, Y = -18209, Z = 3009}
+  6:  Exit  {}
+end
+
+event 25
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -21548, Y = -16961, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -19948, Y = -16961, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -20748, Y = -17761, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -20748, Y = -16161, Z = 3009}
+  6:  Exit  {}
+end
+
+event 26
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21548, Y = -17743, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19948, Y = -17743, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20748, Y = -16943, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20748, Y = -18543, Z = 3009}
+  6:  Exit  {}
+end
+
+event 27
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SetMessage  {Str = 14}         -- "Gotcha, huh? Here's your  message.  Squiggie Msg#3.  The key is guarded by the Matron Symlac."
+  3:  SimpleMessage  {}
+  4:  Add  {"QBits", Value = 488}         -- Tamara Dialog
+  5:  Add  {"AutonotesBits", Value = 99}         -- "Squiggie Msg#3.  The key is guarded by the Matron Symlac."
+  6:  StatusText  {Str = 9}         -- "Autonote added."
+  7:  Exit  {}
+end
+
+event 28
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SetMessage  {Str = 15}         -- "Bingo! I was just stringin' ya along.  Here's your  message.  Squiggie Msg#4.  The Matron Symlac rules Desolation's End."
+  3:  SimpleMessage  {}
+  4:  Add  {"QBits", Value = 487}         -- Demonclaw Reload
+  5:  Add  {"AutonotesBits", Value = 100}         -- "Squiggie Msg#4.  The Matron Symlac rules Desolation's End."
+  6:  StatusText  {Str = 9}         -- "Autonote added."
+  7:  Exit  {}
+end
+
+event 29
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21548, Y = -19009, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -19948, Y = -19009, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20748, Y = -19809, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20748, Y = -18209, Z = 3009}
+  6:  Exit  {}
+end
+
+event 30
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -22060, Y = -16961, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -20460, Y = -16961, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -21260, Y = -17761, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = -21260, Y = -16161, Z = 3009}
+  6:  Exit  {}
+end
+
+event 31
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -22060, Y = -17473, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20460, Y = -17473, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21260, Y = -18273, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21260, Y = -16673, Z = 3009}
+  6:  Exit  {}
+end
+
+event 32
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -22060, Y = -17985, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20460, Y = -17985, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21260, Y = -18785, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21260, Y = -17185, Z = 3009}
+  6:  Exit  {}
+end
+
+event 33
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SetMessage  {Str = 16}         -- "Funny, huh? I was just joshin' with ya.    Here's your  message.  Squiggie Msg#5.  You must now talk with the Tree of Passage to activate the Tunnel to Desolation's End."
+  3:  SimpleMessage  {}
+  4:  Add  {"QBits", Value = 486}         -- Birka Entrance after Bona Fide
+  5:  Add  {"AutonotesBits", Value = 101}         -- "Squiggie Msg#5.  You must now talk with the Tree of Passage to activate the Flashing Tunnel to Desolation's End."
+  6:  StatusText  {Str = 9}         -- "Autonote added."
+  7:  Exit  {}
+end
+
+event 34
+      Hint = str[1]  -- "Strange Stone"
+  0:  SetMessage  {Str = 4}         -- "How dare you disturb our rest!!"
+  1:  SimpleMessage  {}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -22060, Y = -19009, Z = 3009}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -20460, Y = -19009, Z = 3009}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21260, Y = -19809, Z = 3009}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -21260, Y = -18209, Z = 3009}
+  6:  Exit  {}
+end
+
+event 100
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 410,   jump = 13}         -- Quaddah onc
+  2:  Add  {"QBits", Value = 410}         -- Quaddah onc
+  3:  ForPlayer  ("All")
+  4:  Add  {"Experience", Value = 2000000}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -18929, Y = -16686, Z = 3009}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -18929, Y = -19554, Z = 3009}
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -21664, Y = -19554, Z = 3009}
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -21664, Y = -16686, Z = 3009}
+  9:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -17197, Y = -6934, Z = 3137}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -17767, Y = -7801, Z = 3137}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -16656, Y = -9487, Z = 3137}
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -16693, Y = -11161, Z = 3137}
+  13: Exit  {}
+end
+
+event 101
+      Hint = str[2]  -- "Stone Marker"
+  0:  SetMessage  {Str = 3}         --[[ "
+
+                         Warning!
+
+Passage to the Garden of Stones is forbidden!
+
+                Enter at your own risk." ]]
+  1:  SimpleMessage  {}
+  2:  Exit  {}
+end
+
+event 102
+      Hint = str[8]  -- "Tree of Passage"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 490,   jump = 5}         -- Sutters Bay Tarvel Scroll Once
+  2:  SetMessage  {Str = 6}         -- "You must talk with all of the Squiggies first."
+  3:  SimpleMessage  {}
+  4:  Exit  {}
+
+  5:  Cmp  {"QBits", Value = 489,   jump = 7}         -- Kat'an Travel Once
+  6:  GoTo  {jump = 2}
+
+  7:  Cmp  {"QBits", Value = 488,   jump = 9}         -- Tamara Dialog
+  8:  GoTo  {jump = 2}
+
+  9:  Cmp  {"QBits", Value = 487,   jump = 11}         -- Demonclaw Reload
+  10: GoTo  {jump = 2}
+
+  11: Cmp  {"QBits", Value = 486,   jump = 13}         -- Birka Entrance after Bona Fide
+  12: GoTo  {jump = 2}
+
+  13: SetMessage  {Str = 7}         -- "You may now use the Tunnel to Desolation's End."
+  14: SimpleMessage  {}
+  15: ForPlayer  ("All")
+  16: Add  {"Awards", Value = 4}         -- "Gained Access to Desolation's End"
+  17: Exit  {}
+end

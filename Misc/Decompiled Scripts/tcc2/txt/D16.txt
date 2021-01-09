@@ -1,0 +1,27 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Door"
+str[3] = "Chest"
+str[4] = "Cabinet"
+str[5] = "You are pulled through the door!"
+str[6] = "The door is locked."
+str[7] = "The door is double locked."
+str[8] = "You were unable to pick the lock."
+str[9] = "Chest of Drawers"
+str[10] = "You have found two keys!"
+str[11] = "You have found a key!"
+str[12] = "Switch"
+str[13] = "The Eagle Statuette!"
+str[14] = "Exit"
+str[15] = "This door won't open."
+str[16] = "Haldegarn's Lair"
+str[17] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

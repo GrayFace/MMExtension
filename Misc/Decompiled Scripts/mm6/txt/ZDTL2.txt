@@ -1,0 +1,29 @@
+event 1
+      Hint = str[1]
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]
+  0:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[1]
+  0:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 4
+      Hint = str[1]
+  0:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]
+  0:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+      Hint = str[2]
+  0:  Exit  {}
+end

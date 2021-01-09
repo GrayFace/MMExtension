@@ -1,0 +1,21 @@
+str[0] = " "
+str[1] = "Switch"
+str[2] = "Chest"
+str[3] = "Chest"
+str[4] = "Exit"
+str[5] = "You easily defeat the lock."
+str[6] = "A teleporter!"
+str[7] = "You are unable to pick the lock."
+str[8] = "-50 Speed Temporary"
+str[9] = "Cage"
+str[10] = "Haunt of the Rusalka"
+str[11] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

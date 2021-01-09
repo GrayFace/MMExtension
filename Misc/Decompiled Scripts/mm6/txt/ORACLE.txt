@@ -1,0 +1,540 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Exit"
+str[3] = "Chest"
+str[4] = "Not enough memory to operate."
+str[5] = "Panel"
+str[6] = "Oracle"
+str[7] = "Power on.  Status:  All systems functional."
+str[8] = "Power off.  Status:  All systems shut down."
+str[9] = "Insert Memory module to activate Melian."
+str[10] = "Memory module restored."
+str[11] = "+100,000 Experience"
+str[12] = "Stand by…"
+str[13] = "Oracle of Enroth"
+str[14] = ""
+
+
+event 1
+      Hint = str[5]  -- "Panel"
+      MazeInfo = str[13]  -- "Oracle of Enroth"
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"MapVar0", Value = 1,   jump = 4}
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 1, State = 2}         -- switch state
+  5:  StatusText  {Str = 12}         -- "Stand by…"
+end
+
+event 2
+  0:  SetDoorState  {Id = 2, State = 1}
+  1:  SetLight  {Id = 48, On = true}
+  2:  SetLight  {Id = 49, On = true}
+  3:  SetLight  {Id = 50, On = true}
+  4:  SetLight  {Id = 51, On = true}
+  5:  Set  {"MapVar5", Value = 1}
+  6:  Exit  {}
+end
+
+event 18
+  0:  SetLight  {Id = 49, On = false}
+  1:  SetLight  {Id = 50, On = false}
+  2:  SetLight  {Id = 48, On = false}
+  3:  SetLight  {Id = 51, On = false}
+  4:  Set  {"MapVar5", Value = 0}
+  5:  SetDoorState  {Id = 2, State = 0}
+  6:  Exit  {}
+
+  7:  OnLoadMap  {}
+  8:  GoTo  {jump = 0}
+end
+
+event 3
+      Hint = str[6]  -- "Oracle"
+  0:  EnterHouse  {Id = 170}         -- "The Oracle"
+end
+
+event 4
+  0:  SetDoorState  {Id = 2, State = 0}
+end
+
+event 5
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"QBits", Value = 280,   jump = 10}         -- NPC
+  3:  ForPlayer  ("All")
+  4:  Cmp  {"Inventory", Value = 550,   jump = 12}         -- "Memory Crystal Alpha"
+  5:  Cmp  {"Inventory", Value = 551,   jump = 18}         -- "Memory Crystal Beta"
+  6:  Cmp  {"Inventory", Value = 552,   jump = 24}         -- "Memory Crystal Delta"
+  7:  Cmp  {"Inventory", Value = 553,   jump = 30}         -- "Memory Crystal Epsilon"
+  8:  StatusText  {Str = 9}         -- "Insert Memory module to activate Melian."
+  9:  Exit  {}
+
+  10: StatusText  {Str = 10}         -- "Memory module restored."
+  11: Exit  {}
+
+  12: Cmp  {"QBits", Value = 100,   jump = 5}         -- Oracle
+  13: Subtract  {"Inventory", Value = 550}         -- "Memory Crystal Alpha"
+  14: Set  {"QBits", Value = 100}         -- Oracle
+  15: Subtract  {"QBits", Value = 191}         -- Quest item bits for seer
+  16: Set  {"QBits", Value = 280}         -- NPC
+  17: GoTo  {jump = 36}
+
+  18: Cmp  {"QBits", Value = 101,   jump = 6}         -- Oracle
+  19: Subtract  {"Inventory", Value = 551}         -- "Memory Crystal Beta"
+  20: Set  {"QBits", Value = 101}         -- Oracle
+  21: Subtract  {"QBits", Value = 192}         -- Quest item bits for seer
+  22: Set  {"QBits", Value = 280}         -- NPC
+  23: GoTo  {jump = 36}
+
+  24: Cmp  {"QBits", Value = 102,   jump = 7}         -- Oracle
+  25: Subtract  {"Inventory", Value = 552}         -- "Memory Crystal Delta"
+  26: Set  {"QBits", Value = 102}         -- Oracle
+  27: Subtract  {"QBits", Value = 193}         -- Quest item bits for seer
+  28: Set  {"QBits", Value = 280}         -- NPC
+  29: GoTo  {jump = 36}
+
+  30: Cmp  {"QBits", Value = 103,   jump = 10}         -- Oracle
+  31: Subtract  {"Inventory", Value = 553}         -- "Memory Crystal Epsilon"
+  32: Set  {"QBits", Value = 103}         -- Oracle
+  33: Subtract  {"QBits", Value = 194}         -- Quest item bits for seer
+  34: Set  {"QBits", Value = 280}         -- NPC
+  35: GoTo  {jump = 36}
+
+  36: SetSprite  {SpriteId = 4, Visible = 1, Name = "mcryst01"}
+  37: SetLight  {Id = 63, On = true}
+  38: Add  {"Experience", Value = 100000}
+  39: StatusText  {Str = 11}         -- "+100,000 Experience"
+  40: Cmp  {"QBits", Value = 100,   jump = 42}         -- Oracle
+  41: Exit  {}
+
+  42: Cmp  {"QBits", Value = 101,   jump = 44}         -- Oracle
+  43: Exit  {}
+
+  44: Cmp  {"QBits", Value = 102,   jump = 46}         -- Oracle
+  45: Exit  {}
+
+  46: Cmp  {"QBits", Value = 103,   jump = 48}         -- Oracle
+  47: Exit  {}
+
+  48: SetNPCTopic  {NPC = 8, Index = 0, Event = 76}         -- "Oracle" : "Control Center"
+  49: SetNPCTopic  {NPC = 8, Index = 1, Event = 0}         -- "Oracle"
+end
+
+event 6
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetTexture  {Facet = 436, Name = "trekscon"}
+  3:  Set  {"MapVar0", Value = 1}
+end
+
+event 7
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"MapVar0", Value = 1,   jump = 4}
+  3:  Exit  {}
+
+  4:  SetTexture  {Facet = 436, Name = "trekscrn"}
+  5:  Set  {"MapVar0", Value = 0}
+end
+
+event 8
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetLight  {Id = 1, On = true}
+  3:  SetLight  {Id = 2, On = true}
+  4:  SetLight  {Id = 3, On = true}
+  5:  SetLight  {Id = 4, On = true}
+  6:  SetLight  {Id = 5, On = true}
+  7:  SetLight  {Id = 6, On = true}
+  8:  SetLight  {Id = 7, On = true}
+  9:  SetLight  {Id = 9, On = true}
+  10: SetLight  {Id = 10, On = true}
+  11: SetLight  {Id = 11, On = true}
+  12: SetLight  {Id = 12, On = true}
+  13: SetLight  {Id = 13, On = true}
+  14: SetLight  {Id = 14, On = true}
+  15: SetLight  {Id = 15, On = true}
+  16: SetLight  {Id = 16, On = true}
+end
+
+event 9
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetLight  {Id = 1, On = false}
+  3:  SetLight  {Id = 2, On = false}
+  4:  SetLight  {Id = 3, On = false}
+  5:  SetLight  {Id = 4, On = false}
+  6:  SetLight  {Id = 5, On = false}
+  7:  SetLight  {Id = 6, On = false}
+  8:  SetLight  {Id = 7, On = false}
+  9:  SetLight  {Id = 9, On = false}
+  10: SetLight  {Id = 10, On = false}
+  11: SetLight  {Id = 11, On = false}
+  12: SetLight  {Id = 12, On = false}
+  13: SetLight  {Id = 13, On = false}
+  14: SetLight  {Id = 14, On = false}
+  15: SetLight  {Id = 15, On = false}
+  16: SetLight  {Id = 16, On = false}
+end
+
+event 10
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"MapVar1", Value = 1,   jump = 13}
+  3:  SetLight  {Id = 17, On = true}
+  4:  SetLight  {Id = 18, On = true}
+  5:  SetLight  {Id = 19, On = true}
+  6:  SetLight  {Id = 20, On = true}
+  7:  SetLight  {Id = 21, On = true}
+  8:  SetLight  {Id = 22, On = true}
+  9:  SetLight  {Id = 23, On = true}
+  10: SetLight  {Id = 24, On = true}
+  11: Set  {"MapVar1", Value = 1}
+  12: Exit  {}
+
+  13: SetLight  {Id = 17, On = false}
+  14: SetLight  {Id = 18, On = false}
+  15: SetLight  {Id = 19, On = false}
+  16: SetLight  {Id = 20, On = false}
+  17: SetLight  {Id = 21, On = false}
+  18: SetLight  {Id = 22, On = false}
+  19: SetLight  {Id = 23, On = false}
+  20: SetLight  {Id = 24, On = false}
+  21: Set  {"MapVar1", Value = 0}
+end
+
+event 11
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"MapVar2", Value = 1,   jump = 13}
+  3:  SetLight  {Id = 25, On = true}
+  4:  SetLight  {Id = 26, On = true}
+  5:  SetLight  {Id = 27, On = true}
+  6:  SetLight  {Id = 29, On = true}
+  7:  SetLight  {Id = 29, On = true}
+  8:  SetLight  {Id = 30, On = true}
+  9:  SetLight  {Id = 31, On = true}
+  10: SetLight  {Id = 32, On = true}
+  11: Set  {"MapVar2", Value = 1}
+  12: Exit  {}
+
+  13: SetLight  {Id = 25, On = false}
+  14: SetLight  {Id = 26, On = false}
+  15: SetLight  {Id = 27, On = false}
+  16: SetLight  {Id = 28, On = false}
+  17: SetLight  {Id = 29, On = false}
+  18: SetLight  {Id = 30, On = false}
+  19: SetLight  {Id = 31, On = false}
+  20: SetLight  {Id = 32, On = false}
+  21: Set  {"MapVar2", Value = 0}
+end
+
+event 12
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"MapVar3", Value = 1,   jump = 13}
+  3:  SetLight  {Id = 33, On = true}
+  4:  SetLight  {Id = 34, On = true}
+  5:  SetLight  {Id = 35, On = true}
+  6:  SetLight  {Id = 36, On = true}
+  7:  SetLight  {Id = 37, On = true}
+  8:  SetLight  {Id = 38, On = true}
+  9:  SetLight  {Id = 39, On = true}
+  10: SetLight  {Id = 40, On = true}
+  11: Set  {"MapVar3", Value = 1}
+  12: Exit  {}
+
+  13: SetLight  {Id = 33, On = false}
+  14: SetLight  {Id = 34, On = false}
+  15: SetLight  {Id = 35, On = false}
+  16: SetLight  {Id = 36, On = false}
+  17: SetLight  {Id = 37, On = false}
+  18: SetLight  {Id = 38, On = false}
+  19: SetLight  {Id = 39, On = false}
+  20: SetLight  {Id = 40, On = false}
+  21: Set  {"MapVar3", Value = 0}
+end
+
+event 13
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"MapVar4", Value = 1,   jump = 11}
+  3:  SetLight  {Id = 41, On = true}
+  4:  SetLight  {Id = 42, On = true}
+  5:  SetLight  {Id = 43, On = true}
+  6:  SetLight  {Id = 44, On = true}
+  7:  SetLight  {Id = 45, On = true}
+  8:  SetLight  {Id = 46, On = true}
+  9:  Set  {"MapVar4", Value = 1}
+  10: Exit  {}
+
+  11: SetLight  {Id = 41, On = false}
+  12: SetLight  {Id = 42, On = false}
+  13: SetLight  {Id = 43, On = false}
+  14: SetLight  {Id = 44, On = false}
+  15: SetLight  {Id = 45, On = false}
+  16: SetLight  {Id = 46, On = false}
+  17: Set  {"MapVar4", Value = 0}
+end
+
+event 14
+      Hint = str[5]  -- "Panel"
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 15}
+  1:  SetLight  {Id = 52, On = true}
+  2:  SetLight  {Id = 53, On = true}
+  3:  SetLight  {Id = 54, On = true}
+  4:  SetLight  {Id = 55, On = true}
+  5:  SetLight  {Id = 56, On = true}
+  6:  SetLight  {Id = 57, On = true}
+  7:  SetLight  {Id = 58, On = true}
+  8:  SetLight  {Id = 59, On = true}
+  9:  SetLight  {Id = 60, On = true}
+  10: SetLight  {Id = 61, On = true}
+  11: SetLight  {Id = 62, On = true}
+  12: Set  {"MapVar6", Value = 1}
+  13: StatusText  {Str = 7}         -- "Power on.  Status:  All systems functional."
+  14: Exit  {}
+
+  15: SetLight  {Id = 52, On = false}
+  16: SetLight  {Id = 53, On = false}
+  17: SetLight  {Id = 54, On = false}
+  18: SetLight  {Id = 55, On = false}
+  19: SetLight  {Id = 56, On = false}
+  20: SetLight  {Id = 57, On = false}
+  21: SetLight  {Id = 58, On = false}
+  22: SetLight  {Id = 59, On = false}
+  23: SetLight  {Id = 60, On = false}
+  24: SetLight  {Id = 61, On = false}
+  25: SetLight  {Id = 62, On = false}
+  26: StatusText  {Str = 8}         -- "Power off.  Status:  All systems shut down."
+  27: Set  {"MapVar6", Value = 0}
+end
+
+event 15
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"QBits", Value = 281,   jump = 10}         -- NPC
+  3:  ForPlayer  ("All")
+  4:  Cmp  {"Inventory", Value = 550,   jump = 12}         -- "Memory Crystal Alpha"
+  5:  Cmp  {"Inventory", Value = 551,   jump = 18}         -- "Memory Crystal Beta"
+  6:  Cmp  {"Inventory", Value = 552,   jump = 24}         -- "Memory Crystal Delta"
+  7:  Cmp  {"Inventory", Value = 553,   jump = 30}         -- "Memory Crystal Epsilon"
+  8:  StatusText  {Str = 9}         -- "Insert Memory module to activate Melian."
+  9:  Exit  {}
+
+  10: StatusText  {Str = 10}         -- "Memory module restored."
+  11: Exit  {}
+
+  12: Cmp  {"QBits", Value = 100,   jump = 5}         -- Oracle
+  13: Subtract  {"Inventory", Value = 550}         -- "Memory Crystal Alpha"
+  14: Set  {"QBits", Value = 100}         -- Oracle
+  15: Subtract  {"QBits", Value = 191}         -- Quest item bits for seer
+  16: Set  {"QBits", Value = 281}         -- NPC
+  17: GoTo  {jump = 36}
+
+  18: Cmp  {"QBits", Value = 101,   jump = 6}         -- Oracle
+  19: Subtract  {"Inventory", Value = 551}         -- "Memory Crystal Beta"
+  20: Set  {"QBits", Value = 101}         -- Oracle
+  21: Subtract  {"QBits", Value = 192}         -- Quest item bits for seer
+  22: Set  {"QBits", Value = 281}         -- NPC
+  23: GoTo  {jump = 36}
+
+  24: Cmp  {"QBits", Value = 102,   jump = 7}         -- Oracle
+  25: Subtract  {"Inventory", Value = 552}         -- "Memory Crystal Delta"
+  26: Set  {"QBits", Value = 102}         -- Oracle
+  27: Subtract  {"QBits", Value = 193}         -- Quest item bits for seer
+  28: Set  {"QBits", Value = 281}         -- NPC
+  29: GoTo  {jump = 36}
+
+  30: Cmp  {"QBits", Value = 103,   jump = 10}         -- Oracle
+  31: Subtract  {"Inventory", Value = 553}         -- "Memory Crystal Epsilon"
+  32: Set  {"QBits", Value = 103}         -- Oracle
+  33: Subtract  {"QBits", Value = 194}         -- Quest item bits for seer
+  34: Set  {"QBits", Value = 281}         -- NPC
+  35: GoTo  {jump = 36}
+
+  36: SetSprite  {SpriteId = 3, Visible = 1, Name = "mcryst01"}
+  37: SetLight  {Id = 64, On = true}
+  38: Add  {"Experience", Value = 100000}
+  39: StatusText  {Str = 11}         -- "+100,000 Experience"
+  40: Cmp  {"QBits", Value = 100,   jump = 42}         -- Oracle
+  41: Exit  {}
+
+  42: Cmp  {"QBits", Value = 101,   jump = 44}         -- Oracle
+  43: Exit  {}
+
+  44: Cmp  {"QBits", Value = 102,   jump = 46}         -- Oracle
+  45: Exit  {}
+
+  46: Cmp  {"QBits", Value = 103,   jump = 48}         -- Oracle
+  47: Exit  {}
+
+  48: SetNPCTopic  {NPC = 8, Index = 0, Event = 76}         -- "Oracle" : "Control Center"
+  49: SetNPCTopic  {NPC = 8, Index = 1, Event = 0}         -- "Oracle"
+end
+
+event 16
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"QBits", Value = 282,   jump = 10}         -- NPC
+  3:  ForPlayer  ("All")
+  4:  Cmp  {"Inventory", Value = 550,   jump = 12}         -- "Memory Crystal Alpha"
+  5:  Cmp  {"Inventory", Value = 551,   jump = 18}         -- "Memory Crystal Beta"
+  6:  Cmp  {"Inventory", Value = 552,   jump = 24}         -- "Memory Crystal Delta"
+  7:  Cmp  {"Inventory", Value = 553,   jump = 30}         -- "Memory Crystal Epsilon"
+  8:  StatusText  {Str = 9}         -- "Insert Memory module to activate Melian."
+  9:  Exit  {}
+
+  10: StatusText  {Str = 10}         -- "Memory module restored."
+  11: Exit  {}
+
+  12: Cmp  {"QBits", Value = 100,   jump = 5}         -- Oracle
+  13: Subtract  {"Inventory", Value = 550}         -- "Memory Crystal Alpha"
+  14: Set  {"QBits", Value = 100}         -- Oracle
+  15: Subtract  {"QBits", Value = 191}         -- Quest item bits for seer
+  16: Set  {"QBits", Value = 282}         -- NPC
+  17: GoTo  {jump = 36}
+
+  18: Cmp  {"QBits", Value = 101,   jump = 6}         -- Oracle
+  19: Subtract  {"Inventory", Value = 551}         -- "Memory Crystal Beta"
+  20: Set  {"QBits", Value = 101}         -- Oracle
+  21: Subtract  {"QBits", Value = 192}         -- Quest item bits for seer
+  22: Set  {"QBits", Value = 282}         -- NPC
+  23: GoTo  {jump = 36}
+
+  24: Cmp  {"QBits", Value = 102,   jump = 7}         -- Oracle
+  25: Subtract  {"Inventory", Value = 552}         -- "Memory Crystal Delta"
+  26: Set  {"QBits", Value = 102}         -- Oracle
+  27: Subtract  {"QBits", Value = 193}         -- Quest item bits for seer
+  28: Set  {"QBits", Value = 282}         -- NPC
+  29: GoTo  {jump = 36}
+
+  30: Cmp  {"QBits", Value = 103,   jump = 10}         -- Oracle
+  31: Subtract  {"Inventory", Value = 553}         -- "Memory Crystal Epsilon"
+  32: Set  {"QBits", Value = 103}         -- Oracle
+  33: Subtract  {"QBits", Value = 194}         -- Quest item bits for seer
+  34: Set  {"QBits", Value = 282}         -- NPC
+  35: GoTo  {jump = 36}
+
+  36: SetSprite  {SpriteId = 2, Visible = 1, Name = "mcryst01"}
+  37: SetLight  {Id = 65, On = true}
+  38: Add  {"Experience", Value = 100000}
+  39: StatusText  {Str = 11}         -- "+100,000 Experience"
+  40: Cmp  {"QBits", Value = 100,   jump = 42}         -- Oracle
+  41: Exit  {}
+
+  42: Cmp  {"QBits", Value = 101,   jump = 44}         -- Oracle
+  43: Exit  {}
+
+  44: Cmp  {"QBits", Value = 102,   jump = 46}         -- Oracle
+  45: Exit  {}
+
+  46: Cmp  {"QBits", Value = 103,   jump = 48}         -- Oracle
+  47: Exit  {}
+
+  48: SetNPCTopic  {NPC = 8, Index = 0, Event = 76}         -- "Oracle" : "Control Center"
+  49: SetNPCTopic  {NPC = 8, Index = 1, Event = 0}         -- "Oracle"
+end
+
+event 17
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  Cmp  {"QBits", Value = 283,   jump = 10}         -- NPC
+  3:  ForPlayer  ("All")
+  4:  Cmp  {"Inventory", Value = 550,   jump = 12}         -- "Memory Crystal Alpha"
+  5:  Cmp  {"Inventory", Value = 551,   jump = 18}         -- "Memory Crystal Beta"
+  6:  Cmp  {"Inventory", Value = 552,   jump = 24}         -- "Memory Crystal Delta"
+  7:  Cmp  {"Inventory", Value = 553,   jump = 30}         -- "Memory Crystal Epsilon"
+  8:  StatusText  {Str = 9}         -- "Insert Memory module to activate Melian."
+  9:  Exit  {}
+
+  10: StatusText  {Str = 10}         -- "Memory module restored."
+  11: Exit  {}
+
+  12: Cmp  {"QBits", Value = 100,   jump = 5}         -- Oracle
+  13: Subtract  {"Inventory", Value = 550}         -- "Memory Crystal Alpha"
+  14: Set  {"QBits", Value = 100}         -- Oracle
+  15: Subtract  {"QBits", Value = 191}         -- Quest item bits for seer
+  16: Set  {"QBits", Value = 283}         -- NPC
+  17: GoTo  {jump = 36}
+
+  18: Cmp  {"QBits", Value = 101,   jump = 6}         -- Oracle
+  19: Subtract  {"Inventory", Value = 551}         -- "Memory Crystal Beta"
+  20: Set  {"QBits", Value = 101}         -- Oracle
+  21: Subtract  {"QBits", Value = 192}         -- Quest item bits for seer
+  22: Set  {"QBits", Value = 283}         -- NPC
+  23: GoTo  {jump = 36}
+
+  24: Cmp  {"QBits", Value = 102,   jump = 7}         -- Oracle
+  25: Subtract  {"Inventory", Value = 552}         -- "Memory Crystal Delta"
+  26: Set  {"QBits", Value = 102}         -- Oracle
+  27: Subtract  {"QBits", Value = 193}         -- Quest item bits for seer
+  28: Set  {"QBits", Value = 283}         -- NPC
+  29: GoTo  {jump = 36}
+
+  30: Cmp  {"QBits", Value = 103,   jump = 10}         -- Oracle
+  31: Subtract  {"Inventory", Value = 553}         -- "Memory Crystal Epsilon"
+  32: Set  {"QBits", Value = 103}         -- Oracle
+  33: Subtract  {"QBits", Value = 194}         -- Quest item bits for seer
+  34: Set  {"QBits", Value = 283}         -- NPC
+  35: GoTo  {jump = 36}
+
+  36: SetSprite  {SpriteId = 1, Visible = 1, Name = "mcryst01"}
+  37: SetLight  {Id = 66, On = true}
+  38: Add  {"Experience", Value = 100000}
+  39: StatusText  {Str = 11}         -- "+100,000 Experience"
+  40: Cmp  {"QBits", Value = 100,   jump = 42}         -- Oracle
+  41: Exit  {}
+
+  42: Cmp  {"QBits", Value = 101,   jump = 44}         -- Oracle
+  43: Exit  {}
+
+  44: Cmp  {"QBits", Value = 102,   jump = 46}         -- Oracle
+  45: Exit  {}
+
+  46: Cmp  {"QBits", Value = 103,   jump = 48}         -- Oracle
+  47: Exit  {}
+
+  48: SetNPCTopic  {NPC = 8, Index = 0, Event = 76}         -- "Oracle" : "Control Center"
+  49: SetNPCTopic  {NPC = 8, Index = 1, Event = 0}         -- "Oracle"
+end
+
+event 51
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 280,   jump = 6}         -- NPC
+  2:  Cmp  {"QBits", Value = 281,   jump = 8}         -- NPC
+  3:  Cmp  {"QBits", Value = 282,   jump = 10}         -- NPC
+  4:  Cmp  {"QBits", Value = 283,   jump = 12}         -- NPC
+  5:  Exit  {}
+
+  6:  SetSprite  {SpriteId = 4, Visible = 1, Name = "mcryst01"}
+  7:  GoTo  {jump = 2}
+
+  8:  SetSprite  {SpriteId = 3, Visible = 1, Name = "mcryst01"}
+  9:  GoTo  {jump = 3}
+
+  10: SetSprite  {SpriteId = 2, Visible = 1, Name = "mcryst01"}
+  11: GoTo  {jump = 4}
+
+  12: SetSprite  {SpriteId = 1, Visible = 1, Name = "mcryst01"}
+end
+
+event 50
+      Hint = str[2]  -- "Exit"
+  0:  MoveToMap  {X = 12182, Y = 5379, Z = 320, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutC2.Odm"}
+end

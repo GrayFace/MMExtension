@@ -1,0 +1,362 @@
+str[0] = " "
+str[1] = "Switch"
+str[2] = "Sarcophagus"
+str[3] = "Burial niche"
+str[4] = "Elevator"
+str[5] = "Platform"
+str[6] = "Gate"
+str[7] = "The door will not budge."
+str[8] = "Fumes make you feel sick."
+str[9] = "You find something among the bones."
+str[10] = "The niche is empty."
+str[11] = "Door."
+str[12] = "Exit."
+str[13] = "Tomb of Luftka the Kruel"
+str[14] = ""
+
+
+event 1
+      Hint = str[4]  -- "Elevator"
+      MazeInfo = str[13]  -- "Tomb of Luftka the Kruel"
+  0:  SetDoorState  {Id = 1, State = 2}         -- switch state
+end
+
+event 2
+      Hint = str[4]  -- "Elevator"
+  0:  SetDoorState  {Id = 2, State = 2}         -- switch state
+end
+
+event 3
+      Hint = str[4]  -- "Elevator"
+  0:  SetDoorState  {Id = 3, State = 2}         -- switch state
+end
+
+event 4
+      Hint = str[11]  -- "Door."
+  0:  SetDoorState  {Id = 4, State = 2}         -- switch state
+end
+
+event 5
+      Hint = str[1]  -- "Switch"
+  0:  SetDoorState  {Id = 5, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 10, State = 2}         -- switch state
+end
+
+event 6
+      Hint = str[1]  -- "Switch"
+  0:  SetDoorState  {Id = 6, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 11, State = 2}         -- switch state
+end
+
+event 7
+      Hint = str[11]  -- "Door."
+  0:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[11]  -- "Door."
+  0:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+      Hint = str[11]  -- "Door."
+  0:  SetDoorState  {Id = 9, State = 1}
+end
+
+event 10
+      Hint = str[11]  -- "Door."
+  0:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+      Hint = str[11]  -- "Door."
+  0:  SetDoorState  {Id = 11, State = 1}
+end
+
+event 13
+      Hint = str[1]  -- "Switch"
+  0:  SetDoorState  {Id = 13, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 12, State = 2}         -- switch state
+end
+
+event 14
+      Hint = str[2]  -- "Sarcophagus"
+  0:  OpenChest  {Id = 0}
+end
+
+event 15
+      Hint = str[2]  -- "Sarcophagus"
+  0:  OpenChest  {Id = 1}
+end
+
+event 16
+      Hint = str[2]  -- "Sarcophagus"
+  0:  OpenChest  {Id = 2}
+end
+
+event 17
+      Hint = str[2]  -- "Sarcophagus"
+  0:  OpenChest  {Id = 3}
+end
+
+event 18
+      Hint = str[2]  -- "Sarcophagus"
+  0:  OpenChest  {Id = 4}
+end
+
+event 19
+      Hint = str[2]  -- "Sarcophagus"
+  0:  OpenChest  {Id = 5}
+end
+
+event 20
+      Hint = str[2]  -- "Sarcophagus"
+  0:  OpenChest  {Id = 6}
+end
+
+event 21
+      Hint = str[3]  -- "Burial niche"
+  0:  StatusText  {Str = 8}         -- "Fumes make you feel sick."
+  1:  ForPlayer  ("Random")
+  2:  Add  {"DiseasedRed", Value = 2}
+end
+
+event 22
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar0", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 23
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar1", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 24
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar2", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 25
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar3", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar3", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 26
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar4", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 27
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar4", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 28
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar4", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 29
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar5", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"Inventory", Value = 164}         -- "Cure Wounds"
+  3:  Add  {"MapVar5", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 30
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"Inventory", Value = 113}         -- "Cavalier Gauntlets"
+  3:  Add  {"MapVar6", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 31
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"Inventory", Value = 142}         -- "Fairy Wand of Poison"
+  3:  Add  {"MapVar7", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 32
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar8", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"Inventory", Value = 158}         -- "Mystic Wand of Shrinking"
+  3:  Add  {"MapVar8", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 33
+      Hint = str[2]  -- "Sarcophagus"
+  0:  OpenChest  {Id = 7}
+end
+
+event 34
+      Hint = str[6]  -- "Gate"
+  0:  StatusText  {Str = 7}         -- "The door will not budge."
+end
+
+event 35
+      Hint = str[3]  -- "Burial niche"
+  0:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 36
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar9", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"Gold", Value = 500}
+  3:  Add  {"MapVar9", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 37
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar10", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"Gold", Value = 500}
+  3:  Add  {"MapVar10", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 38
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar11", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 9}         -- "You find something among the bones."
+  2:  Add  {"Gold", Value = 500}
+  3:  Add  {"MapVar11", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "The niche is empty."
+end
+
+event 39
+      Hint = str[11]  -- "Door."
+  0:  StatusText  {Str = 7}         -- "The door will not budge."
+  1:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 40
+      Hint = str[11]  -- "Door."
+  0:  StatusText  {Str = 7}         -- "The door will not budge."
+  1:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 50
+      Hint = str[12]  -- "Exit."
+  0:  MoveToMap  {X = -19989, Y = -1020, Z = 159, Direction = 256, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "outc2.odm"}
+end
+
+event 51
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar29", Value = 1,   jump = 3}
+  1:  Set  {"MapVar29", Value = 1}
+  2:  GiveItem  {Strength = 4, Type = const.ItemType.Boots_, Id = 0}
+  3:  Exit  {}
+end
+
+event 52
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar30", Value = 1,   jump = 3}
+  1:  Set  {"MapVar30", Value = 1}
+  2:  GiveItem  {Strength = 4, Type = const.ItemType.Cloak_, Id = 0}
+  3:  Exit  {}
+end
+
+event 53
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar31", Value = 1,   jump = 3}
+  1:  Set  {"MapVar31", Value = 1}
+  2:  GiveItem  {Strength = 4, Type = const.ItemType.Shield_, Id = 0}
+  3:  Exit  {}
+end
+
+event 54
+      Hint = str[3]  -- "Burial niche"
+  0:  Cmp  {"MapVar32", Value = 1,   jump = 3}
+  1:  Set  {"MapVar32", Value = 1}
+  2:  GiveItem  {Strength = 4, Type = const.ItemType.Gountlets_, Id = 0}
+  3:  Exit  {}
+end
+
+event 55
+  0:  Cmp  {"MapVar33", Value = 1,   jump = 3}
+  1:  Set  {"MapVar33", Value = 1}
+  2:  Add  {"Inventory", Value = 155}         -- "Mystic Wand of Implosion"
+  3:  Exit  {}
+end
+
+event 56
+      Timer(<function>, 1.5*const.Minute)
+  1:  CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 7, FromX = -1088, FromY = 1984, FromZ = 896, ToX = 960, ToY = 3456, ToZ = 896}         -- "Fireball"
+  2:  CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 7, FromX = -1088, FromY = 4160, FromZ = 896, ToX = 960, ToY = 2624, ToZ = 896}         -- "Fireball"
+  3:  CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 7, FromX = 832, FromY = 4160, FromZ = 896, ToX = -1280, ToY = 2688, ToZ = 896}         -- "Fireball"
+  4:  CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 7, FromX = 832, FromY = 1984, FromZ = 896, ToX = -1216, ToY = 3584, ToZ = 896}         -- "Fireball"
+end
+
+event 100
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Add  {"QBits", Value = 425}         -- Luftka's Tomb once
+  3:  Subtract  {"Inventory", Value = 577}         -- "Key to Luftka's Tomb"
+end

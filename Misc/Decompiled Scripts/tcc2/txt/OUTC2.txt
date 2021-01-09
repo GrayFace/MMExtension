@@ -1,0 +1,273 @@
+str[0] = " "
+str[1] = "Stone of Revelation"
+str[2] = "Revelation Msg#2.  To enter the Pyramid, you must possess the Pyramid Key."
+str[3] = "+2 Might permanent"
+str[4] = "To Valley of Stones"
+str[5] = "To Desolation's End"
+str[6] = "To Baal's Garden"
+str[7] = "You cannot read the inscription."
+str[8] = "Autonote added."
+str[9] = ""
+str[10] = ""
+str[11] = "Shrine of Endurance"
+str[12] = "You pray at the shrine."
+str[13] = "+25 Endurance permanent"
+str[14] = "+5 Endurance permanent"
+str[15] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            mnfts_t_srrnoohtl"
+str[16] = "Obelisk"
+str[17] = ""
+str[18] = ""
+str[19] = "Temple of Carmen"
+str[20] = ""
+str[21] = "Guild of Aqua"
+str[22] = "Armory"
+str[23] = "Temple"
+str[24] = ""
+str[25] = ""
+str[26] = "Temple of Tranquility"
+str[27] = ""
+str[28] = "Guild of Mentis"
+str[29] = "Due to troubles in the North, services are temporarily suspended."
+str[30] = "You hand the Sacred Chalice to the monks of the temple who ensconce it in the main altar."
+str[31] = "The tomb is locked."
+str[32] = "You must be Master Skill Level may use this Guild."
+str[33] = "Sir Zeddicus Z'ul V is in council and cannot be disturbed."
+str[34] = "You cannot enter at this time."
+str[35] = ""
+
+
+event 1
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 511,   jump = 5}         -- SOG Void Teleport
+  2:  ForPlayer  ("All")
+  3:  Set  {"Eradicated", Value = 0}
+  4:  Exit  {}
+
+  5:  Cmp  {"QBits", Value = 330,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 2}
+
+  7:  Exit  {}
+end
+
+event 4
+      Hint = str[4]  -- "To Valley of Stones"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Awards", Value = 2,   jump = 4}         -- "Gained Access to the Valley of Stones"
+  2:  StatusText  {Str = 1}         -- "Stone of Revelation"
+  3:  Exit  {}
+
+  4:  MoveToMap  {X = -9488, Y = 18931, Z = 3618, Direction = 2034, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "OutA2.Odm"}
+  5:  Exit  {}
+end
+
+event 5
+      Hint = str[5]  -- "To Desolation's End"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Awards", Value = 4,   jump = 3}         -- "Gained Access to Desolation's End"
+  2:  Exit  {}
+
+  3:  MoveToMap  {X = 1968, Y = 1271, Z = 354, Direction = 1522, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "OutA1.Odm"}
+  4:  Exit  {}
+end
+
+event 6
+      Hint = str[6]  -- "To Baal's Garden"
+  0:  Cmp  {"QBits", Value = 496,   jump = 2}         -- Tortuga Hall Reload
+  1:  Exit  {}
+
+  2:  Cmp  {"QBits", Value = 491,   jump = 4}         -- Clear Reload Each January
+  3:  Exit  {}
+
+  4:  Cmp  {"QBits", Value = 492,   jump = 6}         -- Reload Each December
+  5:  Exit  {}
+
+  6:  Cmp  {"QBits", Value = 493,   jump = 8}         -- Seer Tamara Once
+  7:  Exit  {}
+
+  8:  Cmp  {"QBits", Value = 494,   jump = 10}         -- Tamara Once
+  9:  Exit  {}
+
+  10: Cmp  {"QBits", Value = 495,   jump = 12}         -- Kastution Reload
+  11: Exit  {}
+
+  12: ForPlayer  ("All")
+  13: Cmp  {"Inventory", Value = 532,   jump = 18}         -- "Chalice of Gods"
+  14: ForPlayer  ("All")
+  15: Add  {"Awards", Value = 5}         -- "Entered Baal's Garden"
+  16: MoveToMap  {X = 9049, Y = -18370, Z = 224, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "OutB3.Odm"}
+  17: Exit  {}
+
+  18: MoveToMap  {X = 9049, Y = -18370, Z = 224, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "OutC3.Odm"}
+  19: Exit  {}
+end
+
+event 7
+      Hint = str[1]  -- "Stone of Revelation"
+  0:  Cmp  {"QBits", Value = 505,   jump = 4}         -- Stone of Translation
+  1:  SetMessage  {Str = 7}         -- "You cannot read the inscription."
+  2:  SimpleMessage  {}
+  3:  Exit  {}
+
+  4:  SetMessage  {Str = 2}         -- "Revelation Msg#2.  To enter the Pyramid, you must possess the Pyramid Key."
+  5:  SimpleMessage  {}
+  6:  Add  {"QBits", Value = 495}         -- Kastution Reload
+  7:  Add  {"AutonotesBits", Value = 80}         -- "Revelation Msg#2.  To enter the Pyramid, you must possess the Pyramid Key."
+  8:  StatusText  {Str = 8}         -- "Autonote added."
+  9:  Exit  {}
+end
+
+event 162
+      Hint = str[2]  -- "Revelation Msg#2.  To enter the Pyramid, you must possess the Pyramid Key."
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 8}
+  1:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -13168, Y = 19504, Z = 160}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -13696, Y = 17408, Z = 160}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -10960, Y = 18016, Z = 160}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -9840, Y = 19280, Z = 160}
+  5:  Set  {"MapVar4", Value = 1}
+  6:  StatusText  {Str = 4}         -- "To Valley of Stones"
+  7:  Exit  {}
+
+  8:  StatusText  {Str = 9}         -- ""
+  9:  Exit  {}
+
+      RefillTimer(<function>, const.Month, true)
+  11: Set  {"MapVar4", Value = 0}
+end
+
+event 163
+      Hint = str[5]  -- "To Desolation's End"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 9}         -- ""
+  2:  GoTo  {jump = 6}
+
+  3:  Subtract  {"MapVar1", Value = 1}
+  4:  Add  {"HP", Value = 25}
+  5:  StatusText  {Str = 6}         -- "To Baal's Garden"
+  6:  Set  {"AutonotesBits", Value = 31}         -- ""
+  7:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Second)
+  9:  Set  {"MapVar1", Value = 30}
+end
+
+event 164
+      Hint = str[7]  -- "You cannot read the inscription."
+  0:  Set  {"Drunk", Value = 0}
+  1:  StatusText  {Str = 8}         -- "Autonote added."
+end
+
+event 209
+      Timer(<function>, 5*const.Minute)
+  1:  Cmp  {"QBits", Value = 159,   jump = 3}         -- NPC
+  2:  Cmp  {"Flying", Value = 0,   jump = 4}
+  3:  Exit  {}
+
+  4:  CastSpell  {Spell = 6, Mastery = const.Master, Skill = 5, FromX = 3823, FromY = 10974, FromZ = 2700, ToX = 0, ToY = 0, ToZ = 0}         -- "Fireball"
+end
+
+event 210
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 159,   jump = 3}         -- NPC
+  2:  Cmp  {"Inventory", Value = 486,   jump = 4}         -- "Dragon Tower Keys"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 159}         -- NPC
+  5:  SetTextureOutdoors  {Model = 116, Facet = 42, Name = "T1swBu"}
+end
+
+event 211
+      Hint = str[179]
+  20: StatusText  {Str = 33}         -- "Sir Zeddicus Z'ul V is in council and cannot be disturbed."
+  0:  MoveToMap  {X = -3714, Y = 1250, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 179, Icon = 1, Name = "D09.Blv"}         -- "Glastonbury Tor"
+  1:  Exit  {}
+
+  2:  EnterHouse  {Id = 179}         -- "Glastonbury Tor"
+  10: Hint  {Str = 157}
+  10: MoveToMap  {X = 0, Y = 0, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 157, Icon = 1, Name = "0"}         -- "Z'ul Keep"
+  11: EnterHouse  {Id = 158}         -- "Z'ul Keep"
+end
+
+event 212
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 178,   jump = 3}         -- NPC
+  2:  Set  {"QBits", Value = 178}         -- NPC
+  3:  Exit  {}
+end
+
+event 213
+      Hint = str[16]  -- "Obelisk"
+  0:  SetMessage  {Str = 15}         -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            mnfts_t_srrnoohtl"
+  1:  SimpleMessage  {}
+  2:  Set  {"QBits", Value = 367}         -- NPC
+  3:  Set  {"AutonotesBits", Value = 86}         -- ""
+end
+
+event 214
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 159,   jump = 3}         -- NPC
+  2:  Exit  {}
+
+  3:  SetTextureOutdoors  {Model = 116, Facet = 42, Name = "T1swBu"}
+end
+
+event 261
+      Hint = str[11]  -- "Shrine of Endurance"
+  0:  Cmp  {"MonthIs", Value = 3,   jump = 3}
+  1:  StatusText  {Str = 12}         -- "You pray at the shrine."
+  2:  Exit  {}
+
+  3:  Cmp  {"QBits", Value = 206,   jump = 1}         -- NPC
+  4:  Set  {"QBits", Value = 206}         -- NPC
+  5:  Cmp  {"QBits", Value = 211,   jump = 11}         -- NPC
+  6:  Set  {"QBits", Value = 211}         -- NPC
+  7:  ForPlayer  ("All")
+  8:  Add  {"BaseEndurance", Value = 25}
+  9:  StatusText  {Str = 13}         -- "+25 Endurance permanent"
+  10: Exit  {}
+
+  11: ForPlayer  ("All")
+  12: Add  {"BaseEndurance", Value = 5}
+  13: StatusText  {Str = 14}         -- "+5 Endurance permanent"
+end
+
+event 262
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 402,   jump = 3}         -- Vice-Elder Dissappear
+  2:  GoTo  {jump = 4}
+
+  200: Cmp  {"QBits", Value = 508,   jump = 4}         -- Void Fountain2
+  3:  Exit  {}
+
+  4:  Add  {"QBits", Value = 402}         -- Vice-Elder Dissappear
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 7, X = 12510, Y = -22038, Z = 1400}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 7, X = -22312, Y = 14554, Z = 1875}
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 7, X = 16639, Y = 21844, Z = 450}
+  8:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 16033, Y = 21693, Z = 1475}
+  9:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = 10472, Y = 22066, Z = 425}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 6, X = 3841, Y = 22180, Z = 1500}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 3123, Y = 22012, Z = 1900}
+  12: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 4, X = 4679, Y = 21731, Z = 1250}
+  13: GoTo  {jump = 15}
+
+  130: Cmp  {"QBits", Value = 507,   jump = 15}         -- Void Fountain3
+  14: Exit  {}
+
+  15: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = 12630, Y = -20957, Z = 2350}
+  16: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 13228, Y = -20272, Z = 1350}
+  17: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = -22024, Y = 14837, Z = 1400}
+  18: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -22281, Y = 14329, Z = 1450}
+  19: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = 15626, Y = 21471, Z = 1500}
+  20: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = 14498, Y = 21741, Z = 1550}
+  21: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = 4679, Y = 21731, Z = 1550}
+  22: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 3, X = 6118, Y = 22029, Z = 2000}
+  23: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = 7306, Y = 21402, Z = 700}
+  24: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 2, X = -1200, Y = 12542, Z = 1500}
+  25: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = -1200, Y = 12542, Z = 2300}
+  26: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -1200, Y = 12542, Z = 3000}
+  27: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -2000, Y = 12542, Z = 1500}
+  28: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -2000, Y = 12542, Z = 2300}
+  29: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 3, X = -2000, Y = 12542, Z = 3000}
+  30: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 2, X = -600, Y = 12542, Z = 1000}
+  31: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 4, X = -600, Y = 12542, Z = 2000}
+  32: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -600, Y = 12542, Z = 3000}
+end

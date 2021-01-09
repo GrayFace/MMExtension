@@ -1,0 +1,28 @@
+str[0] = " "
+str[1] = "Bench"
+str[2] = "You find a small wooden dowl."
+str[3] = "Crate"
+str[4] = "There seems to be a small hole in the crate."
+str[5] = "You fit the dowl into the hole and a small key pops out."
+str[6] = "The crate is padlocked - you need a key."
+str[7] = "You fit the key into the padlock and it pops open."
+str[8] = ""
+
+
+event 1
+      Hint = str[1]  -- "Bench"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 3}
+  1:  Add  {"MapVar0", Value = 1}
+  2:  StatusText  {Str = 2}         -- "You find a small wooden dowl."
+  3:  Exit  {}
+end
+
+event 2
+      Hint = str[3]  -- "Crate"
+  0:  OpenChest  {Id = 1}
+end
+
+event 3
+      Hint = str[3]  -- "Crate"
+  0:  OpenChest  {Id = 0}
+end

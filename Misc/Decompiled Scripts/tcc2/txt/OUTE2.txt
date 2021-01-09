@@ -1,0 +1,103 @@
+str[0] = " "
+str[1] = "Rock of Translation"
+str[2] = "You touch the rock and begin to understand."
+str[3] = "Chest"
+str[4] = "Drink from Well."
+str[5] = "Drink from Fountain."
+str[6] = "Drink from Trough."
+str[7] = "Refreshing!"
+str[8] = "+10 Spell points restored."
+str[9] = "+10 Intellect and Personality temporary."
+str[10] = "+5 Elemental resistance temporary."
+str[11] = "+20 Luck temporary."
+str[12] = "Poison!"
+str[13] = "Welcome to Ellesia"
+str[14] = "Ellesia"
+str[15] = "Shrine of Might"
+str[16] = "You pray at the shrine."
+str[17] = "+10 Might permanent"
+str[18] = "+3 Might permanent"
+str[19] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                           iNs_u_t_rfesh_'ns"
+str[20] = "Obelisk"
+str[21] = "The Barrel is empty."
+str[22] = "Green Super Barrel"
+str[23] = "Thank you!"
+str[24] = "A caged Prisoner!"
+str[25] = "Closed for repairs."
+str[26] = "You need a key to enter the temple."
+str[27] = "Campfire"
+str[28] = "Elixir of Revelation"
+str[29] = ""
+
+
+event 1
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 511,   jump = 5}         -- SOG Void Teleport
+  2:  ForPlayer  ("All")
+  3:  Set  {"Eradicated", Value = 0}
+  4:  Exit  {}
+
+  5:  Cmp  {"QBits", Value = 330,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 2}
+
+  7:  Exit  {}
+end
+
+event 10
+      Hint = str[1]  -- "Rock of Translation"
+  0:  SetMessage  {Str = 2}         -- "You touch the rock and begin to understand."
+  1:  SimpleMessage  {}
+  2:  Cmp  {"QBits", Value = 505,   jump = 7}         -- Stone of Translation
+  3:  ForPlayer  ("All")
+  4:  Add  {"Experience", Value = 2000000}
+  5:  Add  {"QBits", Value = 505}         -- Stone of Translation
+  44: ForPlayer  ("All")
+  6:  Add  {"Awards", Value = 3}         -- "Touched the Rock of Translation"
+  7:  Exit  {}
+end
+
+event 262
+      function events.LoadMap()
+  87: GoTo  {jump = 2}
+
+  150: Cmp  {"QBits", Value = 505,   jump = 3}         -- Stone of Translation
+  1:  Cmp  {"QBits", Value = 403,   jump = 3}         -- Hive  Twice
+  2:  GoTo  {jump = 4}
+
+  3:  Exit  {}
+
+  4:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 10, X = 9550, Y = 10200, Z = 0}
+  5:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = 9555, Y = 10220, Z = 0}
+  6:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 10, X = 10100, Y = 11400, Z = 0}
+  7:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = 10200, Y = 11400, Z = 0}
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 10, X = 5450, Y = 17050, Z = 0}
+  9:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = 5460, Y = 17050, Z = 0}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 10, X = -8166, Y = -7000, Z = 0}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = -8155, Y = -6990, Z = 0}
+  12: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 13700, Y = 8450, Z = 0}
+  13: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 4, X = -4670, Y = -18620, Z = 0}
+  14: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 7, X = -4670, Y = -18620, Z = 0}
+  15: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 4, X = -7960, Y = -12220, Z = 0}
+  16: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 10, X = -7955, Y = -12230, Z = 0}
+  17: GoTo  {jump = 20}
+
+  170: Cmp  {"QBits", Value = 507,   jump = 20}         -- Void Fountain3
+  18: Set  {"QBits", Value = 505}         -- Stone of Translation
+  19: Exit  {}
+
+  20: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = -7950, Y = -12210, Z = 0}
+  21: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -265, Y = 11000, Z = 0}
+  22: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -11765, Y = 6880, Z = 0}
+  23: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = -9130, Y = 12060, Z = 0}
+  24: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -5630, Y = -6620, Z = 0}
+  25: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -5125, Y = -6583, Z = 0}
+  26: Set  {"QBits", Value = 403}         -- Hive  Twice
+  27: Exit  {}
+
+  28: Subtract  {"QBits", Value = 505}         -- Stone of Translation
+  29: Exit  {}
+end
+
+event 263
+  0:  Subtract  {"HasFullSP", Value = 0}
+end

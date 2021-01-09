@@ -1,0 +1,318 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Switch"
+str[3] = "Chest"
+str[4] = "Double Door"
+str[5] = "The door won't budge"
+str[6] = "Lever"
+str[7] = "Exit"
+str[8] = "Caverns of Timbol"
+str[9] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+      MazeInfo = str[8]  -- "Caverns of Timbol"
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 6, State = 1}
+end
+
+event 7
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[2]  -- "Switch"
+  0:  SetDoorState  {Id = 8, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 9, State = 2}         -- switch state
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 11, State = 1}
+end
+
+event 12
+      Hint = str[6]  -- "Lever"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 6}
+  1:  SetDoorState  {Id = 12, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 13, State = 2}         -- switch state
+  3:  SetFacetBit  {Id = 2667, Bit = const.FacetBits.Untouchable, On = true}
+  4:  Set  {"MapVar0", Value = 1}
+  5:  Exit  {}
+
+  6:  SetDoorState  {Id = 12, State = 2}         -- switch state
+  7:  SetDoorState  {Id = 13, State = 2}         -- switch state
+  8:  SetFacetBit  {Id = 2667, Bit = const.FacetBits.Untouchable, On = false}
+  9:  Set  {"MapVar0", Value = 0}
+end
+
+event 14
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 14, State = 1}
+end
+
+event 15
+      Hint = str[2]  -- "Switch"
+  0:  SetDoorState  {Id = 15, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 19, State = 2}         -- switch state
+end
+
+event 16
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 16, State = 1}
+end
+
+event 17
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 17, State = 1}
+end
+
+event 18
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 18, State = 1}
+end
+
+event 20
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 20, State = 1}
+end
+
+event 21
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 21, State = 1}
+end
+
+event 22
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 22, State = 1}
+end
+
+event 23
+      Hint = str[2]  -- "Switch"
+  0:  SetDoorState  {Id = 23, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 24, State = 2}         -- switch state
+end
+
+event 25
+      Hint = str[6]  -- "Lever"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 6}
+  1:  SetDoorState  {Id = 25, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 26, State = 2}         -- switch state
+  3:  SetFacetBit  {Id = 2668, Bit = const.FacetBits.Untouchable, On = true}
+  4:  Set  {"MapVar0", Value = 1}
+  5:  Exit  {}
+
+  6:  SetDoorState  {Id = 25, State = 2}         -- switch state
+  7:  SetDoorState  {Id = 26, State = 2}         -- switch state
+  8:  SetFacetBit  {Id = 2668, Bit = const.FacetBits.Untouchable, On = false}
+  9:  Set  {"MapVar0", Value = 0}
+end
+
+event 27
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 27, State = 1}
+end
+
+event 28
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 28, State = 1}
+end
+
+event 29
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 29, State = 1}
+end
+
+event 30
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 30, State = 1}
+end
+
+event 31
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 31, State = 1}
+end
+
+event 32
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 32, State = 1}
+end
+
+event 33
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 33, State = 1}
+end
+
+event 34
+      Hint = str[4]  -- "Double Door"
+  0:  SetDoorState  {Id = 34, State = 1}
+  1:  SetDoorState  {Id = 35, State = 1}
+end
+
+event 36
+      Hint = str[36]
+  0:  SetDoorState  {Id = 36, State = 1}
+end
+
+event 37
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 38
+      Hint = str[3]  -- "Chest"
+  0:  Cmp  {"QBits", Value = 14,   jump = 4}         -- 14 D6, given when Message 504 given out.
+  1:  Set  {"QBits", Value = 14}         -- 14 D6, given when Message 504 given out.
+  2:  OpenChest  {Id = 0}
+  3:  Exit  {}
+
+  4:  OpenChest  {Id = 2}
+end
+
+event 39
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 40
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 41
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 42
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 43
+      Hint = str[3]  -- "Chest"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 4}
+  1:  Cmp  {"QBits", Value = 3,   jump = 6}         --  3 D06, given when harp is recovered
+  2:  Set  {"QBits", Value = 3}         --  3 D06, given when harp is recovered
+  3:  Set  {"MapVar1", Value = 1}
+  4:  OpenChest  {Id = 7}
+  5:  Exit  {}
+
+  6:  OpenChest  {Id = 2}
+end
+
+event 44
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+end
+
+event 45
+      Hint = str[3]  -- "Chest"
+  0:  RandomGoTo  {jumpA = 1, jumpB = 3, jumpC = 5, jumpD = 7, jumpE = 9, jumpF = 11}
+  1:  MoveToMap  {X = 2752, Y = -256, Z = 0, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  2:  Exit  {}
+
+  3:  MoveToMap  {X = 3222, Y = -2076, Z = -31, Direction = 1012, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  4:  Exit  {}
+
+  5:  MoveToMap  {X = 1152, Y = -5193, Z = -511, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  6:  Exit  {}
+
+  7:  MoveToMap  {X = -59, Y = 1997, Z = -896, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  8:  Exit  {}
+
+  9:  MoveToMap  {X = -831, Y = 3109, Z = -128, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  10: Exit  {}
+
+  11: RandomGoTo  {jumpA = 13, jumpB = 15, jumpC = 17, jumpD = 19, jumpE = 0, jumpF = 0}
+  12: Exit  {}
+
+  13: MoveToMap  {X = -7023, Y = -1413, Z = -383, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  14: Exit  {}
+
+  15: MoveToMap  {X = 1847, Y = 8410, Z = -767, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  16: Exit  {}
+
+  17: MoveToMap  {X = -843, Y = 6440, Z = -767, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  18: Exit  {}
+
+  19: MoveToMap  {X = -3622, Y = 5464, Z = -639, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  20: Exit  {}
+end
+
+event 46
+      Hint = str[1]  -- "Door"
+  0:  StatusText  {Str = 5}         -- "The door won't budge"
+end
+
+event 50
+      Hint = str[7]  -- "Exit"
+  0:  MoveToMap  {X = 16495, Y = -14570, Z = 96, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutD3.Odm"}
+end
+
+event 51
+  0:  Cmp  {"QBits", Value = 306,   jump = 3}         -- NPC
+  1:  Set  {"QBits", Value = 306}         -- NPC
+  2:  Add  {"BaseLuck", Value = 10}
+  3:  Exit  {}
+end
+
+event 60
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 471,   jump = 4}         -- Cavern of Timbol Once
+  2:  Cmp  {"QBits", Value = 508,   jump = 5}         -- Warrior
+  3:  Set  {"QBits", Value = 471}         -- Cavern of Timbol Once
+  4:  Exit  {}
+
+  5:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 1, X = 2254, Y = -157, Z = 1}
+  6:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = 767, Y = -290, Z = 1}
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 3, X = -1747, Y = -290, Z = 1}
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = -2786, Y = -3235, Z = 1}
+  9:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = 2001, Y = -2157, Z = 1}
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -388, Y = -3254, Z = -511}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 4, X = 4946, Y = -1757, Z = -495}
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 3, X = -2688, Y = -4871, Z = -511}
+  13: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -3737, Y = 2375, Z = -351}
+  14: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = -1460, Y = 6327, Z = -767}
+  15: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = -6276, Y = 6363, Z = -639}
+  16: Cmp  {"QBits", Value = 507,   jump = 18}         -- Death Wish
+  17: GoTo  {jump = 3}
+
+  18: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 2231, Y = -433, Z = 1}
+  19: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 101, Y = -290, Z = 1}
+  20: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 44, Y = -3008, Z = -511}
+  21: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -4285, Y = -1589, Z = -383}
+  22: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 3, X = -2044, Y = 6163, Z = -767}
+  23: GoTo  {jump = 3}
+end

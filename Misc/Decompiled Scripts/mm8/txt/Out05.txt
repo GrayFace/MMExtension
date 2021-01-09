@@ -1,0 +1,892 @@
+str[0] = " "
+str[1] = "Garrote Gorge"
+str[2] = ""
+str[3] = "Chest"
+str[4] = ""
+str[5] = "Well"
+str[6] = "Drink from the well"
+str[7] = "Fountain"
+str[8] = "Drink from the fountain"
+str[9] = "Refreshing"
+str[10] = "That was not so refreshing"
+str[11] = ""
+str[12] = "theunicornkin"
+str[13] = ""
+str[14] = ""
+str[15] = "The door is locked"
+str[16] = ""
+str[17] = ""
+str[18] = ""
+str[19] = "Tent"
+str[20] = "Fruit Tree"
+str[21] = "You receive an apple"
+str[22] = "Berry Bush"
+str[23] = "You receive some berries"
+str[24] = ""
+str[25] = "North"
+str[26] = "West"
+str[27] = "East"
+str[28] = "South"
+str[29] = ""
+str[30] = "Shrine"
+str[31] = "Altar"
+str[32] = "You Pray"
+str[33] = "Obelisk"
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = "Tree"
+str[41] = "Flowers"
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = "Dragon Hunter Camp"
+str[46] = "Dragon Cave"
+str[47] = "Naga Vault"
+str[48] = "Grand Temple of Eep"
+str[49] = ""
+str[50] = "Enter the Dragon Hunter's Camp"
+str[51] = "Enter the Dragon Cave"
+str[52] = "Enter the Naga Vault"
+str[53] = "Enter the Grand Temple of Eep"
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = "Fire Resistance +2 (Permanent)"
+str[61] = "Accuracy +2 (Permanent)"
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = "You have killed all of the Dragons"
+str[71] = "You have killed all of the Dragon Hunters"
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 22,   jump = 4}         -- Allied with Dragons. Return Dragon Egg to Dragons done.
+  2:  Cmp  {"QBits", Value = 21,   jump = 8}         -- Allied with Charles Quioxte's Dragon Hunters. Return Dragon Egg to Quixote done.
+  3:  GoTo  {jump = 12}
+
+  4:  SetMonGroupBit  {NPCGroup = 22, Bit = const.MonsterBits.Hostile, On = true}         -- "Dragon Hunters"
+  5:  SetMonGroupBit  {NPCGroup = 23, Bit = const.MonsterBits.Hostile, On = true}         -- "Dragon Hunters"
+  6:  SetMonGroupBit  {NPCGroup = 24, Bit = const.MonsterBits.Hostile, On = true}         -- "Dragon Hunters at Training Camp"
+  7:  GoTo  {jump = 11}
+
+  8:  SetMonGroupBit  {NPCGroup = 44, Bit = const.MonsterBits.Hostile, On = true}         -- ""
+  9:  SetMonGroupBit  {NPCGroup = 45, Bit = const.MonsterBits.Hostile, On = true}         -- ""
+  10: GoTo  {jump = 11}
+
+  11: GoTo  {jump = 12}
+
+  12: Exit  {}
+end
+
+event 2
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 3
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 4
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 6
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 7
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 8
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 9
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 10
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 11
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 316}         -- "Stormlance Residence"
+  1:  Exit  {}
+end
+
+event 12
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 316}         -- "Stormlance Residence"
+  2:  Exit  {}
+end
+
+event 13
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 317}         -- "Morningstar Residence"
+  1:  Exit  {}
+end
+
+event 14
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 317}         -- "Morningstar Residence"
+  2:  Exit  {}
+end
+
+event 15
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 318}         -- "Foestryke Residence"
+  1:  Exit  {}
+end
+
+event 16
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 318}         -- "Foestryke Residence"
+  2:  Exit  {}
+end
+
+event 17
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 319}         -- "Ironfist Residence"
+  1:  Exit  {}
+end
+
+event 18
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 319}         -- "Ironfist Residence"
+  2:  Exit  {}
+end
+
+event 19
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 340}         -- "Avalon's Residence"
+  1:  Exit  {}
+end
+
+event 20
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 340}         -- "Avalon's Residence"
+  2:  Exit  {}
+end
+
+event 21
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 341}         -- "Arin Residence"
+  1:  Exit  {}
+end
+
+event 22
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 341}         -- "Arin Residence"
+  2:  Exit  {}
+end
+
+event 23
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 342}         -- "Lightsworn Residence"
+  1:  Exit  {}
+end
+
+event 24
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 342}         -- "Lightsworn Residence"
+  2:  Exit  {}
+end
+
+event 25
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 343}         -- "Otterton Residence"
+  1:  Exit  {}
+end
+
+event 26
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 343}         -- "Otterton Residence"
+  2:  Exit  {}
+end
+
+event 27
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 344}         -- "Calandril's Residence"
+  1:  Exit  {}
+end
+
+event 28
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 344}         -- "Calandril's Residence"
+  2:  Exit  {}
+end
+
+event 29
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 345}         -- "Maker Residence"
+  1:  Exit  {}
+end
+
+event 30
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 345}         -- "Maker Residence"
+  2:  Exit  {}
+end
+
+event 31
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 346}         -- "Slayer Residence"
+  1:  Exit  {}
+end
+
+event 32
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 346}         -- "Slayer Residence"
+  2:  Exit  {}
+end
+
+event 33
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 347}         -- "Kern Residence"
+  1:  Exit  {}
+end
+
+event 34
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 347}         -- "Kern Residence"
+  2:  Exit  {}
+end
+
+event 35
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 348}         -- "Jeni Residence"
+  1:  Exit  {}
+end
+
+event 36
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 348}         -- "Jeni Residence"
+  2:  Exit  {}
+end
+
+event 37
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 349}         -- "Weldrick's Home"
+  1:  Exit  {}
+end
+
+event 38
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 349}         -- "Weldrick's Home"
+  2:  Exit  {}
+end
+
+event 39
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 480}         -- "Nelix's House"
+  1:  Exit  {}
+end
+
+event 40
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 480}         -- "Nelix's House"
+  2:  Exit  {}
+end
+
+event 41
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 481}         -- "Tempus' House"
+  1:  Exit  {}
+end
+
+event 42
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 481}         -- "Tempus' House"
+  2:  Exit  {}
+end
+
+event 43
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 320}         -- "Reaverston Residence"
+  1:  Exit  {}
+end
+
+event 44
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 320}         -- "Reaverston Residence"
+  2:  Exit  {}
+end
+
+event 81
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+  1:  Exit  {}
+end
+
+event 82
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+  1:  Exit  {}
+end
+
+event 83
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+  1:  Exit  {}
+end
+
+event 84
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+  1:  Exit  {}
+end
+
+event 85
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+  1:  Exit  {}
+end
+
+event 86
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+  1:  Exit  {}
+end
+
+event 87
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+  1:  Exit  {}
+end
+
+event 88
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+  1:  Exit  {}
+end
+
+event 89
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+  1:  Exit  {}
+end
+
+event 90
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+  1:  Exit  {}
+end
+
+event 91
+      Hint = str[41]  -- "Flowers"
+  0:  OpenChest  {Id = 10}
+  1:  Exit  {}
+end
+
+event 92
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 11}
+  1:  Exit  {}
+end
+
+event 93
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+  1:  Exit  {}
+end
+
+event 94
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+  1:  Exit  {}
+end
+
+event 95
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+  1:  Exit  {}
+end
+
+event 96
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+  1:  Exit  {}
+end
+
+event 97
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+  1:  Exit  {}
+end
+
+event 98
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+  1:  Exit  {}
+end
+
+event 99
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+  1:  Exit  {}
+end
+
+event 100
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+  1:  Exit  {}
+end
+
+event 101
+      Hint = str[6]  -- "Drink from the well"
+  0:  Cmp  {"MapVar29", Value = 2,   jump = 7}
+  1:  Cmp  {"Gold", Value = 199,   jump = 7}
+  2:  Cmp  {"BankGold", Value = 99,   jump = 7}
+  3:  Add  {"Gold", Value = 200}
+  4:  Add  {"MapVar29", Value = 1}
+  5:  Add  {"AutonotesBits", Value = 256}         -- "Well at the Dragon Hunters Camp in Garrote Gorge gives 200 gold if the total gold on party and in the bank is less than 100."
+  6:  GoTo  {jump = 8}
+
+  7:  StatusText  {Str = 9}         -- "Refreshing"
+  8:  Exit  {}
+end
+
+event 102
+      Hint = str[6]  -- "Drink from the well"
+  0:  Cmp  {"FireResistance", Value = 10,   jump = 5}
+  1:  Add  {"FireResistance", Value = 2}
+  2:  StatusText  {Str = 60}         -- "Fire Resistance +2 (Permanent)"
+  3:  Add  {"AutonotesBits", Value = 257}         -- "Well at the Dragon Hunters Camp in Garrote Gorge gives a permanent Fire Resistance bonus up to a Fire Resistance of 10."
+  4:  GoTo  {jump = 6}
+
+  5:  StatusText  {Str = 9}         -- "Refreshing"
+  6:  Exit  {}
+end
+
+event 103
+      Hint = str[6]  -- "Drink from the well"
+  0:  Cmp  {"BaseAccuracy", Value = 16,   jump = 5}
+  1:  Add  {"BaseAccuracy", Value = 2}
+  2:  StatusText  {Str = 61}         -- "Accuracy +2 (Permanent)"
+  3:  Add  {"AutonotesBits", Value = 258}         -- "Well at the Dragon Hunters Camp in Garrote Gorge gives a permanent Accuracy bonus up to an Accuracy of 16."
+  4:  GoTo  {jump = 6}
+
+  5:  StatusText  {Str = 9}         -- "Refreshing"
+  6:  Exit  {}
+end
+
+event 131
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 20}
+  1:  Cmp  {"QBits", Value = 22,   jump = 18}         -- Allied with Dragons. Return Dragon Egg to Dragons done.
+  2:  Cmp  {"QBits", Value = 155,   jump = 18}         -- Killed all Dragons in Garrote Gorge Area
+  3:  CheckMonstersKilled  {CheckType = 2, Id = 189, Count = 0, InvisibleAsDead = 0,   jump(>=) = 5}
+  4:  GoTo  {jump = 18}
+
+  5:  CheckMonstersKilled  {CheckType = 2, Id = 190, Count = 0, InvisibleAsDead = 0,   jump(>=) = 7}
+  6:  GoTo  {jump = 18}
+
+  7:  CheckMonstersKilled  {CheckType = 2, Id = 191, Count = 0, InvisibleAsDead = 0,   jump(>=) = 9}
+  8:  GoTo  {jump = 18}
+
+  9:  Cmp  {"QBits", Value = 156,   jump = 14}         -- Questbit set for Riki
+  10: Set  {"QBits", Value = 156}         -- Questbit set for Riki
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 1, X = -30272, Y = -16512, Z = 0, NPCGroup = 1, unk = 0}         -- "Peasants on Main Island of Dagger Wound"
+  12: SetMonGroupBit  {NPCGroup = 1, Bit = const.MonsterBits.Invisible, On = true}         -- "Peasants on Main Island of Dagger Wound"
+  13: GoTo  {jump = 18}
+
+  14: Set  {"QBits", Value = 155}         -- Killed all Dragons in Garrote Gorge Area
+  15: Add  {"QBits", Value = 225}         -- dead questbit for internal use(bling)
+  16: Subtract  {"QBits", Value = 225}         -- dead questbit for internal use(bling)
+  17: StatusText  {Str = 70}         -- "You have killed all of the Dragons"
+  18: Cmp  {"QBits", Value = 21,   jump = 35}         -- Allied with Charles Quioxte's Dragon Hunters. Return Dragon Egg to Quixote done.
+  19: Cmp  {"QBits", Value = 158,   jump = 35}         -- Killed all Dragon Hunters in Garrote Gorge wilderness area
+  20: CheckMonstersKilled  {CheckType = 2, Id = 42, Count = 0, InvisibleAsDead = 0,   jump(>=) = 22}
+  21: GoTo  {jump = 35}
+
+  22: CheckMonstersKilled  {CheckType = 2, Id = 43, Count = 0, InvisibleAsDead = 0,   jump(>=) = 24}
+  23: GoTo  {jump = 35}
+
+  24: CheckMonstersKilled  {CheckType = 2, Id = 44, Count = 0, InvisibleAsDead = 0,   jump(>=) = 26}
+  25: GoTo  {jump = 35}
+
+  26: Cmp  {"QBits", Value = 159,   jump = 31}         -- Questbit set for Riki
+  27: Set  {"QBits", Value = 159}         -- Questbit set for Riki
+  28: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -30272, Y = -16512, Z = 0, NPCGroup = 2, unk = 0}         -- "Lizardmen Warriors"
+  29: SetMonGroupBit  {NPCGroup = 2, Bit = const.MonsterBits.Invisible, On = true}         -- "Lizardmen Warriors"
+  30: GoTo  {jump = 35}
+
+  31: Set  {"QBits", Value = 158}         -- Killed all Dragon Hunters in Garrote Gorge wilderness area
+  32: Add  {"QBits", Value = 225}         -- dead questbit for internal use(bling)
+  33: Subtract  {"QBits", Value = 225}         -- dead questbit for internal use(bling)
+  34: StatusText  {Str = 71}         -- "You have killed all of the Dragon Hunters"
+  35: Cmp  {"QBits", Value = 75,   jump = 39}         -- Killed all Dragon Slayers in southwest encampment in Area 5
+  36: CheckMonstersKilled  {CheckType = 1, Id = 24, Count = 0, InvisibleAsDead = 0,   jump(>=) = 38}
+  37: GoTo  {jump = 39}
+
+  38: Set  {"QBits", Value = 75}         -- Killed all Dragon Slayers in southwest encampment in Area 5
+  39: Cmp  {"QBits", Value = 200,   jump = 43}         -- Sword of Whistlebone - I lost it
+  40: CheckMonstersKilled  {CheckType = 4, Id = 2, Count = 1, InvisibleAsDead = 0,   jump(>=) = 42}
+  41: GoTo  {jump = 43}
+
+  42: Set  {"QBits", Value = 200}         -- Sword of Whistlebone - I lost it
+  43: GoTo  {jump = 44}
+
+  44: Exit  {}
+end
+
+event 150
+      Hint = str[33]  -- "Obelisk"
+  0:  Cmp  {"QBits", Value = 190,   jump = 4}         -- Obelisk Area 5
+  1:  StatusText  {Str = 12}         -- "theunicornkin"
+  2:  Add  {"AutonotesBits", Value = 17}         -- "Obelisk message #1: theunicornkin"
+  3:  Add  {"QBits", Value = 190}         -- Obelisk Area 5
+  4:  Exit  {}
+end
+
+event 171
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 22,   jump = 2}         -- Allied with Dragons. Return Dragon Egg to Dragons done.
+  1:  GoTo  {jump = 4}
+
+  2:  FaceAnimation  {Player = "Current", Animation = 18}
+  3:  GoTo  {jump = 5}
+
+  4:  EnterHouse  {Id = 4}         -- "Lance's Spears"
+  5:  Exit  {}
+end
+
+event 172
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 4}         -- "Lance's Spears"
+  2:  Exit  {}
+end
+
+event 173
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 22,   jump = 2}         -- Allied with Dragons. Return Dragon Egg to Dragons done.
+  1:  GoTo  {jump = 4}
+
+  2:  FaceAnimation  {Player = "Current", Animation = 18}
+  3:  GoTo  {jump = 5}
+
+  4:  EnterHouse  {Id = 18}         -- "Plated Protection"
+  5:  Exit  {}
+end
+
+event 174
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 18}         -- "Plated Protection"
+  2:  Exit  {}
+end
+
+event 175
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 22,   jump = 2}         -- Allied with Dragons. Return Dragon Egg to Dragons done.
+  1:  GoTo  {jump = 4}
+
+  2:  FaceAnimation  {Player = "Current", Animation = 18}
+  3:  GoTo  {jump = 5}
+
+  4:  EnterHouse  {Id = 32}         -- "Wards and Pendants"
+  5:  Exit  {}
+end
+
+event 176
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 32}         -- "Wards and Pendants"
+  2:  Exit  {}
+end
+
+event 181
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 22,   jump = 2}         -- Allied with Dragons. Return Dragon Egg to Dragons done.
+  1:  GoTo  {jump = 4}
+
+  2:  FaceAnimation  {Player = "Current", Animation = 18}
+  3:  GoTo  {jump = 5}
+
+  4:  EnterHouse  {Id = 57}         -- "Guild Caravans"
+  5:  Exit  {}
+end
+
+event 182
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 57}         -- "Guild Caravans"
+  2:  Exit  {}
+end
+
+event 185
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 22,   jump = 2}         -- Allied with Dragons. Return Dragon Egg to Dragons done.
+  1:  GoTo  {jump = 4}
+
+  2:  FaceAnimation  {Player = "Current", Animation = 18}
+  3:  GoTo  {jump = 5}
+
+  4:  EnterHouse  {Id = 77}         -- "Sacred Steel"
+  5:  Exit  {}
+end
+
+event 186
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 77}         -- "Sacred Steel"
+  2:  Exit  {}
+end
+
+event 187
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 22,   jump = 2}         -- Allied with Dragons. Return Dragon Egg to Dragons done.
+  1:  GoTo  {jump = 4}
+
+  2:  FaceAnimation  {Player = "Current", Animation = 18}
+  3:  GoTo  {jump = 5}
+
+  4:  EnterHouse  {Id = 92}         -- "Godric's Gauntlet"
+  5:  Exit  {}
+end
+
+event 188
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 92}         -- "Godric's Gauntlet"
+  2:  Exit  {}
+end
+
+event 191
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 111}         -- "Dragon's Blood Inn"
+  1:  Exit  {}
+end
+
+event 192
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 111}         -- "Dragon's Blood Inn"
+  2:  Exit  {}
+end
+
+event 401
+      Hint = str[45]  -- "Dragon Hunter Camp"
+  0:  Exit  {}
+end
+
+event 402
+      Hint = str[46]  -- "Dragon Cave"
+  0:  Exit  {}
+end
+
+event 403
+      Hint = str[47]  -- "Naga Vault"
+  0:  Exit  {}
+end
+
+event 404
+      Hint = str[48]  -- "Grand Temple of Eep"
+  0:  Exit  {}
+end
+
+event 405
+      Hint = str[19]  -- "Tent"
+  0:  Exit  {}
+end
+
+event 450
+      Hint = str[5]  -- "Well"
+  0:  Exit  {}
+end
+
+event 479
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 25}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 4, jumpC = 6, jumpD = 8, jumpE = 10, jumpF = 12}
+  2:  GoTo  {jump = 3}
+
+  3:  GoTo  {jump = 12}
+
+  4:  GoTo  {jump = 5}
+
+  5:  GoTo  {jump = 12}
+
+  6:  GoTo  {jump = 7}
+
+  7:  GoTo  {jump = 12}
+
+  8:  GoTo  {jump = 9}
+
+  9:  GoTo  {jump = 12}
+
+  10: GoTo  {jump = 11}
+
+  11: GoTo  {jump = 12}
+
+  12: Exit  {}
+end
+
+event 490
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 15}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 2, jumpC = 3, jumpD = 3, jumpE = 3, jumpF = 3}
+  2:  PlaySound  {Id = 325, X = 11520, Y = -13664}
+  3:  Exit  {}
+end
+
+event 501
+      Hint = str[50]  -- "Enter the Dragon Hunter's Camp"
+  0:  MoveToMap  {X = -1216, Y = 1888, Z = 1, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 202, Icon = 1, Name = "d16.blv"}         -- "Dragon Hunter Camp"
+  1:  Exit  {}
+end
+
+event 502
+      Hint = str[51]  -- "Enter the Dragon Cave"
+  0:  MoveToMap  {X = 223, Y = -8, Z = 170, Direction = 1088, LookAngle = 0, SpeedZ = 0, HouseId = 203, Icon = 1, Name = "d17.blv"}         -- "Dragon Cave"
+  1:  Exit  {}
+end
+
+event 503
+      Hint = str[52]  -- "Enter the Naga Vault"
+  0:  MoveToMap  {X = -500, Y = -1567, Z = -63, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 204, Icon = 1, Name = "d18.blv"}         -- "Naga Vault"
+  1:  Exit  {}
+end
+
+event 504
+      Hint = str[53]  -- "Enter the Grand Temple of Eep"
+  0:  MoveToMap  {X = -2812, Y = 726, Z = 1, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 1, Name = "D44.blv"}
+  1:  Exit  {}
+end

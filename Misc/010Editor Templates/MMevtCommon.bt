@@ -1,0 +1,65 @@
+
+//EvtGenerateWholeDescription = true;
+//EvtFilter = 0x00;
+
+// -----------------------------------------------------------------------------
+// File 
+// -----------------------------------------------------------------------------
+
+LittleEndian();
+BitfieldEnablePadding();
+
+if (EvtGenerateWholeDescription) 
+  TComment WholeFile;
+TComment Stats;
+TComment Errors;
+TComment Reference;
+FSeek(0);
+
+Reference.Description = CommandsRefStr;
+Reference.Description += "\
+\
+Actions:\
+\
+` `(space) or an empty string:  Remove instruction.\
+`-`:  Remove instruction, shift instruction numbers after it by -1.\
+`+0A`:  Add instruction \"0A\" after this one (use any inscturion number instead of \"0A\").\
+`*0A`:  Add instruction \"0A\" after this one, shift instruction numbers after it by +1 (use any inscturion number instead of \"0A\").\
+";
+/*
+Reference generation:
+
+local t = {}
+for k, v in sortpairs(internal.EvtInternal.CmdNames) do
+	t[#t+1] = k ~= 0 and ('%02X   %s'):format(k, v) or nil
+end
+print(table.concat(t, '\\n'))
+
+Reference extra:
+
+local s = [[
+]]
+s = ('\n'..s..'\n'):gsub('\r\n', '\n'):gsub('\n%- ', '\n'):gsub('\n+', '\n')
+print(("%q;"):format("\n\nActions:\n"..s))
+
+
+VarNum generation:
+
+for k, v in sortpairs(internal.EvtInternal.VarNumToStr) do
+	print('  '..v..' = '..k..',')
+end
+*/
+
+local int Lines = 0;
+while(FTell() != FileSize())
+{
+  TEvtCommand Command;
+  Lines++;
+}
+SPrintf(Stats.Description, "Lines: %d, Size: %d", Lines, FileSize());
+
+/* ----------------------------------------------------------------------------
+/ mm_mapviewer:
+/ 04C: byte1 = event action type (1 - space press, 2 - touch)
+/
+*/

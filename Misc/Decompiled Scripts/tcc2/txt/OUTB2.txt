@@ -1,0 +1,113 @@
+str[0] = " "
+str[1] = "Stone of Revelation"
+str[2] = "You cannot read the inscription"
+str[3] = "Revelation Msg#6.  Once you have all six Revelations, you may then use the Tunnel to Baal's Garden."
+str[4] = "Revelation Msg#4.  If you reach the end of lights before you reach your destination, touch the last light to continue your journey."
+str[5] = ""
+str[6] = ""
+str[7] = ""
+str[8] = "Autonote added."
+str[9] = ""
+str[10] = ""
+str[11] = ""
+str[12] = ""
+str[13] = ""
+str[14] = ""
+str[15] = ""
+str[16] = ""
+str[17] = ""
+str[18] = ""
+str[19] = ""
+str[20] = ""
+str[21] = ""
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = ""
+
+
+event 1
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 511,   jump = 5}         -- SOG Void Teleport
+  2:  ForPlayer  ("All")
+  3:  Set  {"Eradicated", Value = 0}
+  4:  Exit  {}
+
+  5:  Cmp  {"QBits", Value = 330,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 2}
+
+  7:  Exit  {}
+end
+
+event 10
+      Hint = str[1]  -- "Stone of Revelation"
+  0:  Cmp  {"QBits", Value = 505,   jump = 3}         -- Stone of Translation
+  1:  StatusText  {Str = 2}         -- "You cannot read the inscription"
+  2:  Exit  {}
+
+  3:  Add  {"QBits", Value = 491}         -- Clear Reload Each January
+  4:  SetMessage  {Str = 3}         -- "Revelation Msg#6.  Once you have all six Revelations, you may then use the Tunnel to Baal's Garden."
+  5:  SimpleMessage  {}
+  6:  Set  {"AutonotesBits", Value = 84}         -- "Revelation Msg#6.  Once you have all six Revelations, you may then use the Flashing Tunnel to Baal's Garden."
+  7:  StatusText  {Str = 8}         -- "Autonote added."
+  8:  Exit  {}
+end
+
+event 11
+      Hint = str[1]  -- "Stone of Revelation"
+  0:  Cmp  {"QBits", Value = 505,   jump = 3}         -- Stone of Translation
+  1:  StatusText  {Str = 2}         -- "You cannot read the inscription"
+  2:  Exit  {}
+
+  3:  Add  {"QBits", Value = 493}         -- Seer Tamara Once
+  4:  SetMessage  {Str = 4}         -- "Revelation Msg#4.  If you reach the end of lights before you reach your destination, touch the last light to continue your journey."
+  5:  SimpleMessage  {}
+  6:  Set  {"AutonotesBits", Value = 82}         -- "Revelation Msg#4.  If you reach the end of lights before you reach your destination, touch the last light to continue your journey."
+  7:  StatusText  {Str = 8}         -- "Autonote added."
+  8:  Exit  {}
+end
+
+event 12
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 407,   jump = 41}         -- Birka Timer2
+  2:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -15079, Y = 12218, Z = 700}
+  3:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -15079, Y = 12218, Z = 1400}
+  4:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = -15079, Y = 12218, Z = 2000}
+  5:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -13834, Y = 12841, Z = 650}
+  6:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -13834, Y = 12841, Z = 1250}
+  7:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = -13834, Y = 12841, Z = 1850}
+  8:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -14083, Y = 14830, Z = 550}
+  9:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -14083, Y = 14830, Z = 900}
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -14083, Y = 14830, Z = 1640}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = 5952, Y = 7169, Z = 1000}
+  12: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = 5952, Y = 7169, Z = 1700}
+  13: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 5952, Y = 7169, Z = 2700}
+  14: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = 3048, Y = 10254, Z = 660}
+  15: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = 3048, Y = 10254, Z = 1320}
+  16: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = 3048, Y = 10254, Z = 1900}
+  17: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -13961, Y = 8461, Z = 850}
+  18: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -13961, Y = 8561, Z = 1800}
+  19: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = -13961, Y = 8661, Z = 2650}
+  20: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -7575, Y = -4779, Z = 900}
+  21: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -7675, Y = -4779, Z = 1700}
+  22: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = -7475, Y = -4779, Z = 2500}
+  23: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -4052, Y = -5549, Z = 800}
+  24: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -4142, Y = -5549, Z = 1540}
+  25: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -4242, Y = -5549, Z = 2650}
+  26: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = 3253, Y = -15999, Z = 950}
+  27: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = 3253, Y = -15999, Z = 1760}
+  28: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 3253, Y = -15999, Z = 2850}
+  29: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 2, X = 6663, Y = -16358, Z = 850}
+  30: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = 6663, Y = -16458, Z = 1900}
+  31: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 3, X = 6663, Y = -16258, Z = 2600}
+  32: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 2, X = -3481, Y = -9843, Z = 850}
+  33: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 1, X = -3481, Y = -9843, Z = 1200}
+  34: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = -3481, Y = -9843, Z = 1800}
+  35: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 1, X = -821, Y = -13453, Z = 750}
+  36: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = -821, Y = -13453, Z = 1450}
+  37: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = -821, Y = -13553, Z = 1900}
+  38: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 7936, Y = -15092, Z = 700}
+  39: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = 7836, Y = -15192, Z = 925}
+  40: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 7736, Y = -15292, Z = 1850}
+  41: Exit  {}
+end

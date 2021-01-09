@@ -1,0 +1,117 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Cabinet"
+str[3] = "Evil Crystal"
+str[4] = "Full sack"
+str[5] = "Switch"
+str[6] = "Flickering Torch"
+str[7] = "Empty barrel"
+str[8] = "The skulls seem to sap your might"
+str[9] = "You have destroyed the evil crystal"
+str[10] = "You pull the torch and it shifts in your hand"
+str[11] = "The door won't budge"
+str[12] = "(removed) The keg is empty"
+str[13] = "Exit"
+str[14] = "(removed) Keg"
+str[15] = "Temple of the Fist"
+str[16] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+      MazeInfo = str[15]  -- "Temple of the Fist"
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  Exit  {}
+end
+
+event 3
+      Hint = str[6]  -- "Flickering Torch"
+  0:  SetDoorState  {Id = 3, State = 1}
+  1:  StatusText  {Str = 10}         -- "You pull the torch and it shifts in your hand"
+end
+
+event 4
+      Hint = str[5]  -- "Switch"
+  0:  SetDoorState  {Id = 4, State = 1}
+  1:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 5
+      Hint = str[2]  -- "Cabinet"
+  0:  OpenChest  {Id = 0}
+end
+
+event 6
+      Hint = str[2]  -- "Cabinet"
+  0:  OpenChest  {Id = 1}
+end
+
+event 7
+      Hint = str[4]  -- "Full sack"
+  0:  OpenChest  {Id = 2}
+end
+
+event 8
+  0:  ForPlayer  ("All")
+  1:  Subtract  {"MightBonus", Value = 10}
+  2:  StatusText  {Str = 8}         -- "The skulls seem to sap your might"
+end
+
+event 9
+      Hint = str[3]  -- "Evil Crystal"
+  0:  Cmp  {"QBits", Value = 21,   jump = 4}         -- 21 T2, Given when evil crystal is destroyed
+  1:  SetSprite  {SpriteId = 25, Visible = 0, Name = "0"}
+  2:  Add  {"QBits", Value = 21}         -- 21 T2, Given when evil crystal is destroyed
+  3:  StatusText  {Str = 9}         -- "You have destroyed the evil crystal"
+  4:  Exit  {}
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  StatusText  {Str = 11}         -- "The door won't budge"
+end
+
+event 11
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 21,   jump = 3}         -- 21 T2, Given when evil crystal is destroyed
+  2:  Exit  {}
+
+  3:  SetSprite  {SpriteId = 25, Visible = 0, Name = "0"}
+end
+
+event 50
+      Hint = str[13]  -- "Exit"
+  0:  MoveToMap  {X = -21001, Y = -4653, Z = 257, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutD2.Odm"}
+end
+
+event 55
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 3}
+  1:  Set  {"MapVar0", Value = 1}
+  2:  Add  {"Inventory", Value = 275}         -- "Flying Fist"
+  3:  Exit  {}
+end
+
+event 56
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 3}
+  1:  Set  {"MapVar1", Value = 1}
+  2:  Add  {"Inventory", Value = 275}         -- "Flying Fist"
+  3:  Exit  {}
+end
+
+event 57
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 3}
+  1:  Set  {"MapVar2", Value = 1}
+  2:  Add  {"Inventory", Value = 275}         -- "Flying Fist"
+  3:  Exit  {}
+end
+
+event 58
+  0:  Cmp  {"MapVar3", Value = 1,   jump = 3}
+  1:  Set  {"MapVar3", Value = 1}
+  2:  Add  {"Inventory", Value = 275}         -- "Flying Fist"
+  3:  Exit  {}
+end

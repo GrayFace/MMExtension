@@ -1,0 +1,393 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Leave the Hall Under the Hill"
+str[3] = "Chest"
+str[4] = "Button"
+str[5] = "Lever"
+str[6] = "Vault"
+str[7] = "Cabinet"
+str[8] = "Switch"
+str[9] = ""
+str[10] = "Bookcase"
+str[11] = "Well"
+str[12] = "Drink from the Well"
+str[13] = "Refreshing !"
+str[14] = "You Successfully disarm the trap"
+str[15] = "The Door is Locked"
+str[16] = "Take a Drink"
+str[17] = "Not Very Refreshing"
+str[18] = "Refreshing"
+str[19] = ""
+str[20] = ""
+str[21] = ""
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = ""
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = ""
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = ""
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = ""
+str[51] = ""
+str[52] = ""
+str[53] = ""
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = "Fruit Tree"
+str[61] = "You received an apple"
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 17, State = 0}
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 30, State = 2}         -- switch state
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 31, State = 2}         -- switch state
+end
+
+event 151
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 152
+  0:  MoveToMap  {X = -1383, Y = 2328, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  1:  SetDoorState  {Id = 1, State = 0}
+end
+
+event 176
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 177
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 178
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 179
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 180
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 181
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 182
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+end
+
+event 183
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+end
+
+event 184
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+end
+
+event 185
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 10}
+end
+
+event 186
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 11}
+end
+
+event 187
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+end
+
+event 188
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+end
+
+event 189
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+end
+
+event 190
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+end
+
+event 191
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+end
+
+event 192
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+end
+
+event 193
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+end
+
+event 194
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+end
+
+event 195
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+end
+
+event 196
+      Hint = str[11]  -- "Well"
+  0:  Exit  {}
+end
+
+event 197
+      Hint = str[12]  -- "Drink from the Well"
+  0:  StatusText  {Str = 13}         -- "Refreshing !"
+end
+
+event 316
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 37,   jump = 3}         -- "Solve the secret to the entrance of the Faerie Mound in Avlee and speak to the Faerie King."
+  1:  Cmp  {"QBits", Value = 179,   jump = 3}         -- "Take the sealed letter to the Faerie King in the Hall under the Hill in Avlee."
+  2:  GoTo  {jump = 4}
+
+  3:  SpeakNPC  {NPC = 52}         -- "Faerie King"
+  4:  Exit  {}
+end
+
+event 451
+  0:  MoveToMap  {X = 1233, Y = -34, Z = -1023, Direction = -1, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 452
+  0:  MoveToMap  {X = -1210, Y = 194, Z = -2047, Direction = -1, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 453
+  0:  Cmp  {"Inventory", Value = 662,   jump = 4}         -- "Faerie Key"
+  1:  FaceAnimation  {Player = "Current", Animation = 18}
+  2:  StatusText  {Str = 15}         -- "The Door is Locked"
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 10, State = 1}
+  5:  SetDoorState  {Id = 11, State = 1}
+  6:  SetDoorState  {Id = 12, State = 1}
+  7:  SetDoorState  {Id = 13, State = 1}
+  8:  SetDoorState  {Id = 14, State = 1}
+  9:  SetDoorState  {Id = 15, State = 1}
+  10: SetDoorState  {Id = 16, State = 1}
+  11: SetDoorState  {Id = 20, State = 1}
+end
+
+event 454
+      Hint = str[60]  -- "Fruit Tree"
+  0:  Cmp  {"MapVar50", Value = 1,   jump = 5}
+  1:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  2:  Set  {"MapVar50", Value = 1}
+  3:  StatusText  {Str = 61}         -- "You received an apple"
+  4:  SetSprite  {SpriteId = 51, Visible = 1, Name = "tree37"}
+  5:  Exit  {}
+end
+
+event 455
+      Hint = str[60]  -- "Fruit Tree"
+  0:  Cmp  {"MapVar51", Value = 1,   jump = 5}
+  1:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  2:  Set  {"MapVar51", Value = 1}
+  3:  StatusText  {Str = 61}         -- "You received an apple"
+  4:  SetSprite  {SpriteId = 52, Visible = 1, Name = "tree37"}
+  5:  Exit  {}
+end
+
+event 456
+      Hint = str[60]  -- "Fruit Tree"
+  0:  Cmp  {"MapVar52", Value = 1,   jump = 5}
+  1:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  2:  Set  {"MapVar52", Value = 1}
+  3:  StatusText  {Str = 61}         -- "You received an apple"
+  4:  SetSprite  {SpriteId = 53, Visible = 1, Name = "tree37"}
+  5:  Exit  {}
+end
+
+event 457
+      Hint = str[60]  -- "Fruit Tree"
+  0:  Cmp  {"MapVar53", Value = 1,   jump = 5}
+  1:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  2:  Set  {"MapVar53", Value = 1}
+  3:  StatusText  {Str = 61}         -- "You received an apple"
+  4:  SetSprite  {SpriteId = 54, Visible = 1, Name = "tree37"}
+  5:  Exit  {}
+end
+
+event 458
+      Hint = str[60]  -- "Fruit Tree"
+  0:  Cmp  {"MapVar54", Value = 1,   jump = 5}
+  1:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  2:  Set  {"MapVar54", Value = 1}
+  3:  StatusText  {Str = 61}         -- "You received an apple"
+  4:  SetSprite  {SpriteId = 55, Visible = 1, Name = "tree37"}
+  5:  Exit  {}
+end
+
+event 459
+      Hint = str[60]  -- "Fruit Tree"
+  0:  Cmp  {"MapVar55", Value = 1,   jump = 5}
+  1:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  2:  Set  {"MapVar55", Value = 1}
+  3:  StatusText  {Str = 61}         -- "You received an apple"
+  4:  SetSprite  {SpriteId = 56, Visible = 1, Name = "tree37"}
+  5:  Exit  {}
+end
+
+event 460
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Cmp  {"MapVar50", Value = 1,   jump = 4}
+  2:  SetSprite  {SpriteId = 51, Visible = 1, Name = "tree38"}
+  3:  GoTo  {jump = 5}
+
+  4:  SetSprite  {SpriteId = 51, Visible = 1, Name = "tree37"}
+  5:  Cmp  {"MapVar51", Value = 1,   jump = 8}
+  6:  SetSprite  {SpriteId = 52, Visible = 1, Name = "tree38"}
+  7:  GoTo  {jump = 9}
+
+  8:  SetSprite  {SpriteId = 52, Visible = 1, Name = "tree37"}
+  9:  Cmp  {"MapVar52", Value = 1,   jump = 12}
+  10: SetSprite  {SpriteId = 53, Visible = 1, Name = "tree38"}
+  11: GoTo  {jump = 13}
+
+  12: SetSprite  {SpriteId = 53, Visible = 1, Name = "tree37"}
+  13: Cmp  {"MapVar53", Value = 1,   jump = 16}
+  14: SetSprite  {SpriteId = 54, Visible = 1, Name = "tree38"}
+  15: GoTo  {jump = 17}
+
+  16: SetSprite  {SpriteId = 54, Visible = 1, Name = "tree37"}
+  17: Cmp  {"MapVar54", Value = 1,   jump = 20}
+  18: SetSprite  {SpriteId = 55, Visible = 1, Name = "tree38"}
+  19: GoTo  {jump = 21}
+
+  20: SetSprite  {SpriteId = 55, Visible = 1, Name = "tree37"}
+  21: Cmp  {"MapVar55", Value = 1,   jump = 24}
+  22: SetSprite  {SpriteId = 56, Visible = 1, Name = "tree38"}
+  23: GoTo  {jump = 25}
+
+  24: SetSprite  {SpriteId = 56, Visible = 1, Name = "tree"}
+  25: Exit  {}
+end
+
+event 501
+      Hint = str[2]  -- "Leave the Hall Under the Hill"
+  0:  MoveToMap  {X = 1550, Y = 21117, Z = 800, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 4, Name = "Out14.odm"}
+end

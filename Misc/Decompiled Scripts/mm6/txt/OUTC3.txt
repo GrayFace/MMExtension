@@ -1,0 +1,621 @@
+str[0] = " "
+str[1] = "Crate"
+str[2] = "Dragon's Lair"
+str[3] = "Drink from Fountain"
+str[4] = "+2 Endurance permenant."
+str[5] = "Refreshing!"
+str[6] = "No one is here.  The Circus has moved."
+str[7] = "Mire of the Damned"
+str[8] = "Shrine of Speed"
+str[9] = "You pray at the shrine."
+str[10] = "+10 Speed permanent"
+str[11] = "+3 Speed permanent"
+str[12] = "Pedestal"
+str[13] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            aoflo'h.hbtid_p_"
+str[14] = "Obelisk"
+str[15] = ""
+
+
+event 2
+      Hint = str[6]  -- "No one is here.  The Circus has moved."
+      MazeInfo = str[7]  -- "Mire of the Damned"
+  0:  EnterHouse  {Id = 6}         -- "Blunt Trauma Weapons"
+end
+
+event 3
+      Hint = str[6]  -- "No one is here.  The Circus has moved."
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 6}         -- "Blunt Trauma Weapons"
+end
+
+event 4
+      Hint = str[19]
+  0:  EnterHouse  {Id = 19}         -- "Mailed fist Armory"
+end
+
+event 5
+      Hint = str[19]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 19}         -- "Mailed fist Armory"
+end
+
+event 6
+      Hint = str[34]
+  0:  EnterHouse  {Id = 34}         -- "Smoke and Mirrors"
+end
+
+event 7
+      Hint = str[34]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 34}         -- "Smoke and Mirrors"
+end
+
+event 8
+      Hint = str[52]
+  0:  EnterHouse  {Id = 52}         -- "Darkmoor Travel"
+end
+
+event 9
+      Hint = str[52]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 52}         -- "Darkmoor Travel"
+end
+
+event 10
+      Hint = str[102]
+  0:  EnterHouse  {Id = 102}         -- "The Haunt"
+end
+
+event 11
+      Hint = str[102]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 102}         -- "The Haunt"
+end
+
+event 12
+      Hint = str[103]
+  0:  EnterHouse  {Id = 103}         -- "The Rusted Shield"
+end
+
+event 13
+      Hint = str[103]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 103}         -- "The Rusted Shield"
+end
+
+event 14
+      Hint = str[166]
+  0:  Cmp  {"DayOfYearIs", Value = 196,   jump = 30}
+  1:  Cmp  {"DayOfYearIs", Value = 197,   jump = 30}
+  2:  Cmp  {"DayOfYearIs", Value = 198,   jump = 30}
+  3:  Cmp  {"DayOfYearIs", Value = 199,   jump = 30}
+  4:  Cmp  {"DayOfYearIs", Value = 200,   jump = 30}
+  5:  Cmp  {"DayOfYearIs", Value = 201,   jump = 30}
+  6:  Cmp  {"DayOfYearIs", Value = 202,   jump = 30}
+  7:  Cmp  {"DayOfYearIs", Value = 203,   jump = 30}
+  8:  Cmp  {"DayOfYearIs", Value = 204,   jump = 30}
+  9:  Cmp  {"DayOfYearIs", Value = 205,   jump = 30}
+  10: Cmp  {"DayOfYearIs", Value = 206,   jump = 30}
+  11: Cmp  {"DayOfYearIs", Value = 207,   jump = 30}
+  12: Cmp  {"DayOfYearIs", Value = 208,   jump = 30}
+  13: Cmp  {"DayOfYearIs", Value = 209,   jump = 30}
+  14: Cmp  {"DayOfYearIs", Value = 210,   jump = 30}
+  15: Cmp  {"DayOfYearIs", Value = 211,   jump = 30}
+  16: Cmp  {"DayOfYearIs", Value = 212,   jump = 30}
+  17: Cmp  {"DayOfYearIs", Value = 213,   jump = 30}
+  18: Cmp  {"DayOfYearIs", Value = 214,   jump = 30}
+  19: Cmp  {"DayOfYearIs", Value = 215,   jump = 30}
+  20: Cmp  {"DayOfYearIs", Value = 216,   jump = 30}
+  21: Cmp  {"DayOfYearIs", Value = 217,   jump = 30}
+  22: Cmp  {"DayOfYearIs", Value = 218,   jump = 30}
+  23: Cmp  {"DayOfYearIs", Value = 219,   jump = 30}
+  24: Cmp  {"DayOfYearIs", Value = 220,   jump = 30}
+  25: Cmp  {"DayOfYearIs", Value = 221,   jump = 30}
+  26: Cmp  {"DayOfYearIs", Value = 222,   jump = 30}
+  27: Cmp  {"DayOfYearIs", Value = 223,   jump = 30}
+  28: StatusText  {Str = 6}         -- "No one is here.  The Circus has moved."
+  29: Exit  {}
+
+  30: EnterHouse  {Id = 166}         -- "Circus"
+end
+
+event 15
+      Hint = str[20]
+  0:  Cmp  {"DayOfYearIs", Value = 196,   jump = 30}
+  1:  Cmp  {"DayOfYearIs", Value = 197,   jump = 30}
+  2:  Cmp  {"DayOfYearIs", Value = 198,   jump = 30}
+  3:  Cmp  {"DayOfYearIs", Value = 199,   jump = 30}
+  4:  Cmp  {"DayOfYearIs", Value = 200,   jump = 30}
+  5:  Cmp  {"DayOfYearIs", Value = 201,   jump = 30}
+  6:  Cmp  {"DayOfYearIs", Value = 202,   jump = 30}
+  7:  Cmp  {"DayOfYearIs", Value = 203,   jump = 30}
+  8:  Cmp  {"DayOfYearIs", Value = 204,   jump = 30}
+  9:  Cmp  {"DayOfYearIs", Value = 205,   jump = 30}
+  10: Cmp  {"DayOfYearIs", Value = 206,   jump = 30}
+  11: Cmp  {"DayOfYearIs", Value = 207,   jump = 30}
+  12: Cmp  {"DayOfYearIs", Value = 208,   jump = 30}
+  13: Cmp  {"DayOfYearIs", Value = 209,   jump = 30}
+  14: Cmp  {"DayOfYearIs", Value = 210,   jump = 30}
+  15: Cmp  {"DayOfYearIs", Value = 211,   jump = 30}
+  16: Cmp  {"DayOfYearIs", Value = 212,   jump = 30}
+  17: Cmp  {"DayOfYearIs", Value = 213,   jump = 30}
+  18: Cmp  {"DayOfYearIs", Value = 214,   jump = 30}
+  19: Cmp  {"DayOfYearIs", Value = 215,   jump = 30}
+  20: Cmp  {"DayOfYearIs", Value = 216,   jump = 30}
+  21: Cmp  {"DayOfYearIs", Value = 217,   jump = 30}
+  22: Cmp  {"DayOfYearIs", Value = 218,   jump = 30}
+  23: Cmp  {"DayOfYearIs", Value = 219,   jump = 30}
+  24: Cmp  {"DayOfYearIs", Value = 220,   jump = 30}
+  25: Cmp  {"DayOfYearIs", Value = 221,   jump = 30}
+  26: Cmp  {"DayOfYearIs", Value = 222,   jump = 30}
+  27: Cmp  {"DayOfYearIs", Value = 223,   jump = 30}
+  28: StatusText  {Str = 6}         -- "No one is here.  The Circus has moved."
+  29: Exit  {}
+
+  30: EnterHouse  {Id = 532}         -- "Tent"
+end
+
+event 16
+      Hint = str[22]
+  0:  Cmp  {"DayOfYearIs", Value = 196,   jump = 30}
+  1:  Cmp  {"DayOfYearIs", Value = 197,   jump = 30}
+  2:  Cmp  {"DayOfYearIs", Value = 198,   jump = 30}
+  3:  Cmp  {"DayOfYearIs", Value = 199,   jump = 30}
+  4:  Cmp  {"DayOfYearIs", Value = 200,   jump = 30}
+  5:  Cmp  {"DayOfYearIs", Value = 201,   jump = 30}
+  6:  Cmp  {"DayOfYearIs", Value = 202,   jump = 30}
+  7:  Cmp  {"DayOfYearIs", Value = 203,   jump = 30}
+  8:  Cmp  {"DayOfYearIs", Value = 204,   jump = 30}
+  9:  Cmp  {"DayOfYearIs", Value = 205,   jump = 30}
+  10: Cmp  {"DayOfYearIs", Value = 206,   jump = 30}
+  11: Cmp  {"DayOfYearIs", Value = 207,   jump = 30}
+  12: Cmp  {"DayOfYearIs", Value = 208,   jump = 30}
+  13: Cmp  {"DayOfYearIs", Value = 209,   jump = 30}
+  14: Cmp  {"DayOfYearIs", Value = 210,   jump = 30}
+  15: Cmp  {"DayOfYearIs", Value = 211,   jump = 30}
+  16: Cmp  {"DayOfYearIs", Value = 212,   jump = 30}
+  17: Cmp  {"DayOfYearIs", Value = 213,   jump = 30}
+  18: Cmp  {"DayOfYearIs", Value = 214,   jump = 30}
+  19: Cmp  {"DayOfYearIs", Value = 215,   jump = 30}
+  20: Cmp  {"DayOfYearIs", Value = 216,   jump = 30}
+  21: Cmp  {"DayOfYearIs", Value = 217,   jump = 30}
+  22: Cmp  {"DayOfYearIs", Value = 218,   jump = 30}
+  23: Cmp  {"DayOfYearIs", Value = 219,   jump = 30}
+  24: Cmp  {"DayOfYearIs", Value = 220,   jump = 30}
+  25: Cmp  {"DayOfYearIs", Value = 221,   jump = 30}
+  26: Cmp  {"DayOfYearIs", Value = 222,   jump = 30}
+  27: Cmp  {"DayOfYearIs", Value = 223,   jump = 30}
+  28: StatusText  {Str = 6}         -- "No one is here.  The Circus has moved."
+  29: Exit  {}
+
+  30: EnterHouse  {Id = 534}         -- "Tent"
+end
+
+event 17
+      Hint = str[25]
+  0:  Cmp  {"DayOfYearIs", Value = 196,   jump = 30}
+  1:  Cmp  {"DayOfYearIs", Value = 197,   jump = 30}
+  2:  Cmp  {"DayOfYearIs", Value = 198,   jump = 30}
+  3:  Cmp  {"DayOfYearIs", Value = 199,   jump = 30}
+  4:  Cmp  {"DayOfYearIs", Value = 200,   jump = 30}
+  5:  Cmp  {"DayOfYearIs", Value = 201,   jump = 30}
+  6:  Cmp  {"DayOfYearIs", Value = 202,   jump = 30}
+  7:  Cmp  {"DayOfYearIs", Value = 203,   jump = 30}
+  8:  Cmp  {"DayOfYearIs", Value = 204,   jump = 30}
+  9:  Cmp  {"DayOfYearIs", Value = 205,   jump = 30}
+  10: Cmp  {"DayOfYearIs", Value = 206,   jump = 30}
+  11: Cmp  {"DayOfYearIs", Value = 207,   jump = 30}
+  12: Cmp  {"DayOfYearIs", Value = 208,   jump = 30}
+  13: Cmp  {"DayOfYearIs", Value = 209,   jump = 30}
+  14: Cmp  {"DayOfYearIs", Value = 210,   jump = 30}
+  15: Cmp  {"DayOfYearIs", Value = 211,   jump = 30}
+  16: Cmp  {"DayOfYearIs", Value = 212,   jump = 30}
+  17: Cmp  {"DayOfYearIs", Value = 213,   jump = 30}
+  18: Cmp  {"DayOfYearIs", Value = 214,   jump = 30}
+  19: Cmp  {"DayOfYearIs", Value = 215,   jump = 30}
+  20: Cmp  {"DayOfYearIs", Value = 216,   jump = 30}
+  21: Cmp  {"DayOfYearIs", Value = 217,   jump = 30}
+  22: Cmp  {"DayOfYearIs", Value = 218,   jump = 30}
+  23: Cmp  {"DayOfYearIs", Value = 219,   jump = 30}
+  24: Cmp  {"DayOfYearIs", Value = 220,   jump = 30}
+  25: Cmp  {"DayOfYearIs", Value = 221,   jump = 30}
+  26: Cmp  {"DayOfYearIs", Value = 222,   jump = 30}
+  27: Cmp  {"DayOfYearIs", Value = 223,   jump = 30}
+  28: StatusText  {Str = 6}         -- "No one is here.  The Circus has moved."
+  29: Exit  {}
+
+  30: EnterHouse  {Id = 537}         -- "Tent"
+end
+
+event 18
+      Hint = str[21]
+  0:  Cmp  {"DayOfYearIs", Value = 196,   jump = 30}
+  1:  Cmp  {"DayOfYearIs", Value = 197,   jump = 30}
+  2:  Cmp  {"DayOfYearIs", Value = 198,   jump = 30}
+  3:  Cmp  {"DayOfYearIs", Value = 199,   jump = 30}
+  4:  Cmp  {"DayOfYearIs", Value = 200,   jump = 30}
+  5:  Cmp  {"DayOfYearIs", Value = 201,   jump = 30}
+  6:  Cmp  {"DayOfYearIs", Value = 202,   jump = 30}
+  7:  Cmp  {"DayOfYearIs", Value = 203,   jump = 30}
+  8:  Cmp  {"DayOfYearIs", Value = 204,   jump = 30}
+  9:  Cmp  {"DayOfYearIs", Value = 205,   jump = 30}
+  10: Cmp  {"DayOfYearIs", Value = 206,   jump = 30}
+  11: Cmp  {"DayOfYearIs", Value = 207,   jump = 30}
+  12: Cmp  {"DayOfYearIs", Value = 208,   jump = 30}
+  13: Cmp  {"DayOfYearIs", Value = 209,   jump = 30}
+  14: Cmp  {"DayOfYearIs", Value = 210,   jump = 30}
+  15: Cmp  {"DayOfYearIs", Value = 211,   jump = 30}
+  16: Cmp  {"DayOfYearIs", Value = 212,   jump = 30}
+  17: Cmp  {"DayOfYearIs", Value = 213,   jump = 30}
+  18: Cmp  {"DayOfYearIs", Value = 214,   jump = 30}
+  19: Cmp  {"DayOfYearIs", Value = 215,   jump = 30}
+  20: Cmp  {"DayOfYearIs", Value = 216,   jump = 30}
+  21: Cmp  {"DayOfYearIs", Value = 217,   jump = 30}
+  22: Cmp  {"DayOfYearIs", Value = 218,   jump = 30}
+  23: Cmp  {"DayOfYearIs", Value = 219,   jump = 30}
+  24: Cmp  {"DayOfYearIs", Value = 220,   jump = 30}
+  25: Cmp  {"DayOfYearIs", Value = 221,   jump = 30}
+  26: Cmp  {"DayOfYearIs", Value = 222,   jump = 30}
+  27: Cmp  {"DayOfYearIs", Value = 223,   jump = 30}
+  28: StatusText  {Str = 6}         -- "No one is here.  The Circus has moved."
+  29: Exit  {}
+
+  30: EnterHouse  {Id = 533}         -- "Wagon"
+end
+
+event 19
+      Hint = str[23]
+  0:  Cmp  {"DayOfYearIs", Value = 196,   jump = 30}
+  1:  Cmp  {"DayOfYearIs", Value = 197,   jump = 30}
+  2:  Cmp  {"DayOfYearIs", Value = 198,   jump = 30}
+  3:  Cmp  {"DayOfYearIs", Value = 199,   jump = 30}
+  4:  Cmp  {"DayOfYearIs", Value = 200,   jump = 30}
+  5:  Cmp  {"DayOfYearIs", Value = 201,   jump = 30}
+  6:  Cmp  {"DayOfYearIs", Value = 202,   jump = 30}
+  7:  Cmp  {"DayOfYearIs", Value = 203,   jump = 30}
+  8:  Cmp  {"DayOfYearIs", Value = 204,   jump = 30}
+  9:  Cmp  {"DayOfYearIs", Value = 205,   jump = 30}
+  10: Cmp  {"DayOfYearIs", Value = 206,   jump = 30}
+  11: Cmp  {"DayOfYearIs", Value = 207,   jump = 30}
+  12: Cmp  {"DayOfYearIs", Value = 208,   jump = 30}
+  13: Cmp  {"DayOfYearIs", Value = 209,   jump = 30}
+  14: Cmp  {"DayOfYearIs", Value = 210,   jump = 30}
+  15: Cmp  {"DayOfYearIs", Value = 211,   jump = 30}
+  16: Cmp  {"DayOfYearIs", Value = 212,   jump = 30}
+  17: Cmp  {"DayOfYearIs", Value = 213,   jump = 30}
+  18: Cmp  {"DayOfYearIs", Value = 214,   jump = 30}
+  19: Cmp  {"DayOfYearIs", Value = 215,   jump = 30}
+  20: Cmp  {"DayOfYearIs", Value = 216,   jump = 30}
+  21: Cmp  {"DayOfYearIs", Value = 217,   jump = 30}
+  22: Cmp  {"DayOfYearIs", Value = 218,   jump = 30}
+  23: Cmp  {"DayOfYearIs", Value = 219,   jump = 30}
+  24: Cmp  {"DayOfYearIs", Value = 220,   jump = 30}
+  25: Cmp  {"DayOfYearIs", Value = 221,   jump = 30}
+  26: Cmp  {"DayOfYearIs", Value = 222,   jump = 30}
+  27: Cmp  {"DayOfYearIs", Value = 223,   jump = 30}
+  28: StatusText  {Str = 6}         -- "No one is here.  The Circus has moved."
+  29: Exit  {}
+
+  30: EnterHouse  {Id = 535}         -- "Wagon"
+end
+
+event 20
+      Hint = str[24]
+  0:  Cmp  {"DayOfYearIs", Value = 196,   jump = 30}
+  1:  Cmp  {"DayOfYearIs", Value = 197,   jump = 30}
+  2:  Cmp  {"DayOfYearIs", Value = 198,   jump = 30}
+  3:  Cmp  {"DayOfYearIs", Value = 199,   jump = 30}
+  4:  Cmp  {"DayOfYearIs", Value = 200,   jump = 30}
+  5:  Cmp  {"DayOfYearIs", Value = 201,   jump = 30}
+  6:  Cmp  {"DayOfYearIs", Value = 202,   jump = 30}
+  7:  Cmp  {"DayOfYearIs", Value = 203,   jump = 30}
+  8:  Cmp  {"DayOfYearIs", Value = 204,   jump = 30}
+  9:  Cmp  {"DayOfYearIs", Value = 205,   jump = 30}
+  10: Cmp  {"DayOfYearIs", Value = 206,   jump = 30}
+  11: Cmp  {"DayOfYearIs", Value = 207,   jump = 30}
+  12: Cmp  {"DayOfYearIs", Value = 208,   jump = 30}
+  13: Cmp  {"DayOfYearIs", Value = 209,   jump = 30}
+  14: Cmp  {"DayOfYearIs", Value = 210,   jump = 30}
+  15: Cmp  {"DayOfYearIs", Value = 211,   jump = 30}
+  16: Cmp  {"DayOfYearIs", Value = 212,   jump = 30}
+  17: Cmp  {"DayOfYearIs", Value = 213,   jump = 30}
+  18: Cmp  {"DayOfYearIs", Value = 214,   jump = 30}
+  19: Cmp  {"DayOfYearIs", Value = 215,   jump = 30}
+  20: Cmp  {"DayOfYearIs", Value = 216,   jump = 30}
+  21: Cmp  {"DayOfYearIs", Value = 217,   jump = 30}
+  22: Cmp  {"DayOfYearIs", Value = 218,   jump = 30}
+  23: Cmp  {"DayOfYearIs", Value = 219,   jump = 30}
+  24: Cmp  {"DayOfYearIs", Value = 220,   jump = 30}
+  25: Cmp  {"DayOfYearIs", Value = 221,   jump = 30}
+  26: Cmp  {"DayOfYearIs", Value = 222,   jump = 30}
+  27: Cmp  {"DayOfYearIs", Value = 223,   jump = 30}
+  28: StatusText  {Str = 6}         -- "No one is here.  The Circus has moved."
+  29: Exit  {}
+
+  30: EnterHouse  {Id = 536}         -- "Wagon"
+end
+
+event 50
+      Hint = str[78]
+  0:  EnterHouse  {Id = 334}         -- "House"
+end
+
+event 51
+      Hint = str[79]
+  0:  EnterHouse  {Id = 335}         -- "House"
+end
+
+event 52
+      Hint = str[80]
+  0:  EnterHouse  {Id = 336}         -- "House"
+end
+
+event 53
+      Hint = str[81]
+  0:  EnterHouse  {Id = 337}         -- "House"
+end
+
+event 54
+      Hint = str[82]
+  0:  EnterHouse  {Id = 338}         -- "House"
+end
+
+event 55
+      Hint = str[83]
+  0:  EnterHouse  {Id = 339}         -- "House"
+end
+
+event 56
+      Hint = str[84]
+  0:  EnterHouse  {Id = 340}         -- "House"
+end
+
+event 57
+      Hint = str[85]
+  0:  EnterHouse  {Id = 341}         -- "House"
+end
+
+event 58
+      Hint = str[86]
+  0:  EnterHouse  {Id = 342}         -- "House"
+end
+
+event 59
+      Hint = str[87]
+  0:  EnterHouse  {Id = 343}         -- "House"
+end
+
+event 60
+      Hint = str[88]
+  0:  EnterHouse  {Id = 344}         -- "House"
+end
+
+event 61
+      Hint = str[89]
+  0:  EnterHouse  {Id = 345}         -- "House"
+end
+
+event 62
+      Hint = str[90]
+  0:  EnterHouse  {Id = 346}         -- "House"
+end
+
+event 63
+      Hint = str[91]
+  0:  EnterHouse  {Id = 347}         -- "House"
+end
+
+event 64
+      Hint = str[92]
+  0:  EnterHouse  {Id = 348}         -- "House"
+end
+
+event 65
+      Hint = str[93]
+  0:  EnterHouse  {Id = 349}         -- "House"
+end
+
+event 66
+      Hint = str[94]
+  0:  EnterHouse  {Id = 350}         -- "House"
+end
+
+event 67
+      Hint = str[95]
+  0:  EnterHouse  {Id = 351}         -- "House"
+end
+
+event 68
+      Hint = str[96]
+  0:  EnterHouse  {Id = 352}         -- "House"
+      Hint = str[97]
+  0:  EnterHouse  {Id = 353}         -- "House"
+end
+
+event 70
+      Hint = str[98]
+  0:  EnterHouse  {Id = 354}         -- "House"
+end
+
+event 71
+      Hint = str[99]
+  0:  EnterHouse  {Id = 355}         -- "House"
+end
+
+event 72
+      Hint = str[100]
+  0:  EnterHouse  {Id = 356}         -- "House"
+end
+
+event 73
+      Hint = str[101]
+  0:  EnterHouse  {Id = 357}         -- "House"
+end
+
+event 74
+      Hint = str[102]
+  0:  EnterHouse  {Id = 358}         -- "House"
+end
+
+event 75
+      Hint = str[103]
+  0:  EnterHouse  {Id = 359}         -- "House"
+end
+
+event 76
+      Hint = str[104]
+  0:  EnterHouse  {Id = 360}         -- "House"
+end
+
+event 77
+      Hint = str[1]  -- "Crate"
+  0:  OpenChest  {Id = 1}
+end
+
+event 78
+      Hint = str[1]  -- "Crate"
+  0:  OpenChest  {Id = 2}
+end
+
+event 79
+      Hint = str[1]  -- "Crate"
+  0:  OpenChest  {Id = 3}
+end
+
+event 90
+  0:  MoveToMap  {X = -3714, Y = 1250, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 179, Icon = 5, Name = "D09.Blv"}         -- "Snergle's Iron Mines"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 179}         -- "Snergle's Iron Mines"
+end
+
+event 91
+  0:  MoveToMap  {X = 21169, Y = 1920, Z = -689, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 200, Icon = 5, Name = "CD2.Blv"}         -- "Castle Darkmoor"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 200}         -- "Castle Darkmoor"
+end
+
+event 92
+      Hint = str[78]
+  0:  EnterHouse  {Id = 78}         -- "Temple Baa"
+end
+
+event 93
+      Hint = str[2]  -- "Dragon's Lair"
+  0:  MoveToMap  {X = -622, Y = 239, Z = 1, Direction = 128, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 5, Name = "ZDDB01.Blv"}
+end
+
+event 100
+      Hint = str[3]  -- "Drink from Fountain"
+  0:  Cmp  {"BaseEndurance", Value = 15,   jump = 2}
+  1:  Cmp  {"MapVar4", Value = 1,   jump = 4}
+  2:  StatusText  {Str = 5}         -- "Refreshing!"
+  3:  Exit  {}
+
+  4:  Subtract  {"MapVar4", Value = 1}
+  5:  Add  {"BaseEndurance", Value = 2}
+  6:  StatusText  {Str = 4}         -- "+2 Endurance permenant."
+  7:  Set  {"AutonotesBits", Value = 29}         -- "2 Points of permanent endurance from the fountain in the south of the Mire of the Damned."
+  8:  Exit  {}
+
+  9:  OnRefillTimer  {EachMonth = true}
+  10: Set  {"MapVar4", Value = 8}
+end
+
+event 210
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 7}
+  1:  Set  {"MapVar0", Value = 1}
+  2:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 4, X = -304, Y = 9904, Z = 3000}
+  3:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 4, X = 480, Y = 7904, Z = 256}
+  4:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 4, X = -1200, Y = 6480, Z = 2500}
+  5:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 4, X = -4336, Y = 8552, Z = 1750}
+  6:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 4, X = -2784, Y = 10000, Z = 1945}
+  7:  Exit  {}
+end
+
+event 220
+  0:  Cmp  {"MapVar9", Value = 1,   jump = 4}
+  1:  Set  {"MapVar9", Value = 1}
+  2:  SetFacetBitOutdoors  {Model = 4, Facet = -1, Bit = const.FacetBits.Invisible, On = false}
+  3:  Exit  {}
+
+  4:  Set  {"MapVar9", Value = 0}
+  5:  SetFacetBitOutdoors  {Model = 4, Facet = -1, Bit = const.FacetBits.Invisible, On = true}
+end
+
+event 261
+      Hint = str[8]  -- "Shrine of Speed"
+  0:  Cmp  {"MonthIs", Value = 5,   jump = 3}
+  1:  StatusText  {Str = 9}         -- "You pray at the shrine."
+  2:  Exit  {}
+
+  3:  Cmp  {"QBits", Value = 206,   jump = 1}         -- NPC
+  4:  Set  {"QBits", Value = 206}         -- NPC
+  5:  Cmp  {"QBits", Value = 212,   jump = 11}         -- NPC
+  6:  Set  {"QBits", Value = 212}         -- NPC
+  7:  ForPlayer  ("All")
+  8:  Add  {"BaseSpeed", Value = 10}
+  9:  StatusText  {Str = 10}         -- "+10 Speed permanent"
+  10: Exit  {}
+
+  11: ForPlayer  ("All")
+  12: Add  {"BaseSpeed", Value = 3}
+  13: StatusText  {Str = 11}         -- "+3 Speed permanent"
+end
+
+event 221
+      Hint = str[12]  -- "Pedestal"
+  0:  Cmp  {"Inventory", Value = 452,   jump = 3}         -- "Wolf Statuette"
+  1:  Cmp  {"Inventory", Value = 453,   jump = 17}         -- "Eagle Statuette"
+  2:  Exit  {}
+
+  3:  Subtract  {"Inventory", Value = 452}         -- "Wolf Statuette"
+  4:  SetSprite  {SpriteId = 394, Visible = 1, Name = "ped04"}
+  5:  Set  {"QBits", Value = 225}         -- NPC
+  6:  Cmp  {"QBits", Value = 223,   jump = 8}         -- NPC
+  7:  Exit  {}
+
+  8:  Cmp  {"QBits", Value = 224,   jump = 10}         -- NPC
+  9:  Exit  {}
+
+  10: Cmp  {"QBits", Value = 222,   jump = 12}         -- NPC
+  11: Exit  {}
+
+  12: Cmp  {"QBits", Value = 226,   jump = 14}         -- NPC
+  13: Exit  {}
+
+  14: MoveNPC  {NPC = 87, HouseId = 0}         -- "Twillen"
+  15: MoveNPC  {NPC = 41, HouseId = 253}         -- "Twillen" -> "House"
+  16: Exit  {}
+
+  17: Cmp  {"QBits", Value = 224,   jump = 19}         -- NPC
+  18: Exit  {}
+
+  19: Subtract  {"Inventory", Value = 453}         -- "Eagle Statuette"
+  20: GoTo  {jump = 4}
+end
+
+event 222
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 225,   jump = 3}         -- NPC
+  2:  Exit  {}
+
+  3:  SetSprite  {SpriteId = 394, Visible = 1, Name = "ped04"}
+end
+
+event 223
+      Hint = str[14]  -- "Obelisk"
+  0:  SetMessage  {Str = 13}         -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            aoflo'h.hbtid_p_"
+  1:  SimpleMessage  {}
+  2:  Set  {"QBits", Value = 368}         -- NPC
+  3:  Set  {"AutonotesBits", Value = 87}         -- "Obelisk Message # 9:  aoflo'h.hbtid_p_"
+end

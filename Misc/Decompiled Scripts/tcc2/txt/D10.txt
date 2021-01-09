@@ -1,0 +1,25 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Chest"
+str[3] = "Lever"
+str[4] = "Cabinet"
+str[5] = "Switch"
+str[6] = "The Door won't budge."
+str[7] = "Caught!"
+str[8] = "Guards!"
+str[9] = "Are those footsteps?"
+str[10] = "Exit"
+str[11] = "Druid's Temple"
+str[12] = "You open the chest and exchange the pearls."
+str[13] = "The chest is locked."
+str[14] = ""
+str[15] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

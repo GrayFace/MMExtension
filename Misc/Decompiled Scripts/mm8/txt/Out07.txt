@@ -1,0 +1,826 @@
+str[0] = " "
+str[1] = "Murmurwoods"
+str[2] = ""
+str[3] = "Chest"
+str[4] = ""
+str[5] = "Well"
+str[6] = "Drink from the well"
+str[7] = "Fountain"
+str[8] = "Drink from the fountain"
+str[9] = "Refreshing"
+str[10] = "That was not so refreshing"
+str[11] = ""
+str[12] = "pearswhil"
+str[13] = "Statue"
+str[14] = ""
+str[15] = "The door is locked"
+str[16] = ""
+str[17] = ""
+str[18] = ""
+str[19] = ""
+str[20] = "Fruit Tree"
+str[21] = "You receive an apple"
+str[22] = "Berry Bush"
+str[23] = "You receive some berries"
+str[24] = ""
+str[25] = "North"
+str[26] = "West"
+str[27] = "East"
+str[28] = "South"
+str[29] = ""
+str[30] = "Shrine"
+str[31] = "Altar"
+str[32] = "You Pray"
+str[33] = "Obelisk"
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = "Tree"
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = "The Temple of the Sun"
+str[46] = "A Druid Circle"
+str[47] = "Ancient Troll Home"
+str[48] = "Gate to the Plane of Air"
+str[49] = ""
+str[50] = "Enter the Temple of the Sun"
+str[51] = "Enter the Druid Circle"
+str[52] = "Enter the Ancient Troll Home"
+str[53] = "Enter the Plane of Air"
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = "Personality +2 (Permanent)"
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 40,   jump = 3}         -- Found and Rescued Cauri Blackthorne
+  2:  GoTo  {jump = 8}
+
+  3:  SetSprite  {SpriteId = 20, Visible = 0, Name = "on"}
+  4:  SetSprite  {SpriteId = 21, Visible = 0, Name = "on"}
+  5:  SetSprite  {SpriteId = 22, Visible = 0, Name = "on"}
+  6:  SetSprite  {SpriteId = 23, Visible = 0, Name = "on"}
+  7:  SetSprite  {SpriteId = 24, Visible = 0, Name = "on"}
+  8:  Cmp  {"QBits", Value = 19,   jump = 11}         -- Allied with Necromancers Guild. Steal Nightshade Brazier done.
+  9:  Cmp  {"QBits", Value = 230,   jump = 11}         -- You have Pissed off the clerics
+  10: GoTo  {jump = 13}
+
+  11: SetMonGroupBit  {NPCGroup = 39, Bit = const.MonsterBits.Hostile, On = true}         -- ""
+  12: SetMonGroupBit  {NPCGroup = 40, Bit = const.MonsterBits.Hostile, On = true}         -- ""
+  13: Exit  {}
+end
+
+event 2
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 3
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 4
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 6
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 7
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 8
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 9
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 10
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 11
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 388}         -- "Ravensight Residence"
+  1:  Exit  {}
+end
+
+event 12
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 388}         -- "Ravensight Residence"
+  2:  Exit  {}
+end
+
+event 13
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 389}         -- "Dreamwright Residence"
+  1:  Exit  {}
+end
+
+event 14
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 389}         -- "Dreamwright Residence"
+  2:  Exit  {}
+end
+
+event 15
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 390}         -- "Snowtree Residence"
+  1:  Exit  {}
+end
+
+event 16
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 390}         -- "Snowtree Residence"
+  2:  Exit  {}
+end
+
+event 17
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 391}         -- "Dantillion's Residence"
+  1:  Exit  {}
+end
+
+event 18
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 391}         -- "Dantillion's Residence"
+  2:  Exit  {}
+end
+
+event 19
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 392}         -- "Mithrit Residence"
+  1:  Exit  {}
+end
+
+event 20
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 392}         -- "Mithrit Residence"
+  2:  Exit  {}
+end
+
+event 21
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 393}         -- "Tonk Residence"
+  1:  Exit  {}
+end
+
+event 22
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 393}         -- "Tonk Residence"
+  2:  Exit  {}
+end
+
+event 23
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 394}         -- "Keenedge Residence"
+  1:  Exit  {}
+end
+
+event 24
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 394}         -- "Keenedge Residence"
+  2:  Exit  {}
+end
+
+event 25
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 395}         -- "Treasurestone Residence"
+  1:  Exit  {}
+end
+
+event 26
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 395}         -- "Treasurestone Residence"
+  2:  Exit  {}
+end
+
+event 27
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 396}         -- "Sampson Residence"
+  1:  Exit  {}
+end
+
+event 28
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 396}         -- "Sampson Residence"
+  2:  Exit  {}
+end
+
+event 29
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 482}         -- "Verish's House"
+  1:  Exit  {}
+end
+
+event 30
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 482}         -- "Verish's House"
+  2:  Exit  {}
+end
+
+event 81
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+  1:  Exit  {}
+end
+
+event 82
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+  1:  Exit  {}
+end
+
+event 83
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+  1:  Exit  {}
+end
+
+event 84
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+  1:  Exit  {}
+end
+
+event 85
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+  1:  Exit  {}
+end
+
+event 86
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+  1:  Exit  {}
+end
+
+event 87
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+  1:  Exit  {}
+end
+
+event 88
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+  1:  Exit  {}
+end
+
+event 89
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+  1:  Exit  {}
+end
+
+event 90
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+  1:  Exit  {}
+end
+
+event 91
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 10}
+  1:  Exit  {}
+end
+
+event 92
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 11}
+  1:  Exit  {}
+end
+
+event 93
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+  1:  Exit  {}
+end
+
+event 94
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+  1:  Exit  {}
+end
+
+event 95
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+  1:  Exit  {}
+end
+
+event 96
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+  1:  Exit  {}
+end
+
+event 97
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+  1:  Exit  {}
+end
+
+event 98
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+  1:  Exit  {}
+end
+
+event 99
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+  1:  Exit  {}
+end
+
+event 100
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+  1:  Exit  {}
+end
+
+event 101
+      Hint = str[6]  -- "Drink from the well"
+  0:  StatusText  {Str = 10}         -- "That was not so refreshing"
+  1:  Set  {"PoisonedYellow", Value = 0}
+  2:  Cmp  {"AutonotesBits", Value = 263,   jump = 4}         -- "Well near the Temple of the Sun in the Murmurwoods is poison!"
+  3:  Add  {"AutonotesBits", Value = 263}         -- "Well near the Temple of the Sun in the Murmurwoods is poison!"
+  4:  Exit  {}
+end
+
+event 102
+      Hint = str[6]  -- "Drink from the well"
+  0:  Cmp  {"BasePersonality", Value = 16,   jump = 5}
+  1:  Add  {"BasePersonality", Value = 2}
+  2:  StatusText  {Str = 60}         -- "Personality +2 (Permanent)"
+  3:  Add  {"AutonotesBits", Value = 265}         -- "Well in the Ravage Roaming region gives a permanent Endurance bonus up to an Endurance of 16."
+  4:  GoTo  {jump = 6}
+
+  5:  StatusText  {Str = 9}         -- "Refreshing"
+  6:  Exit  {}
+end
+
+event 103
+      Hint = str[6]  -- "Drink from the well"
+  0:  StatusText  {Str = 9}         -- "Refreshing"
+  1:  Exit  {}
+end
+
+event 131
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 69,   jump = 8}         -- Ancient Troll Homeland Found
+  1:  Cmp  {"QBits", Value = 68,   jump = 3}         -- "Find the Ancient Troll Homeland and return to Volog Sandwind in the Ironsand Desert."
+  2:  GoTo  {jump = 8}
+
+  3:  ForPlayer  ("All")
+  4:  Cmp  {"Inventory", Value = 0,   jump = 6}         -- "0"
+  5:  GoTo  {jump = 8}
+
+  6:  Subtract  {"Inventory", Value = 0}         -- "0"
+  7:  Add  {"QBits", Value = 69}         -- Ancient Troll Homeland Found
+  8:  Exit  {}
+end
+
+event 132
+      Hint = str[13]  -- "Statue"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 339,   jump = 3}         -- "Stone to Flesh"
+  2:  GoTo  {jump = 8}
+
+  3:  SpeakNPC  {NPC = 55}         -- "Cauri Blackthorne"
+  4:  Add  {"QBits", Value = 40}         -- Found and Rescued Cauri Blackthorne
+  5:  Subtract  {"Inventory", Value = 339}         -- "Stone to Flesh"
+  6:  Add  {"QBits", Value = 430}         -- Roster Character In Party 31
+  7:  SetSprite  {SpriteId = 20, Visible = 0, Name = "on"}
+  8:  Exit  {}
+end
+
+event 133
+      Hint = str[13]  -- "Statue"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 339,   jump = 3}         -- "Stone to Flesh"
+  2:  GoTo  {jump = 6}
+
+  3:  SpeakNPC  {NPC = 59}         -- "Dark Elf Pilgrim"
+  4:  Subtract  {"Inventory", Value = 339}         -- "Stone to Flesh"
+  5:  SetSprite  {SpriteId = 21, Visible = 0, Name = "on"}
+  6:  Exit  {}
+end
+
+event 134
+      Hint = str[13]  -- "Statue"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 339,   jump = 3}         -- "Stone to Flesh"
+  2:  GoTo  {jump = 6}
+
+  3:  SpeakNPC  {NPC = 59}         -- "Dark Elf Pilgrim"
+  4:  Subtract  {"Inventory", Value = 339}         -- "Stone to Flesh"
+  5:  SetSprite  {SpriteId = 22, Visible = 0, Name = "on"}
+  6:  Exit  {}
+end
+
+event 135
+      Hint = str[13]  -- "Statue"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 339,   jump = 3}         -- "Stone to Flesh"
+  2:  GoTo  {jump = 6}
+
+  3:  SpeakNPC  {NPC = 59}         -- "Dark Elf Pilgrim"
+  4:  Subtract  {"Inventory", Value = 339}         -- "Stone to Flesh"
+  5:  SetSprite  {SpriteId = 23, Visible = 0, Name = "on"}
+  6:  Exit  {}
+end
+
+event 136
+      Hint = str[13]  -- "Statue"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 339,   jump = 3}         -- "Stone to Flesh"
+  2:  GoTo  {jump = 6}
+
+  3:  SpeakNPC  {NPC = 59}         -- "Dark Elf Pilgrim"
+  4:  Subtract  {"Inventory", Value = 339}         -- "Stone to Flesh"
+  5:  SetSprite  {SpriteId = 24, Visible = 0, Name = "on"}
+  6:  Exit  {}
+end
+
+event 150
+      Hint = str[33]  -- "Obelisk"
+  0:  Cmp  {"QBits", Value = 192,   jump = 4}         -- Obelisk Area 7
+  1:  StatusText  {Str = 12}         -- "pearswhil"
+  2:  Add  {"AutonotesBits", Value = 22}         -- "Obelisk message #6: pearswhil"
+  3:  Add  {"QBits", Value = 192}         -- Obelisk Area 7
+  4:  Exit  {}
+end
+
+event 191
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 113}         -- "Traveler's Rest"
+  1:  Exit  {}
+end
+
+event 192
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 113}         -- "Traveler's Rest"
+  2:  Exit  {}
+end
+
+event 201
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 142}         -- "Guild of Light"
+  1:  Exit  {}
+end
+
+event 202
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 142}         -- "Guild of Light"
+  2:  Exit  {}
+end
+
+event 401
+      Hint = str[45]  -- "The Temple of the Sun"
+  0:  Exit  {}
+end
+
+event 402
+      Hint = str[46]  -- "A Druid Circle"
+  0:  Exit  {}
+end
+
+event 403
+      Hint = str[47]  -- "Ancient Troll Home"
+  0:  Exit  {}
+end
+
+event 404
+      Hint = str[48]  -- "Gate to the Plane of Air"
+  0:  Exit  {}
+end
+
+event 450
+      Hint = str[5]  -- "Well"
+  0:  Exit  {}
+end
+
+event 451
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 30}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 4, jumpC = 6, jumpD = 8, jumpE = 10, jumpF = 12}
+  2:  PlaySound  {Id = 351, X = 14784, Y = 10304}
+  3:  GoTo  {jump = 14}
+
+  4:  PlaySound  {Id = 351, X = 17152, Y = 5440}
+  5:  GoTo  {jump = 14}
+
+  6:  PlaySound  {Id = 351, X = -5696, Y = 7040}
+  7:  GoTo  {jump = 14}
+
+  8:  PlaySound  {Id = 351, X = -17920, Y = 15360}
+  9:  GoTo  {jump = 14}
+
+  10: PlaySound  {Id = 351, X = -16256, Y = -576}
+  11: GoTo  {jump = 14}
+
+  12: PlaySound  {Id = 351, X = -2880, Y = -5248}
+  13: GoTo  {jump = 14}
+
+  14: RandomGoTo  {jumpA = 15, jumpB = 17, jumpC = 19, jumpD = 21, jumpE = 23, jumpF = 25}
+  15: PlaySound  {Id = 342, X = 16448, Y = 15340}
+  16: GoTo  {jump = 27}
+
+  17: PlaySound  {Id = 335, X = 11200, Y = 15040}
+  18: GoTo  {jump = 27}
+
+  19: PlaySound  {Id = 336, X = 1440, Y = 6016}
+  20: GoTo  {jump = 27}
+
+  21: PlaySound  {Id = 337, X = 9728, Y = -3584}
+  22: GoTo  {jump = 27}
+
+  23: PlaySound  {Id = 338, X = 5568, Y = -12224}
+  24: GoTo  {jump = 27}
+
+  25: PlaySound  {Id = 340, X = 18048, Y = -11968}
+  26: GoTo  {jump = 27}
+
+  27: Exit  {}
+end
+
+event 452
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 25}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 4, jumpC = 6, jumpD = 8, jumpE = 10, jumpF = 12}
+  2:  PlaySound  {Id = 343, X = -11392, Y = 13248}
+  3:  GoTo  {jump = 14}
+
+  4:  PlaySound  {Id = 342, X = -7744, Y = -4992}
+  5:  GoTo  {jump = 14}
+
+  6:  PlaySound  {Id = 346, X = -16512, Y = -2048}
+  7:  GoTo  {jump = 14}
+
+  8:  PlaySound  {Id = 345, X = -11456, Y = 10112}
+  9:  GoTo  {jump = 14}
+
+  10: PlaySound  {Id = 339, X = -19136, Y = 16000}
+  11: GoTo  {jump = 14}
+
+  12: PlaySound  {Id = 340, X = -4160, Y = -19840}
+  13: GoTo  {jump = 14}
+
+  14: RandomGoTo  {jumpA = 15, jumpB = 17, jumpC = 19, jumpD = 21, jumpE = 23, jumpF = 25}
+  15: PlaySound  {Id = 340, X = 4672, Y = 18176}
+  16: GoTo  {jump = 27}
+
+  17: PlaySound  {Id = 335, X = -4096, Y = -12736}
+  18: GoTo  {jump = 27}
+
+  19: PlaySound  {Id = 336, X = -2816, Y = -9088}
+  20: GoTo  {jump = 27}
+
+  21: PlaySound  {Id = 337, X = 320, Y = -12352}
+  22: GoTo  {jump = 27}
+
+  23: PlaySound  {Id = 338, X = -896, Y = 14976}
+  24: GoTo  {jump = 27}
+
+  25: PlaySound  {Id = 339, X = 15552, Y = 13568}
+  26: GoTo  {jump = 27}
+
+  27: Exit  {}
+end
+
+event 454
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 240,   jump = 3}         -- for riki
+  1:  Add  {"Inventory", Value = 332}         -- "Lloyd's Beacon"
+  2:  Add  {"QBits", Value = 240}         -- for riki
+  3:  Exit  {}
+end
+
+event 455
+      Hint = str[40]  -- "Tree"
+  0:  Cmp  {"Inventory", Value = 186,   jump = 38}         -- "Diamond"
+  1:  Cmp  {"Inventory", Value = 185,   jump = 35}         -- "Ruby"
+  2:  Cmp  {"Inventory", Value = 184,   jump = 32}         -- "Sapphire"
+  3:  Cmp  {"Inventory", Value = 183,   jump = 29}         -- "Emerald"
+  4:  Cmp  {"Inventory", Value = 182,   jump = 26}         -- "Topaz"
+  5:  Cmp  {"Inventory", Value = 181,   jump = 23}         -- "Amethyst"
+  6:  Cmp  {"Inventory", Value = 180,   jump = 20}         -- "Amber"
+  7:  Cmp  {"Inventory", Value = 179,   jump = 17}         -- "Citrine"
+  8:  Cmp  {"Inventory", Value = 178,   jump = 14}         -- "Iolite"
+  9:  Cmp  {"Inventory", Value = 177,   jump = 11}         -- "Zircon"
+  10: GoTo  {jump = 53}
+
+  11: Subtract  {"Inventory", Value = 177}         -- "Zircon"
+  12: Add  {"Inventory", Value = 179}         -- "Citrine"
+  13: GoTo  {jump = 53}
+
+  14: Subtract  {"Inventory", Value = 178}         -- "Iolite"
+  15: Add  {"Inventory", Value = 132}         -- "Walking Boots"
+  16: GoTo  {jump = 53}
+
+  17: Subtract  {"Inventory", Value = 179}         -- "Citrine"
+  18: Add  {"Inventory", Value = 181}         -- "Amethyst"
+  19: GoTo  {jump = 53}
+
+  20: Subtract  {"Inventory", Value = 180}         -- "Amber"
+  21: Add  {"Inventory", Value = 250}         -- "Swift Potion"
+  22: GoTo  {jump = 53}
+
+  23: Subtract  {"Inventory", Value = 181}         -- "Amethyst"
+  24: Add  {"Inventory", Value = 183}         -- "Emerald"
+  25: GoTo  {jump = 53}
+
+  26: Subtract  {"Inventory", Value = 182}         -- "Topaz"
+  27: GoTo  {jump = 41}
+
+  28: GoTo  {jump = 53}
+
+  29: Subtract  {"Inventory", Value = 183}         -- "Emerald"
+  30: Add  {"Inventory", Value = 655}         -- "Green Apple"
+  31: GoTo  {jump = 53}
+
+  32: Subtract  {"Inventory", Value = 184}         -- "Sapphire"
+  33: Add  {"Gold", Value = 2000}
+  34: GoTo  {jump = 53}
+
+  35: Subtract  {"Inventory", Value = 185}         -- "Ruby"
+  36: Add  {"Inventory", Value = 271}         -- "Rejuvenation"
+  37: GoTo  {jump = 53}
+
+  38: Subtract  {"Inventory", Value = 186}         -- "Diamond"
+  39: Add  {"Inventory", Value = 656}         -- "Horseshoe"
+  40: GoTo  {jump = 53}
+
+  41: RandomGoTo  {jumpA = 43, jumpB = 45, jumpC = 47, jumpD = 49, jumpE = 51, jumpF = 0}
+  42: GoTo  {jump = 28}
+
+  43: GiveItem  {Strength = 3, Type = const.ItemType.Weapon_, Id = 0}
+  44: GoTo  {jump = 28}
+
+  45: GiveItem  {Strength = 3, Type = const.ItemType.Armor_, Id = 0}
+  46: GoTo  {jump = 28}
+
+  47: GiveItem  {Strength = 3, Type = const.ItemType.Scroll_, Id = 0}
+  48: GoTo  {jump = 28}
+
+  49: GiveItem  {Strength = 3, Type = const.ItemType.Ring_, Id = 0}
+  50: GoTo  {jump = 28}
+
+  51: GiveItem  {Strength = 3, Type = const.ItemType.Misc, Id = 0}
+  52: GoTo  {jump = 28}
+
+  53: Exit  {}
+end
+
+event 501
+      Hint = str[50]  -- "Enter the Temple of the Sun"
+  0:  MoveToMap  {X = -768, Y = -768, Z = 96, Direction = 280, LookAngle = 0, SpeedZ = 0, HouseId = 205, Icon = 1, Name = "d22.blv"}         -- "Temple of the Sun"
+  1:  Exit  {}
+end
+
+event 502
+      Hint = str[51]  -- "Enter the Druid Circle"
+  0:  MoveToMap  {X = 235, Y = 2980, Z = 673, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 206, Icon = 3, Name = "d23.blv"}         -- "Abandoned Druid Circle"
+  1:  Exit  {}
+end
+
+event 503
+      Hint = str[53]  -- "Enter the Plane of Air"
+  0:  MoveToMap  {X = 5376, Y = -12240, Z = 1133, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 222, Icon = 1, Name = "ElemA.odm"}         -- "Gateway to the Plane of Air"
+  1:  Exit  {}
+end
+
+event 504
+      Hint = str[52]  -- "Enter the Ancient Troll Home"
+  0:  Cmp  {"QBits", Value = 69,   jump = 2}         -- Ancient Troll Homeland Found
+  1:  Set  {"QBits", Value = 69}         -- Ancient Troll Homeland Found
+  2:  MoveToMap  {X = 448, Y = -224, Z = 0, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 1, Name = "D43.blv"}
+  3:  Exit  {}
+end

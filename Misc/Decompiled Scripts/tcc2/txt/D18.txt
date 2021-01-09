@@ -1,0 +1,21 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Lever"
+str[3] = "The Door won't budge."
+str[4] = "Tile"
+str[5] = "Chest"
+str[6] = "The Door is locked"
+str[7] = "Found something!"
+str[8] = "Bookcase"
+str[9] = "Exit"
+str[10] = "Oozew Pit"
+str[11] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

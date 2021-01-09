@@ -1,0 +1,500 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Exit"
+str[3] = "Chest"
+str[4] = "The door is locked."
+str[5] = "The door is locked."
+str[6] = "The door is locked."
+str[7] = "Zap!"
+str[8] = "The door is locked."
+str[9] = "The door is locked."
+str[10] = "The door is locked."
+str[11] = "The door is locked."
+str[12] = "Refreshing."
+str[13] = "Temple of Baa"
+str[14] = ""
+str[15] = ""
+str[16] = ""
+str[17] = ""
+str[18] = "A wooden sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+str[19] = "The haunted sounds of tortured souls assail your ears."
+str[20] = "A silver sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+str[21] = "A copper sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+str[22] = "A lapis sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+str[23] = "Sign"
+str[24] = "Found something!"
+str[25] = "You scoop away a handful of someone's hopes and dreams."
+str[26] = "Fountain"
+str[27] = "You toss a few coins into the fountain."
+str[28] = " +20 Hit points restored."
+str[29] = "Statue"
+str[30] = "The door clicks."
+str[31] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+      MazeInfo = str[13]  -- "Temple of Baa"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 558,   jump = 4}         -- "Secret Door Key"
+  2:  StatusText  {Str = 8}         -- "The door is locked."
+  3:  Exit  {}
+
+  4:  ForPlayer  ("All")
+  5:  Subtract  {"Inventory", Value = 558}         -- "Secret Door Key"
+  6:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 557,   jump = 4}         -- "Treasure Room Key"
+  2:  StatusText  {Str = 5}         -- "The door is locked."
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 2, State = 1}
+  5:  ForPlayer  ("All")
+  6:  Subtract  {"Inventory", Value = 557}         -- "Treasure Room Key"
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 563,   jump = 4}         -- "Treasure Room Key"
+  2:  StatusText  {Str = 6}         -- "The door is locked."
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 3, State = 1}
+  5:  ForPlayer  ("All")
+  6:  Subtract  {"Inventory", Value = 563}         -- "Treasure Room Key"
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 556,   jump = 4}         -- "Store Room Key"
+  2:  StatusText  {Str = 4}         -- "The door is locked."
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 5, State = 1}
+  5:  ForPlayer  ("All")
+  6:  Subtract  {"Inventory", Value = 556}         -- "Store Room Key"
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -9956, Y = -2760, Z = -255}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -9956, Y = -2908, Z = -255}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -9956, Y = -3108, Z = -255}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -9866, Y = -2606, Z = -255}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -10102, Y = -2606, Z = -255}
+end
+
+event 6
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 562,   jump = 4}         -- "Store Room Key"
+  2:  StatusText  {Str = 10}         -- "The door is locked."
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 6, State = 1}
+  5:  ForPlayer  ("All")
+  6:  Subtract  {"Inventory", Value = 562}         -- "Store Room Key"
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -9956, Y = -2760, Z = -255}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -9956, Y = -2908, Z = -255}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -9956, Y = -3108, Z = -255}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -9866, Y = -2606, Z = -255}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -10102, Y = -2606, Z = -255}
+end
+
+event 7
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 555,   jump = 4}         -- "Bathhouse Key"
+  2:  StatusText  {Str = 9}         -- "The door is locked."
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 9, State = 1}
+  5:  ForPlayer  ("All")
+  6:  Subtract  {"Inventory", Value = 555}         -- "Bathhouse Key"
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -9986, Y = 3669, Z = -255}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -9986, Y = 3741, Z = -255}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -9986, Y = 3870, Z = -255}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -9986, Y = 2537, Z = -255}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -9986, Y = 3603, Z = -255}
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 561,   jump = 4}         -- "Bathhouse Key"
+  2:  StatusText  {Str = 11}         -- "The door is locked."
+  3:  Exit  {}
+
+  4:  SetDoorState  {Id = 10, State = 1}
+  5:  ForPlayer  ("All")
+  6:  Subtract  {"Inventory", Value = 561}         -- "Bathhouse Key"
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -9986, Y = 3669, Z = -255}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -9986, Y = 3741, Z = -255}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -9986, Y = 3870, Z = -255}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -9986, Y = 2537, Z = -255}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -9986, Y = 3603, Z = -255}
+end
+
+event 11
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 11, State = 1}
+  1:  SetDoorState  {Id = 12, State = 1}
+end
+
+event 15
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 15, State = 1}
+  1:  SetDoorState  {Id = 16, State = 1}
+end
+
+event 17
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 17, State = 1}
+  1:  SetDoorState  {Id = 18, State = 1}
+end
+
+event 18
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 18, State = 1}
+end
+
+event 19
+      Hint = str[1]  -- "Door"
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 2}
+  1:  GoTo  {jump = 7}
+
+  2:  Add  {"MapVar3", Value = 1}
+  3:  Cmp  {"MapVar3", Value = 2,   jump = 6}
+  4:  StatusText  {Str = 30}         -- "The door clicks."
+  5:  Exit  {}
+
+  6:  Set  {"MapVar3", Value = 1}
+  7:  DamagePlayer  {Player = "All", DamageType = const.Damage.Fire, Damage = 10}
+  8:  Set  {"MapVar2", Value = 0}
+  9:  Set  {"MapVar3", Value = 0}
+  10: Set  {"MapVar4", Value = 0}
+  11: Set  {"MapVar8", Value = 0}
+  12: StatusText  {Str = 7}         -- "Zap!"
+end
+
+event 20
+      Hint = str[1]  -- "Door"
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 2}
+  1:  GoTo  {jump = 11}
+
+  2:  Add  {"MapVar8", Value = 1}
+  3:  Cmp  {"MapVar8", Value = 2,   jump = 10}
+  4:  Cmp  {"MapVar2", Value = 1,   jump = 6}
+  5:  Exit  {}
+
+  6:  Cmp  {"MapVar3", Value = 1,   jump = 8}
+  7:  Exit  {}
+
+  8:  Cmp  {"MapVar4", Value = 1,   jump = 14}
+  9:  Exit  {}
+
+  10: Set  {"MapVar8", Value = 1}
+  11: DamagePlayer  {Player = "All", DamageType = const.Damage.Fire, Damage = 10}
+  12: StatusText  {Str = 7}         -- "Zap!"
+  13: Exit  {}
+
+  14: SetDoorState  {Id = 20, State = 1}
+  15: SetDoorState  {Id = 19, State = 1}
+  16: SetDoorState  {Id = 21, State = 1}
+  17: SetDoorState  {Id = 22, State = 1}
+  18: Set  {"MapVar2", Value = 0}
+  19: Set  {"MapVar3", Value = 0}
+  20: Set  {"MapVar4", Value = 0}
+  21: Set  {"MapVar8", Value = 0}
+end
+
+event 21
+      Hint = str[1]  -- "Door"
+  0:  Cmp  {"MapVar3", Value = 1,   jump = 2}
+  1:  GoTo  {jump = 7}
+
+  2:  Add  {"MapVar4", Value = 1}
+  3:  Cmp  {"MapVar4", Value = 2,   jump = 6}
+  4:  StatusText  {Str = 30}         -- "The door clicks."
+  5:  Exit  {}
+
+  6:  Set  {"MapVar3", Value = 1}
+  7:  DamagePlayer  {Player = "All", DamageType = const.Damage.Fire, Damage = 10}
+  8:  Set  {"MapVar2", Value = 0}
+  9:  Set  {"MapVar3", Value = 0}
+  10: Set  {"MapVar4", Value = 0}
+  11: Set  {"MapVar8", Value = 0}
+  12: StatusText  {Str = 7}         -- "Zap!"
+  13: Exit  {}
+end
+
+event 22
+      Hint = str[1]  -- "Door"
+  0:  Add  {"MapVar2", Value = 1}
+  1:  Cmp  {"MapVar2", Value = 2,   jump = 4}
+  2:  StatusText  {Str = 30}         -- "The door clicks."
+  3:  Exit  {}
+
+  4:  Set  {"MapVar2", Value = 1}
+  5:  DamagePlayer  {Player = "All", DamageType = const.Damage.Fire, Damage = 10}
+  6:  StatusText  {Str = 7}         -- "Zap!"
+  7:  Exit  {}
+end
+
+event 23
+      Hint = str[3]  -- "Chest"
+  0:  Cmp  {"MapVar19", Value = 1,   jump = 24}
+  1:  OpenChest  {Id = 0}
+  2:  Set  {"MapVar19", Value = 1}
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -9986, Y = 1295, Z = -255}
+  4:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -10224, Y = 1295, Z = -255}
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -9716, Y = 1295, Z = -255}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -9688, Y = 1678, Z = -255}
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -10273, Y = 1678, Z = -255}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -8716, Y = 101, Z = -255}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -8716, Y = 405, Z = -255}
+  10: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -8716, Y = -117, Z = -255}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -8261, Y = -227, Z = -255}
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -8261, Y = 453, Z = -255}
+  13: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -10009, Y = -1039, Z = -255}
+  14: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -9713, Y = -1039, Z = -255}
+  15: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -10272, Y = -1039, Z = -255}
+  16: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -10281, Y = -1402, Z = -255}
+  17: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -9716, Y = -1402, Z = -255}
+  18: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -11291, Y = 138, Z = -255}
+  19: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -11291, Y = -93, Z = -255}
+  20: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -11291, Y = 454, Z = -255}
+  21: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -11675, Y = 454, Z = -255}
+  22: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = -11675, Y = -139, Z = -255}
+  23: Exit  {}
+
+  24: OpenChest  {Id = 0}
+end
+
+event 12
+      Hint = str[23]  -- "Sign"
+  0:  SetMessage  {Str = 20}         -- "A silver sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+  1:  SimpleMessage  {}
+end
+
+event 14
+      Hint = str[23]  -- "Sign"
+  0:  SetMessage  {Str = 21}         -- "A copper sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+  1:  SimpleMessage  {}
+end
+
+event 16
+      Hint = str[23]  -- "Sign"
+  0:  SetMessage  {Str = 22}         -- "A lapis sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+  1:  SimpleMessage  {}
+end
+
+event 24
+      Hint = str[23]  -- "Sign"
+  0:  SetMessage  {Str = 18}         -- "A wooden sign reads: As the winds blow, the seasons change, and only at the end of all can the doors be opened."
+  1:  SimpleMessage  {}
+end
+
+event 26
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"PerceptionSkill", Value = 1,   jump = 5}
+  2:  Cmp  {"Cursed", Value = 1,   jump = 5}
+  3:  CastSpell  {Spell = 91, Mastery = const.Novice, Skill = 10, FromX = 0, FromY = 0, FromZ = 0, ToX = 0, ToY = 0, ToZ = 0}         -- "Mass Curse"
+  4:  StatusText  {Str = 19}         -- "The haunted sounds of tortured souls assail your ears."
+  5:  Exit  {}
+end
+
+event 27
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 28
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 29
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 30
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 31
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 32
+      Hint = str[29]  -- "Statue"
+  0:  Cmp  {"MapVar10", Value = 1,   jump = 4}
+  1:  Add  {"Inventory", Value = 556}         -- "Store Room Key"
+  2:  StatusText  {Str = 24}         -- "Found something!"
+  3:  Set  {"MapVar10", Value = 1}
+  4:  Exit  {}
+end
+
+event 34
+      Hint = str[26]  -- "Fountain"
+  0:  Cmp  {"MapVar14", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 12}         -- "Refreshing."
+  2:  Exit  {}
+
+  3:  Subtract  {"MapVar14", Value = 1}
+  4:  Add  {"HP", Value = 20}
+  5:  StatusText  {Str = 28}         -- " +20 Hit points restored."
+  6:  Exit  {}
+end
+
+event 50
+      Hint = str[2]  -- "Exit"
+  0:  MoveToMap  {X = 4885, Y = -7698, Z = 96, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutD3.Odm"}
+end
+
+event 51
+  0:  OnTimer  {IntervalInHalfMinutes = 5}
+  1:  CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 4, FromX = -1590, FromY = 133, FromZ = -100, ToX = -2200, ToY = 133, ToZ = -100}         -- "Fireball"
+end
+
+event 52
+  0:  Cmp  {"MapVar29", Value = 1,   jump = 103}
+  1:  PlaySound  {Id = 215, X = 0, Y = 0}
+  2:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = 3216, Z = 577}
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = 2572, Z = 577}
+  4:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = 1929, Z = 577}
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = 1286, Z = 577}
+  6:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = 643, Z = 577}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = 0, Z = 577}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = -643, Z = 577}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = -1286, Z = 577}
+  10: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = -1929, Z = 577}
+  11: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3702, Y = -2572, Z = 577}
+  12: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = 3216, Z = 577}
+  13: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = 2572, Z = 577}
+  14: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = 1929, Z = 577}
+  15: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = 1286, Z = 577}
+  16: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = 643, Z = 577}
+  17: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = 0, Z = 577}
+  18: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = -643, Z = 577}
+  19: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = -1286, Z = 577}
+  20: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = -1929, Z = 577}
+  21: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3326, Y = -2572, Z = 577}
+  22: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = 3216, Z = 577}
+  23: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = 2572, Z = 577}
+  24: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = 1929, Z = 577}
+  25: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = 1286, Z = 577}
+  26: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = 643, Z = 577}
+  27: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = 0, Z = 577}
+  28: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = -643, Z = 577}
+  29: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = -1286, Z = 577}
+  30: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = -1929, Z = 577}
+  31: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2950, Y = -2572, Z = 577}
+  32: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = 3216, Z = 577}
+  33: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = 2572, Z = 577}
+  34: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = 1929, Z = 577}
+  35: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = 1286, Z = 577}
+  36: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = 643, Z = 577}
+  37: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = 0, Z = 577}
+  38: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = -643, Z = 577}
+  39: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = -1286, Z = 577}
+  40: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = -1929, Z = 577}
+  41: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 2400, Y = -2572, Z = 577}
+  42: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = 3216, Z = 577}
+  43: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = 2572, Z = 577}
+  44: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = 1929, Z = 577}
+  45: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = 1286, Z = 577}
+  46: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = 643, Z = 577}
+  47: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = 0, Z = 577}
+  48: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = -643, Z = 577}
+  49: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = -1286, Z = 577}
+  50: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = -1929, Z = 577}
+  51: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1985, Y = -2572, Z = 577}
+  52: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = 3216, Z = 577}
+  53: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = 2572, Z = 577}
+  54: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = 1929, Z = 577}
+  55: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = 1286, Z = 577}
+  56: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = 643, Z = 577}
+  57: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = 0, Z = 577}
+  58: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = -643, Z = 577}
+  59: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = -1286, Z = 577}
+  60: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = -1929, Z = 577}
+  61: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 1476, Y = -2572, Z = 577}
+  62: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = 3216, Z = 577}
+  63: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = 2572, Z = 577}
+  64: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = 1929, Z = 577}
+  65: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = 1286, Z = 577}
+  66: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = 643, Z = 577}
+  67: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = 0, Z = 577}
+  68: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = -643, Z = 577}
+  69: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = -1286, Z = 577}
+  70: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = -1929, Z = 577}
+  71: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 810, Y = -2572, Z = 577}
+  72: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = 3216, Z = 577}
+  73: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = 2572, Z = 577}
+  74: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = 1929, Z = 577}
+  75: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = 1286, Z = 577}
+  76: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = 643, Z = 577}
+  77: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = 0, Z = 577}
+  78: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = -643, Z = 577}
+  79: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = -1286, Z = 577}
+  80: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = -1929, Z = 577}
+  81: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 440, Y = -2572, Z = 577}
+  82: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = 3216, Z = 577}
+  83: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = 2572, Z = 577}
+  84: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = 1929, Z = 577}
+  85: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = 1286, Z = 577}
+  86: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = 643, Z = 577}
+  87: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = 0, Z = 577}
+  88: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = -643, Z = 577}
+  89: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = -1286, Z = 577}
+  90: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = -1929, Z = 577}
+  91: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = -2572, Z = 577}
+  92: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = 3216, Z = 577}
+  93: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = 2572, Z = 577}
+  94: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = 1929, Z = 577}
+  95: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = 1286, Z = 577}
+  96: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = 643, Z = 577}
+  97: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = 0, Z = 577}
+  98: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = -643, Z = 577}
+  99: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = -1286, Z = 577}
+  100: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = -1929, Z = 577}
+  101: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -650, Y = -2572, Z = 577}
+  102: Set  {"MapVar29", Value = 1}
+  103: Exit  {}
+end
+
+event 53
+  0:  Cmp  {"MapVar24", Value = 1,   jump = 3}
+  1:  Add  {"Gold", Value = 5000}
+  2:  Set  {"MapVar24", Value = 1}
+  3:  Exit  {}
+end
+
+event 70
+  0:  OnLoadMap  {}
+  1:  Set  {"MapVar2", Value = 0}
+  2:  Set  {"MapVar3", Value = 0}
+  3:  Set  {"MapVar4", Value = 0}
+  4:  Set  {"MapVar8", Value = 0}
+end

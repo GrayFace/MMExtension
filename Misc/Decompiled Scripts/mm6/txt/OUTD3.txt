@@ -1,0 +1,632 @@
+str[0] = " "
+str[1] = "Castle Ironfist"
+str[2] = "Enter at Own Risk."
+str[3] = "Keep Off!"
+str[4] = "Ironfist Castle"
+str[5] = "New Sorpigal"
+str[6] = "+10 Speed temporary."
+str[7] = "All Hit points restored."
+str[8] = "Refreshing!"
+str[9] = "The prince has been kidnapped!  No visitors will be admitted until this crisis has been resolved!"
+str[10] = "Crate"
+str[11] = "Well"
+str[12] = "Chest"
+str[13] = "Well, thanks for sneaking me out of the Castle.  Sorry about the circus thing—I hope I wasn’t too much trouble to find.  I’ll go in myself so no one will see that it was you who kidnapped me.  Thanks again, and goodbye.  I’ll remember this, and I owe you a favor! "
+str[14] = "The Sword won't budge!"
+str[15] = "Drink from Fountain"
+str[16] = "+10 Accuracy temporary."
+str[17] = "+10 Hit Points restored."
+str[18] = "Shrine of Electricity"
+str[19] = "You pray at the shrine."
+str[20] = "+10 Electricity resistance permanent"
+str[21] = "+3 Electricity resistance permanent"
+str[22] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            _t_staoi_on_oiz_"
+str[23] = "Obelisk"
+str[24] = ""
+str[25] = ""
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+
+
+event 2
+      Hint = str[3]  -- "Keep Off!"
+      MazeInfo = str[1]  -- "Castle Ironfist"
+  0:  EnterHouse  {Id = 3}         -- "Fine Blades"
+end
+
+event 3
+      Hint = str[3]  -- "Keep Off!"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 3}         -- "Fine Blades"
+end
+
+event 4
+      Hint = str[17]  -- "+10 Hit Points restored."
+  0:  EnterHouse  {Id = 17}         -- "Metalweave Armory"
+end
+
+event 5
+      Hint = str[17]  -- "+10 Hit Points restored."
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 17}         -- "Metalweave Armory"
+end
+
+event 6
+      Hint = str[33]  -- ""
+  0:  EnterHouse  {Id = 33}         -- "Eye of Newt"
+end
+
+event 7
+      Hint = str[33]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 33}         -- "Eye of Newt"
+end
+
+event 8
+      Hint = str[49]
+  0:  EnterHouse  {Id = 49}         -- "Royal Lines "
+end
+
+event 9
+      Hint = str[49]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 49}         -- "Royal Lines "
+end
+
+event 10
+      Hint = str[85]
+  0:  EnterHouse  {Id = 85}         -- "Royal Gymnasium"
+end
+
+event 11
+      Hint = str[85]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 85}         -- "Royal Gymnasium"
+end
+
+event 12
+      Hint = str[96]
+  0:  EnterHouse  {Id = 96}         -- "The King's Crown"
+end
+
+event 13
+      Hint = str[96]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 96}         -- "The King's Crown"
+end
+
+event 14
+      Hint = str[119]
+  0:  EnterHouse  {Id = 119}         -- "Initiate Guild of Fire"
+end
+
+event 15
+      Hint = str[119]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 119}         -- "Initiate Guild of Fire"
+end
+
+event 16
+      Hint = str[155]
+  0:  EnterHouse  {Id = 155}         -- "Castle Newton"
+end
+
+event 17
+      Hint = str[155]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 155}         -- "Castle Newton"
+end
+
+event 18
+      Hint = str[169]
+  0:  EnterHouse  {Id = 169}         -- "The Seer"
+end
+
+event 19
+      Hint = str[76]
+  0:  EnterHouse  {Id = 76}         -- "King's Temple"
+end
+
+event 40
+      Hint = str[5]  -- "New Sorpigal"
+  0:  StatusText  {Str = 5}         -- "New Sorpigal"
+  1:  Exit  {}
+end
+
+event 41
+      Hint = str[4]  -- "Ironfist Castle"
+  0:  StatusText  {Str = 4}         -- "Ironfist Castle"
+  1:  Exit  {}
+end
+
+event 42
+      Hint = str[168]
+  0:  Cmp  {"QBits", Value = 177,   jump = 3}         -- NPC
+  1:  EnterHouse  {Id = 168}         -- "King's Library"
+  2:  Exit  {}
+
+  3:  EnterHouse  {Id = 554}         -- "King's Library"
+end
+
+event 43
+      Hint = str[153]
+  0:  Cmp  {"QBits", Value = 90,   jump = 16}         -- "Entertain Nicolai."
+  1:  Cmp  {"QBits", Value = 95,   jump = 3}         -- "Find and return Prince Nicolai to Castle Ironfist."
+  2:  GoTo  {jump = 13}
+
+  3:  Cmp  {"NPCs", Value = 13,   jump = 5}         -- "Nicolai Ironfist"
+  4:  GoTo  {jump = 17}
+
+  5:  MoveNPC  {NPC = 13, HouseId = 154}         -- "Nicolai Ironfist" -> "Throne Room"
+  6:  Subtract  {"NPCs", Value = 13}         -- "Nicolai Ironfist"
+  7:  Subtract  {"QBits", Value = 95}         -- "Find and return Prince Nicolai to Castle Ironfist."
+  8:  SetMessage  {Str = 13}         -- "Well, thanks for sneaking me out of the Castle.  Sorry about the circus thing—I hope I wasn’t too much trouble to find.  I’ll go in myself so no one will see that it was you who kidnapped me.  Thanks again, and goodbye.  I’ll remember this, and I owe you a favor! "
+  9:  ForPlayer  ("All")
+  10: Add  {"Experience", Value = 7500}
+  11: SetNPCTopic  {NPC = 13, Index = 0, Event = 24}         -- "Nicolai Ironfist" : "The Circus"
+  12: SimpleMessage  {}
+  13: MoveToMap  {X = 0, Y = 0, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 153, Icon = 2, Name = "0"}         -- "Castle Ironfist"
+  14: EnterHouse  {Id = 154}         -- "Throne Room"
+  15: Exit  {}
+
+  16: Cmp  {"NPCs", Value = 13,   jump = 13}         -- "Nicolai Ironfist"
+  17: SetMessage  {Str = 9}         -- "The prince has been kidnapped!  No visitors will be admitted until this crisis has been resolved!"
+  18: SimpleMessage  {}
+end
+
+event 44
+      Hint = str[58]
+  0:  EnterHouse  {Id = 58}         -- "Zephyr"
+end
+
+event 45
+      Hint = str[59]
+  0:  EnterHouse  {Id = 59}         -- "Queen Catherine"
+end
+
+event 46
+      Hint = str[4]  -- "Ironfist Castle"
+  0:  EnterHouse  {Id = 4}         -- "The Eagle's Eye"
+end
+
+event 47
+      Hint = str[4]  -- "Ironfist Castle"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 4}         -- "The Eagle's Eye"
+end
+
+event 48
+      Hint = str[21]  -- "+3 Electricity resistance permanent"
+  0:  EnterHouse  {Id = 21}         -- "Iron Defense"
+end
+
+event 49
+      Hint = str[21]  -- "+3 Electricity resistance permanent"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 21}         -- "Iron Defense"
+end
+
+event 50
+      Hint = str[97]
+  0:  EnterHouse  {Id = 97}         -- "The Will o' Wisp"
+end
+
+event 51
+      Hint = str[97]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 97}         -- "The Will o' Wisp"
+end
+
+event 52
+      Hint = str[127]
+  0:  EnterHouse  {Id = 127}         -- "Initiate Guild of Spirit"
+end
+
+event 53
+      Hint = str[127]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 127}         -- "Initiate Guild of Spirit"
+end
+
+event 54
+      Hint = str[129]
+  0:  EnterHouse  {Id = 129}         -- "Initiate Guild of Mind"
+end
+
+event 55
+      Hint = str[129]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 129}         -- "Initiate Guild of Mind"
+end
+
+event 56
+      Hint = str[131]
+  0:  EnterHouse  {Id = 131}         -- "Initiate Guild of Body"
+end
+
+event 57
+      Hint = str[131]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 131}         -- "Initiate Guild of Body"
+end
+
+event 82
+      Hint = str[146]
+  0:  EnterHouse  {Id = 146}         -- "Berserkers' Fury"
+end
+
+event 58
+      Hint = str[168]
+  0:  EnterHouse  {Id = 424}         -- "House"
+end
+
+event 59
+      Hint = str[169]
+  0:  EnterHouse  {Id = 425}         -- "House"
+end
+
+event 60
+      Hint = str[170]
+  0:  EnterHouse  {Id = 426}         -- "House"
+end
+
+event 61
+      Hint = str[172]
+  0:  EnterHouse  {Id = 428}         -- "House"
+end
+
+event 62
+      Hint = str[173]
+  0:  EnterHouse  {Id = 429}         -- "House"
+end
+
+event 63
+      Hint = str[174]
+  0:  EnterHouse  {Id = 430}         -- "House"
+end
+
+event 64
+      Hint = str[175]
+  0:  EnterHouse  {Id = 431}         -- "House"
+end
+
+event 65
+      Hint = str[178]
+  0:  EnterHouse  {Id = 434}         -- "House"
+end
+
+event 66
+      Hint = str[179]
+  0:  EnterHouse  {Id = 435}         -- "House"
+end
+
+event 67
+      Hint = str[180]
+  0:  EnterHouse  {Id = 436}         -- "House"
+end
+
+event 68
+      Hint = str[181]
+  0:  EnterHouse  {Id = 437}         -- "House"
+end
+
+event 69
+      Hint = str[183]
+  0:  EnterHouse  {Id = 439}         -- "House"
+end
+
+event 70
+      Hint = str[184]
+  0:  EnterHouse  {Id = 440}         -- "House"
+end
+
+event 71
+      Hint = str[171]
+  0:  EnterHouse  {Id = 427}         -- "House"
+      Hint = str[176]
+  0:  EnterHouse  {Id = 432}         -- "House"
+end
+
+event 72
+      Hint = str[177]
+  0:  EnterHouse  {Id = 433}         -- "House"
+end
+
+event 73
+      Hint = str[182]
+  0:  EnterHouse  {Id = 438}         -- "House"
+end
+
+event 74
+      Hint = str[185]
+  0:  EnterHouse  {Id = 441}         -- "House"
+end
+
+event 75
+      Hint = str[186]
+  0:  EnterHouse  {Id = 442}         -- "House"
+end
+
+event 83
+      Hint = str[1]  -- "Castle Ironfist"
+  0:  EnterHouse  {Id = 257}         -- "House"
+end
+
+event 81
+      Hint = str[10]  -- "Crate"
+  0:  OpenChest  {Id = 1}
+end
+
+event 76
+      Hint = str[10]  -- "Crate"
+  0:  OpenChest  {Id = 2}
+end
+
+event 77
+      Hint = str[10]  -- "Crate"
+  0:  OpenChest  {Id = 3}
+end
+
+event 78
+      Hint = str[10]  -- "Crate"
+  0:  OpenChest  {Id = 4}
+end
+
+event 79
+      Hint = str[10]  -- "Crate"
+  0:  OpenChest  {Id = 5}
+end
+
+event 80
+      Hint = str[10]  -- "Crate"
+  0:  OpenChest  {Id = 6}
+end
+
+event 90
+  0:  MoveToMap  {X = -130, Y = -1408, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 173, Icon = 5, Name = "D03.Blv"}         -- "Shadow Guild Hideout"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 173}         -- "Shadow Guild Hideout"
+end
+
+event 91
+  0:  MoveToMap  {X = 1664, Y = -1896, Z = 1, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 175, Icon = 5, Name = "D05.Blv"}         -- "Snergle's Caverns"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 175}         -- "Snergle's Caverns"
+end
+
+event 92
+  0:  MoveToMap  {X = 2716, Y = -256, Z = 1, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 176, Icon = 5, Name = "D06.Blv"}         -- "Dragoons' Caverns"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 176}         -- "Dragoons' Caverns"
+end
+
+event 93
+  0:  MoveToMap  {X = 128, Y = -151, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 181, Icon = 5, Name = "D11.Blv"}         -- "Corlagon's Estate"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 181}         -- "Corlagon's Estate"
+end
+
+event 94
+  0:  MoveToMap  {X = -15592, Y = 120, Z = -191, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 191, Icon = 5, Name = "T1.Blv"}         -- "Temple of Baa"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 191}         -- "Temple of Baa"
+end
+
+event 97
+      Hint = str[78]
+  0:  EnterHouse  {Id = 78}         -- "Temple Baa"
+end
+
+event 100
+      Hint = str[15]  -- "Drink from Fountain"
+  0:  Cmp  {"SpeedBonus", Value = 10,   jump = 5}
+  1:  Set  {"SpeedBonus", Value = 10}
+  2:  StatusText  {Str = 6}         -- "+10 Speed temporary."
+  3:  Set  {"AutonotesBits", Value = 20}         -- "10 Points of temporary speed from the east fountain at Castle Ironfist."
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 8}         -- "Refreshing!"
+  6:  Exit  {}
+end
+
+event 101
+      Hint = str[15]  -- "Drink from Fountain"
+  0:  Cmp  {"AccuracyBonus", Value = 10,   jump = 6}
+  1:  Set  {"AccuracyBonus", Value = 10}
+  2:  StatusText  {Str = 16}         -- "+10 Accuracy temporary."
+  3:  Set  {"AutonotesBits", Value = 19}         -- "10 Points of temporary accuracy from the west fountain at Castle Ironfist."
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 8}         -- "Refreshing!"
+  6:  Exit  {}
+end
+
+event 102
+      Hint = str[15]  -- "Drink from Fountain"
+  0:  Cmp  {"MapVar24", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 8}         -- "Refreshing!"
+  2:  GoTo  {jump = 6}
+
+  3:  Subtract  {"MapVar24", Value = 1}
+  4:  Add  {"HP", Value = 10}
+  5:  StatusText  {Str = 17}         -- "+10 Hit Points restored."
+  6:  Set  {"AutonotesBits", Value = 21}         -- "10 Hit points restored from the fountain in the Arena."
+  7:  Exit  {}
+
+  8:  OnRefillTimer  {Second = 1}
+  9:  Set  {"MapVar24", Value = 30}
+end
+
+event 200
+  0:  OnTimer  {IntervalInHalfMinutes = 60}
+  1:  Cmp  {"MapVar1", Value = 8,   jump = 3}
+  2:  Cmp  {"MapVar0", Value = 1,   jump = 4}
+  3:  Exit  {}
+
+  4:  SummonObject  {Type = 8080, X = -12024, Y = -3784, Z = 400, Speed = 512, Count = 1, RandomAngle = true}         -- Paralyze
+  5:  SummonObject  {Type = 8080, X = -12032, Y = -4744, Z = 400, Speed = 512, Count = 1, RandomAngle = true}         -- Paralyze
+  6:  SummonObject  {Type = 8080, X = -12040, Y = -2712, Z = 640, Speed = 750, Count = 1, RandomAngle = true}         -- Paralyze
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 2, X = -13040, Y = -2424, Z = 645}
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 2, X = -10392, Y = -2224, Z = 645}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -12752, Y = -3856, Z = 640}
+  10: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -11328, Y = -3808, Z = 640}
+  11: Add  {"MapVar1", Value = 1}
+end
+
+event 201
+      Hint = str[3]  -- "Keep Off!"
+  0:  Set  {"MapVar0", Value = 1}
+  1:  MoveToMap  {X = -12045, Y = -6073, Z = 2, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 202
+      Hint = str[3]  -- "Keep Off!"
+  0:  Set  {"MapVar0", Value = 0}
+end
+
+event 203
+      Hint = str[3]  -- "Keep Off!"
+  0:  SetSnow  {EffectId = 1, On = false}
+  1:  MoveToMap  {X = 17920, Y = 14344, Z = 2080, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 210
+  0:  Cmp  {"MapVar4", Value = 0,   jump = 13}
+  1:  CastSpell  {Spell = 98, Mastery = const.Novice, Skill = 1, FromX = 5784, FromY = 11584, FromZ = 512, ToX = 5784, ToY = 11584, ToZ = 0}         -- "Armageddon"
+  2:  CastSpell  {Spell = 98, Mastery = const.Novice, Skill = 1, FromX = 4312, FromY = 11600, FromZ = 512, ToX = 4312, ToY = 11600, ToZ = 0}         -- "Armageddon"
+  3:  SetMessage  {Str = 7}         -- "All Hit points restored."
+  4:  SimpleMessage  {}
+  5:  SetMessage  {Str = 12}         -- "Chest"
+  6:  SimpleMessage  {}
+  7:  Question  {Question = 8, Answer1 = 9, Answer2 = 9,   jump(ok) = 9}         -- "Refreshing!" ("The prince has been kidnapped!  No visitors will be admitted until this crisis has been resolved!")
+  8:  Question  {Question = 8, Answer1 = 10, Answer2 = 10,   jump(ok) = 14}         -- "Refreshing!" ("Crate")
+  9:  Cmp  {"Gold", Value = 100,   jump = 17}
+  10: SetMessage  {Str = 11}         -- "Well"
+  11: SimpleMessage  {}
+  12: MoveToMap  {X = 4856, Y = 10288, Z = 0, Direction = 500, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  13: Exit  {}
+
+  14: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 5, X = 4920, Y = 12976, Z = 0}
+  15: GoTo  {jump = 18}
+
+  16: Exit  {}
+
+  17: Subtract  {"Gold", Value = 100}
+  18: Set  {"MapVar4", Value = 0}
+end
+
+event 220
+  0:  Cmp  {"MapVar9", Value = 1,   jump = 4}
+  1:  Set  {"MapVar9", Value = 1}
+  2:  SetFacetBitOutdoors  {Model = 1, Facet = -1, Bit = const.FacetBits.Invisible, On = true}
+  3:  Exit  {}
+
+  4:  Set  {"MapVar9", Value = 0}
+  5:  SetFacetBitOutdoors  {Model = 1, Facet = -1, Bit = const.FacetBits.Invisible, On = false}
+end
+
+event 221
+  0:  Cmp  {"MapVar14", Value = 1,   jump = 4}
+  1:  Set  {"MapVar14", Value = 1}
+  2:  SetFacetBitOutdoors  {Model = 1, Facet = -1, Bit = const.FacetBits.Untouchable, On = true}
+  3:  Exit  {}
+
+  4:  Set  {"MapVar14", Value = 0}
+  5:  SetFacetBitOutdoors  {Model = 1, Facet = -1, Bit = const.FacetBits.Untouchable, On = false}
+end
+
+event 225
+  0:  Cmp  {"QBits", Value = 303,   jump = 8}         -- NPC
+  1:  Cmp  {"CurrentMight", Value = 40,   jump = 5}
+  2:  FaceExpression  {Player = "Current", Frame = 51}
+  3:  StatusText  {Str = 14}         -- "The Sword won't budge!"
+  4:  GoTo  {jump = 8}
+
+  5:  Set  {"QBits", Value = 303}         -- NPC
+  6:  GiveItem  {Strength = 4, Type = const.ItemType.Sword, Id = 7}         -- "Great Sword"
+  7:  SetSprite  {SpriteId = 232, Visible = 1, Name = "swrdstx"}
+  8:  Exit  {}
+
+  9:  OnLoadMap  {}
+  10: Cmp  {"QBits", Value = 303,   jump = 7}         -- NPC
+end
+
+event 230
+  0:  Cmp  {"MapVar19", Value = 1,   jump = 3}
+  1:  Add  {"Inventory", Value = 208}         -- "Meteor Shower"
+  2:  Set  {"MapVar19", Value = 1}
+  3:  Exit  {}
+end
+
+event 231
+      Hint = str[11]  -- "Well"
+  0:  Cmp  {"QBits", Value = 305,   jump = 2}         -- NPC
+  1:  Cmp  {"QBits", Value = 96,   jump = 3}         -- "Find the Third Eye and bring it to Prince Nicolai in Castle Ironfist."
+  2:  Exit  {}
+
+  3:  Add  {"Inventory", Value = 446}         -- "The Third Eye"
+  4:  Set  {"QBits", Value = 305}         -- NPC
+  5:  Set  {"QBits", Value = 196}         -- Quest item bits for seer
+end
+
+event 232
+      Hint = str[23]  -- "Obelisk"
+  0:  SetMessage  {Str = 22}         -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            _t_staoi_on_oiz_"
+  1:  SimpleMessage  {}
+  2:  Set  {"QBits", Value = 371}         -- NPC
+  3:  Set  {"AutonotesBits", Value = 90}         -- "Obelisk Message # 12: _t_staoi_on_oiz_"
+end
+
+event 261
+      Hint = str[18]  -- "Shrine of Electricity"
+  0:  Cmp  {"MonthIs", Value = 8,   jump = 3}
+  1:  StatusText  {Str = 19}         -- "You pray at the shrine."
+  2:  Exit  {}
+
+  3:  Cmp  {"QBits", Value = 206,   jump = 1}         -- NPC
+  4:  Set  {"QBits", Value = 206}         -- NPC
+  5:  Cmp  {"QBits", Value = 215,   jump = 11}         -- NPC
+  6:  Set  {"QBits", Value = 215}         -- NPC
+  7:  ForPlayer  ("All")
+  8:  Add  {"ElecResistance", Value = 10}
+  9:  StatusText  {Str = 20}         -- "+10 Electricity resistance permanent"
+  10: Exit  {}
+
+  11: ForPlayer  ("All")
+  12: Add  {"ElecResistance", Value = 3}
+  13: StatusText  {Str = 21}         -- "+3 Electricity resistance permanent"
+end

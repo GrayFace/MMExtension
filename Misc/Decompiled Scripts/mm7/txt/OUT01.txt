@@ -1,0 +1,653 @@
+str[0] = " "
+str[1] = "Crate"
+str[2] = "Barrel"
+str[3] = "Well"
+str[4] = "Drink from the Well"
+str[5] = "Fountain"
+str[6] = "Drink from the Fountain"
+str[7] = "House"
+str[8] = "Trash Heap"
+str[9] = "Keg"
+str[10] = "Cart"
+str[11] = "Refreshing!"
+str[12] = "Boat"
+str[13] = "Dock"
+str[14] = "Anvil"
+str[15] = "Button"
+str[16] = "Chest"
+str[17] = ""
+str[18] = ""
+str[19] = "Fruit Tree"
+str[20] = "Door"
+str[21] = "This Door is Locked"
+str[22] = "+50 Fire Resistance temporary."
+str[23] = "+5 Hit points restored."
+str[24] = "+5 Spell points restored."
+str[25] = "+2 Luck permanent"
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = "Enter The Temple of the Moon"
+str[31] = "Enter the Dragon's Cave"
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = "Temple"
+str[36] = "Guilds"
+str[37] = "Stables"
+str[38] = "Docks"
+str[39] = "Shops"
+str[40] = "Lord Markham"
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = ""
+str[46] = "Welcome to Emerald Isle"
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = "Obelisk"
+str[51] = "Nothing Seems to have happened"
+str[52] = "Shrine"
+str[53] = "Alter"
+str[54] = "You Pray"
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[46]  -- "Welcome to Emerald Isle"
+  0:  Exit  {}
+end
+
+event 2
+      Hint = str[1]  -- "Crate"
+  0:  EnterHouse  {Id = 1}         -- "The Knight's Blade"
+end
+
+event 3
+      Hint = str[1]  -- "Crate"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 1}         -- "The Knight's Blade"
+end
+
+event 4
+      Hint = str[15]  -- "Button"
+  0:  EnterHouse  {Id = 15}         -- "Erik's Armory"
+end
+
+event 5
+      Hint = str[15]  -- "Button"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 15}         -- "Erik's Armory"
+end
+
+event 6
+      Hint = str[29]  -- ""
+  0:  EnterHouse  {Id = 29}         -- "Emerald Enchantments"
+end
+
+event 7
+      Hint = str[29]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 29}         -- "Emerald Enchantments"
+end
+
+event 8
+      Hint = str[42]  -- ""
+  0:  EnterHouse  {Id = 42}         -- "The Blue Bottle"
+end
+
+event 9
+      Hint = str[42]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 42}         -- "The Blue Bottle"
+end
+
+event 10
+      Hint = str[74]  -- ""
+  0:  EnterHouse  {Id = 74}         -- "Healer's Tent"
+end
+
+event 11
+      Hint = str[74]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 74}         -- "Healer's Tent"
+end
+
+event 12
+      Hint = str[89]  -- ""
+  0:  EnterHouse  {Id = 89}         -- "Island Training Grounds"
+end
+
+event 13
+      Hint = str[89]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 89}         -- "Island Training Grounds"
+end
+
+event 14
+      Hint = str[107]  -- ""
+  0:  EnterHouse  {Id = 107}         -- "Two Palms Tavern"
+end
+
+event 15
+      Hint = str[107]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 107}         -- "Two Palms Tavern"
+end
+
+event 16
+      Hint = str[139]
+  0:  EnterHouse  {Id = 139}         -- "Initiate Guild of Fire"
+end
+
+event 17
+      Hint = str[139]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 139}         -- "Initiate Guild of Fire"
+end
+
+event 18
+      Hint = str[143]
+  0:  EnterHouse  {Id = 143}         -- "Initiate Guild of Air"
+end
+
+event 19
+      Hint = str[143]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 143}         -- "Initiate Guild of Air"
+end
+
+event 20
+      Hint = str[155]
+  0:  EnterHouse  {Id = 155}         -- "Initiate Guild of Spirit"
+end
+
+event 21
+      Hint = str[155]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 155}         -- "Initiate Guild of Spirit"
+end
+
+event 22
+      Hint = str[163]
+  0:  EnterHouse  {Id = 163}         -- "Initiate Guild of Body"
+end
+
+event 23
+      Hint = str[163]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 163}         -- "Initiate Guild of Body"
+end
+
+event 24
+      Hint = str[63]  -- ""
+  0:  EnterHouse  {Id = 238}         -- "The Lady Margaret"
+end
+
+event 25
+      Hint = str[63]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 63}         -- "Lady Margaret"
+end
+
+event 49
+      Hint = str[7]  -- "House"
+  0:  Exit  {}
+end
+
+event 50
+      Hint = str[224]
+  0:  EnterHouse  {Id = 224}         -- "Donna Wyrith's Residence"
+end
+
+event 51
+      Hint = str[225]
+  0:  EnterHouse  {Id = 225}         -- "Mia Lucille' Home"
+end
+
+event 52
+      Hint = str[226]
+  0:  EnterHouse  {Id = 226}         -- "Vandalir Residence"
+end
+
+event 53
+      Hint = str[227]
+  0:  EnterHouse  {Id = 227}         -- "House 227"
+end
+
+event 54
+      Hint = str[228]
+  0:  EnterHouse  {Id = 228}         -- "House 228"
+end
+
+event 55
+      Hint = str[229]
+  0:  EnterHouse  {Id = 229}         -- "House 229"
+end
+
+event 56
+      Hint = str[239]
+  0:  EnterHouse  {Id = 239}         -- "Carolyn Weathers' House"
+end
+
+event 57
+      Hint = str[240]
+  0:  EnterHouse  {Id = 240}         -- "Tellmar Residence"
+end
+
+event 58
+      Hint = str[241]
+  0:  EnterHouse  {Id = 241}         -- "House 241"
+end
+
+event 59
+      Hint = str[242]
+  0:  EnterHouse  {Id = 242}         -- "House 242"
+end
+
+event 60
+      Hint = str[254]
+  0:  EnterHouse  {Id = 254}         -- "House 254"
+end
+
+event 61
+      Hint = str[255]
+  0:  EnterHouse  {Id = 255}         -- "House 255"
+end
+
+event 62
+      Hint = str[255]
+  0:  EnterHouse  {Id = 255}         -- "House 255"
+end
+
+event 63
+      Hint = str[14]  -- "Anvil"
+  0:  Exit  {}
+end
+
+event 64
+      Hint = str[10]  -- "Cart"
+  0:  Exit  {}
+end
+
+event 65
+      Hint = str[9]  -- "Keg"
+  0:  Exit  {}
+end
+
+event 66
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 186}         -- "Markham's Headquarters"
+end
+
+event 67
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 186}         -- "Markham's Headquarters"
+end
+
+event 68
+      Hint = str[36]  -- "Guilds"
+  0:  Exit  {}
+end
+
+event 69
+      Hint = str[39]  -- "Shops"
+  0:  Exit  {}
+end
+
+event 70
+      Hint = str[40]  -- "Lord Markham"
+  0:  Exit  {}
+end
+
+event 101
+      Hint = str[30]  -- "Enter The Temple of the Moon"
+  0:  MoveToMap  {X = -1208, Y = -4225, Z = 366, Direction = 320, LookAngle = 0, SpeedZ = 0, HouseId = 191, Icon = 3, Name = "D06.blv"}         -- "Temple of the Moon"
+  1:  Exit  {}
+end
+
+event 102
+      Hint = str[31]  -- "Enter the Dragon's Cave"
+  0:  MoveToMap  {X = 752, Y = 2229, Z = 1, Direction = 1012, LookAngle = 0, SpeedZ = 0, HouseId = 192, Icon = 3, Name = "D28.Blv"}         -- "Dragon's Lair"
+  1:  Exit  {}
+end
+
+event 109
+      Hint = str[3]  -- "Well"
+  0:  Exit  {}
+end
+
+event 110
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"FireResBonus", Value = 50,   jump = 5}
+  1:  Set  {"FireResBonus", Value = 50}
+  2:  StatusText  {Str = 22}         -- "+50 Fire Resistance temporary."
+  3:  Add  {"AutonotesBits", Value = 2}         -- ""
+  4:  GoTo  {jump = 6}
+
+  5:  StatusText  {Str = 11}         -- "Refreshing!"
+  6:  Exit  {}
+end
+
+event 111
+  0:  OnRefillTimer  {Second = 1}
+  1:  Set  {"MapVar0", Value = 30}
+  2:  Set  {"MapVar1", Value = 30}
+end
+
+event 112
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 11}         -- "Refreshing!"
+  2:  GoTo  {jump = 7}
+
+  3:  Subtract  {"MapVar0", Value = 1}
+  4:  Add  {"HP", Value = 5}
+  5:  Add  {"AutonotesBits", Value = 3}         -- ""
+  6:  StatusText  {Str = 23}         -- "+5 Hit points restored."
+  7:  Exit  {}
+end
+
+event 113
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 11}         -- "Refreshing!"
+  2:  GoTo  {jump = 6}
+
+  3:  Subtract  {"MapVar1", Value = 1}
+  4:  Add  {"SP", Value = 5}
+  5:  StatusText  {Str = 24}         -- "+5 Spell points restored."
+  6:  Set  {"AutonotesBits", Value = 4}         -- ""
+end
+
+event 114
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"BaseLuck", Value = 15,   jump = 2}
+  1:  Cmp  {"MapVar2", Value = 1,   jump = 4}
+  2:  StatusText  {Str = 11}         -- "Refreshing!"
+  3:  Exit  {}
+
+  4:  Subtract  {"MapVar2", Value = 1}
+  5:  Add  {"BaseLuck", Value = 2}
+  6:  Add  {"AutonotesBits", Value = 5}         -- ""
+  7:  StatusText  {Str = 25}         -- "+2 Luck permanent"
+  8:  Exit  {}
+
+  9:  OnRefillTimer  {EachMonth = true}
+  10: Set  {"MapVar2", Value = 8}
+end
+
+event 115
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"MapVar4", Value = 3,   jump = 9}
+  1:  Cmp  {"MapVar3", Value = 1,   jump = 9}
+  2:  Cmp  {"Gold", Value = 201,   jump = 9}
+  3:  Cmp  {"BaseLuck", Value = 15,   jump = 5}
+  4:  GoTo  {jump = 9}
+
+  5:  Add  {"MapVar3", Value = 1}
+  6:  Add  {"Gold", Value = 1000}
+  7:  Add  {"MapVar4", Value = 1}
+  8:  GoTo  {jump = 10}
+
+  9:  StatusText  {Str = 11}         -- "Refreshing!"
+  10: Exit  {}
+
+  11: OnRefillTimer  {EachWeek = true}
+  12: Set  {"MapVar3", Value = 0}
+end
+
+event 118
+      Hint = str[1]  -- "Crate"
+  0:  OpenChest  {Id = 1}
+  1:  Exit  {}
+end
+
+event 119
+      Hint = str[1]  -- "Crate"
+  0:  OpenChest  {Id = 2}
+  1:  Exit  {}
+end
+
+event 120
+      Hint = str[1]  -- "Crate"
+  0:  OpenChest  {Id = 3}
+  1:  Exit  {}
+end
+
+event 121
+      Hint = str[1]  -- "Crate"
+  0:  OpenChest  {Id = 4}
+  1:  Exit  {}
+end
+
+event 122
+      Hint = str[1]  -- "Crate"
+  0:  OpenChest  {Id = 5}
+  1:  Exit  {}
+end
+
+event 123
+      Hint = str[1]  -- "Crate"
+  0:  OpenChest  {Id = 6}
+  1:  Exit  {}
+end
+
+event 124
+      Hint = str[16]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+end
+
+event 200
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 19}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 201
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 20}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 202
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 21}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 203
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 22}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 204
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 23}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 205
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 24}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 206
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 25}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 207
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 26}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 208
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 27}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 209
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 28}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 210
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 29}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 211
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 30}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 212
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 31}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 213
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 32}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 214
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 33}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 215
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 34}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 216
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 35}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 217
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 36}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 218
+  0:  Cmp  {"QBits", Value = 17,   jump = 2}         -- No more docent babble
+  1:  SpeakNPC  {NPC = 37}         -- "Margaret the Docent"
+  2:  Exit  {}
+end
+
+event 219
+      Hint = str[15]  -- "Button"
+  0:  CastSpell  {Spell = 43, Mastery = const.GM, Skill = 10, FromX = 10495, FromY = 17724, FromZ = 2370, ToX = 10495, ToY = 24144, ToZ = 4500}         -- "Death Blossom"
+end
+
+event 220
+      Hint = str[100]  -- ""
+
+  0:  OnRefillTimer  {Hour = 1}
+  1:  CheckMonstersKilled  {CheckType = 1, Id = 20, Count = 0,   jump(>=) = 3}
+  2:  Exit  {}
+
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 10, X = -336, Y = 14512, Z = 0, NPCGroup = 20, unk = 0}         -- "Ridge walkers in Bracada"
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 5, X = 16, Y = 16352, Z = 90, NPCGroup = 20, unk = 0}         -- "Ridge walkers in Bracada"
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 10, X = 480, Y = 18288, Z = 6, NPCGroup = 20, unk = 0}         -- "Ridge walkers in Bracada"
+end

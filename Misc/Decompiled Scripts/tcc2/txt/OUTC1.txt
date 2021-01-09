@@ -1,0 +1,185 @@
+str[0] = " "
+str[1] = "Au"
+str[2] = "Look Out!"
+str[3] = "Autonote added."
+str[4] = "+20 Accuracy and Speed temporary."
+str[5] = "+20 Armor class temporary."
+str[6] = "Lenny 2"
+str[7] = "Lenny 3"
+str[8] = "Lenny Msg #2.  The Squiggies are not like us Lennies, fancy and dandy.  They are common Stones, plain and unattractive."
+str[9] = "Lenny Msg #3.  They live in the Valley of  Stones."
+str[10] = "Refreshing!"
+str[11] = "Norseland"
+str[12] = "Shrine of Accuracy"
+str[13] = "You pray at the shrine."
+str[14] = "+10 Accuracy permanent"
+str[15] = "+3 Accuracy permanent"
+str[16] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            _a,uef;re_oottg_l"
+str[17] = "Obelisk"
+str[18] = "Castle Birka"
+str[19] = "Jorgsborg"
+str[20] = "Cumbria/Port Sleigon"
+str[21] = "Locked.  The proprietor has fled to the mountains."
+str[22] = "The Lord is in council and cannot be disturbed."
+str[23] = "You need the proper key to enter the keep."
+str[24] = "You cannot enter at this time"
+str[25] = "This entrance is magically warded."
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+
+
+event 1
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 511,   jump = 5}         -- SOG Void Teleport
+  2:  ForPlayer  ("All")
+  3:  Set  {"Eradicated", Value = 0}
+  4:  Exit  {}
+
+  5:  Cmp  {"QBits", Value = 330,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 2}
+
+  7:  Exit  {}
+end
+
+event 10
+      Hint = str[6]  -- "Lenny 2"
+  0:  Cmp  {"QBits", Value = 505,   jump = 3}         -- Stone of Translation
+  1:  StatusText  {Str = 10}         -- "Refreshing!"
+  2:  Exit  {}
+
+  3:  Add  {"QBits", Value = 502}         -- Campfire
+  4:  SetMessage  {Str = 8}         -- "Lenny Msg #2.  The Squiggies are not like us Lennies, fancy and dandy.  They are common Stones, plain and unattractive."
+  5:  SimpleMessage  {}
+  6:  Set  {"AutonotesBits", Value = 11}         -- "Lenny Msg #2.  The Squiggies are not like us Lennies, fancy and dandy.  They are common Stones, plain and unattractive."
+  7:  StatusText  {Str = 3}         -- "Autonote added."
+  8:  Exit  {}
+end
+
+event 11
+      Hint = str[7]  -- "Lenny 3"
+  0:  Cmp  {"QBits", Value = 505,   jump = 3}         -- Stone of Translation
+  1:  StatusText  {Str = 10}         -- "Refreshing!"
+  2:  Exit  {}
+
+  3:  Add  {"QBits", Value = 501}         -- Campfire
+  4:  SetMessage  {Str = 9}         -- "Lenny Msg #3.  They live in the Valley of  Stones."
+  5:  SimpleMessage  {}
+  6:  Set  {"AutonotesBits", Value = 12}         -- "Lenny Msg #3.  They live in the Valley of  Stones."
+  7:  StatusText  {Str = 3}         -- "Autonote added."
+  8:  Exit  {}
+end
+
+event 262
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 406,   jump = 15}         -- Birka Timer1
+  2:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 4, X = -4725, Y = 15551, Z = 1400}
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 3, X = -3735, Y = 16118, Z = 650}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 4, X = -7467, Y = 18362, Z = 900}
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 3, X = -10662, Y = 13523, Z = 1250}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 3, X = 6283, Y = 17094, Z = 555}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = 10328, Y = 22523, Z = 1235}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 4, X = 7978, Y = 21373, Z = 435}
+  9:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = 12506, Y = -3215, Z = 1635}
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = 21291, Y = -1044, Z = 1865}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 2, X = 18936, Y = -3352, Z = 765}
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 3, X = 8520, Y = 3859, Z = 3100}
+  130: Cmp  {"QBits", Value = 508,   jump = 16}         -- Void Fountain2
+  13: Set  {"QBits", Value = 406}         -- Birka Timer1
+  14: GoTo  {jump = 16}
+
+  15: Exit  {}
+
+  16: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = 12441, Y = -2439, Z = 1542}
+  17: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = 20828, Y = -8961, Z = 442}
+  18: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = 16776, Y = -21566, Z = 1342}
+  19: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = 10200, Y = 11400, Z = 850}
+  20: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = -11349, Y = 17574, Z = 650}
+  21: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -8253, Y = 15583, Z = 1400}
+  22: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 4, X = -10548, Y = 15711, Z = 876}
+  23: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = -7717, Y = 12574, Z = 1950}
+  24: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -8888, Y = 17907, Z = 2100}
+  25: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = 5600, Y = 20403, Z = 2867}
+  26: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 3, X = 6460, Y = 15697, Z = 1900}
+  27: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 2, X = -259, Y = 5153, Z = 1800}
+  28: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 3, X = -5932, Y = 12049, Z = 1700}
+  29: GoTo  {jump = 32}
+
+  34: Cmp  {"QBits", Value = 507,   jump = 32}         -- Void Fountain3
+  30: Set  {"QBits", Value = 487}         -- Demonclaw Reload
+  31: Exit  {}
+
+  32: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -13143, Y = 17068, Z = 550}
+  33: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = 12557, Y = -3827, Z = 1225}
+  34: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = 20524, Y = -10570, Z = 950}
+  35: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -8989, Y = 13803, Z = 2312}
+  36: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = 5690, Y = 11714, Z = 1650}
+  37: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = 18798, Y = -1443, Z = 1800}
+  124: Set  {"QBits", Value = 487}         -- Demonclaw Reload
+  38: Exit  {}
+
+  40: Subtract  {"QBits", Value = 487}         -- Demonclaw Reload
+  41: Exit  {}
+
+  42: Subtract  {"HasFullSP", Value = 0}
+end
+
+event 263
+      function events.LoadMap()
+  1:  Exit  {}
+
+  10: Cmp  {"Awards", Value = 3,   jump = 3}         -- "Touched the Rock of Translation"
+  2:  Exit  {}
+
+  3:  MoveNPC  {NPC = 354, HouseId = 510}         -- "Ray Boswell" -> "House"
+  4:  MoveNPC  {NPC = 353, HouseId = 509}         -- "Svarktel Jorgen" -> "House"
+  5:  MoveNPC  {NPC = 351, HouseId = 507}         -- "Abe Markoviac" -> "House"
+  6:  MoveNPC  {NPC = 352, HouseId = 508}         -- "Shel Stineway" -> "House"
+  7:  MoveNPC  {NPC = 36, HouseId = 274}         -- "Fredrick Piles" -> "House"
+  8:  MoveNPC  {NPC = 356, HouseId = 512}         -- "Marc Teagan" -> "House"
+  9:  MoveNPC  {NPC = 357, HouseId = 513}         -- "Harper Nike" -> "House"
+  10: MoveNPC  {NPC = 359, HouseId = 515}         -- "Gerrold Dane" -> "House"
+  11: MoveNPC  {NPC = 358, HouseId = 514}         -- "Trevor Jones" -> "House"
+  12: MoveNPC  {NPC = 355, HouseId = 511}         -- "Sly Silverstone" -> "House"
+  13: MoveNPC  {NPC = 278, HouseId = 278}         -- "Becky Holmes" -> "House"
+  14: MoveNPC  {NPC = 360, HouseId = 516}         -- "Peace Stringer" -> "House"
+  15: MoveNPC  {NPC = 96, HouseId = 273}         -- "Sure Valla" -> "House"
+  16: MoveNPC  {NPC = 69, HouseId = 278}         -- "Warren Holmes" -> "House"
+  17: MoveNPC  {NPC = 263, HouseId = 279}         -- "Rachel Herzl" -> "House"
+  18: MoveNPC  {NPC = 282, HouseId = 279}         -- "Jennifer Herzl" -> "House"
+end
+
+event 264
+      Timer(<function>, 95*const.Minute)
+  1:  Cmp  {"QBits", Value = 85,   jump = 4}         -- Paul
+  2:  Cmp  {"QBits", Value = 485,   jump = 4}         -- LG 2nd Jorgsburg
+  3:  Add  {"QBits", Value = 86}         -- Paul
+  4:  Exit  {}
+end
+
+event 265
+      Timer(<function>, 45*const.Minute)
+  1:  Cmp  {"QBits", Value = 406,   jump = 3}         -- Birka Timer1
+  2:  Exit  {}
+
+  3:  Add  {"QBits", Value = 485}         -- LG 2nd Jorgsburg
+  0:  Exit  {}
+end
+
+event 266
+      function events.LoadMap()
+  1:  SetSnow  {EffectId = 0, On = true}
+end
+
+event 271
+      function events.LoadMap()
+  1:  SetSnow  {EffectId = 0, On = true}
+end

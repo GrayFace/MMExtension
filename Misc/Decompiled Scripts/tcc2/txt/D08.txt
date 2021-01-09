@@ -1,0 +1,45 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Chest"
+str[3] = "Poisoned Spike"
+str[4] = "Unstable rock"
+str[5] = "Suspicious Floor"
+str[6] = "Dark pit"
+str[7] = "Click!"
+str[8] = "Exit"
+str[9] = "Switch"
+str[10] = "Trap!"
+str[11] = "Ca-Click!"
+str[12] = "Snick!"
+str[13] = "Magic Gate Open"
+str[14] = "Bag"
+str[15] = "Spiral Stuff (Bug if this displays)."
+str[16] = "Magic Door"
+str[17] = "Bag"
+str[18] = "You cannot see me, hear me or touch me.  I lie behind the stars and alter what is real, I am what you really fear, Close your eyes and come I near. What am I?"
+str[19] = "dark"
+str[20] = "darkness"
+str[21] = "Answer?  "
+str[22] = "Incorrect"
+str[23] = "I go through an apple, or point out your way, I fit in a bow, then a target, to stay. What am I?"
+str[24] = "arrow"
+str[25] = "an arrow"
+str[26] = "What consumes rocks, levels mountains, destroys wood, pushes the clouds across the sky, and can make a young one old?"
+str[27] = "time"
+str[28] = "Alive without breath, as cold as death, never thirsty ever drinking, all in mail never clinking, ever travelling, never walking, mouth ever moving, never talking.  What am I? "
+str[29] = "fish"
+str[30] = "a fish"
+str[31] = "Magical Wall"
+str[32] = "Sack"
+str[33] = "Empty"
+str[34] = "Quedagh Curse"
+str[35] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

@@ -1,0 +1,28 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Chest"
+str[3] = "All must have amber.  Take life force!"
+str[4] = "The chest is locked."
+str[5] = "Magically Refreshing!"
+str[6] = "Exit"
+str[7] = "Deleted"
+str[8] = "The door is locked."
+str[9] = "Ah, delicious amber!"
+str[10] = "Stone Face"
+str[11] = "Water"
+str[12] = "Bag"
+str[13] = "The Door is warded."
+str[14] = "All wards must be destroyed."
+str[15] = "The door won't budge."
+str[16] = "Lord of Forgetfullness"
+str[17] = "Forbidden Vault"
+str[18] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

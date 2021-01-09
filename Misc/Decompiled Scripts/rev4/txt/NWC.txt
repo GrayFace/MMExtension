@@ -1,0 +1,686 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Leave the Cave"
+str[3] = "Chest"
+str[4] = "Button"
+str[5] = "Lever"
+str[6] = "Vault"
+str[7] = "Cabinet"
+str[8] = "Switch"
+str[9] = "The lever won't budge"
+str[10] = "Bookcase"
+str[11] = "You must have the Book of UnMakings in order to leave"
+str[12] = "You must kill all hostiles in order to leave the temple."
+str[13] = ""
+str[14] = ""
+str[15] = ""
+str[16] = ""
+str[17] = ""
+str[18] = ""
+str[19] = ""
+str[20] = ""
+str[21] = ""
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = ""
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = ""
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = ""
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = ""
+str[51] = ""
+str[52] = ""
+str[53] = ""
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+      function events.LoadMap()
+  1:  SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = false}         -- "Generic Monster Group for Dungeons"
+  2:  Cmp  {"QBits", Value = 293,   jump = 4}         -- Return to NWC
+  3:  Exit  {}
+
+  4:  SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = true}         -- "Generic Monster Group for Dungeons"
+  5:  SetDoorState  {Id = 73, State = 1}
+  6:  SetDoorState  {Id = 74, State = 1}
+  7:  SetDoorState  {Id = 81, State = 1}
+  8:  SetDoorState  {Id = 75, State = 1}
+  9:  SetDoorState  {Id = 82, State = 1}
+  10: SetDoorState  {Id = 76, State = 1}
+  11: SetDoorState  {Id = 83, State = 1}
+  12: SetDoorState  {Id = 77, State = 1}
+  13: SetDoorState  {Id = 84, State = 1}
+  14: SetDoorState  {Id = 78, State = 1}
+  15: SetDoorState  {Id = 85, State = 1}
+  16: SetDoorState  {Id = 79, State = 1}
+  17: SetDoorState  {Id = 86, State = 1}
+  18: SetDoorState  {Id = 72, State = 1}
+  19: SetDoorState  {Id = 73, State = 1}
+  20: SetDoorState  {Id = 80, State = 1}
+  21: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = 2756, Y = 4781, Z = 0, NPCGroup = 512, unk = 0}         -- not found!
+end
+
+event 3
+  0:  SetDoorState  {Id = 3, State = 2}         -- switch state
+end
+
+event 4
+  0:  SetDoorState  {Id = 4, State = 2}         -- switch state
+end
+
+event 5
+  0:  SetDoorState  {Id = 5, State = 2}         -- switch state
+end
+
+event 6
+  0:  SetDoorState  {Id = 6, State = 2}         -- switch state
+end
+
+event 7
+  0:  SetDoorState  {Id = 7, State = 2}         -- switch state
+end
+
+event 8
+  0:  SetDoorState  {Id = 8, State = 2}         -- switch state
+end
+
+event 9
+  0:  SetDoorState  {Id = 9, State = 2}         -- switch state
+end
+
+event 10
+  0:  SetDoorState  {Id = 10, State = 2}         -- switch state
+end
+
+event 11
+  0:  SetDoorState  {Id = 11, State = 2}         -- switch state
+end
+
+event 12
+  0:  SetDoorState  {Id = 12, State = 2}         -- switch state
+end
+
+event 13
+  0:  SetDoorState  {Id = 13, State = 2}         -- switch state
+end
+
+event 14
+  0:  SetDoorState  {Id = 14, State = 2}         -- switch state
+end
+
+event 15
+  0:  SetDoorState  {Id = 15, State = 2}         -- switch state
+end
+
+event 16
+  0:  SetDoorState  {Id = 16, State = 2}         -- switch state
+end
+
+event 17
+  0:  SetDoorState  {Id = 17, State = 2}         -- switch state
+end
+
+event 18
+  0:  SetDoorState  {Id = 18, State = 2}         -- switch state
+end
+
+event 19
+  0:  SetDoorState  {Id = 19, State = 2}         -- switch state
+end
+
+event 20
+  0:  SetDoorState  {Id = 20, State = 2}         -- switch state
+end
+
+event 21
+  0:  SetDoorState  {Id = 21, State = 2}         -- switch state
+end
+
+event 22
+  0:  SetDoorState  {Id = 22, State = 2}         -- switch state
+end
+
+event 23
+  0:  SetDoorState  {Id = 23, State = 2}         -- switch state
+end
+
+event 24
+  0:  SetDoorState  {Id = 24, State = 2}         -- switch state
+end
+
+event 25
+  0:  SetDoorState  {Id = 25, State = 2}         -- switch state
+end
+
+event 26
+  0:  SetDoorState  {Id = 26, State = 2}         -- switch state
+end
+
+event 27
+  0:  SetDoorState  {Id = 27, State = 2}         -- switch state
+end
+
+event 28
+  0:  SetDoorState  {Id = 28, State = 2}         -- switch state
+end
+
+event 29
+  0:  SetDoorState  {Id = 29, State = 2}         -- switch state
+end
+
+event 30
+  0:  SetDoorState  {Id = 30, State = 2}         -- switch state
+end
+
+event 31
+  0:  SetDoorState  {Id = 31, State = 2}         -- switch state
+end
+
+event 32
+  0:  SetDoorState  {Id = 32, State = 2}         -- switch state
+end
+
+event 33
+  0:  SetDoorState  {Id = 33, State = 2}         -- switch state
+end
+
+event 34
+  0:  SetDoorState  {Id = 34, State = 2}         -- switch state
+end
+
+event 35
+  0:  SetDoorState  {Id = 35, State = 2}         -- switch state
+end
+
+event 36
+  0:  SetDoorState  {Id = 36, State = 2}         -- switch state
+end
+
+event 37
+  0:  SetDoorState  {Id = 37, State = 2}         -- switch state
+end
+
+event 38
+  0:  SetDoorState  {Id = 38, State = 2}         -- switch state
+end
+
+event 39
+  0:  SetDoorState  {Id = 39, State = 2}         -- switch state
+end
+
+event 40
+  0:  SetDoorState  {Id = 40, State = 2}         -- switch state
+end
+
+event 41
+  0:  SetDoorState  {Id = 41, State = 2}         -- switch state
+end
+
+event 42
+  0:  SetDoorState  {Id = 42, State = 2}         -- switch state
+end
+
+event 43
+  0:  SetDoorState  {Id = 43, State = 2}         -- switch state
+end
+
+event 44
+  0:  SetDoorState  {Id = 44, State = 2}         -- switch state
+end
+
+event 45
+  0:  SetDoorState  {Id = 45, State = 2}         -- switch state
+end
+
+event 46
+  0:  SetDoorState  {Id = 46, State = 2}         -- switch state
+end
+
+event 47
+  0:  SetDoorState  {Id = 47, State = 2}         -- switch state
+end
+
+event 48
+  0:  SetDoorState  {Id = 48, State = 2}         -- switch state
+end
+
+event 49
+  0:  SetDoorState  {Id = 49, State = 2}         -- switch state
+end
+
+event 50
+  0:  SetDoorState  {Id = 50, State = 2}         -- switch state
+end
+
+event 51
+  0:  SetDoorState  {Id = 51, State = 2}         -- switch state
+end
+
+event 52
+  0:  SetDoorState  {Id = 52, State = 2}         -- switch state
+end
+
+event 53
+  0:  SetDoorState  {Id = 53, State = 2}         -- switch state
+end
+
+event 54
+  0:  SetDoorState  {Id = 54, State = 2}         -- switch state
+end
+
+event 55
+  0:  SetDoorState  {Id = 55, State = 2}         -- switch state
+end
+
+event 56
+  0:  SetDoorState  {Id = 56, State = 2}         -- switch state
+end
+
+event 57
+  0:  SetDoorState  {Id = 57, State = 2}         -- switch state
+end
+
+event 58
+  0:  SetDoorState  {Id = 58, State = 2}         -- switch state
+end
+
+event 59
+  0:  SetDoorState  {Id = 59, State = 2}         -- switch state
+end
+
+event 60
+  0:  SetDoorState  {Id = 60, State = 2}         -- switch state
+end
+
+event 61
+  0:  SetDoorState  {Id = 61, State = 2}         -- switch state
+end
+
+event 62
+  0:  SetDoorState  {Id = 62, State = 2}         -- switch state
+end
+
+event 63
+  0:  SetDoorState  {Id = 63, State = 2}         -- switch state
+end
+
+event 64
+  0:  SetDoorState  {Id = 64, State = 2}         -- switch state
+end
+
+event 65
+  0:  SetDoorState  {Id = 65, State = 2}         -- switch state
+end
+
+event 66
+  0:  SetDoorState  {Id = 66, State = 2}         -- switch state
+end
+
+event 67
+  0:  SetDoorState  {Id = 67, State = 2}         -- switch state
+end
+
+event 68
+  0:  SetDoorState  {Id = 68, State = 2}         -- switch state
+end
+
+event 69
+  0:  SetDoorState  {Id = 69, State = 2}         -- switch state
+end
+
+event 70
+  0:  SetDoorState  {Id = 70, State = 2}         -- switch state
+end
+
+event 71
+  0:  SetDoorState  {Id = 1, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 2, State = 2}         -- switch state
+end
+
+event 72
+  0:  SetDoorState  {Id = 71, State = 2}         -- switch state
+end
+
+event 73
+  0:  SetDoorState  {Id = 72, State = 2}         -- switch state
+end
+
+event 74
+  0:  SetDoorState  {Id = 73, State = 2}         -- switch state
+end
+
+event 75
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 285,   jump = 4}         -- NWC Switch1
+  2:  StatusText  {Str = 9}         -- "The lever won't budge"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 286}         -- NWC Switch2
+  5:  SetDoorState  {Id = 74, State = 1}
+end
+
+event 76
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 287,   jump = 4}         -- NWC Switch3
+  2:  StatusText  {Str = 9}         -- "The lever won't budge"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 288}         -- NWC Switch4
+  5:  SetDoorState  {Id = 75, State = 1}
+end
+
+event 77
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 288,   jump = 4}         -- NWC Switch4
+  2:  StatusText  {Str = 9}         -- "The lever won't budge"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 289}         -- NWC Switch5
+  5:  SetDoorState  {Id = 76, State = 1}
+end
+
+event 78
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 290,   jump = 4}         -- NWC Switch6
+  2:  StatusText  {Str = 9}         -- "The lever won't budge"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 291}         -- NWC Tele Bit
+  5:  SetDoorState  {Id = 77, State = 1}
+end
+
+event 79
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 286,   jump = 4}         -- NWC Switch2
+  2:  StatusText  {Str = 9}         -- "The lever won't budge"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 287}         -- NWC Switch3
+  5:  SetDoorState  {Id = 78, State = 1}
+end
+
+event 80
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 289,   jump = 4}         -- NWC Switch5
+  2:  StatusText  {Str = 9}         -- "The lever won't budge"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 290}         -- NWC Switch6
+  5:  SetDoorState  {Id = 79, State = 1}
+end
+
+event 81
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 293,   jump = 10}         -- Return to NWC
+  2:  Cmp  {"QBits", Value = 291,   jump = 13}         -- NWC Tele Bit
+  3:  Cmp  {"QBits", Value = 285,   jump = 10}         -- NWC Switch1
+  4:  Set  {"QBits", Value = 285}         -- NWC Switch1
+  5:  SetDoorState  {Id = 71, State = 1}
+  6:  SetDoorState  {Id = 72, State = 1}
+  7:  Cmp  {"QBits", Value = 99,   jump = 9}         -- Chose the path of Light
+  8:  Cmp  {"QBits", Value = 100,   jump = 11}         -- Chose the path of Dark
+  9:  SpeakNPC  {NPC = 7}         -- "Thomas Grey"
+  10: Exit  {}
+
+  11: SpeakNPC  {NPC = 8}         -- "Halfgild Wynac"
+  12: Exit  {}
+
+  13: SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = true}         -- "Generic Monster Group for Dungeons"
+  14: MoveToMap  {X = 2752, Y = 13056, Z = -1376, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 176
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 1}
+end
+
+event 177
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 2}
+end
+
+event 178
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 3}
+end
+
+event 179
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 4}
+end
+
+event 180
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 5}
+end
+
+event 181
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 6}
+end
+
+event 182
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 7}
+end
+
+event 183
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 8}
+end
+
+event 184
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 9}
+end
+
+event 185
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 10}
+end
+
+event 186
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 11}
+end
+
+event 187
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 12}
+end
+
+event 188
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 13}
+end
+
+event 189
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 14}
+end
+
+event 190
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 15}
+end
+
+event 191
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 16}
+end
+
+event 192
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 17}
+end
+
+event 193
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 18}
+end
+
+event 194
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 19}
+end
+
+event 195
+      Hint = str[1]  -- "Door"
+  0:  OpenChest  {Id = 0}
+end
+
+event 451
+  0:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = 2756, Y = 4781, Z = 0, NPCGroup = 512, unk = 0}         -- not found!
+  1:  SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = true}         -- "Generic Monster Group for Dungeons"
+  2:  SetDoorState  {Id = 73, State = 1}
+end
+
+event 452
+  0:  MoveToMap  {X = 2752, Y = 13056, Z = -1376, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 453
+  0:  Cmp  {"Gold", Value = 10000,   jump = 3}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 4, jumpC = 6, jumpD = 8, jumpE = 10, jumpF = 12}
+  2:  Add  {"Gold", Value = 1}
+  3:  Exit  {}
+
+  4:  Add  {"Gold", Value = 1}
+  5:  Exit  {}
+
+  6:  Add  {"Gold", Value = 1}
+  7:  Exit  {}
+
+  8:  Add  {"Gold", Value = 1}
+  9:  Exit  {}
+
+  10: Add  {"Gold", Value = 1}
+  11: Exit  {}
+
+  12: Set  {"Gold", Value = 1}
+end
+
+event 454
+  0:  Subtract  {"Gold", Value = 10}
+  1:  Add  {"Inventory", Value = 220}         -- "Potion Bottle"
+end
+
+event 501
+  0:  GoTo  {jump = 12}
+
+  1:  SetNPCTopic  {NPC = 48, Index = 0, Event = 95}         -- "Thomas Grey" : "We've retrieved the Book of UnMakings!"
+  2:  SetNPCTopic  {NPC = 49, Index = 0, Event = 97}         -- "Halfgild Wynac" : "Lord Godwinson sent us!"
+  3:  Cmp  {"Inventory", Value = 499,   jump = 6}         -- "Book of UnMakings"
+  4:  StatusText  {Str = 11}         -- "You must have the Book of UnMakings in order to leave"
+  5:  Exit  {}
+
+  6:  Cmp  {"QBits", Value = 99,   jump = 8}         -- Chose the path of Light
+  7:  Cmp  {"QBits", Value = 100,   jump = 10}         -- Chose the path of Dark
+  8:  MoveToMap  {X = 670, Y = -93, Z = 0, Direction = 2047, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "d14.blv"}
+  9:  Exit  {}
+
+  10: MoveToMap  {X = 3309, Y = -7974, Z = 0, Direction = 2047, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "d26.blv"}
+  11: Exit  {}
+
+  12: ForPlayer  ("All")
+  13: Cmp  {"QBits", Value = 293,   jump = 15}         -- Return to NWC
+  14: GoTo  {jump = 1}
+
+  15: CheckMonstersKilled  {CheckType = 1, Id = 5, Count = 0,   jump(>=) = 18}
+  16: StatusText  {Str = 12}         -- "You must kill all hostiles in order to leave the temple."
+  17: Exit  {}
+
+  18: Set  {"QBits", Value = 302}         -- Small House only Once
+  19: MoveToMap  {X = -15360, Y = 2956, Z = 129, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "mdt15.blv"}
+  20: Exit  {}
+end

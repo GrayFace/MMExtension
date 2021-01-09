@@ -375,8 +375,9 @@ end
 
 local CmdDef = {}
 local DeclareCmd = {}
-local Deco = {CmdStructs = {}, CmdNames = {}, CmdInfo = {}}
 local VarNumToStr, PlayerToStr = {}, {}
+local Deco = {CmdStructs = {}, CmdNames = {}, CmdInfo = {}, DeclareCmd = DeclareCmd, CmdDef = CmdDef, VarNumToStr = VarNumToStr, PlayerToStr = PlayerToStr}
+internal.EvtInternal = Deco
 
 local EvtBuf = internal.EvtBuf
 local BufPtr, LineN

@@ -1,0 +1,11 @@
+str[0] = " "
+str[1] = "Exit"
+str[2] = "Dragon's Lair"
+str[3] = ""
+
+
+event 1
+      Hint = str[1]  -- "Exit"
+      MazeInfo = str[2]  -- "Dragon's Lair"
+  0:  MoveToMap  {X = -17962, Y = 20974, Z = 1, Direction = 1152, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutC3.Odm"}
+end

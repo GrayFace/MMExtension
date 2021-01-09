@@ -1,0 +1,314 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Chest"
+str[3] = "Switch"
+str[4] = "Oracle Memory Crystal"
+str[5] = "Exit"
+str[6] = "Cylinder"
+str[7] = "Supreme Temple of Baa"
+str[8] = "Altar of Fire"
+str[9] = "Trial by Fire"
+str[10] = "Altar of Cold"
+str[11] = "Trial by Cold"
+str[12] = "Altar of Pain"
+str[13] = "Trial by Pain"
+str[14] = "Shrine of Fire"
+str[15] = "+10 Fire resistance permanent."
+str[16] = "Shrine of Air"
+str[17] = "+10 Electric resistance permanent."
+str[18] = "Shrine of Water"
+str[19] = "+10 Cold resistance permanent."
+str[20] = "Shrine of Earth"
+str[21] = "+10 Magic resistance permanent."
+str[22] = "You're not worthy!"
+str[23] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+      MazeInfo = str[7]  -- "Supreme Temple of Baa"
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+  0:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 6, State = 1}
+end
+
+event 7
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+  0:  SetDoorState  {Id = 9, State = 1}
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+  0:  SetDoorState  {Id = 11, State = 1}
+end
+
+event 12
+      Hint = str[3]  -- "Switch"
+  0:  SetDoorState  {Id = 16, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 13, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 15, State = 2}         -- switch state
+end
+
+event 13
+      Hint = str[3]  -- "Switch"
+  0:  SetDoorState  {Id = 17, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 12, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 14, State = 2}         -- switch state
+end
+
+event 14
+      Hint = str[3]  -- "Switch"
+  0:  SetDoorState  {Id = 18, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 13, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 15, State = 2}         -- switch state
+end
+
+event 15
+      Hint = str[3]  -- "Switch"
+  0:  SetDoorState  {Id = 19, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 12, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 14, State = 2}         -- switch state
+end
+
+event 16
+  0:  SetDoorState  {Id = 20, State = 1}
+end
+
+event 17
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 18
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 19
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 20
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 21
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 22
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 23
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+  1:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 24
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+end
+
+event 30
+  0:  SetDoorState  {Id = 21, State = 0}
+end
+
+event 31
+      Hint = str[6]  -- "Cylinder"
+  0:  Set  {"QBits", Value = 176}         -- NPC
+  1:  MoveToMap  {X = -9110, Y = -5381, Z = 17, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 5, Name = "sewer.blv"}
+end
+
+event 32
+      Hint = str[4]  -- "Oracle Memory Crystal"
+  0:  Cmp  {"QBits", Value = 53,   jump = 6}         -- 53 T6, Given when characters take the Oracle Crystal from the altar.
+  1:  Set  {"QBits", Value = 53}         -- 53 T6, Given when characters take the Oracle Crystal from the altar.
+  2:  SetMessage  {Str = 5}         -- "Exit"
+  3:  SetSprite  {SpriteId = 132, Visible = 1, Name = "crysdisc"}
+  4:  Add  {"Inventory", Value = 550}         -- "Memory Crystal Alpha"
+  5:  Set  {"QBits", Value = 191}         -- Quest item bits for seer
+  6:  Exit  {}
+end
+
+event 33
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 53,   jump = 3}         -- 53 T6, Given when characters take the Oracle Crystal from the altar.
+  2:  Exit  {}
+
+  3:  SetSprite  {SpriteId = 132, Visible = 1, Name = "crysdisc"}
+end
+
+event 34
+  0:  DamagePlayer  {Player = "All", DamageType = const.Damage.Magic, Damage = 1000}
+end
+
+event 35
+      Hint = str[5]  -- "Exit"
+  0:  MoveToMap  {X = -19914, Y = -18118, Z = 65, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "outA3.odm"}
+end
+
+event 36
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 3}
+  1:  Set  {"MapVar0", Value = 1}
+  2:  Add  {"Inventory", Value = 54}         -- "Death Mace"
+  3:  Exit  {}
+end
+
+event 37
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 10}
+  1:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -416, Y = 416, Z = -1016}
+  2:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = -576, Y = 0, Z = -1016}
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = -416, Y = -416, Z = -1016}
+  4:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 0, Y = -576, Z = -1016}
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 416, Y = -416, Z = -1016}
+  6:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 576, Y = 0, Z = -1016}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 416, Y = 416, Z = -1016}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 1, X = 0, Y = 576, Z = -1016}
+  9:  Set  {"MapVar1", Value = 1}
+  10: Exit  {}
+end
+
+event 40
+      Hint = str[8]  -- "Altar of Fire"
+  0:  Cmp  {"QBits", Value = 315,   jump = 3}         -- NPC
+  1:  Set  {"QBits", Value = 315}         -- NPC
+  2:  DamagePlayer  {Player = "All", DamageType = const.Damage.Magic, Damage = 75}
+  3:  StatusText  {Str = 9}         -- "Trial by Fire"
+end
+
+event 41
+      Hint = str[10]  -- "Altar of Cold"
+  0:  Cmp  {"QBits", Value = 316,   jump = 3}         -- NPC
+  1:  Set  {"QBits", Value = 316}         -- NPC
+  2:  DamagePlayer  {Player = "All", DamageType = const.Damage.Elec, Damage = 75}
+  3:  StatusText  {Str = 11}         -- "Trial by Cold"
+end
+
+event 42
+      Hint = str[12]  -- "Altar of Pain"
+  0:  Cmp  {"QBits", Value = 317,   jump = 3}         -- NPC
+  1:  Set  {"QBits", Value = 317}         -- NPC
+  2:  DamagePlayer  {Player = "All", DamageType = const.Damage.Magic, Damage = 75}
+  3:  StatusText  {Str = 12}         -- "Altar of Pain"
+end
+
+event 43
+      Hint = str[14]  -- "Shrine of Fire"
+  0:  Cmp  {"QBits", Value = 318,   jump = 10}         -- NPC
+  1:  Cmp  {"QBits", Value = 315,   jump = 3}         -- NPC
+  2:  GoTo  {jump = 11}
+
+  3:  Cmp  {"QBits", Value = 316,   jump = 5}         -- NPC
+  4:  GoTo  {jump = 11}
+
+  5:  Cmp  {"QBits", Value = 317,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 11}
+
+  7:  StatusText  {Str = 15}         -- "+10 Fire resistance permanent."
+  8:  Add  {"FireResistance", Value = 10}
+  9:  Set  {"QBits", Value = 318}         -- NPC
+  10: Exit  {}
+
+  11: StatusText  {Str = 22}         -- "You're not worthy!"
+end
+
+event 44
+      Hint = str[16]  -- "Shrine of Air"
+  0:  Cmp  {"QBits", Value = 319,   jump = 10}         -- NPC
+  1:  Cmp  {"QBits", Value = 315,   jump = 3}         -- NPC
+  2:  GoTo  {jump = 11}
+
+  3:  Cmp  {"QBits", Value = 316,   jump = 5}         -- NPC
+  4:  GoTo  {jump = 11}
+
+  5:  Cmp  {"QBits", Value = 317,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 11}
+
+  7:  StatusText  {Str = 17}         -- "+10 Electric resistance permanent."
+  8:  Add  {"ElecResistance", Value = 10}
+  9:  Set  {"QBits", Value = 319}         -- NPC
+  10: Exit  {}
+
+  11: StatusText  {Str = 22}         -- "You're not worthy!"
+end
+
+event 45
+      Hint = str[18]  -- "Shrine of Water"
+  0:  Cmp  {"QBits", Value = 320,   jump = 10}         -- NPC
+  1:  Cmp  {"QBits", Value = 315,   jump = 3}         -- NPC
+  2:  GoTo  {jump = 11}
+
+  3:  Cmp  {"QBits", Value = 316,   jump = 5}         -- NPC
+  4:  GoTo  {jump = 11}
+
+  5:  Cmp  {"QBits", Value = 317,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 11}
+
+  7:  StatusText  {Str = 19}         -- "+10 Cold resistance permanent."
+  8:  Add  {"ColdResistance", Value = 10}
+  9:  Set  {"QBits", Value = 320}         -- NPC
+  10: Exit  {}
+
+  11: StatusText  {Str = 22}         -- "You're not worthy!"
+end
+
+event 46
+      Hint = str[20]  -- "Shrine of Earth"
+  0:  Cmp  {"QBits", Value = 321,   jump = 10}         -- NPC
+  1:  Cmp  {"QBits", Value = 315,   jump = 3}         -- NPC
+  2:  GoTo  {jump = 11}
+
+  3:  Cmp  {"QBits", Value = 316,   jump = 5}         -- NPC
+  4:  GoTo  {jump = 11}
+
+  5:  Cmp  {"QBits", Value = 317,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 11}
+
+  7:  StatusText  {Str = 21}         -- "+10 Magic resistance permanent."
+  8:  Add  {"MagicResistance", Value = 10}
+  9:  Set  {"QBits", Value = 321}         -- NPC
+  10: Exit  {}
+
+  11: StatusText  {Str = 22}         -- "You're not worthy!"
+end

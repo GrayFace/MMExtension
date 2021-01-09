@@ -1,0 +1,876 @@
+str[0] = " "
+str[1] = "Leave Merchant House of Alvar"
+str[2] = "Door"
+str[3] = "Chest"
+str[4] = "Lever"
+str[5] = "Button"
+str[6] = "Crate"
+str[7] = ""
+str[8] = ""
+str[9] = "Bookshelf"
+str[10] = "You found nothing of interest"
+str[11] = ""
+str[12] = ""
+str[13] = ""
+str[14] = ""
+str[15] = "The door is locked"
+str[16] = ""
+str[17] = ""
+str[18] = ""
+str[19] = ""
+str[20] = ""
+str[21] = ""
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = ""
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = ""
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = ""
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = ""
+str[51] = ""
+str[52] = ""
+str[53] = ""
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 2
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 3
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 4
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 5
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Exit  {}
+end
+
+event 6
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 7
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 8
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 9
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 10
+      Hint = str[100]  -- ""
+
+  0:  OnLeaveMap  {}
+  1:  Exit  {}
+end
+
+event 11
+      Hint = str[6]  -- "Crate"
+  0:  SetDoorState  {Id = 1, State = 0}
+  1:  Exit  {}
+end
+
+event 12
+      Hint = str[9]  -- "Bookshelf"
+  0:  Cmp  {"QBits", Value = 13,   jump = 3}         -- "Form an alliance among the major factions of Jadame."
+  1:  FaceAnimation  {Player = "Current", Animation = 18}
+  2:  GoTo  {jump = 4}
+
+  3:  SetDoorState  {Id = 2, State = 0}
+  4:  Exit  {}
+end
+
+event 13
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 3, State = 0}
+  1:  SetDoorState  {Id = 5, State = 0}
+  2:  Exit  {}
+end
+
+event 14
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 0}
+  1:  Exit  {}
+end
+
+event 15
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 5, State = 0}
+  1:  Exit  {}
+end
+
+event 16
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 6, State = 0}
+  1:  Exit  {}
+end
+
+event 17
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 7, State = 0}
+  1:  Exit  {}
+end
+
+event 18
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 8, State = 0}
+  1:  Exit  {}
+end
+
+event 19
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 9, State = 0}
+  1:  Exit  {}
+end
+
+event 20
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 0}
+  1:  Exit  {}
+end
+
+event 21
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 11, State = 0}
+  1:  Exit  {}
+end
+
+event 22
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 12, State = 0}
+  1:  Exit  {}
+end
+
+event 23
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 13, State = 0}
+  1:  Exit  {}
+end
+
+event 24
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 14, State = 0}
+  1:  Exit  {}
+end
+
+event 25
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 15, State = 0}
+  1:  Exit  {}
+end
+
+event 26
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 16, State = 0}
+  1:  Exit  {}
+end
+
+event 27
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 17, State = 0}
+  1:  Exit  {}
+end
+
+event 28
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 18, State = 0}
+  1:  Exit  {}
+end
+
+event 29
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 19, State = 0}
+  1:  Exit  {}
+end
+
+event 30
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 20, State = 0}
+  1:  Exit  {}
+end
+
+event 31
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 21, State = 0}
+  1:  Exit  {}
+end
+
+event 32
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 22, State = 0}
+  1:  Exit  {}
+end
+
+event 33
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 23, State = 0}
+  1:  Exit  {}
+end
+
+event 34
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 24, State = 0}
+  1:  Exit  {}
+end
+
+event 35
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 25, State = 0}
+  1:  Exit  {}
+end
+
+event 36
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 26, State = 0}
+  1:  Exit  {}
+end
+
+event 37
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 27, State = 0}
+  1:  Exit  {}
+end
+
+event 38
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 28, State = 0}
+  1:  Exit  {}
+end
+
+event 39
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 29, State = 0}
+  1:  Exit  {}
+end
+
+event 40
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 30, State = 0}
+  1:  Exit  {}
+end
+
+event 41
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 31, State = 0}
+  1:  Exit  {}
+end
+
+event 42
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 32, State = 0}
+  1:  Exit  {}
+end
+
+event 43
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 33, State = 0}
+  1:  Exit  {}
+end
+
+event 44
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 34, State = 0}
+  1:  Exit  {}
+end
+
+event 45
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 35, State = 0}
+  1:  Exit  {}
+end
+
+event 46
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 36, State = 0}
+  1:  Exit  {}
+end
+
+event 47
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 37, State = 0}
+  1:  Exit  {}
+end
+
+event 48
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 38, State = 0}
+  1:  Exit  {}
+end
+
+event 49
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 39, State = 0}
+  1:  Exit  {}
+end
+
+event 50
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 40, State = 0}
+  1:  Exit  {}
+end
+
+event 51
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 41, State = 0}
+  1:  Exit  {}
+end
+
+event 52
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 42, State = 0}
+  1:  Exit  {}
+end
+
+event 53
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 43, State = 0}
+  1:  Exit  {}
+end
+
+event 54
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 44, State = 0}
+  1:  Exit  {}
+end
+
+event 55
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 45, State = 0}
+  1:  Exit  {}
+end
+
+event 56
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 46, State = 0}
+  1:  Exit  {}
+end
+
+event 57
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 47, State = 0}
+  1:  Exit  {}
+end
+
+event 58
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 48, State = 0}
+  1:  Exit  {}
+end
+
+event 59
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 49, State = 0}
+  1:  Exit  {}
+end
+
+event 60
+      Hint = str[2]  -- "Door"
+  0:  SetDoorState  {Id = 50, State = 0}
+  1:  Exit  {}
+end
+
+event 81
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+  1:  Exit  {}
+end
+
+event 82
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+  1:  Exit  {}
+end
+
+event 83
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+  1:  Exit  {}
+end
+
+event 84
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+  1:  Exit  {}
+end
+
+event 85
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+  1:  Exit  {}
+end
+
+event 86
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+  1:  Exit  {}
+end
+
+event 87
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+  1:  Exit  {}
+end
+
+event 88
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+  1:  Exit  {}
+end
+
+event 89
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+  1:  Exit  {}
+end
+
+event 90
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+  1:  Exit  {}
+end
+
+event 91
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 10}
+  1:  Exit  {}
+end
+
+event 92
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 11}
+  1:  Exit  {}
+end
+
+event 93
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+  1:  Exit  {}
+end
+
+event 94
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+  1:  Exit  {}
+end
+
+event 95
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+  1:  Exit  {}
+end
+
+event 96
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+  1:  Exit  {}
+end
+
+event 97
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+  1:  Exit  {}
+end
+
+event 98
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+  1:  Exit  {}
+end
+
+event 99
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+  1:  Exit  {}
+end
+
+event 100
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+  1:  Exit  {}
+end
+
+event 171
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 57,   jump = 30}         -- The Pirates invaded Ravenshore
+  1:  Cmp  {"QBits", Value = 37,   jump = 21}         -- Regnan Pirate Fleet is sunk.
+  2:  Cmp  {"QBits", Value = 34,   jump = 28}         -- Alliance Council formed. Quest 13 done.
+  3:  Cmp  {"QBits", Value = 19,   jump = 6}         -- Allied with Necromancers Guild. Steal Nightshade Brazier done.
+  4:  Cmp  {"QBits", Value = 20,   jump = 6}         -- Allied with Temple of the Sun. Destroy the Skeleton Transformer done.
+  5:  GoTo  {jump = 28}
+
+  6:  Cmp  {"QBits", Value = 21,   jump = 9}         -- Allied with Charles Quioxte's Dragon Hunters. Return Dragon Egg to Quixote done.
+  7:  Cmp  {"QBits", Value = 22,   jump = 9}         -- Allied with Dragons. Return Dragon Egg to Dragons done.
+  8:  GoTo  {jump = 28}
+
+  9:  Cmp  {"QBits", Value = 23,   jump = 11}         -- Allied with Minotaurs. Rescue the Minotaurs done.
+  10: GoTo  {jump = 28}
+
+  11: Add  {"QBits", Value = 34}         -- Alliance Council formed. Quest 13 done.
+  12: SetNPCTopic  {NPC = 53, Index = 0, Event = 106}         -- "Elgar Fellmoon" : "Ironfists"
+  13: SetNPCTopic  {NPC = 53, Index = 1, Event = 108}         -- "Elgar Fellmoon" : "Pirates"
+  14: SetNPCTopic  {NPC = 65, Index = 0, Event = 117}         -- "Sir Charles Quixote" : "Blackwell Cooper"
+  15: SetNPCTopic  {NPC = 66, Index = 0, Event = 124}         -- "Deftclaw Redreaver" : "Regna Island"
+  16: SetNPCTopic  {NPC = 67, Index = 0, Event = 131}         -- "Oskar Tyre" : "Mace of the Sun"
+  17: SetNPCTopic  {NPC = 68, Index = 0, Event = 138}         -- "Masul" : "Pirate Raid"
+  18: SetNPCTopic  {NPC = 69, Index = 0, Event = 145}         -- "Sandro" : "Pirate Mages"
+  19: Subtract  {"QBits", Value = 13}         -- "Form an alliance among the major factions of Jadame."
+  20: GoTo  {jump = 28}
+
+  21: SetNPCTopic  {NPC = 53, Index = 1, Event = 111}         -- "Elgar Fellmoon" : "Ironfists' Arrival"
+  22: SetNPCTopic  {NPC = 65, Index = 0, Event = 118}         -- "Sir Charles Quixote" : "Xanthor"
+  23: SetNPCTopic  {NPC = 66, Index = 0, Event = 125}         -- "Deftclaw Redreaver" : "Quixote's Treasure"
+  24: SetNPCTopic  {NPC = 67, Index = 0, Event = 132}         -- "Oskar Tyre" : "Ironfists"
+  25: SetNPCTopic  {NPC = 68, Index = 0, Event = 139}         -- "Masul" : "Catherine Ironfist"
+  26: SetNPCTopic  {NPC = 69, Index = 0, Event = 146}         -- "Sandro" : "Wizards"
+  27: GoTo  {jump = 28}
+
+  28: EnterHouse  {Id = 175}         -- "Council Chamber Door"
+  29: GoTo  {jump = 31}
+
+  30: FaceAnimation  {Player = "Current", Animation = 18}
+  31: Exit  {}
+end
+
+event 452
+      Hint = str[9]  -- "Bookshelf"
+  0:  Cmp  {"MapVar52", Value = 1,   jump = 16}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 2, jumpC = 2, jumpD = 4, jumpE = 15, jumpF = 16}
+  2:  GiveItem  {Strength = 3, Type = const.ItemType.Scroll_, Id = 0}
+  3:  GoTo  {jump = 15}
+
+  4:  RandomGoTo  {jumpA = 5, jumpB = 7, jumpC = 9, jumpD = 11, jumpE = 13, jumpF = 14}
+  5:  Add  {"Inventory", Value = 401}         -- "Fire Bolt"
+  6:  GoTo  {jump = 14}
+
+  7:  Add  {"Inventory", Value = 412}         -- "Feather Fall"
+  8:  GoTo  {jump = 14}
+
+  9:  Add  {"Inventory", Value = 414}         -- "Sparks"
+  10: GoTo  {jump = 14}
+
+  11: Add  {"Inventory", Value = 479}         -- "Dispel Magic"
+  12: GoTo  {jump = 14}
+
+  13: Add  {"Inventory", Value = 467}         -- "Heal"
+  14: RandomGoTo  {jumpA = 15, jumpB = 15, jumpC = 15, jumpD = 15, jumpE = 16, jumpF = 16}
+  15: Add  {"MapVar52", Value = 1}
+  16: Exit  {}
+end
+
+event 453
+      Hint = str[9]  -- "Bookshelf"
+  0:  Cmp  {"MapVar39", Value = 1,   jump = 3}
+  1:  Add  {"Inventory", Value = 744}         -- "History of the Vault of Time"
+  2:  Add  {"MapVar39", Value = 1}
+  3:  Exit  {}
+end
+
+event 454
+      Hint = str[9]  -- "Bookshelf"
+  0:  Cmp  {"MapVar49", Value = 1,   jump = 16}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 2, jumpC = 2, jumpD = 4, jumpE = 15, jumpF = 16}
+  2:  GiveItem  {Strength = 3, Type = const.ItemType.Scroll_, Id = 0}
+  3:  GoTo  {jump = 15}
+
+  4:  RandomGoTo  {jumpA = 5, jumpB = 7, jumpC = 9, jumpD = 11, jumpE = 13, jumpF = 14}
+  5:  Add  {"Inventory", Value = 401}         -- "Fire Bolt"
+  6:  GoTo  {jump = 14}
+
+  7:  Add  {"Inventory", Value = 412}         -- "Feather Fall"
+  8:  GoTo  {jump = 14}
+
+  9:  Add  {"Inventory", Value = 414}         -- "Sparks"
+  10: GoTo  {jump = 14}
+
+  11: Add  {"Inventory", Value = 479}         -- "Dispel Magic"
+  12: GoTo  {jump = 14}
+
+  13: Add  {"Inventory", Value = 467}         -- "Heal"
+  14: RandomGoTo  {jumpA = 15, jumpB = 15, jumpC = 15, jumpD = 15, jumpE = 16, jumpF = 16}
+  15: Add  {"MapVar49", Value = 1}
+  16: Exit  {}
+end
+
+event 455
+      Hint = str[9]  -- "Bookshelf"
+  0:  Cmp  {"MapVar50", Value = 1,   jump = 16}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 2, jumpC = 2, jumpD = 4, jumpE = 15, jumpF = 16}
+  2:  GiveItem  {Strength = 5, Type = const.ItemType.Scroll_, Id = 0}
+  3:  GoTo  {jump = 15}
+
+  4:  RandomGoTo  {jumpA = 5, jumpB = 7, jumpC = 9, jumpD = 11, jumpE = 13, jumpF = 14}
+  5:  Add  {"Inventory", Value = 401}         -- "Fire Bolt"
+  6:  GoTo  {jump = 14}
+
+  7:  Add  {"Inventory", Value = 412}         -- "Feather Fall"
+  8:  GoTo  {jump = 14}
+
+  9:  Add  {"Inventory", Value = 414}         -- "Sparks"
+  10: GoTo  {jump = 14}
+
+  11: Add  {"Inventory", Value = 479}         -- "Dispel Magic"
+  12: GoTo  {jump = 14}
+
+  13: Add  {"Inventory", Value = 467}         -- "Heal"
+  14: RandomGoTo  {jumpA = 15, jumpB = 15, jumpC = 15, jumpD = 15, jumpE = 16, jumpF = 16}
+  15: Add  {"MapVar50", Value = 1}
+  16: Exit  {}
+end
+
+event 456
+      Hint = str[9]  -- "Bookshelf"
+  0:  Cmp  {"MapVar51", Value = 1,   jump = 16}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 2, jumpC = 2, jumpD = 4, jumpE = 15, jumpF = 16}
+  2:  GiveItem  {Strength = 2, Type = const.ItemType.Scroll_, Id = 0}
+  3:  GoTo  {jump = 15}
+
+  4:  RandomGoTo  {jumpA = 5, jumpB = 7, jumpC = 9, jumpD = 11, jumpE = 13, jumpF = 14}
+  5:  Add  {"Inventory", Value = 401}         -- "Fire Bolt"
+  6:  GoTo  {jump = 14}
+
+  7:  Add  {"Inventory", Value = 412}         -- "Feather Fall"
+  8:  GoTo  {jump = 14}
+
+  9:  Add  {"Inventory", Value = 414}         -- "Sparks"
+  10: GoTo  {jump = 14}
+
+  11: Add  {"Inventory", Value = 479}         -- "Dispel Magic"
+  12: GoTo  {jump = 14}
+
+  13: Add  {"Inventory", Value = 467}         -- "Heal"
+  14: RandomGoTo  {jumpA = 15, jumpB = 15, jumpC = 15, jumpD = 15, jumpE = 16, jumpF = 16}
+  15: Add  {"MapVar51", Value = 1}
+  16: Exit  {}
+end
+
+event 457
+      Hint = str[9]  -- "Bookshelf"
+  0:  Cmp  {"MapVar53", Value = 1,   jump = 16}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 2, jumpC = 2, jumpD = 4, jumpE = 15, jumpF = 16}
+  2:  GiveItem  {Strength = 2, Type = const.ItemType.Scroll_, Id = 0}
+  3:  GoTo  {jump = 15}
+
+  4:  RandomGoTo  {jumpA = 5, jumpB = 7, jumpC = 9, jumpD = 11, jumpE = 13, jumpF = 14}
+  5:  Add  {"Inventory", Value = 401}         -- "Fire Bolt"
+  6:  GoTo  {jump = 14}
+
+  7:  Add  {"Inventory", Value = 412}         -- "Feather Fall"
+  8:  GoTo  {jump = 14}
+
+  9:  Add  {"Inventory", Value = 414}         -- "Sparks"
+  10: GoTo  {jump = 14}
+
+  11: Add  {"Inventory", Value = 479}         -- "Dispel Magic"
+  12: GoTo  {jump = 14}
+
+  13: Add  {"Inventory", Value = 467}         -- "Heal"
+  14: RandomGoTo  {jumpA = 15, jumpB = 15, jumpC = 15, jumpD = 15, jumpE = 16, jumpF = 16}
+  15: Add  {"MapVar53", Value = 1}
+  16: Exit  {}
+end
+
+event 458
+      Hint = str[9]  -- "Bookshelf"
+  0:  Cmp  {"MapVar40", Value = 1,   jump = 3}
+  1:  Add  {"Inventory", Value = 747}         -- "Page Torn from a Book"
+  2:  Add  {"MapVar40", Value = 1}
+  3:  Exit  {}
+end
+
+event 459
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 460
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 461
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 462
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 463
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 464
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 465
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 466
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 467
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 468
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 469
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 470
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 471
+      Hint = str[9]  -- "Bookshelf"
+  0:  Exit  {}
+end
+
+event 501
+      Hint = str[1]  -- "Leave Merchant House of Alvar"
+  0:  MoveToMap  {X = 12894, Y = -12153, Z = 257, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 1, Name = "Out02.odm"}
+  1:  Exit  {}
+end
+
+event 502
+      Hint = str[1]  -- "Leave Merchant House of Alvar"
+  0:  MoveToMap  {X = 11284, Y = -11009, Z = 258, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 1, Name = "Out02.odm"}
+  1:  Exit  {}
+end

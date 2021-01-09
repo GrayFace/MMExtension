@@ -543,7 +543,7 @@ The reason for the first two lines of code is that Might and Magic doesn't suppo
 
 <a id="Decompiled-Scripts"></a><h3>Decompiled Scripts</h3>
 Original Might and Magic scripts are stored in binary format in files with extension <b class="def-param">.evt</b>. MMExtension can decompile these scripts.
-<a href="https://www.dropbox.com/s/kznafxub3lcbrv1/MMScripts.rar?dl=1">Download decompiled scripts here.</a><br>
+<a href="https://github.com/GrayFace/MMExtension/tree/master/Misc/Decompiled%20Scripts">Get decompiled scripts here.</a><br>
 Decompiled scripts come in the form of Lua scripts and also pseudo code that directly corresponds to binary format.<br>
 Just so you know, here are the differences between pseudo code commands and real MMExtension commands:<br>
 1) "evt." isn't written in them.<br>
@@ -578,6 +578,12 @@ Create "Decompile" sub-folder inside the game folder, put these files there and 
 <br>
 <div class="pre-outer"><div class="pre"><span class="lua5-note">local</span> dir <span class="lua5-note">=</span> <span class="lua5-str">"Decompile/"</span><br><span class="lua5-ctrl">for</span> f <span class="lua5-ctrl">in</span> path.<span class="lua5-std">find</span>(dir<span class="lua5-operator">..</span><span class="lua5-str">"*.evt"</span>) <span class="lua5-ctrl">do</span><br><span class="lua5-tab">&#9;</span>evt.Decompile(f, <span class="lua5-literal">0</span>, dir<span class="lua5-operator">..</span><span class="lua5-str">"Scripts/"</span><span class="lua5-operator">..</span>path.setext(path.name(f), <span class="lua5-str">".lua"</span>))<br><span class="lua5-tab">&#9;</span>evt.Decompile(f, <span class="lua5-literal">0</span>, dir<span class="lua5-operator">..</span><span class="lua5-str">"Scripts/txt/"</span><span class="lua5-operator">..</span>path.setext(path.name(f), <span class="lua5-str">".txt"</span>), <span class="lua5-literal">true</span>)<br><span class="lua5-ctrl">end</span></div></div>
 <br>
+
+<i>Note:</i> You can't turn a decompiled script back into EVT file, even if it's in text form. In case you do need to edit raw EVT files, you can use <a href="https://github.com/GrayFace/MMExtension/tree/master/Misc/010Editor%20Templates">my 010Editor Templates</a>.
+<br>
+<br>
+
+
 
 <a id="Short-functions-syntax"></a><h3>Short functions syntax</h3>
 MMExtension features one language extension &ndash; short syntax for functions declaration. Here's an example:

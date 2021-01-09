@@ -1,0 +1,27 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Gate"
+str[3] = "Cabinet"
+str[4] = "Button"
+str[5] = "Bed"
+str[6] = "Chest"
+str[7] = "Various Foodstuff bags"
+str[8] = "Throne"
+str[9] = "Lever"
+str[10] = "Table"
+str[11] = "The gate will not budge."
+str[12] = "You find something around the bed."
+str[13] = "Something rumbles off in the distance."
+str[14] = "The bed(s) are empty."
+str[15] = "Exit"
+str[16] = "The Barracks Keep"
+str[17] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

@@ -1,0 +1,56 @@
+str[0] = " "
+str[1] = "Chest"
+str[2] = "Exit"
+str[3] = ""
+
+
+event 1
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 32}
+  1:  Cmp  {"MapVar0", Value = 2,   jump = 32}
+  2:  Cmp  {"MapVar0", Value = 1,   jump = 18}
+  3:  CastSpell  {Spell = 18, Mastery = const.Novice, Skill = 0, FromX = 1, FromY = 64, FromZ = 500, ToX = 0, ToY = 896, ToZ = 1}         -- "Lightning Bolt"
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 3, X = 0, Y = 896, Z = 32}
+  5:  CastSpell  {Spell = 18, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = 0, ToY = -768, ToZ = 1}         -- "Lightning Bolt"
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 3, X = 0, Y = -768, Z = 32}
+  7:  CastSpell  {Spell = 18, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = 576, ToY = 448, ToZ = 1}         -- "Lightning Bolt"
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = 576, Y = 448, Z = 32}
+  9:  CastSpell  {Spell = 18, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = -576, ToY = -320, ToZ = 1}         -- "Lightning Bolt"
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = -576, Y = -320, Z = 32}
+  11: CastSpell  {Spell = 18, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = 576, ToY = -320, ToZ = 1}         -- "Lightning Bolt"
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 3, X = 576, Y = -320, Z = 32}
+  13: CastSpell  {Spell = 18, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = -576, ToY = 448, ToZ = 1}         -- "Lightning Bolt"
+  14: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 3, X = -576, Y = 448, Z = 32}
+  15: Add  {"MapVar0", Value = 1}
+  16: Set  {"MapVar1", Value = 1}
+  17: GoTo  {jump = 32}
+
+  18: CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 0, FromX = 1, FromY = 64, FromZ = 500, ToX = 0, ToY = 896, ToZ = 1}         -- "Fireball"
+  19: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = 0, Y = 896, Z = 32}
+  20: CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = 0, ToY = -768, ToZ = 1}         -- "Fireball"
+  21: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = 0, Y = -768, Z = 32}
+  22: CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = 576, ToY = 448, ToZ = 1}         -- "Fireball"
+  23: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = 576, Y = 448, Z = 32}
+  24: CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = -576, ToY = -320, ToZ = 1}         -- "Fireball"
+  25: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = -576, Y = -320, Z = 32}
+  26: CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = 576, ToY = -320, ToZ = 1}         -- "Fireball"
+  27: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 3, X = 576, Y = -320, Z = 32}
+  28: CastSpell  {Spell = 6, Mastery = const.Novice, Skill = 0, FromX = 0, FromY = 64, FromZ = 500, ToX = -576, ToY = 448, ToZ = 1}         -- "Fireball"
+  29: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 3, X = -576, Y = 448, Z = 32}
+  30: Add  {"MapVar0", Value = 1}
+  31: Set  {"MapVar1", Value = 1}
+  32: SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Chest"
+  0:  Cmp  {"MapVar0", Value = 2,   jump = 3}
+  1:  OpenChest  {Id = 1}
+  2:  Exit  {}
+
+  3:  OpenChest  {Id = 2}
+end
+
+event 3
+      Hint = str[2]  -- "Exit"
+  0:  Set  {"MapVar1", Value = 0}
+end

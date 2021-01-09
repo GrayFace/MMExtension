@@ -1,0 +1,950 @@
+str[0] = " "
+str[1] = "Chest"
+str[2] = "Drink from Well."
+str[3] = "+2 Might permanent"
+str[4] = "Look Out!"
+str[5] = "Drink from Fountain"
+str[6] = "+25 Hit points restored."
+str[7] = "Drink from Trough."
+str[8] = "Hic…"
+str[9] = "Refreshing!"
+str[10] = "Free Haven"
+str[11] = "Shrine of Accuracy"
+str[12] = "You pray at the shrine."
+str[13] = "+10 Accuracy permanent"
+str[14] = "+3 Accuracy permanent"
+str[15] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            lg____gtS_cln;__"
+str[16] = "Obelisk"
+str[17] = "Free Haven"
+str[18] = "Castle Temper"
+str[19] = "Temple of Baa"
+str[20] = "Darkmoor"
+str[21] = "Guild of Water"
+str[22] = "Armory"
+str[23] = "Temple"
+str[24] = "Rockham"
+str[25] = "Whitecap"
+str[26] = "Castle Stone"
+str[27] = "Blackshire"
+str[28] = "Guild of Mind"
+str[29] = "The stone cutter and carpenter begin rebuilding the temple."
+str[30] = "You hand the Sacred Chalice to the monks of the temple who ensconce it in the main altar."
+str[31] = ""
+
+
+event 2
+      Hint = str[7]  -- "Drink from Trough."
+      MazeInfo = str[10]  -- "Free Haven"
+  0:  EnterHouse  {Id = 7}         -- "The Sharpening Stone"
+end
+
+event 3
+      Hint = str[7]  -- "Drink from Trough."
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 7}         -- "The Sharpening Stone"
+end
+
+event 4
+      Hint = str[8]  -- "Hic…"
+  0:  EnterHouse  {Id = 8}         -- "Feathers and String"
+end
+
+event 5
+      Hint = str[8]  -- "Hic…"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 8}         -- "Feathers and String"
+end
+
+event 6
+      Hint = str[20]  -- "Darkmoor"
+  0:  EnterHouse  {Id = 20}         -- "The Foundry"
+end
+
+event 7
+      Hint = str[20]  -- "Darkmoor"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 20}         -- "The Foundry"
+end
+
+event 8
+      Hint = str[25]  -- "Whitecap"
+  0:  EnterHouse  {Id = 25}         -- "The Footman's Friend"
+end
+
+event 9
+      Hint = str[25]  -- "Whitecap"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 25}         -- "The Footman's Friend"
+end
+
+event 10
+      Hint = str[39]
+  0:  EnterHouse  {Id = 39}         -- "Alchemy and Incantations"
+end
+
+event 11
+      Hint = str[39]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 39}         -- "Alchemy and Incantations"
+end
+
+event 12
+      Hint = str[45]
+  0:  EnterHouse  {Id = 45}         -- "Abdul's Discount Goods"
+end
+
+event 13
+      Hint = str[45]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 45}         -- "Abdul's Discount Goods"
+end
+
+event 14
+      Hint = str[50]
+  0:  EnterHouse  {Id = 50}         -- "Free Haven Travel East"
+end
+
+event 15
+      Hint = str[50]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 50}         -- "Free Haven Travel East"
+end
+
+event 16
+      Hint = str[51]
+  0:  EnterHouse  {Id = 51}         -- "Free Haven Travel West"
+end
+
+event 17
+      Hint = str[51]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 51}         -- "Free Haven Travel West"
+end
+
+event 18
+      Hint = str[62]
+  0:  EnterHouse  {Id = 62}         -- "Windrunner"
+end
+
+event 19
+      Hint = str[70]
+  0:  Cmp  {"QBits", Value = 107,   jump = 16}         -- "Take the Sacred Chalice from the monks in their island temple east of Free Haven, return it to Temple Stone in Free Haven, and then return to Lord Stone at Castle Stone."
+  1:  Cmp  {"QBits", Value = 106,   jump = 12}         -- NPC
+  2:  Cmp  {"HasNPCProfession", Value = const.NPCProfession.StoneCutter,   jump = 4}
+  3:  GoTo  {jump = 10}
+
+  4:  Cmp  {"HasNPCProfession", Value = const.NPCProfession.Carpenter,   jump = 6}
+  5:  GoTo  {jump = 10}
+
+  6:  Set  {"QBits", Value = 106}         -- NPC
+  7:  Subtract  {"HasNPCProfession", Value = const.NPCProfession.Carpenter}
+  8:  Subtract  {"HasNPCProfession", Value = const.NPCProfession.StoneCutter}
+  9:  SetMessage  {Str = 29}         -- "The stone cutter and carpenter begin rebuilding the temple."
+  10: EnterHouse  {Id = 551}         -- "Free Haven Temple"
+  11: Exit  {}
+
+  12: Cmp  {"QBits", Value = 105,   jump = 10}         -- "Hire a Stonecutter and a Carpenter, bring them to Temple Stone in Free Haven to repair the Temple, and then return to Lord Anthony Stone at Castle Stone."
+  13: SetMessage  {Str = 30}         -- "You hand the Sacred Chalice to the monks of the temple who ensconce it in the main altar."
+  14: EnterHouse  {Id = 70}         -- "Temple Stone"
+  15: Exit  {}
+
+  16: ForPlayer  ("All")
+  17: Cmp  {"Inventory", Value = 434,   jump = 19}         -- "Sacred Chalice"
+  18: GoTo  {jump = 14}
+
+  19: Subtract  {"Inventory", Value = 434}         -- "Sacred Chalice"
+  20: Subtract  {"QBits", Value = 188}         -- Quest item bits for seer
+  21: Set  {"QBits", Value = 108}         -- NPC
+  22: EnterHouse  {Id = 70}         -- "Temple Stone"
+end
+
+event 20
+      Hint = str[80]
+  0:  EnterHouse  {Id = 80}         -- "Free Haven Academy"
+end
+
+event 21
+      Hint = str[80]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 80}         -- "Free Haven Academy"
+end
+
+event 22
+      Hint = str[105]
+  0:  EnterHouse  {Id = 105}         -- "The Echoing Whisper"
+end
+
+event 23
+      Hint = str[105]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 105}         -- "The Echoing Whisper"
+end
+
+event 24
+      Hint = str[104]
+  0:  EnterHouse  {Id = 104}         -- "Viktor's Hall"
+end
+
+event 25
+      Hint = str[104]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 104}         -- "Viktor's Hall"
+end
+
+event 26
+      Hint = str[106]
+  0:  EnterHouse  {Id = 106}         -- "Rockham's Pride"
+end
+
+event 27
+      Hint = str[106]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 106}         -- "Rockham's Pride"
+end
+
+event 28
+      Hint = str[116]
+  0:  EnterHouse  {Id = 116}         -- "Foreign Exchange"
+end
+
+event 29
+      Hint = str[116]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 116}         -- "Foreign Exchange"
+end
+
+event 30
+      Hint = str[120]
+  0:  EnterHouse  {Id = 120}         -- "Adept Guild of Fire"
+end
+
+event 31
+      Hint = str[120]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 120}         -- "Adept Guild of Fire"
+end
+
+event 32
+      Hint = str[122]
+  0:  EnterHouse  {Id = 122}         -- "Adept Guild of Air"
+end
+
+event 33
+      Hint = str[122]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 122}         -- "Adept Guild of Air"
+end
+
+event 34
+      Hint = str[124]
+  0:  EnterHouse  {Id = 124}         -- "Adept Guild of Water"
+end
+
+event 35
+      Hint = str[124]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 124}         -- "Adept Guild of Water"
+end
+
+event 36
+      Hint = str[126]
+  0:  EnterHouse  {Id = 126}         -- "Adept Guild of Earth"
+end
+
+event 37
+      Hint = str[126]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 126}         -- "Adept Guild of Earth"
+end
+
+event 38
+      Hint = str[128]
+  0:  EnterHouse  {Id = 128}         -- "Adept Guild of Spirit"
+end
+
+event 39
+      Hint = str[128]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 128}         -- "Adept Guild of Spirit"
+end
+
+event 40
+      Hint = str[130]
+  0:  EnterHouse  {Id = 130}         -- "Adept Guild of Mind"
+end
+
+event 41
+      Hint = str[130]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 130}         -- "Adept Guild of Mind"
+end
+
+event 42
+      Hint = str[132]
+  0:  EnterHouse  {Id = 132}         -- "Adept Guild of Body"
+end
+
+event 43
+      Hint = str[132]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 132}         -- "Adept Guild of Body"
+end
+
+event 44
+      Hint = str[144]
+  0:  EnterHouse  {Id = 144}         -- "Duelists' Edge"
+end
+
+event 45
+      Hint = str[144]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 144}         -- "Duelists' Edge"
+end
+
+event 46
+      Hint = str[151]
+  0:  EnterHouse  {Id = 151}         -- "Smugglers' Guild"
+end
+
+event 47
+      Hint = str[151]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 151}         -- "Smugglers' Guild"
+end
+
+event 48
+      Hint = str[157]
+  0:  EnterHouse  {Id = 157}         -- "Castle Temper"
+end
+
+event 49
+      Hint = str[165]
+  0:  EnterHouse  {Id = 165}         -- "High Council"
+end
+
+event 50
+      Hint = str[165]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 165}         -- "High Council"
+end
+
+event 52
+      Hint = str[68]
+  0:  EnterHouse  {Id = 68}         -- "Enterprise"
+end
+
+event 53
+      Hint = str[78]
+  0:  EnterHouse  {Id = 78}         -- "Temple Baa"
+end
+
+event 54
+      Hint = str[37]
+  0:  EnterHouse  {Id = 37}         -- "The Sorcerer's Shoppe"
+end
+
+event 55
+      Hint = str[37]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 37}         -- "The Sorcerer's Shoppe"
+end
+
+event 56
+      Hint = str[27]  -- "Blackshire"
+  0:  EnterHouse  {Id = 283}         -- "House"
+end
+
+event 57
+      Hint = str[28]  -- "Guild of Mind"
+  0:  EnterHouse  {Id = 284}         -- "House"
+end
+
+event 58
+      Hint = str[29]  -- "The stone cutter and carpenter begin rebuilding the temple."
+  0:  EnterHouse  {Id = 285}         -- "House"
+end
+
+event 59
+      Hint = str[30]  -- "You hand the Sacred Chalice to the monks of the temple who ensconce it in the main altar."
+  0:  EnterHouse  {Id = 286}         -- "House"
+end
+
+event 60
+      Hint = str[31]  -- ""
+  0:  EnterHouse  {Id = 287}         -- "House"
+end
+
+event 61
+      Hint = str[32]
+  0:  EnterHouse  {Id = 288}         -- "House"
+end
+
+event 62
+      Hint = str[33]
+  0:  EnterHouse  {Id = 289}         -- "House"
+end
+
+event 63
+      Hint = str[34]
+  0:  EnterHouse  {Id = 290}         -- "House"
+end
+
+event 64
+      Hint = str[35]
+  0:  EnterHouse  {Id = 291}         -- "House"
+end
+
+event 65
+      Hint = str[36]
+  0:  EnterHouse  {Id = 292}         -- "House"
+end
+
+event 66
+      Hint = str[37]
+  0:  EnterHouse  {Id = 293}         -- "House"
+end
+
+event 67
+      Hint = str[38]
+  0:  EnterHouse  {Id = 294}         -- "House"
+end
+
+event 68
+      Hint = str[39]
+  0:  EnterHouse  {Id = 295}         -- "House"
+end
+
+event 69
+      Hint = str[40]
+  0:  EnterHouse  {Id = 296}         -- "House"
+end
+
+event 70
+      Hint = str[41]
+  0:  EnterHouse  {Id = 297}         -- "House"
+end
+
+event 71
+      Hint = str[42]
+  0:  EnterHouse  {Id = 298}         -- "House"
+end
+
+event 72
+      Hint = str[43]
+  0:  EnterHouse  {Id = 299}         -- "House"
+end
+
+event 73
+      Hint = str[44]
+  0:  EnterHouse  {Id = 300}         -- "House"
+end
+
+event 74
+      Hint = str[45]
+  0:  EnterHouse  {Id = 301}         -- "House"
+end
+
+event 75
+      Hint = str[46]
+  0:  EnterHouse  {Id = 302}         -- "House"
+end
+
+event 76
+      Hint = str[47]
+  0:  EnterHouse  {Id = 303}         -- "House"
+end
+
+event 77
+      Hint = str[48]
+  0:  EnterHouse  {Id = 304}         -- "House"
+end
+
+event 78
+      Hint = str[49]
+  0:  EnterHouse  {Id = 305}         -- "House"
+end
+
+event 79
+      Hint = str[50]
+  0:  EnterHouse  {Id = 306}         -- "House"
+end
+
+event 80
+      Hint = str[51]
+  0:  EnterHouse  {Id = 307}         -- "House"
+end
+
+event 81
+      Hint = str[52]
+  0:  EnterHouse  {Id = 308}         -- "House"
+end
+
+event 82
+      Hint = str[53]
+  0:  EnterHouse  {Id = 309}         -- "House"
+end
+
+event 83
+      Hint = str[54]
+  0:  EnterHouse  {Id = 310}         -- "House"
+end
+
+event 84
+      Hint = str[55]
+  0:  EnterHouse  {Id = 311}         -- "House"
+end
+
+event 85
+      Hint = str[56]
+  0:  EnterHouse  {Id = 312}         -- "House"
+end
+
+event 86
+      Hint = str[57]
+  0:  EnterHouse  {Id = 313}         -- "House"
+end
+
+event 87
+      Hint = str[58]
+  0:  EnterHouse  {Id = 314}         -- "House"
+end
+
+event 88
+      Hint = str[59]
+  0:  EnterHouse  {Id = 315}         -- "House"
+end
+
+event 89
+      Hint = str[60]
+  0:  EnterHouse  {Id = 316}         -- "House"
+end
+
+event 90
+      Hint = str[61]
+  0:  EnterHouse  {Id = 317}         -- "House"
+end
+
+event 91
+      Hint = str[62]
+  0:  EnterHouse  {Id = 318}         -- "House"
+end
+
+event 92
+      Hint = str[63]
+  0:  EnterHouse  {Id = 319}         -- "House"
+end
+
+event 93
+      Hint = str[64]
+  0:  EnterHouse  {Id = 320}         -- "House"
+end
+
+event 94
+      Hint = str[65]
+  0:  EnterHouse  {Id = 321}         -- "House"
+end
+
+event 95
+      Hint = str[66]
+  0:  EnterHouse  {Id = 322}         -- "House"
+end
+
+event 96
+      Hint = str[67]
+  0:  EnterHouse  {Id = 323}         -- "House"
+end
+
+event 97
+      Hint = str[68]
+  0:  EnterHouse  {Id = 324}         -- "House"
+end
+
+event 98
+      Hint = str[69]
+  0:  EnterHouse  {Id = 325}         -- "House"
+end
+
+event 99
+      Hint = str[70]
+  0:  EnterHouse  {Id = 326}         -- "House"
+end
+
+event 100
+      Hint = str[71]
+  0:  EnterHouse  {Id = 327}         -- "House"
+end
+
+event 101
+      Hint = str[72]
+  0:  EnterHouse  {Id = 328}         -- "House"
+end
+
+event 102
+      Hint = str[73]
+  0:  EnterHouse  {Id = 329}         -- "House"
+end
+
+event 103
+      Hint = str[74]
+  0:  EnterHouse  {Id = 330}         -- "House"
+end
+
+event 104
+      Hint = str[75]
+  0:  EnterHouse  {Id = 331}         -- "House"
+end
+
+event 105
+      Hint = str[76]
+  0:  EnterHouse  {Id = 332}         -- "House"
+end
+
+event 106
+      Hint = str[77]
+  0:  EnterHouse  {Id = 333}         -- "House"
+end
+
+event 107
+      Hint = str[7]  -- "Drink from Trough."
+  0:  EnterHouse  {Id = 519}         -- "House"
+end
+
+event 108
+      Hint = str[8]  -- "Hic…"
+  0:  EnterHouse  {Id = 520}         -- "House"
+end
+
+event 109
+      Hint = str[9]  -- "Refreshing!"
+  0:  EnterHouse  {Id = 521}         -- "House"
+end
+
+event 110
+      Hint = str[10]  -- "Free Haven"
+  0:  EnterHouse  {Id = 522}         -- "House"
+end
+
+event 111
+      Hint = str[11]  -- "Shrine of Accuracy"
+  0:  EnterHouse  {Id = 523}         -- "House"
+end
+
+event 112
+      Hint = str[12]  -- "You pray at the shrine."
+  0:  EnterHouse  {Id = 524}         -- "House"
+end
+
+event 113
+      Hint = str[13]  -- "+10 Accuracy permanent"
+  0:  EnterHouse  {Id = 525}         -- "House"
+end
+
+event 114
+      Hint = str[14]  -- "+3 Accuracy permanent"
+  0:  EnterHouse  {Id = 526}         -- "House"
+end
+
+event 115
+      Hint = str[15]  -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            lg____gtS_cln;__"
+  0:  EnterHouse  {Id = 527}         -- "House"
+end
+
+event 116
+      Hint = str[16]  -- "Obelisk"
+  0:  EnterHouse  {Id = 528}         -- "House"
+end
+
+event 117
+      Hint = str[17]  -- "Free Haven"
+  0:  EnterHouse  {Id = 529}         -- "House"
+end
+
+event 118
+      Hint = str[18]  -- "Castle Temper"
+  0:  EnterHouse  {Id = 530}         -- "House"
+end
+
+event 119
+      Hint = str[19]  -- "Temple of Baa"
+  0:  EnterHouse  {Id = 531}         -- "House"
+end
+
+event 122
+      Hint = str[17]  -- "Free Haven"
+  0:  StatusText  {Str = 17}         -- "Free Haven"
+end
+
+event 123
+      Hint = str[18]  -- "Castle Temper"
+  0:  StatusText  {Str = 18}         -- "Castle Temper"
+end
+
+event 124
+      Hint = str[19]  -- "Temple of Baa"
+  0:  StatusText  {Str = 19}         -- "Temple of Baa"
+end
+
+event 125
+      Hint = str[17]  -- "Free Haven"
+  0:  StatusText  {Str = 17}         -- "Free Haven"
+end
+
+event 126
+      Hint = str[20]  -- "Darkmoor"
+  0:  StatusText  {Str = 20}         -- "Darkmoor"
+end
+
+event 127
+      Hint = str[18]  -- "Castle Temper"
+  0:  StatusText  {Str = 18}         -- "Castle Temper"
+end
+
+event 128
+      Hint = str[21]  -- "Guild of Water"
+  0:  StatusText  {Str = 21}         -- "Guild of Water"
+end
+
+event 129
+      Hint = str[22]  -- "Armory"
+  0:  StatusText  {Str = 22}         -- "Armory"
+end
+
+event 130
+      Hint = str[23]  -- "Temple"
+  0:  StatusText  {Str = 23}         -- "Temple"
+end
+
+event 131
+      Hint = str[17]  -- "Free Haven"
+  0:  StatusText  {Str = 17}         -- "Free Haven"
+end
+
+event 132
+      Hint = str[24]  -- "Rockham"
+  0:  StatusText  {Str = 24}         -- "Rockham"
+end
+
+event 133
+      Hint = str[27]  -- "Blackshire"
+  0:  StatusText  {Str = 27}         -- "Blackshire"
+end
+
+event 134
+      Hint = str[24]  -- "Rockham"
+  0:  StatusText  {Str = 24}         -- "Rockham"
+end
+
+event 135
+      Hint = str[28]  -- "Guild of Mind"
+  0:  StatusText  {Str = 28}         -- "Guild of Mind"
+end
+
+event 136
+  0:  StatusText  {Str = 0}         -- " "
+end
+
+event 137
+      Hint = str[17]  -- "Free Haven"
+  0:  StatusText  {Str = 17}         -- "Free Haven"
+end
+
+event 138
+      Hint = str[25]  -- "Whitecap"
+  0:  StatusText  {Str = 25}         -- "Whitecap"
+end
+
+event 139
+      Hint = str[26]  -- "Castle Stone"
+  0:  StatusText  {Str = 26}         -- "Castle Stone"
+end
+
+event 120
+      Hint = str[1]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 121
+      Hint = str[1]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 150
+  0:  MoveToMap  {X = -2, Y = -128, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 180, Icon = 5, Name = "D10.Blv"}         -- "Dragoons' Keep"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 180}         -- "Dragoons' Keep"
+end
+
+event 151
+  0:  MoveToMap  {X = -118, Y = -1640, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 184, Icon = 5, Name = "D14.Blv"}         -- "Tomb of Ethric the Mad"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 184}         -- "Tomb of Ethric the Mad"
+end
+
+event 152
+  0:  MoveToMap  {X = 0, Y = -2135, Z = 125, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 195, Icon = 5, Name = "T5.Blv"}         -- "Temple of the Moon"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 195}         -- "Temple of the Moon"
+end
+
+event 153
+  0:  MoveToMap  {X = 7059, Y = -6153, Z = 1, Direction = 128, LookAngle = 0, SpeedZ = 0, HouseId = 170, Icon = 5, Name = "Oracle.Blv"}         -- "The Oracle"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 170}         -- "The Oracle"
+end
+
+event 161
+      Hint = str[2]  -- "Drink from Well."
+  0:  Cmp  {"BaseMight", Value = 15,   jump = 2}
+  1:  Cmp  {"MapVar0", Value = 1,   jump = 4}
+  2:  StatusText  {Str = 9}         -- "Refreshing!"
+  3:  Exit  {}
+
+  4:  Subtract  {"MapVar0", Value = 1}
+  5:  Add  {"BaseMight", Value = 2}
+  6:  StatusText  {Str = 3}         -- "+2 Might permanent"
+  7:  Set  {"AutonotesBits", Value = 30}         -- "2 Points of permanent might from the fountain in the northeast of Free Haven."
+  8:  Exit  {}
+
+  9:  OnRefillTimer  {EachMonth = true}
+  10: Set  {"MapVar0", Value = 8}
+end
+
+event 162
+      Hint = str[2]  -- "Drink from Well."
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 8}
+  1:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -13168, Y = 19504, Z = 160}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -13696, Y = 17408, Z = 160}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -10960, Y = 18016, Z = 160}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -9840, Y = 19280, Z = 160}
+  5:  Set  {"MapVar4", Value = 1}
+  6:  StatusText  {Str = 4}         -- "Look Out!"
+  7:  Exit  {}
+
+  8:  StatusText  {Str = 9}         -- "Refreshing!"
+  9:  Exit  {}
+
+  10: OnRefillTimer  {EachMonth = true}
+  11: Set  {"MapVar4", Value = 0}
+end
+
+event 163
+      Hint = str[5]  -- "Drink from Fountain"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 9}         -- "Refreshing!"
+  2:  GoTo  {jump = 6}
+
+  3:  Subtract  {"MapVar1", Value = 1}
+  4:  Add  {"HP", Value = 25}
+  5:  StatusText  {Str = 6}         -- "+25 Hit points restored."
+  6:  Set  {"AutonotesBits", Value = 31}         -- "25 Hit points restored from the central fountain in Free Haven."
+  7:  Exit  {}
+
+  8:  OnRefillTimer  {Second = 1}
+  9:  Set  {"MapVar1", Value = 30}
+end
+
+event 164
+      Hint = str[7]  -- "Drink from Trough."
+  0:  Set  {"Drunk", Value = 0}
+  1:  StatusText  {Str = 8}         -- "Hic…"
+end
+
+event 209
+  0:  OnTimer  {IntervalInHalfMinutes = 10}
+  1:  Cmp  {"QBits", Value = 159,   jump = 3}         -- NPC
+  2:  Cmp  {"Flying", Value = 0,   jump = 4}
+  3:  Exit  {}
+
+  4:  CastSpell  {Spell = 6, Mastery = const.Master, Skill = 5, FromX = 3823, FromY = 10974, FromZ = 2700, ToX = 0, ToY = 0, ToZ = 0}         -- "Fireball"
+end
+
+event 210
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 159,   jump = 3}         -- NPC
+  2:  Cmp  {"Inventory", Value = 486,   jump = 4}         -- "Dragon Tower Keys"
+  3:  Exit  {}
+
+  4:  Set  {"QBits", Value = 159}         -- NPC
+  5:  SetTextureOutdoors  {Model = 116, Facet = 42, Name = "T1swBu"}
+end
+
+event 211
+      Hint = str[157]
+  0:  MoveToMap  {X = 0, Y = 0, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 157, Icon = 2, Name = "0"}         -- "Castle Temper"
+  1:  EnterHouse  {Id = 158}         -- "Throne Room"
+end
+
+event 212
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 178,   jump = 3}         -- NPC
+  2:  Set  {"QBits", Value = 178}         -- NPC
+  3:  Exit  {}
+end
+
+event 213
+      Hint = str[16]  -- "Obelisk"
+  0:  SetMessage  {Str = 15}         -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            lg____gtS_cln;__"
+  1:  SimpleMessage  {}
+  2:  Set  {"QBits", Value = 367}         -- NPC
+  3:  Set  {"AutonotesBits", Value = 86}         -- "Obelisk Message # 8:  lg____gtS_cln;__"
+end
+
+event 214
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 159,   jump = 3}         -- NPC
+  2:  Exit  {}
+
+  3:  SetTextureOutdoors  {Model = 116, Facet = 42, Name = "T1swBu"}
+end
+
+event 261
+      Hint = str[11]  -- "Shrine of Accuracy"
+  0:  Cmp  {"MonthIs", Value = 4,   jump = 3}
+  1:  StatusText  {Str = 12}         -- "You pray at the shrine."
+  2:  Exit  {}
+
+  3:  Cmp  {"QBits", Value = 206,   jump = 1}         -- NPC
+  4:  Set  {"QBits", Value = 206}         -- NPC
+  5:  Cmp  {"QBits", Value = 211,   jump = 11}         -- NPC
+  6:  Set  {"QBits", Value = 211}         -- NPC
+  7:  ForPlayer  ("All")
+  8:  Add  {"BaseAccuracy", Value = 10}
+  9:  StatusText  {Str = 13}         -- "+10 Accuracy permanent"
+  10: Exit  {}
+
+  11: ForPlayer  ("All")
+  12: Add  {"BaseAccuracy", Value = 3}
+  13: StatusText  {Str = 14}         -- "+3 Accuracy permanent"
+end

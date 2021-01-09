@@ -1,0 +1,286 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Gate"
+str[3] = "Cabinet"
+str[4] = "Button"
+str[5] = "Bed"
+str[6] = "Chest"
+str[7] = "Various Foodstuff bags"
+str[8] = "Throne"
+str[9] = "Lever"
+str[10] = "Table"
+str[11] = "The gate will not budge."
+str[12] = "You find something around the bed."
+str[13] = "Something rumbles off in the distance."
+str[14] = "The bed(s) are empty."
+str[15] = "Exit"
+str[16] = "The Barracks Keep"
+str[17] = ""
+
+
+event 1
+      MazeInfo = str[16]  -- "The Barracks Keep"
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[9]  -- "Lever"
+  0:  StatusText  {Str = 13}         -- "Something rumbles off in the distance."
+  1:  FaceExpression  {Player = "Random", Frame = 30}
+  2:  SetDoorState  {Id = 2, State = 2}         -- switch state
+  3:  SetDoorState  {Id = 16, State = 2}         -- switch state
+end
+
+event 3
+      Hint = str[9]  -- "Lever"
+  0:  StatusText  {Str = 13}         -- "Something rumbles off in the distance."
+  1:  SetDoorState  {Id = 3, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 17, State = 2}         -- switch state
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 6, State = 1}
+end
+
+event 7
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 9, State = 1}
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 11, State = 1}
+end
+
+event 12
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 12, State = 1}
+end
+
+event 13
+      Hint = str[9]  -- "Lever"
+  0:  SetDoorState  {Id = 13, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 19, State = 2}         -- switch state
+end
+
+event 14
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 14, State = 1}
+end
+
+event 15
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 15, State = 1}
+end
+
+event 18
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 18, State = 1}
+end
+
+event 19
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 19, State = 1}
+end
+
+event 20
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+end
+
+event 21
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 22
+      Hint = str[3]  -- "Cabinet"
+  0:  OpenChest  {Id = 2}
+end
+
+event 23
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 24
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 25
+      Hint = str[6]  -- "Chest"
+  0:  Cmp  {"MapVar9", Value = 1,   jump = 2}
+  1:  Cmp  {"QBits", Value = 25,   jump = 7}         -- 25 D15, Given to find merchants White pearl
+  2:  OpenChest  {Id = 5}
+  3:  Add  {"MapVar9", Value = 1}
+  4:  Set  {"QBits", Value = 25}         -- 25 D15, Given to find merchants White pearl
+  5:  Set  {"QBits", Value = 189}         -- Quest item bits for seer
+  6:  Exit  {}
+
+  7:  OpenChest  {Id = 7}
+end
+
+event 26
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 27
+      Hint = str[5]  -- "Bed"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 12}         -- "You find something around the bed."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar0", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 14}         -- "The bed(s) are empty."
+end
+
+event 28
+      Hint = str[5]  -- "Bed"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 12}         -- "You find something around the bed."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar1", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 14}         -- "The bed(s) are empty."
+end
+
+event 29
+      Hint = str[5]  -- "Bed"
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 12}         -- "You find something around the bed."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar2", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 14}         -- "The bed(s) are empty."
+end
+
+event 30
+      Hint = str[5]  -- "Bed"
+  0:  Cmp  {"MapVar3", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 12}         -- "You find something around the bed."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar3", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 14}         -- "The bed(s) are empty."
+end
+
+event 31
+      Hint = str[5]  -- "Bed"
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 12}         -- "You find something around the bed."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar4", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 14}         -- "The bed(s) are empty."
+end
+
+event 32
+      Hint = str[5]  -- "Bed"
+  0:  Cmp  {"MapVar5", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 12}         -- "You find something around the bed."
+  2:  Add  {"GoldAddRandom", Value = 2000}
+  3:  Add  {"MapVar5", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 14}         -- "The bed(s) are empty."
+end
+
+event 33
+      Hint = str[5]  -- "Bed"
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 12}         -- "You find something around the bed."
+  2:  Add  {"Inventory", Value = 29}         -- "Heavy Poleax"
+  3:  Add  {"MapVar6", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 14}         -- "The bed(s) are empty."
+end
+
+event 34
+      Hint = str[5]  -- "Bed"
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 12}         -- "You find something around the bed."
+  2:  Add  {"Inventory", Value = 11}         -- "Mighty Broadsword"
+  3:  Add  {"MapVar7", Value = 1}
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 14}         -- "The bed(s) are empty."
+end
+
+event 35
+      Hint = str[2]  -- "Gate"
+  0:  StatusText  {Str = 11}         -- "The gate will not budge."
+end
+
+event 50
+      Hint = str[15]  -- "Exit"
+  0:  MoveToMap  {X = -18638, Y = -5133, Z = 64, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutC1.Odm"}
+end
+
+event 51
+  0:  Cmp  {"MapVar19", Value = 1,   jump = 3}
+  1:  Set  {"MapVar19", Value = 1}
+  2:  GiveItem  {Strength = 6, Type = const.ItemType.Helm_, Id = 0}
+  3:  Exit  {}
+end
+
+event 52
+  0:  Cmp  {"MapVar19", Value = 1,   jump = 3}
+  1:  Set  {"MapVar19", Value = 1}
+  2:  GiveItem  {Strength = 6, Type = const.ItemType.Helm_, Id = 0}
+  3:  Exit  {}
+end
+
+event 53
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 482,   jump = 17}         -- The Barracks Once
+  2:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 5, X = -495, Y = 2146, Z = 0}
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 3, X = 1898, Y = 2289, Z = 0}
+  4:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 3, X = 2072, Y = 4685, Z = 0}
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = 2026, Y = 6570, Z = 0}
+  6:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 3, X = -1912, Y = 2298, Z = 0}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 4, X = -2067, Y = 4067, Z = 0}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -2008, Y = 6513, Z = 0}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 4, X = -686, Y = 7283, Z = 0}
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = -4243, Y = 1997, Z = 0}
+  11: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 4, X = 1075, Y = 8147, Z = 0}
+  12: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 4221, Y = 2133, Z = 0}
+  13: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 6, X = -24, Y = 8857, Z = 0}
+  14: Set  {"QBits", Value = 482}         -- The Barracks Once
+  15: ForPlayer  ("All")
+  16: Subtract  {"Inventory", Value = 490}         -- "Barracks Key"
+  17: Exit  {}
+end

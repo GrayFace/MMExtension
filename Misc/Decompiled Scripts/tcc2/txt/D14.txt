@@ -1,0 +1,24 @@
+str[0] = " "
+str[1] = "Switch"
+str[2] = "Sarcophagus"
+str[3] = "Burial niche"
+str[4] = "Elevator"
+str[5] = "Platform"
+str[6] = "Gate"
+str[7] = "The door will not budge."
+str[8] = "Fumes make you feel sick."
+str[9] = "You find something among the bones."
+str[10] = "The niche is empty."
+str[11] = "Door."
+str[12] = "Exit."
+str[13] = "Tomb of Luftka the Kruel"
+str[14] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

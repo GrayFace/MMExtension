@@ -539,7 +539,7 @@ braces.autoclose=0<br>
 
 <a id="Decompiled-Scripts"></a><h3>Декомпилированные скрипты</h3>
 Оригинальные скрипты Меча и Магии хранятся в двоичном формате в файлах с расширением <b class="def-param">.evt</b>. MMExtension может декомпилировать эти скрипты.
-<a href="https://www.dropbox.com/s/kznafxub3lcbrv1/MMScripts.rar?dl=1">Ссылка для скачивания декомпилированных скриптов.</a><br>
+<a href="https://github.com/GrayFace/MMExtension/tree/master/Misc/Decompiled%20Scripts">Ссылка на декомпилированные скрипты.</a><br>
 
 
 Декомпилированные скрипты представлены в виде скриптов Lua и в псевдокоде, который напрямую соответствует бинарному формату.<br>
@@ -574,6 +574,12 @@ braces.autoclose=0<br>
 <br>
 <div class="pre-outer"><div class="pre"><span class="lua5-note">local</span> dir <span class="lua5-note">=</span> <span class="lua5-str">"Decompile/"</span><br><span class="lua5-ctrl">for</span> f <span class="lua5-ctrl">in</span> path.<span class="lua5-std">find</span>(dir<span class="lua5-operator">..</span><span class="lua5-str">"*.evt"</span>) <span class="lua5-ctrl">do</span><br><span class="lua5-tab">&#9;</span>evt.Decompile(f, <span class="lua5-literal">0</span>, dir<span class="lua5-operator">..</span><span class="lua5-str">"Scripts/"</span><span class="lua5-operator">..</span>path.setext(path.name(f), <span class="lua5-str">".lua"</span>))<br><span class="lua5-tab">&#9;</span>evt.Decompile(f, <span class="lua5-literal">0</span>, dir<span class="lua5-operator">..</span><span class="lua5-str">"Scripts/txt/"</span><span class="lua5-operator">..</span>path.setext(path.name(f), <span class="lua5-str">".txt"</span>), <span class="lua5-literal">true</span>)<br><span class="lua5-ctrl">end</span></div></div>
 <br>
+
+<i>Примечание:</i> Невозможно преобразовать декомпилированный скрипт даже в текстовой форме обратно в файл EVT. Если Вам надо отредактировать EVT, используйте <a href="https://github.com/GrayFace/MMExtension/tree/master/Misc/010Editor%20Templates">мои шаблоны для 010Editor</a>.
+<br>
+<br>
+
+
 
 <a id="Short-functions-syntax"></a><h3>Сокращённый синтаксис объявления функций</h3>
 MMExtension вносит одно дополнение в синтаксис Lua &ndash; cокращённый синтаксис объявления функций. Пример:

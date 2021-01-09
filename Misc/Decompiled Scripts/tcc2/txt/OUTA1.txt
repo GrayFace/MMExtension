@@ -1,0 +1,88 @@
+str[0] = " "
+str[1] = "Stone of Revelation"
+str[2] = "Revelation Msg#1.  To reach your derstination you must first enter the Pyramid in Baal's Garden."
+str[3] = ""
+str[4] = ""
+str[5] = ""
+str[6] = ""
+str[7] = ""
+str[8] = "Autonote added."
+str[9] = ""
+str[10] = ""
+str[11] = ""
+
+
+event 1
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 511,   jump = 5}         -- SOG Void Teleport
+  2:  ForPlayer  ("All")
+  3:  Set  {"Eradicated", Value = 0}
+  4:  Exit  {}
+
+  5:  Cmp  {"QBits", Value = 330,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 2}
+
+  7:  Exit  {}
+end
+
+event 5
+  0:  MoveToMap  {X = -1769, Y = 12542, Z = 1000, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "OutC2.Odm"}
+  1:  Exit  {}
+end
+
+event 6
+      Hint = str[1]  -- "Stone of Revelation"
+  0:  SetMessage  {Str = 2}         -- "Revelation Msg#1.  To reach your derstination you must first enter the Pyramid in Baal's Garden."
+  1:  SimpleMessage  {}
+  2:  Add  {"QBits", Value = 496}         -- Tortuga Hall Reload
+  3:  Add  {"AutonotesBits", Value = 79}         -- "Revelation Msg#1.  To reach your derstination you must first enter the Pyramid in Baal's Garden."
+  4:  StatusText  {Str = 8}         -- "Autonote added."
+  5:  Exit  {}
+end
+
+event 221
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 411,   jump = 3}         -- Quaddah onc
+  2:  GoTo  {jump = 4}
+
+  200: Cmp  {"QBits", Value = 134,   jump = 4}         -- NPC
+  3:  Exit  {}
+
+  4:  Add  {"QBits", Value = 411}         -- Quaddah onc
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 3, X = -9629, Y = 13740, Z = 428}
+  6:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -8923, Y = 11797, Z = 898}
+  7:  GoTo  {jump = 9}
+
+  70: Cmp  {"QBits", Value = 508,   jump = 9}         -- Void Fountain2
+  8:  Exit  {}
+
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 4, X = -8194, Y = 16033, Z = 161}
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 4, X = -8437, Y = 18772, Z = 661}
+  11: GoTo  {jump = 13}
+
+  110: Cmp  {"QBits", Value = 507,   jump = 13}         -- Void Fountain3
+  12: Exit  {}
+
+  13: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 4, X = -6821, Y = 17533, Z = 181}
+  14: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = -7862, Y = 16690, Z = 661}
+  15: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = -7482, Y = 11385, Z = 725}
+  16: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 3, X = -7689, Y = 9128, Z = 800}
+  17: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 2, X = 1568, Y = 1771, Z = 354}
+  18: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 3, X = 1468, Y = 1771, Z = 354}
+  19: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 2, X = 1568, Y = 1271, Z = 354}
+  20: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 1568, Y = 1771, Z = 854}
+  21: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 2, X = 1468, Y = 1771, Z = 925}
+  22: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = 1568, Y = 1271, Z = 800}
+  23: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 3, X = 2468, Y = 1271, Z = 354}
+  24: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 3, X = 2468, Y = 1271, Z = 850}
+  25: ForPlayer  ("All")
+  26: Add  {"Experience", Value = 2000000}
+  27: Exit  {}
+end
+
+event 266
+      function events.LoadMap()
+  1:  Exit  {}
+
+  2:  SetSnow  {EffectId = 0, On = true}
+end

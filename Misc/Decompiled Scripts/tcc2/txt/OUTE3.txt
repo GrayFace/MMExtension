@@ -1,0 +1,274 @@
+str[0] = " "
+str[1] = "Land's Gateway"
+str[2] = "Hungry Rock"
+str[3] = "You cannot understand the creature."
+str[4] = "Hungry!  Feed me coconut!"
+str[5] = "Lennie the Elder"
+str[6] = "You cannot understand The Lennie."
+str[7] = "Visit my five brothers and then return to me.                                                                                                                                                         They can be found in the frozen lands of the North."
+str[8] = "The Rock creature takes a coconut from you and begins to chew it.  In a brief moment he spits out a perfectly 'shelled' coconut.  Apparently, all the creatures wants is the rock shell.  You pick up the coconut and add it to your food supply!"
+str[9] = "OK.  You may now use the Tunnel to  the Valley of Stones."
+str[10] = "Well"
+str[11] = "Banana Plant"
+str[12] = "There are no more bananas on this plant."
+str[13] = "Tree"
+str[14] = "+5 Hit points restored."
+str[15] = "+5 Spell points restored."
+str[16] = "+10 Might temporary."
+str[17] = "Rock"
+str[18] = "The door is locked."
+str[19] = "The Sword won't budge!"
+str[20] = "+2 Luck permanent"
+str[21] = "It's your Lucky Day!  +100 gold."
+str[22] = "The Underwald"
+str[23] = "Shrine of Ignis Resistance"
+str[24] = "You pray at the shrine."
+str[25] = "+10 Ignis Resistance permanent"
+str[26] = "+3 Ignis Resistance permanent"
+str[27] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                           sitWnsoi__saeiltu"
+str[28] = "Obelisk"
+str[29] = "The entrance is magically warded."
+str[30] = "Whom the gods bless they first curse!"
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+
+
+event 1
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 511,   jump = 5}         -- SOG Void Teleport
+  2:  ForPlayer  ("All")
+  3:  Set  {"Eradicated", Value = 0}
+  41: Set  {"QBits", Value = 330}         -- NPC
+  4:  Exit  {}
+
+  5:  Cmp  {"QBits", Value = 330,   jump = 7}         -- NPC
+  6:  GoTo  {jump = 2}
+
+  7:  Exit  {}
+end
+
+event 2
+      Hint = str[2]  -- "Hungry Rock"
+  0:  ForPlayer  ("Current")
+  1:  Cmp  {"Inventory", Value = 484,   jump = 7}         -- "Rock-shell Coconut"
+  2:  Cmp  {"QBits", Value = 505,   jump = 5}         -- Stone of Translation
+  3:  StatusText  {Str = 3}         -- "You cannot understand the creature."
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 4}         -- "Hungry!  Feed me coconut!"
+  6:  Exit  {}
+
+  7:  Subtract  {"Inventory", Value = 484}         -- "Rock-shell Coconut"
+  8:  Add  {"Food", Value = 1}
+  9:  SetMessage  {Str = 8}         -- "The Rock creature takes a coconut from you and begins to chew it.  In a brief moment he spits out a perfectly 'shelled' coconut.  Apparently, all the creatures wants is the rock shell.  You pick up the coconut and add it to your food supply!"
+  10: SimpleMessage  {}
+  11: Exit  {}
+end
+
+event 3
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"MapVar9", Value = 4,   jump = 4}
+  1:  Add  {"MapVar9", Value = 1}
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      RefillTimer(<function>, const.Week, true)
+  7:  Set  {"MapVar9", Value = 0}
+end
+
+event 4
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"QBits", Value = 350,   jump = 4}         -- NPC
+  1:  Add  {"QBits", Value = 350}         -- NPC
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Second)
+  7:  Subtract  {"QBits", Value = 350}         -- NPC
+end
+
+event 5
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"MapVar10", Value = 5,   jump = 4}
+  1:  Add  {"MapVar10", Value = 1}
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      RefillTimer(<function>, const.Week, true)
+  7:  Set  {"MapVar10", Value = 0}
+end
+
+event 6
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"QBits", Value = 351,   jump = 4}         -- NPC
+  1:  Add  {"QBits", Value = 351}         -- NPC
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Second)
+  7:  Subtract  {"QBits", Value = 351}         -- NPC
+end
+
+event 7
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"MapVar11", Value = 3,   jump = 4}
+  1:  Add  {"MapVar11", Value = 1}
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      RefillTimer(<function>, const.Week, true)
+  7:  Set  {"MapVar11", Value = 0}
+end
+
+event 8
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"QBits", Value = 352,   jump = 4}         -- NPC
+  1:  Add  {"QBits", Value = 352}         -- NPC
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Second)
+  7:  Subtract  {"QBits", Value = 352}         -- NPC
+end
+
+event 9
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"QBits", Value = 353,   jump = 4}         -- NPC
+  1:  Add  {"QBits", Value = 353}         -- NPC
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Second)
+  7:  Subtract  {"QBits", Value = 353}         -- NPC
+end
+
+event 10
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"QBits", Value = 354,   jump = 4}         -- NPC
+  1:  Add  {"QBits", Value = 354}         -- NPC
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Second)
+  7:  Subtract  {"QBits", Value = 354}         -- NPC
+end
+
+event 11
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"QBits", Value = 355,   jump = 4}         -- NPC
+  1:  Add  {"QBits", Value = 355}         -- NPC
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Second)
+  7:  Subtract  {"QBits", Value = 355}         -- NPC
+end
+
+event 12
+      Hint = str[11]  -- "Banana Plant"
+  0:  Cmp  {"MapVar14", Value = 3,   jump = 4}
+  1:  Add  {"MapVar14", Value = 1}
+  2:  Add  {"Food", Value = 1}
+  3:  Exit  {}
+
+  4:  StatusText  {Str = 12}         -- "There are no more bananas on this plant."
+  5:  Exit  {}
+
+      RefillTimer(<function>, const.Week, true)
+  7:  Set  {"MapVar14", Value = 0}
+end
+
+event 50
+      Hint = str[5]  -- "Lennie the Elder"
+  0:  Cmp  {"Awards", Value = 2,   jump = 23}         -- "Gained Access to the Valley of Stones"
+  1:  Cmp  {"QBits", Value = 83,   jump = 9}
+  2:  Cmp  {"QBits", Value = 505,   jump = 5}         -- Stone of Translation
+  3:  StatusText  {Str = 6}         -- "You cannot understand The Lennie."
+  4:  Exit  {}
+
+  5:  SetMessage  {Str = 7}         -- "Visit my five brothers and then return to me.                                                                                                                                                         They can be found in the frozen lands of the North."
+  6:  SimpleMessage  {}
+  7:  Set  {"QBits", Value = 83}
+  8:  Exit  {}
+
+  9:  Cmp  {"QBits", Value = 503,   jump = 11}         -- Campfire
+  10: GoTo  {jump = 5}
+
+  11: Cmp  {"QBits", Value = 502,   jump = 13}         -- Campfire
+  12: GoTo  {jump = 5}
+
+  100: Exit  {}
+
+  13: Cmp  {"QBits", Value = 501,   jump = 15}         -- Campfire
+  14: GoTo  {jump = 5}
+
+  15: Cmp  {"QBits", Value = 500,   jump = 17}         -- Tobin Cage
+  16: GoTo  {jump = 5}
+
+  17: Cmp  {"QBits", Value = 499,   jump = 19}         -- Fountain of Enchantment once
+  18: GoTo  {jump = 5}
+
+  19: Subtract  {"QBits", Value = 83}
+  20: ForPlayer  ("All")
+  21: Add  {"Experience", Value = 1500000}
+  22: Set  {"Awards", Value = 2}         -- "Gained Access to the Valley of Stones"
+  23: SetMessage  {Str = 9}         -- "OK.  You may now use the Tunnel to  the Valley of Stones."
+  24: SimpleMessage  {}
+  25: Add  {"QBits", Value = 498}         -- Flame of Might once
+  26: Exit  {}
+end
+
+event 262
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 497,   jump = 21}         -- Sutter's Bay Reload
+  2:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 10, X = -8442, Y = -10496, Z = 1500}
+  3:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -9670, Y = -12905, Z = 1200}
+  4:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 10, X = -11011, Y = -15233, Z = 1500}
+  5:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 3, X = -14595, Y = -14177, Z = 2200}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 10, X = -18458, Y = -14646, Z = 2600}
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 5, X = -15439, Y = -4060, Z = 700}
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -17338, Y = -4929, Z = 500}
+  9:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = -17957, Y = 4743, Z = 600}
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -2050, Y = 3288, Z = 400}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 4, X = 10777, Y = -13092, Z = 450}
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -22329, Y = -10583, Z = 540}
+  13: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -8440, Y = -9496, Z = 560}
+  14: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 6, X = -17950, Y = 4700, Z = 350}
+  15: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -17738, Y = -4500, Z = 700}
+  16: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -2040, Y = 3200, Z = 600}
+  17: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 5, X = -22300, Y = -10580, Z = 480}
+  18: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = -9570, Y = -12700, Z = 1346}
+  19: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -18450, Y = -14550, Z = 2500}
+  20: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 5, X = -9295, Y = -9626, Z = 700}
+  21: Add  {"QBits", Value = 497}         -- Sutter's Bay Reload
+  22: Exit  {}
+end

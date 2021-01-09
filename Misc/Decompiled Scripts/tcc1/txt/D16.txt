@@ -1,0 +1,413 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Door"
+str[3] = "Chest"
+str[4] = "Cabinet"
+str[5] = "You are pulled through the door!"
+str[6] = "The door is locked."
+str[7] = "The door is double locked."
+str[8] = "You were unable to pick the lock."
+str[9] = "Chest of Drawers"
+str[10] = "You have found two keys!"
+str[11] = "You have found a key!"
+str[12] = "Switch"
+str[13] = "The Eagle Statuette!"
+str[14] = "Exit"
+str[15] = "This door won't open."
+str[16] = "Haldegarn's Lair"
+str[17] = ""
+
+
+event 1
+      MazeInfo = str[16]  -- "Haldegarn's Lair"
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 4
+  0:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+      Hint = str[2]  -- "Door"
+  0:  Cmp  {"Inventory", Value = 565,   jump = 3}         -- "Storage Key"
+  1:  StatusText  {Str = 7}         -- "The door is double locked."
+  2:  Exit  {}
+
+  3:  Cmp  {"Inventory", Value = 571,   jump = 6}         -- "Storage Key"
+  4:  StatusText  {Str = 7}         -- "The door is double locked."
+  5:  Exit  {}
+
+  6:  Cmp  {"MapVar9", Value = 10,   jump = 10}
+  7:  Set  {"MapVar9", Value = 10}
+  8:  SetDoorState  {Id = 6, State = 1}
+  9:  Exit  {}
+
+  10: Subtract  {"Inventory", Value = 565}         -- "Storage Key"
+  11: Subtract  {"Inventory", Value = 571}         -- "Storage Key"
+  12: SetDoorState  {Id = 6, State = 1}
+end
+
+event 7
+      Hint = str[2]  -- "Door"
+  0:  Cmp  {"Inventory", Value = 565,   jump = 3}         -- "Storage Key"
+  1:  StatusText  {Str = 7}         -- "The door is double locked."
+  2:  Exit  {}
+
+  3:  Cmp  {"Inventory", Value = 571,   jump = 6}         -- "Storage Key"
+  4:  StatusText  {Str = 7}         -- "The door is double locked."
+  5:  Exit  {}
+
+  6:  Cmp  {"MapVar9", Value = 10,   jump = 10}
+  7:  Set  {"MapVar9", Value = 10}
+  8:  SetDoorState  {Id = 7, State = 1}
+  9:  Exit  {}
+
+  10: Subtract  {"Inventory", Value = 565}         -- "Storage Key"
+  11: Subtract  {"Inventory", Value = 571}         -- "Storage Key"
+  12: SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+      Hint = str[2]  -- "Door"
+  0:  Cmp  {"Inventory", Value = 564,   jump = 3}         -- "Warlord's Key"
+  1:  StatusText  {Str = 6}         -- "The door is locked."
+  2:  Exit  {}
+
+  3:  SetDoorState  {Id = 9, State = 1}
+  4:  Subtract  {"Inventory", Value = 564}         -- "Warlord's Key"
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+  0:  SetDoorState  {Id = 11, State = 1}
+end
+
+event 12
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 12, State = 1}
+end
+
+event 13
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 13, State = 1}
+end
+
+event 14
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 14, State = 1}
+end
+
+event 15
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 15, State = 1}
+end
+
+event 16
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 16, State = 1}
+end
+
+event 17
+  0:  SetDoorState  {Id = 17, State = 1}
+end
+
+event 18
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 18, State = 1}
+end
+
+event 19
+      Hint = str[12]  -- "Switch"
+  0:  SetTexture  {Facet = 960, Name = "D8s2on"}
+  1:  SetDoorState  {Id = 19, State = 1}
+  2:  Set  {"MapVar19", Value = 1}
+end
+
+event 20
+      Hint = str[1]  -- "Door"
+  0:  RandomGoTo  {jumpA = 3, jumpB = 5, jumpC = 7, jumpD = 9, jumpE = 0, jumpF = 0}
+  1:  MoveToMap  {X = -3586, Y = -789, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  2:  GoTo  {jump = 10}
+
+  3:  MoveToMap  {X = -2539, Y = -512, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  4:  GoTo  {jump = 10}
+
+  5:  MoveToMap  {X = -1537, Y = -788, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  6:  GoTo  {jump = 10}
+
+  7:  MoveToMap  {X = -1012, Y = -1284, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  8:  GoTo  {jump = 10}
+
+  9:  MoveToMap  {X = -1036, Y = -1775, Z = -255, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  10: StatusText  {Str = 5}         -- "You are pulled through the door!"
+  11: Exit  {}
+end
+
+event 21
+      Hint = str[1]  -- "Door"
+  0:  RandomGoTo  {jumpA = 1, jumpB = 5, jumpC = 7, jumpD = 9, jumpE = 0, jumpF = 0}
+  1:  MoveToMap  {X = -3586, Y = -789, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  2:  GoTo  {jump = 10}
+
+  3:  MoveToMap  {X = -2539, Y = -512, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  4:  GoTo  {jump = 10}
+
+  5:  MoveToMap  {X = -1537, Y = -788, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  6:  GoTo  {jump = 10}
+
+  7:  MoveToMap  {X = -1012, Y = -1284, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  8:  GoTo  {jump = 10}
+
+  9:  MoveToMap  {X = -1036, Y = -1775, Z = -255, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  10: StatusText  {Str = 5}         -- "You are pulled through the door!"
+  11: Exit  {}
+end
+
+event 22
+      Hint = str[1]  -- "Door"
+  0:  RandomGoTo  {jumpA = 1, jumpB = 3, jumpC = 7, jumpD = 9, jumpE = 0, jumpF = 0}
+  1:  MoveToMap  {X = -3586, Y = -789, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  2:  GoTo  {jump = 10}
+
+  3:  MoveToMap  {X = -2539, Y = -512, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  4:  GoTo  {jump = 10}
+
+  5:  MoveToMap  {X = -1537, Y = -788, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  6:  GoTo  {jump = 10}
+
+  7:  MoveToMap  {X = -1012, Y = -1284, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  8:  GoTo  {jump = 10}
+
+  9:  MoveToMap  {X = -1036, Y = -1775, Z = -255, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  10: StatusText  {Str = 5}         -- "You are pulled through the door!"
+  11: Exit  {}
+end
+
+event 23
+      Hint = str[1]  -- "Door"
+  0:  RandomGoTo  {jumpA = 1, jumpB = 3, jumpC = 5, jumpD = 9, jumpE = 0, jumpF = 0}
+  1:  MoveToMap  {X = -3586, Y = -789, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  2:  GoTo  {jump = 10}
+
+  3:  MoveToMap  {X = -2539, Y = -512, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  4:  GoTo  {jump = 10}
+
+  5:  MoveToMap  {X = -1537, Y = -788, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  6:  GoTo  {jump = 10}
+
+  7:  MoveToMap  {X = -1012, Y = -1284, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  8:  GoTo  {jump = 10}
+
+  9:  MoveToMap  {X = -1036, Y = -1775, Z = -255, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  10: StatusText  {Str = 5}         -- "You are pulled through the door!"
+  11: Exit  {}
+end
+
+event 24
+      Hint = str[1]  -- "Door"
+  0:  RandomGoTo  {jumpA = 1, jumpB = 3, jumpC = 5, jumpD = 7, jumpE = 0, jumpF = 0}
+  1:  MoveToMap  {X = -3586, Y = -789, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  2:  GoTo  {jump = 10}
+
+  3:  MoveToMap  {X = -2539, Y = -512, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  4:  GoTo  {jump = 10}
+
+  5:  MoveToMap  {X = -1537, Y = -788, Z = -255, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  6:  GoTo  {jump = 10}
+
+  7:  MoveToMap  {X = -1012, Y = -1284, Z = -255, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  8:  GoTo  {jump = 10}
+
+  9:  MoveToMap  {X = -1036, Y = -1775, Z = -255, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  10: StatusText  {Str = 5}         -- "You are pulled through the door!"
+  11: Exit  {}
+end
+
+event 25
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+end
+
+event 26
+      Hint = str[4]  -- "Cabinet"
+  0:  OpenChest  {Id = 1}
+end
+
+event 27
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 28
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 29
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 30
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 31
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 32
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+end
+
+event 33
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+end
+
+event 34
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+end
+
+event 35
+      Hint = str[4]  -- "Cabinet"
+  0:  OpenChest  {Id = 10}
+end
+
+event 36
+      Hint = str[3]  -- "Chest"
+  0:  Cmp  {"QBits", Value = 52,   jump = 5}         -- 52 D16, Given when characters find the Eagle Statuette
+  1:  OpenChest  {Id = 11}
+  2:  Set  {"QBits", Value = 52}         -- 52 D16, Given when characters find the Eagle Statuette
+  3:  Set  {"QBits", Value = 187}         -- Quest item bits for seer
+  4:  Exit  {}
+
+  5:  OpenChest  {Id = 0}
+end
+
+event 37
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+end
+
+event 38
+      Hint = str[4]  -- "Cabinet"
+  0:  OpenChest  {Id = 13}
+end
+
+event 39
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+end
+
+event 40
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+end
+
+event 41
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+end
+
+event 42
+      Hint = str[4]  -- "Cabinet"
+  0:  OpenChest  {Id = 17}
+end
+
+event 43
+      Hint = str[4]  -- "Cabinet"
+  0:  OpenChest  {Id = 18}
+end
+
+event 44
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+end
+
+event 45
+      Hint = str[9]  -- "Chest of Drawers"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 5}
+  1:  StatusText  {Str = 10}         -- "You have found two keys!"
+  2:  Add  {"Inventory", Value = 564}         -- "Warlord's Key"
+  3:  Add  {"Inventory", Value = 565}         -- "Storage Key"
+  4:  Set  {"MapVar0", Value = 1}
+  5:  Exit  {}
+end
+
+event 46
+      Hint = str[9]  -- "Chest of Drawers"
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 4}
+  1:  StatusText  {Str = 11}         -- "You have found a key!"
+  2:  Add  {"Inventory", Value = 571}         -- "Storage Key"
+  3:  Set  {"MapVar1", Value = 1}
+  4:  Exit  {}
+end
+
+event 47
+      Hint = str[1]  -- "Door"
+  0:  StatusText  {Str = 15}         -- "This door won't open."
+end
+
+event 48
+      function events.LoadMap()
+  1:  Cmp  {"MapVar19", Value = 1,   jump = 3}
+  2:  GoTo  {jump = 4}
+
+  3:  SetTexture  {Facet = 960, Name = "D8s2on"}
+  4:  Exit  {}
+end
+
+event 50
+      Hint = str[14]  -- "Exit"
+  0:  MoveToMap  {X = 20212, Y = 13238, Z = 179, Direction = 1408, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "OutC3.Odm"}
+end
+
+event 51
+  0:  Cmp  {"MapVar49", Value = 1,   jump = 3}
+  1:  Set  {"MapVar49", Value = 1}
+  2:  GiveItem  {Strength = 6, Type = const.ItemType.Axe, Id = 0}
+  3:  Exit  {}
+end
+
+event 60
+      Timer(<function>, 10*const.Minute)
+  1:  ForPlayer  ("All")
+  2:  Set  {"Afraid", Value = 0}
+  3:  Set  {"Weak", Value = 0}
+end
+
+event 61
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Weak", Value = 0}
+  3:  Set  {"Afraid", Value = 0}
+end

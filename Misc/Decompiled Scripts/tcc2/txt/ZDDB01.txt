@@ -1,0 +1,25 @@
+str[0] = " "
+str[1] = "Exit"
+str[2] = "Cavern of the Rogue"
+str[3] = ""
+
+
+event 1
+      Hint = str[1]  -- "Exit"
+      MazeInfo = str[2]  -- "Cavern of the Rogue"
+  0:  MoveToMap  {X = -287, Y = 18687, Z = 256, Direction = 2040, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "OutD3.Odm"}
+end
+
+event 2
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 424,   jump = 10}         -- Drider Spwan Glacier's End QBIT once.
+  2:  Add  {"QBits", Value = 424}         -- Drider Spwan Glacier's End QBIT once.
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 7, X = -206, Y = 311, Z = 1}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 5, X = 480, Y = 320, Z = 1}
+  5:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 6, X = 863, Y = 1152, Z = 1}
+  6:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 4, X = 256, Y = 1024, Z = 0}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = 0, Y = 128, Z = 0}
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 2, X = -86, Y = -583, Z = 1}
+  9:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 4, X = 378, Y = 520, Z = 1}
+  10: Exit  {}
+end

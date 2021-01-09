@@ -1,0 +1,27 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Chest"
+str[3] = "The door won't budge"
+str[4] = "Exit  "
+str[5] = "Empty"
+str[6] = " Switch"
+str[7] = "Memory crystal"
+str[8] = "Guardian of the Fortress"
+str[9] = "The Guardian of the Fortress proclaims, 'For 50,000 gold, the secret will be revealed!'"
+str[10] = "Accept (Yes/No)?"
+str[11] = "Yes"
+str[12] = "Y"
+str[13] = "Get Lost!"
+str[14] = "Curator of the Fortress"
+str[15] = "The Curator of the Fortress proclaims, 'For 10,000 gold you shall be healed.'"
+str[16] = "Cage"
+str[17] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

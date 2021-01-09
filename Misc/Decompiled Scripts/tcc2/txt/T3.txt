@@ -1,0 +1,18 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Lever"
+str[3] = "Chest"
+str[4] = "Cell"
+str[5] = "The door is locked"
+str[6] = "Lunatic Vault"
+str[7] = "Flame of Might"
+str[8] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

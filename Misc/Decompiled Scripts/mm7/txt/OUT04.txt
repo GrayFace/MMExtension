@@ -1,0 +1,912 @@
+str[0] = " "
+str[1] = "Chest "
+str[2] = "Barrel"
+str[3] = "Well"
+str[4] = "Drink from the Well"
+str[5] = "Fountain"
+str[6] = "Drink from the Fountain"
+str[7] = "House"
+str[8] = "Trash Heap"
+str[9] = "Tent"
+str[10] = "Hut"
+str[11] = "Refreshing!"
+str[12] = "Boat"
+str[13] = "Dock"
+str[14] = "Drink"
+str[15] = "Button"
+str[16] = ""
+str[17] = ""
+str[18] = ""
+str[19] = ""
+str[20] = ""
+str[21] = "This Door is Locked"
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = "Castle Navan"
+str[26] = "Tularean Caves"
+str[27] = "Clanker's Laboratory"
+str[28] = ""
+str[29] = ""
+str[30] = "Enter Castle Navan"
+str[31] = "Enter the Tularean Caves"
+str[32] = "Enter Clanker's Laboratory"
+str[33] = ""
+str[34] = ""
+str[35] = "Temple"
+str[36] = "Guilds"
+str[37] = "Stables"
+str[38] = "Docks"
+str[39] = "Shops"
+str[40] = ""
+str[41] = "Castle Harmondy"
+str[42] = "East "
+str[43] = "North "
+str[44] = "West"
+str[45] = "South "
+str[46] = "Harmondale"
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = "Obelisk"
+str[51] = "redditoh"
+str[52] = "Shrine"
+str[53] = "Altar"
+str[54] = "You Pray"
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = "Fruit Tree"
+str[61] = "You received an apple"
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = "+50 Earth Resistance (Temporary)"
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = "+10 Water, Fire, and Air Resistance(Permanent)"
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 208,   jump = 3}         -- Tularean Forest - Town Portal
+  2:  Add  {"QBits", Value = 208}         -- Tularean Forest - Town Portal
+  3:  Cmp  {"QBits", Value = 41,   jump = 6}         -- Solved Tree quest
+  4:  SetMonGroupBit  {NPCGroup = 10, Bit = const.MonsterBits.Hostile, On = true}         -- "Southern Village Group in Harmondy"
+  5:  GoTo  {jump = 7}
+
+  6:  SetMonGroupBit  {NPCGroup = 10, Bit = const.MonsterBits.Hostile, On = false}         -- "Southern Village Group in Harmondy"
+  7:  Exit  {}
+end
+
+event 3
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 18}         -- "Buckskins and Bucklers"
+end
+
+event 4
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 18}         -- "Buckskins and Bucklers"
+end
+
+event 5
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 32}         -- "Natural Magic"
+end
+
+event 6
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 32}         -- "Natural Magic"
+end
+
+event 7
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 45}         -- "The Bubbling Cauldron"
+end
+
+event 8
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 45}         -- "The Bubbling Cauldron"
+end
+
+event 9
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 56}         -- "Hu's Stallions"
+end
+
+event 10
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 56}         -- "Hu's Stallions"
+end
+
+event 11
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 65}         -- "Sea Sprite"
+end
+
+event 12
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 65}         -- "Sea Sprite"
+end
+
+event 13
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 77}         -- "Nature's Remedies"
+end
+
+event 14
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 77}         -- "Nature's Remedies"
+end
+
+event 15
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 92}         -- "The Proving Grounds"
+end
+
+event 16
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 92}         -- "The Proving Grounds"
+end
+
+event 17
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 104}         -- "Pierpont Townhall"
+end
+
+event 18
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 104}         -- "Pierpont Townhall"
+end
+
+event 19
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 110}         -- "Emerald Inn"
+end
+
+event 20
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 110}         -- "Emerald Inn"
+end
+
+event 21
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 130}         -- "Nature's Stockpile"
+end
+
+event 22
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 130}         -- "Nature's Stockpile"
+end
+
+event 23
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 141}         -- "Master Guild of Fire"
+end
+
+event 24
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 141}         -- "Master Guild of Fire"
+end
+
+event 25
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 145}         -- "Master Guild of Air"
+end
+
+event 26
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 145}         -- "Master Guild of Air"
+end
+
+event 27
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 148}         -- "Adept Guild of Water"
+end
+
+event 28
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 148}         -- "Adept Guild of Water"
+end
+
+event 29
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 152}         -- "Adept Guild of Earth"
+end
+
+event 30
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 152}         -- "Adept Guild of Earth"
+end
+
+event 32
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 4}         -- "Hunter's Lodge"
+end
+
+event 33
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 4}         -- "Hunter's Lodge"
+end
+
+event 51
+      Hint = str[7]  -- "House"
+  0:  Exit  {}
+end
+
+event 52
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 308}         -- "Bith Residence"
+end
+
+event 53
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 309}         -- "Suretrail Home"
+end
+
+event 54
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 310}         -- "Silverpoint Residence"
+end
+
+event 55
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 311}         -- "Miyon's Home"
+end
+
+event 56
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 312}         -- "Green House"
+end
+
+event 57
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 313}         -- "Warlin Residence"
+end
+
+event 58
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 314}         -- "Dotes Residence"
+end
+
+event 59
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 315}         -- "Blueswan Home"
+end
+
+event 60
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 316}         -- "Treasurestone Home"
+end
+
+event 61
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 317}         -- "Windsong House"
+end
+
+event 62
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 318}         -- "Whitecap Residence"
+end
+
+event 63
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 319}         -- "Ottin House"
+end
+
+event 64
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 320}         -- "Black House"
+end
+
+event 65
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 321}         -- "Fiddlebone Residence"
+end
+
+event 66
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 322}         -- "Kerrid Residence"
+end
+
+event 67
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 323}         -- "Willowbark's Home"
+end
+
+event 68
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 324}         -- "House 324"
+end
+
+event 69
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 325}         -- "House 325"
+end
+
+event 70
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 326}         -- "House 326"
+end
+
+event 71
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 327}         -- "Benjamin's Home"
+end
+
+event 72
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 328}         -- "Stonewright Residence"
+end
+
+event 73
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 329}         -- "Weatherson's House"
+end
+
+event 74
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 330}         -- "Sower Residence"
+end
+
+event 75
+      Hint = str[9]  -- "Tent"
+  0:  Exit  {}
+end
+
+event 151
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 1}
+end
+
+event 152
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 2}
+end
+
+event 153
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 3}
+end
+
+event 154
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 4}
+end
+
+event 155
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 5}
+end
+
+event 156
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 6}
+end
+
+event 157
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 7}
+end
+
+event 158
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 8}
+end
+
+event 159
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 9}
+end
+
+event 160
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 10}
+end
+
+event 161
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 11}
+end
+
+event 162
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 12}
+end
+
+event 163
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 13}
+end
+
+event 164
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 14}
+end
+
+event 165
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 15}
+end
+
+event 166
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 16}
+end
+
+event 167
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 17}
+end
+
+event 168
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 18}
+end
+
+event 169
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 19}
+end
+
+event 170
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 0}
+end
+
+event 201
+      Hint = str[3]  -- "Well"
+  0:  Exit  {}
+end
+
+event 202
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"BankGold", Value = 99,   jump = 5}
+  1:  Cmp  {"Gold", Value = 199,   jump = 5}
+  2:  Cmp  {"MapVar19", Value = 1,   jump = 5}
+  3:  Add  {"Gold", Value = 200}
+  4:  Set  {"MapVar19", Value = 1}
+  5:  StatusText  {Str = 11}         -- "Refreshing!"
+  6:  Exit  {}
+
+  7:  OnRefillTimer  {EachWeek = true}
+  8:  Set  {"MapVar19", Value = 0}
+end
+
+event 203
+      Hint = str[5]  -- "Fountain"
+  0:  Exit  {}
+end
+
+event 204
+      Hint = str[6]  -- "Drink from the Fountain"
+  0:  Cmp  {"PlayerBits", Value = 8,   jump = 7}
+  1:  Cmp  {"AutonotesBits", Value = 13,   jump = 3}         -- ""
+  2:  Add  {"AutonotesBits", Value = 13}         -- ""
+  3:  Add  {"EarthResBonus", Value = 50}
+  4:  Add  {"PlayerBits", Value = 8}
+  5:  StatusText  {Str = 70}         -- "+50 Earth Resistance (Temporary)"
+  6:  GoTo  {jump = 8}
+
+  7:  StatusText  {Str = 11}         -- "Refreshing!"
+  8:  Exit  {}
+
+  9:  OnRefillTimer  {Hour = 1}
+  10: ForPlayer  ("All")
+  11: Subtract  {"PlayerBits", Value = 8}
+end
+
+event 205
+      Hint = str[25]  -- "Castle Navan"
+  0:  Exit  {}
+end
+
+event 401
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 137,   jump = 17}         -- Artifact Messenger only happens once
+  2:  Cmp  {"Counter3", Value = 1344,   jump = 4}
+  3:  Exit  {}
+
+  4:  Cmp  {"Counter3", Value = 2016,   jump = 17}
+  5:  SpeakNPC  {NPC = 73}         -- "Messenger"
+  6:  Add  {"Inventory", Value = 700}         -- "Message from Erathia"
+  7:  Set  {"QBits", Value = 137}         -- Artifact Messenger only happens once
+  8:  Set  {"QBits", Value = 79}         -- "Retrieve Gryphonheart's Trumpet from the battle in the Tularean Forest and return it to whichever side you choose."
+  9:  SetFacetBit  {Id = 1, Bit = const.FacetBits.Untouchable, On = false}
+  10: SetFacetBit  {Id = 1, Bit = const.FacetBits.Invisible, On = false}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 3, X = -15752, Y = 21272, Z = 3273, NPCGroup = 0, unk = 0}
+  12: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 5, X = -14000, Y = 18576, Z = 4250, NPCGroup = 0, unk = 0}
+  13: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 10, X = -16016, Y = 19280, Z = 3284, NPCGroup = 0, unk = 0}
+  14: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 30, X = -15752, Y = 21272, Z = 3273, NPCGroup = 0, unk = 0}
+  15: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 9, X = -14000, Y = 18576, Z = 4250, NPCGroup = 0, unk = 0}
+  16: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 10, X = -16016, Y = 19280, Z = 3284, NPCGroup = 0, unk = 0}
+  17: Exit  {}
+end
+
+event 402
+      Hint = str[100]  -- ""
+  0:  SpeakNPC  {NPC = 53}         -- "The Oldest Tree"
+end
+
+event 403
+      Hint = str[100]  -- ""
+
+  0:  OnTimer  {IntervalInHalfMinutes = 10}
+  1:  Cmp  {"QBits", Value = 41,   jump = 3}         -- Solved Tree quest
+  2:  Exit  {}
+
+  3:  SetMonGroupBit  {NPCGroup = 10, Bit = const.MonsterBits.Hostile, On = false}         -- "Southern Village Group in Harmondy"
+end
+
+event 451
+      Hint = str[52]  -- "Shrine"
+  0:  Exit  {}
+end
+
+event 452
+      Hint = str[53]  -- "Altar"
+  0:  Cmp  {"PlayerBits", Value = 25,   jump = 7}
+  1:  Add  {"WaterResistance", Value = 10}
+  2:  Add  {"FireResistance", Value = 10}
+  3:  Add  {"AirResistance", Value = 10}
+  4:  Add  {"PlayerBits", Value = 25}
+  5:  StatusText  {Str = 76}         -- "+10 Water, Fire, and Air Resistance(Permanent)"
+  6:  GoTo  {jump = 8}
+
+  7:  StatusText  {Str = 54}         -- "You Pray"
+  8:  Exit  {}
+end
+
+event 453
+      Hint = str[50]  -- "Obelisk"
+  0:  Cmp  {"QBits", Value = 166,   jump = 5}         -- Visited Obelisk in Area 4
+  1:  StatusText  {Str = 51}         -- "redditoh"
+  2:  Add  {"AutonotesBits", Value = 116}         -- ""
+  3:  ForPlayer  ("All")
+  4:  Add  {"QBits", Value = 166}         -- Visited Obelisk in Area 4
+  5:  Exit  {}
+end
+
+event 500
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 16}
+  2:  CheckSeason  {Season = 3,   jump(ok) = 20}
+  3:  SetSprite  {SpriteId = 5, Visible = 1, Name = "tree07"}
+  4:  SetSprite  {SpriteId = 6, Visible = 1, Name = "tree25"}
+  5:  SetSprite  {SpriteId = 7, Visible = 1, Name = "tree38"}
+  6:  SetSprite  {SpriteId = 10, Visible = 1, Name = "0"}
+  7:  GoTo  {jump = 37}
+
+  8:  CheckSeason  {Season = 1,   jump(ok) = 12}
+  9:  CheckSeason  {Season = 0,   jump(ok) = 14}
+  10: StatusText  {Str = 64}         -- ""
+  11: Exit  {}
+
+  12: StatusText  {Str = 61}         -- "You received an apple"
+  13: GoTo  {jump = 36}
+
+  14: StatusText  {Str = 60}         -- "Fruit Tree"
+  15: GoTo  {jump = 36}
+
+  16: SetSprite  {SpriteId = 5, Visible = 1, Name = "tree08"}
+  17: SetSprite  {SpriteId = 6, Visible = 1, Name = "tree26"}
+  18: StatusText  {Str = 62}         -- ""
+  19: GoTo  {jump = 23}
+
+  20: SetSprite  {SpriteId = 5, Visible = 1, Name = "tree09"}
+  21: SetSprite  {SpriteId = 6, Visible = 1, Name = "tree27"}
+  22: StatusText  {Str = 63}         -- ""
+  23: SetSprite  {SpriteId = 7, Visible = 1, Name = "tree40"}
+  24: SetSprite  {SpriteId = 10, Visible = 0, Name = "0"}
+  25: SetSprite  {SpriteId = 51, Visible = 1, Name = "tree30"}
+  26: SetSprite  {SpriteId = 52, Visible = 1, Name = "tree30"}
+  27: SetSprite  {SpriteId = 53, Visible = 1, Name = "tree30"}
+  28: SetSprite  {SpriteId = 54, Visible = 1, Name = "tree30"}
+  29: SetSprite  {SpriteId = 55, Visible = 1, Name = "tree30"}
+  30: SetSprite  {SpriteId = 56, Visible = 1, Name = "tree30"}
+  31: SetSprite  {SpriteId = 57, Visible = 1, Name = "tree30"}
+  32: SetSprite  {SpriteId = 58, Visible = 1, Name = "tree30"}
+  33: SetSprite  {SpriteId = 59, Visible = 1, Name = "tree30"}
+  34: SetSprite  {SpriteId = 60, Visible = 1, Name = "tree30"}
+  35: SetSprite  {SpriteId = 61, Visible = 1, Name = "tree30"}
+  36: Exit  {}
+
+  37: Cmp  {"MapVar50", Value = 1,   jump = 40}
+  38: SetSprite  {SpriteId = 51, Visible = 1, Name = "tree38"}
+  39: GoTo  {jump = 41}
+
+  40: SetSprite  {SpriteId = 51, Visible = 1, Name = "tree37"}
+  41: Cmp  {"MapVar51", Value = 1,   jump = 44}
+  42: SetSprite  {SpriteId = 52, Visible = 1, Name = "tree38"}
+  43: GoTo  {jump = 45}
+
+  44: SetSprite  {SpriteId = 52, Visible = 1, Name = "tree37"}
+  45: Cmp  {"MapVar52", Value = 1,   jump = 48}
+  46: SetSprite  {SpriteId = 53, Visible = 1, Name = "tree38"}
+  47: GoTo  {jump = 49}
+
+  48: SetSprite  {SpriteId = 53, Visible = 1, Name = "tree37"}
+  49: Cmp  {"MapVar53", Value = 1,   jump = 52}
+  50: SetSprite  {SpriteId = 54, Visible = 1, Name = "tree38"}
+  51: GoTo  {jump = 53}
+
+  52: SetSprite  {SpriteId = 54, Visible = 1, Name = "tree37"}
+  53: Cmp  {"MapVar54", Value = 1,   jump = 56}
+  54: SetSprite  {SpriteId = 55, Visible = 1, Name = "tree38"}
+  55: GoTo  {jump = 57}
+
+  56: SetSprite  {SpriteId = 55, Visible = 1, Name = "tree37"}
+  57: Cmp  {"MapVar55", Value = 1,   jump = 60}
+  58: SetSprite  {SpriteId = 56, Visible = 1, Name = "tree38"}
+  59: GoTo  {jump = 61}
+
+  60: SetSprite  {SpriteId = 56, Visible = 1, Name = "tree"}
+  61: Cmp  {"MapVar56", Value = 1,   jump = 64}
+  62: SetSprite  {SpriteId = 57, Visible = 1, Name = "tree38"}
+  63: GoTo  {jump = 65}
+
+  64: SetSprite  {SpriteId = 57, Visible = 1, Name = "tree37"}
+  65: Cmp  {"MapVar57", Value = 1,   jump = 68}
+  66: SetSprite  {SpriteId = 58, Visible = 1, Name = "tree38"}
+  67: GoTo  {jump = 69}
+
+  68: SetSprite  {SpriteId = 58, Visible = 1, Name = "tree37"}
+  69: Cmp  {"MapVar58", Value = 1,   jump = 72}
+  70: SetSprite  {SpriteId = 59, Visible = 1, Name = "tree38"}
+  71: GoTo  {jump = 73}
+
+  72: SetSprite  {SpriteId = 59, Visible = 1, Name = "tree37"}
+  73: Cmp  {"MapVar59", Value = 1,   jump = 76}
+  74: SetSprite  {SpriteId = 60, Visible = 1, Name = "tree38"}
+  75: GoTo  {jump = 77}
+
+  76: SetSprite  {SpriteId = 60, Visible = 1, Name = "tree37"}
+  77: Cmp  {"MapVar60", Value = 1,   jump = 80}
+  78: SetSprite  {SpriteId = 61, Visible = 1, Name = "tree38"}
+  79: GoTo  {jump = 81}
+
+  80: SetSprite  {SpriteId = 61, Visible = 1, Name = "tree"}
+  81: GoTo  {jump = 82}
+
+  82: GoTo  {jump = 8}
+end
+
+event 251
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar50", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar50", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 51, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 252
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar51", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar51", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 52, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 253
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar52", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar52", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 53, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 254
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar53", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar53", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 54, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 255
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar54", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar54", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 55, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 256
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar55", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar55", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 56, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 257
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar56", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar56", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 57, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 258
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar57", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar57", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 58, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 259
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar58", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar58", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 59, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 260
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar59", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar59", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 60, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 261
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar60", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar60", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 61, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 501
+      Hint = str[30]  -- "Enter Castle Navan"
+  0:  MoveToMap  {X = 0, Y = -1589, Z = 225, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 177, Icon = 1, Name = "D32.blv"}         -- "Castle Navan"
+end
+
+event 502
+      Hint = str[31]  -- "Enter the Tularean Caves"
+  0:  MoveToMap  {X = 2071, Y = 448, Z = 1, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 197, Icon = 3, Name = "D08.blv"}         -- "Tularean Caves"
+end
+
+event 503
+      Hint = str[32]  -- "Enter Clanker's Laboratory"
+  0:  Cmp  {"QBits", Value = 198,   jump = 2}         -- Archibald in Clankers Lab now
+  1:  MoveToMap  {X = 0, Y = -709, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 198, Icon = 9, Name = "D12.blv"}         -- "Clanker's Laboratory"
+  2:  SetNPCTopic  {NPC = 88, Index = 2, Event = 164}         -- "Archibald Ironfist" : "Clanker's Laboratory"
+  3:  SpeakNPC  {NPC = 88}         -- "Archibald Ironfist"
+  4:  Exit  {}
+end

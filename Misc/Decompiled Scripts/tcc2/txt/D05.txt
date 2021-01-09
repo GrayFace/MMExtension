@@ -1,0 +1,44 @@
+str[0] = " "
+str[1] = "Switch"
+str[2] = "Door"
+str[3] = "Lever"
+str[4] = "Gold vein"
+str[5] = "Gems"
+str[6] = "Cave-in!"
+str[7] = "Orpheus’s Gateway "
+str[8] = "Black liquid filled barrel"
+str[9] = "Old bones"
+str[10] = "Glowing dinosaur bones"
+str[11] = "Elevator platform"
+str[12] = "Gateway Door"
+str[13] = ""
+str[14] = ""
+str[15] = "Chest"
+str[16] = ""
+str[17] = ""
+str[18] = "The door will not budge"
+str[19] = ""
+str[20] = ""
+str[21] = ""
+str[22] = ""
+str[23] = ""
+str[24] = "Bones"
+str[25] = "The bones feel weird (+5 Poison resistance permanent)"
+str[26] = "The bones feel weird (+5 Magic resistance permanent)"
+str[27] = "No effect"
+str[28] = "Only the Horn of Vainen can open the Gateway."
+str[29] = "You blow the Horn of Vainen and the Gateway opens."
+str[30] = "Exit"
+str[31] = "The bones feel weird (+5 Might permanent)"
+str[32] = ""
+
+
+event 3
+  110: GoTo  {jump = 0}
+end
+
+event 1
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

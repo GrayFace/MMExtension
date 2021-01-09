@@ -1,0 +1,374 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Chest"
+str[3] = "The Door Won't Budge"
+str[4] = "Warning!  Flush system activated!"
+str[5] = "Flush sequence in progress."
+str[6] = "Flush system activated."
+str[7] = "Flush sequence complete."
+str[8] = "Flush system deactivated"
+str[9] = "Switch"
+str[10] = "empty"
+str[11] = "empty"
+str[12] = "Drow Hive"
+str[13] = "Poison spray!"
+str[14] = "empty"
+str[15] = "Havin' fun yet??"
+str[16] = "empty"
+str[17] = "Keg"
+str[18] = " +20 Hit Points"
+str[19] = "The Portal is not powered."
+str[20] = "The Portal needs the Ether Jewel."
+str[21] = "Ether Portal"
+str[22] = "empty"
+str[23] = "empty"
+str[24] = "empty"
+str[25] = "The door is locked"
+str[26] = "empty"
+str[27] = "Exit"
+str[28] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+      MazeInfo = str[12]  -- "Drow Hive"
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+      Hint = str[1]  -- "Door"
+  0:  Cmp  {"Inventory", Value = 570,   jump = 3}         -- "Hive Sanctum Key"
+  1:  StatusText  {Str = 25}         -- "The door is locked"
+  2:  Exit  {}
+
+  3:  SetDoorState  {Id = 6, State = 1}
+  4:  Subtract  {"Inventory", Value = 570}         -- "Hive Sanctum Key"
+end
+
+event 7
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 9, State = 1}
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 11, State = 1}
+end
+
+event 12
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 12, State = 1}
+end
+
+event 13
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 13, State = 1}
+end
+
+event 14
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 14, State = 1}
+end
+
+event 16
+      Hint = str[9]  -- "Switch"
+  0:  MoveToMap  {X = 468, Y = 3690, Z = 1, Direction = 45, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  1:  SetDoorState  {Id = 16, State = 2}         -- switch state
+  2:  Set  {"MapVar0", Value = 0}
+  13: StatusText  {Str = 8}         -- "Flush system deactivated"
+end
+
+event 17
+  0:  Exit  {}
+
+  10: Cmp  {"MapVar21", Value = 1,   jump = 4}
+  11: Cmp  {"MapVar0", Value = 1,   jump = 4}
+  12: StatusText  {Str = 6}         -- "Flush system activated."
+  3:  Set  {"MapVar0", Value = 0}
+  4:  Exit  {}
+end
+
+event 19
+  0:  Cmp  {"MapVar21", Value = 1,   jump = 3}
+  1:  Cmp  {"MapVar0", Value = 1,   jump = 3}
+  2:  Set  {"MapVar0", Value = 1}
+  3:  Exit  {}
+end
+
+event 21
+      Hint = str[1]  -- "Door"
+  0:  StatusText  {Str = 3}         -- "The Door Won't Budge"
+end
+
+event 22
+  0:  Set  {"MapVar3", Value = 0}
+end
+
+event 23
+      Hint = str[17]  -- "Keg"
+  0:  StatusText  {Str = 18}         -- " +20 Hit Points"
+  1:  Add  {"HP", Value = 20}
+end
+
+event 27
+  0:  SetDoorState  {Id = 43, State = 1}
+end
+
+event 28
+      Hint = str[1]  -- "Door"
+  0:  Cmp  {"QBits", Value = 440,   jump = 27}         -- Hive Sanctum Door Once
+  1:  Set  {"QBits", Value = 440}         -- Hive Sanctum Door Once
+  2:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = 3455, Y = 23408, Z = -2255}
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = 3450, Y = 23408, Z = -2255}
+  4:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3455, Y = 23415, Z = -2255}
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = 3696, Y = 23741, Z = -2255}
+  6:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = 3690, Y = 23741, Z = -2255}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 3700, Y = 23730, Z = -2255}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = 4108, Y = 24169, Z = -2255}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = 4100, Y = 24169, Z = -2255}
+  10: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 4115, Y = 24175, Z = -2255}
+  11: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = 4748, Y = 24171, Z = -2255}
+  12: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = 4760, Y = 24171, Z = -2255}
+  13: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 4730, Y = 24180, Z = -2255}
+  14: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = 5180, Y = 23883, Z = -2255}
+  15: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 5190, Y = 23883, Z = -2255}
+  16: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = 5170, Y = 23870, Z = -2255}
+  17: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 3, X = 4388, Y = 23517, Z = -2255}
+  18: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 2, X = 3253, Y = 22521, Z = -2255}
+  19: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 2, X = 3240, Y = 22510, Z = -2255}
+  20: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = 5527, Y = 22664, Z = -2255}
+  21: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 3, X = 5540, Y = 22650, Z = -2255}
+  22: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 4, X = 5782, Y = 21636, Z = -2255}
+  23: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 4, X = 5443, Y = 20997, Z = -2255}
+  24: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 4, X = 4753, Y = 20767, Z = -2255}
+  25: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 4, X = 3356, Y = 21063, Z = -2255}
+  26: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 4, X = 3419, Y = 21861, Z = -2255}
+  27: SetDoorState  {Id = 28, State = 1}
+  28: Exit  {}
+end
+
+event 99
+      function events.LoadMap()
+  1:  GoTo  {jump = 2}
+
+  11: SetDoorState  {Id = 28, State = 0}
+  2:  SetDoorState  {Id = 30, State = 1}
+  3:  SetDoorState  {Id = 51, State = 0}
+  4:  SetDoorState  {Id = 52, State = 0}
+  5:  SetDoorState  {Id = 53, State = 1}
+end
+
+event 29
+  0:  Set  {"MapVar0", Value = 0}
+end
+
+event 31
+      Hint = str[9]  -- "Switch"
+  0:  SetDoorState  {Id = 31, State = 1}
+  1:  SetDoorState  {Id = 32, State = 1}
+end
+
+event 33
+  0:  SetDoorState  {Id = 35, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 36, State = 2}         -- switch state
+end
+
+event 34
+      Hint = str[9]  -- "Switch"
+  0:  SetDoorState  {Id = 37, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 38, State = 2}         -- switch state
+end
+
+event 36
+      Hint = str[9]  -- "Switch"
+  0:  SetDoorState  {Id = 41, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 43, State = 2}         -- switch state
+end
+
+event 38
+  0:  SetDoorState  {Id = 42, State = 1}
+end
+
+event 39
+  0:  SetDoorState  {Id = 45, State = 1}
+  1:  SetDoorState  {Id = 46, State = 1}
+end
+
+event 41
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 42
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+  1:  Set  {"MapVar10", Value = 1}
+end
+
+event 43
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 44
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 45
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 48
+      Hint = str[27]  -- "Exit"
+  0:  MoveToMap  {X = -14355, Y = 15010, Z = 3841, Direction = 1408, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutA1.Odm"}
+end
+
+event 50
+      Hint = str[9]  -- "Switch"
+  0:  SetDoorState  {Id = 50, State = 1}
+  1:  Set  {"MapVar21", Value = 1}
+end
+
+event 51
+  0:  Exit  {}
+
+      Timer(<function>, 2.5*const.Minute)
+  11: Cmp  {"MapVar20", Value = 1,   jump = 3}
+  12: Exit  {}
+
+  13: StatusText  {Str = 7}         -- "Flush sequence complete."
+  14: Set  {"MapVar20", Value = 0}
+end
+
+event 54
+  0:  Exit  {}
+
+      Timer(<function>, 5*const.Minute)
+  11: Cmp  {"MapVar19", Value = 1,   jump = 3}
+  12: Exit  {}
+
+  13: StatusText  {Str = 5}         -- "Flush sequence in progress."
+  14: Cmp  {"MapVar1", Value = 1,   jump = 6}
+  15: DamagePlayer  {Player = "All", DamageType = const.Damage.Phys, Damage = 20}
+  16: Set  {"MapVar20", Value = 1}
+  7:  Set  {"MapVar19", Value = 0}
+  8:  Exit  {}
+end
+
+event 56
+      Hint = str[15]  -- "Havin' fun yet??"
+  0:  Set  {"MapVar1", Value = 1}
+end
+
+event 57
+  0:  Exit  {}
+
+      Timer(<function>, 1*const.Hour)
+  11: Cmp  {"MapVar0", Value = 1,   jump = 3}
+  12: Exit  {}
+
+  13: StatusText  {Str = 4}         -- "Warning!  Flush system activated!"
+  14: Set  {"MapVar19", Value = 1}
+end
+
+event 58
+  0:  Set  {"MapVar1", Value = 0}
+end
+
+event 60
+      Hint = str[21]  -- "Ether Portal"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 437,   jump = 12}         -- Hive teleportal once - show Tamara
+  81: EnterHouse  {Id = 600}         -- Win
+  2:  Cmp  {"Inventory", Value = 481,   jump = 5}         -- "Jewel of Power"
+  3:  StatusText  {Str = 19}         -- "The Portal is not powered."
+  4:  Exit  {}
+
+  5:  Cmp  {"Inventory", Value = 479,   jump = 8}         -- "Ether Jewel"
+  6:  StatusText  {Str = 20}         -- "The Portal needs the Ether Jewel."
+  7:  Exit  {}
+
+  8:  Set  {"QBits", Value = 437}         -- Hive teleportal once - show Tamara
+  9:  SetNPCTopic  {NPC = 8, Index = 0, Event = 293}         -- "Tamara" : "The Fortress of Anarchy"
+  10: SpeakNPC  {NPC = 8}         -- "Tamara"
+  11: Exit  {}
+
+  12: ForPlayer  ("All")
+  13: Subtract  {"Inventory", Value = 481}         -- "Jewel of Power"
+  14: Subtract  {"Inventory", Value = 479}         -- "Ether Jewel"
+  15: MoveToMap  {X = -2921, Y = 13139, Z = 225, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "CD1.Blv"}
+  16: Exit  {}
+end
+
+event 100
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 439,   jump = 16}         -- Hive Reload Once
+  2:  Set  {"QBits", Value = 439}         -- Hive Reload Once
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = -6646, Y = 13357, Z = -1399}
+  4:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = -4225, Y = 18156, Z = -1535}
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = 8441, Y = 7060, Z = -1334}
+  6:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 3, X = -1160, Y = 16932, Z = -1535}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = 1297, Y = 16381, Z = -1535}
+  8:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 1, X = 1290, Y = 16381, Z = -1535}
+  9:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 1300, Y = 16390, Z = -1535}
+  10: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = 1318, Y = 15267, Z = -1535}
+  11: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 1, X = 1318, Y = 12669, Z = -2020}
+  12: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -5592, Y = 2853, Z = -1710}
+  13: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 3, X = -1673, Y = 2682, Z = -2037}
+  14: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 2, X = -1385, Y = 2730, Z = -2037}
+  15: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 2, X = -1709, Y = 8178, Z = -1535}
+  16: Cmp  {"QBits", Value = 508,   jump = 18}         -- Warrior
+  17: GoTo  {jump = 27}
+
+  55: Exit  {}
+
+  18: Cmp  {"QBits", Value = 404,   jump = 28}         -- Hive  Once
+  19: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 431, Y = 4379, Z = 1}
+  20: Cmp  {"QBits", Value = 507,   jump = 22}         -- Death Wish
+  21: Exit  {}
+
+  22: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = 422, Y = 4919, Z = 1}
+  23: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 547, Y = 5219, Z = 1}
+  24: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = 435, Y = 5747, Z = 1}
+  25: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 435, Y = 5921, Z = 1}
+  26: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = 435, Y = 6017, Z = 1}
+  27: Add  {"QBits", Value = 404}         -- Hive  Once
+  28: Exit  {}
+end

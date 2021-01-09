@@ -1,0 +1,391 @@
+str[0] = " "
+str[1] = "Drink from Fountain"
+str[2] = "+10 Elemental resistance permanent."
+str[3] = "+10 Seven statistics permanent."
+str[4] = "+50 Hit points temporary."
+str[5] = "Refreshing!"
+str[6] = "Chest"
+str[7] = "+20 to all stats permanent."
+str[8] = "Baal's Garden"
+str[9] = "Shrine of Magic"
+str[10] = "You pray at the shrine."
+str[11] = "+10 Magic resistance permanent"
+str[12] = "+3 Magic resistance permanent"
+str[13] = "Pedestal"
+str[14] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            elroioeuuefo__id"
+str[15] = "Obelisk"
+str[16] = "Shrine of the Gods"
+str[17] = "rock"
+str[18] = "You cannot enter at this time"
+str[19] = "Nothing happens."
+str[20] = "Whom the gods bless, they first curse!"
+str[21] = "Abrakadabra"
+str[22] = "What is the 1st word of the incantation?"
+str[23] = "Wrong, Moose Brains!"
+str[24] = "What is the 2nd word of the incantation?"
+str[25] = "What is the 3rd word of the incantation?"
+str[26] = "What is the 4th word of the incantation?"
+str[27] = "What is the 5th word of the incantation?"
+str[28] = "What is the 6th word of the incantation?"
+str[29] = "What is the last word of the incantation?"
+str[30] = "Wam"
+str[31] = "Allakhazam"
+str[32] = "Bam"
+str[33] = "Mam"
+str[34] = "Thank"
+str[35] = "you"
+str[36] = "Correct!"
+str[37] = "Correct!  You may now open the chest!"
+str[38] = "The Danu Tree"
+str[39] = ""
+str[40] = ""
+
+
+event 1
+      Hint = str[17]  -- "rock"
+      MazeInfo = str[8]  -- "Baal's Garden"
+  0:  Exit  {}
+end
+
+event 50
+      Hint = str[4]  -- "+50 Hit points temporary."
+  0:  EnterHouse  {Id = 260}         -- "House"
+end
+
+event 51
+      Hint = str[5]  -- "Refreshing!"
+  0:  EnterHouse  {Id = 261}         -- "House"
+end
+
+event 52
+      Hint = str[6]  -- "Chest"
+  0:  EnterHouse  {Id = 262}         -- "House"
+end
+
+event 53
+      Hint = str[7]  -- "+20 to all stats permanent."
+  0:  EnterHouse  {Id = 263}         -- "House"
+end
+
+event 54
+      Hint = str[8]  -- "Baal's Garden"
+  0:  EnterHouse  {Id = 264}         -- "House"
+end
+
+event 55
+      Hint = str[9]  -- "Shrine of Magic"
+  0:  EnterHouse  {Id = 265}         -- "House"
+end
+
+event 56
+      Hint = str[10]  -- "You pray at the shrine."
+  0:  EnterHouse  {Id = 266}         -- "Tent"
+end
+
+event 57
+      Hint = str[11]  -- "+10 Magic resistance permanent"
+  0:  EnterHouse  {Id = 267}         -- "Tent"
+end
+
+event 58
+      Hint = str[43]
+  0:  EnterHouse  {Id = 555}         -- "Tent"
+end
+
+event 59
+      Hint = str[44]
+  0:  EnterHouse  {Id = 556}         -- "Tent"
+end
+
+event 60
+      Hint = str[45]
+  0:  EnterHouse  {Id = 557}         -- "Tent"
+end
+
+event 75
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 76
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 77
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 78
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 79
+      Hint = str[6]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 90
+  0:  StatusText  {Str = 18}         -- "You cannot enter at this time"
+  1:  Exit  {}
+
+  10: MoveToMap  {X = -9734, Y = -19201, Z = 772, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 202, Icon = 5, Name = "Pyramid.Blv"}         -- "Tomb of VARN"
+  11: Exit  {}
+
+  2:  EnterHouse  {Id = 202}         -- "Tomb of VARN"
+end
+
+event 91
+  10: StatusText  {Str = 19}         -- "Nothing happens."
+  11: Exit  {}
+
+  0:  MoveToMap  {X = 0, Y = 0, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "OutE3.Odm"}
+end
+
+event 92
+  0:  StatusText  {Str = 18}         -- "You cannot enter at this time"
+  1:  Exit  {}
+
+  10: MoveToMap  {X = -640, Y = 512, Z = -416, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "zNWC.Blv"}
+end
+
+event 100
+      Hint = str[1]  -- "Drink from Fountain"
+  0:  Cmp  {"PlayerBits", Value = 3,   jump = 10}
+  1:  Add  {"FireResistance", Value = 10}
+  2:  Add  {"ElecResistance", Value = 10}
+  3:  Add  {"ColdResistance", Value = 10}
+  4:  Add  {"PoisonResistance", Value = 10}
+  5:  Set  {"PlayerBits", Value = 3}
+  6:  Set  {"Eradicated", Value = 0}
+  7:  StatusText  {Str = 2}         -- "+10 Elemental resistance permanent."
+  8:  Set  {"AutonotesBits", Value = 38}         -- "10 Points of permanent fire, electricity, cold, and poison resistance from the fountain on the east island in Baal's Garden."
+  9:  Exit  {}
+
+  10: Set  {"Eradicated", Value = 0}
+end
+
+event 101
+      Hint = str[1]  -- "Drink from Fountain"
+  0:  Cmp  {"PlayerBits", Value = 4,   jump = 13}
+  1:  Add  {"BaseMight", Value = 10}
+  2:  Add  {"BaseIntellect", Value = 10}
+  3:  Add  {"BasePersonality", Value = 10}
+  4:  Add  {"BaseEndurance", Value = 10}
+  5:  Add  {"BaseSpeed", Value = 10}
+  6:  Add  {"BaseAccuracy", Value = 10}
+  7:  Add  {"BaseLuck", Value = 10}
+  8:  Set  {"PlayerBits", Value = 4}
+  9:  Set  {"Eradicated", Value = 0}
+  10: StatusText  {Str = 3}         -- "+10 Seven statistics permanent."
+  11: Set  {"AutonotesBits", Value = 39}         -- "10 Points of permanent might, accuracy, speed, endurance, personality, intellect, and luck from the fountain on the south island in Baal's Garden."
+  12: Exit  {}
+
+  13: Set  {"Eradicated", Value = 0}
+end
+
+event 102
+      Hint = str[1]  -- "Drink from Fountain"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 5}         -- "Refreshing!"
+  2:  GoTo  {jump = 6}
+
+  3:  Subtract  {"MapVar0", Value = 1}
+  4:  Add  {"HP", Value = 50}
+  5:  StatusText  {Str = 4}         -- "+50 Hit points temporary."
+  6:  Set  {"AutonotesBits", Value = 40}         -- "50 Hit points restored from fountain on the northwest island in Baal's Garden."
+  7:  Exit  {}
+
+      RefillTimer(<function>, const.Week, true)
+  9:  Set  {"MapVar0", Value = 20}
+end
+
+event 103
+      Hint = str[16]  -- "Shrine of the Gods"
+  0:  Cmp  {"QBits", Value = 438,   jump = 6}         -- Baal's Garden God's Bless/Curse
+  1:  Set  {"QBits", Value = 438}         -- Baal's Garden God's Bless/Curse
+  2:  ForPlayer  ("All")
+  3:  Set  {"Cursed", Value = 0}
+  4:  StatusText  {Str = 20}         -- "Whom the gods bless, they first curse!"
+  5:  Exit  {}
+
+  6:  Cmp  {"QBits", Value = 436,   jump = 24}         -- Shrine of Gods once
+  56: Cmp  {"PlayerBits", Value = 10,   jump = 23}
+  7:  ForPlayer  ("All")
+  8:  Add  {"FireResistance", Value = 20}
+  9:  Add  {"ElecResistance", Value = 20}
+  10: Add  {"ColdResistance", Value = 20}
+  11: Add  {"PoisonResistance", Value = 20}
+  12: Add  {"MagicResistance", Value = 20}
+  13: Add  {"BaseMight", Value = 20}
+  14: Add  {"BaseIntellect", Value = 20}
+  15: Add  {"BasePersonality", Value = 20}
+  16: Add  {"BaseEndurance", Value = 20}
+  17: Add  {"BaseSpeed", Value = 20}
+  18: Add  {"BaseAccuracy", Value = 20}
+  19: Add  {"BaseLuck", Value = 20}
+  20: Set  {"QBits", Value = 436}         -- Shrine of Gods once
+  55: Set  {"PlayerBits", Value = 10}
+  21: Set  {"MainCondition", Value = const.Condition.Cursed}
+  22: PlaySound  {Id = 14050, X = 0, Y = 0}
+  23: StatusText  {Str = 7}         -- "+20 to all stats permanent."
+  24: Exit  {}
+end
+
+event 105
+      Hint = str[13]  -- "Pedestal"
+  0:  Cmp  {"Inventory", Value = 453,   jump = 3}         -- "Statuette of Holy Cleansing"
+  1:  Cmp  {"Inventory", Value = 452,   jump = 17}         -- "Wolf Statuette"
+  2:  Exit  {}
+
+  3:  Subtract  {"Inventory", Value = 453}         -- "Statuette of Holy Cleansing"
+  4:  SetSprite  {SpriteId = 321, Visible = 1, Name = "ped03"}
+  5:  Set  {"QBits", Value = 224}         -- NPC
+  6:  Cmp  {"QBits", Value = 223,   jump = 8}         -- NPC
+  7:  Exit  {}
+
+  8:  Cmp  {"QBits", Value = 222,   jump = 10}         -- NPC
+  9:  Exit  {}
+
+  10: Cmp  {"QBits", Value = 225,   jump = 12}         -- NPC
+  11: Exit  {}
+
+  12: Cmp  {"QBits", Value = 226,   jump = 14}         -- NPC
+  13: Exit  {}
+
+  14: MoveNPC  {NPC = 87, HouseId = 0}         -- "Jaana Barthold"
+  15: MoveNPC  {NPC = 41, HouseId = 253}         -- "Maikki Barthold" -> "Barthold Residence"
+  16: Exit  {}
+
+  17: Cmp  {"QBits", Value = 225,   jump = 19}         -- NPC
+  18: Exit  {}
+
+  19: Subtract  {"Inventory", Value = 452}         -- "Wolf Statuette"
+  20: GoTo  {jump = 4}
+end
+
+event 106
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 224,   jump = 3}         -- NPC
+  2:  Exit  {}
+
+  3:  SetSprite  {SpriteId = 321, Visible = 1, Name = "ped03"}
+end
+
+event 107
+      Hint = str[15]  -- "Obelisk"
+  0:  SetMessage  {Str = 14}         -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            elroioeuuefo__ide
+  1:  SimpleMessage  {}
+  2:  Set  {"QBits", Value = 365}         -- NPC
+  3:  Set  {"AutonotesBits", Value = 84}         -- "Obelisk Message # 6:  elroioeuuefo__ide"
+end
+
+event 108
+      Hint = str[38]  -- "The Danu Tree"
+  0:  Cmp  {"QBits", Value = 435,   jump = 50}         -- Danu Chest Open
+  1:  Cmp  {"QBits", Value = 434,   jump = 45}         -- Danu Answer 6
+  2:  Cmp  {"QBits", Value = 433,   jump = 40}         -- Danu Answer 5
+  3:  Cmp  {"QBits", Value = 432,   jump = 35}         -- Danu Answer 4
+  4:  Cmp  {"QBits", Value = 431,   jump = 30}         -- Danu Answer 3
+  5:  Cmp  {"QBits", Value = 430,   jump = 25}         -- Danu Answer 2
+  6:  Cmp  {"QBits", Value = 429,   jump = 20}         -- Danu Answer 1
+  7:  Question  {Question = 22, Answer1 = 21, Answer2 = 21,   jump(ok) = 17}         -- "What is the 1st word of the incantation?" ("Abrakadabra")
+  8:  Subtract  {"QBits", Value = 435}         -- Danu Chest Open
+  9:  Subtract  {"QBits", Value = 434}         -- Danu Answer 6
+  10: Subtract  {"QBits", Value = 433}         -- Danu Answer 5
+  11: Subtract  {"QBits", Value = 432}         -- Danu Answer 4
+  12: Subtract  {"QBits", Value = 431}         -- Danu Answer 3
+  13: Subtract  {"QBits", Value = 430}         -- Danu Answer 2
+  14: Subtract  {"QBits", Value = 429}         -- Danu Answer 1
+  15: StatusText  {Str = 23}         -- "Wrong, Moose Brains!"
+  16: GoTo  {jump = 56}
+
+  76: Exit  {}
+
+  17: StatusText  {Str = 36}         -- "Correct!"
+  18: Add  {"QBits", Value = 429}         -- Danu Answer 1
+  19: Exit  {}
+
+  20: Question  {Question = 29, Answer1 = 33, Answer2 = 33,   jump(ok) = 22}         -- "What is the last word of the incantation?" ("Mam")
+  21: GoTo  {jump = 8}
+
+  22: StatusText  {Str = 36}         -- "Correct!"
+  23: Add  {"QBits", Value = 430}         -- Danu Answer 2
+  24: Exit  {}
+
+  25: Question  {Question = 24, Answer1 = 31, Answer2 = 31,   jump(ok) = 27}         -- "What is the 2nd word of the incantation?" ("Allakhazam")
+  26: GoTo  {jump = 8}
+
+  27: StatusText  {Str = 36}         -- "Correct!"
+  28: Add  {"QBits", Value = 431}         -- Danu Answer 3
+  29: Exit  {}
+
+  30: Question  {Question = 25, Answer1 = 30, Answer2 = 30,   jump(ok) = 32}         -- "What is the 3rd word of the incantation?" ("Wam")
+  31: GoTo  {jump = 8}
+
+  32: StatusText  {Str = 36}         -- "Correct!"
+  33: Add  {"QBits", Value = 432}         -- Danu Answer 4
+  34: Exit  {}
+
+  35: Question  {Question = 28, Answer1 = 35, Answer2 = 35,   jump(ok) = 37}         -- "What is the 6th word of the incantation?" ("you")
+  36: GoTo  {jump = 8}
+
+  37: StatusText  {Str = 36}         -- "Correct!"
+  38: Add  {"QBits", Value = 433}         -- Danu Answer 5
+  39: Exit  {}
+
+  40: Question  {Question = 26, Answer1 = 32, Answer2 = 32,   jump(ok) = 42}         -- "What is the 4th word of the incantation?" ("Bam")
+  41: GoTo  {jump = 8}
+
+  42: StatusText  {Str = 36}         -- "Correct!"
+  43: Add  {"QBits", Value = 434}         -- Danu Answer 6
+  44: Exit  {}
+
+  45: Question  {Question = 27, Answer1 = 34, Answer2 = 34,   jump(ok) = 47}         -- "What is the 5th word of the incantation?" ("Thank")
+  46: GoTo  {jump = 8}
+
+  47: StatusText  {Str = 37}         -- "Correct!  You may now open the chest!"
+  48: Add  {"QBits", Value = 435}         -- Danu Chest Open
+  49: Exit  {}
+
+  50: Cmp  {"QBits", Value = 419,   jump = 55}         -- Danu Treasure Chest once
+  51: Add  {"QBits", Value = 419}         -- Danu Treasure Chest once
+  52: Add  {"Awards", Value = 55}         -- "Obtained the Treasures of Danu."
+  53: Subtract  {"QBits", Value = 164}         -- "Solve the mystery of Danu’s Incantation and obtain the Treasure of Danu."
+  54: OpenChest  {Id = 6}
+  55: Exit  {}
+
+  56: MoveToMap  {X = 17525, Y = 13543, Z = 210, Direction = 1896, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  57: Exit  {}
+end
+
+event 260
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 455,   jump = 17}         -- Baal's Garden Once
+  2:  Set  {"QBits", Value = 455}         -- Baal's Garden Once
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 4, X = -12125, Y = 20923, Z = 288}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 2, X = -12120, Y = 20920, Z = 288}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = -12130, Y = 20928, Z = 288}
+  6:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 5, X = -12015, Y = 22196, Z = 225}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = -13068, Y = -5928, Z = 161}
+  8:  Cmp  {"QBits", Value = 508,   jump = 10}         -- Warrior
+  9:  Exit  {}
+
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 4, X = -11524, Y = 19742, Z = 226}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 5, X = -12901, Y = 20232, Z = 256}
+  12: SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 7, X = -13612, Y = 16161, Z = 292}
+  13: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 4, X = -13760, Y = 13331, Z = 351}
+  14: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 2, X = -15871, Y = 11231, Z = 223}
+  15: SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 4, X = -19186, Y = 1604, Z = 288}
+  16: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 4, X = -11425, Y = -7240, Z = 164}
+  17: Cmp  {"QBits", Value = 507,   jump = 19}         -- Death Wish
+  18: Exit  {}
+
+  19: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -11757, Y = 19726, Z = 300}
+  20: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -12033, Y = 18205, Z = 193}
+  21: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = -15138, Y = 7482, Z = 128}
+  22: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -19139, Y = -3157, Z = 0}
+  23: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 2, X = -8503, Y = -13100, Z = 1745}
+end

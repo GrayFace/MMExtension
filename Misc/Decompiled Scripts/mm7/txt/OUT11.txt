@@ -1,0 +1,535 @@
+str[0] = " "
+str[1] = "Chest "
+str[2] = "Barrel"
+str[3] = "Well"
+str[4] = "Drink from the Well"
+str[5] = "Fountain"
+str[6] = "Drink from the Fountain"
+str[7] = "House"
+str[8] = ""
+str[9] = "Tent"
+str[10] = "Hut"
+str[11] = "Refreshing!"
+str[12] = "Boat"
+str[13] = "Dock"
+str[14] = "Drink"
+str[15] = "Button"
+str[16] = ""
+str[17] = ""
+str[18] = ""
+str[19] = ""
+str[20] = ""
+str[21] = "This Door is Locked"
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = "Stone City"
+str[26] = "Dwarven Barrow"
+str[27] = "Mansion"
+str[28] = ""
+str[29] = ""
+str[30] = "Enter Stone City"
+str[31] = "Enter Dwarven Barrow"
+str[32] = "Enter Mansion"
+str[33] = ""
+str[34] = ""
+str[35] = "Temple"
+str[36] = "Guilds"
+str[37] = "Stables"
+str[38] = "Docks"
+str[39] = "Shops"
+str[40] = ""
+str[41] = "Castle Harmondy"
+str[42] = "East "
+str[43] = "North "
+str[44] = "West"
+str[45] = "South "
+str[46] = "Harmondale"
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = "Obelisk"
+str[51] = "ivg_whn_"
+str[52] = "Shrine"
+str[53] = "Altar"
+str[54] = "You Pray"
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = "Fruit Tree"
+str[61] = "You received an apple"
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = "+25 Fire Resistance (Temporary)"
+str[71] = "Paralysis Relieved"
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = "+10 Endurance and Might(Permanent)"
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = true}         -- "Generic Monster Group for Dungeons"
+  2:  Exit  {}
+end
+
+event 3
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 117}         -- "Miner's Only"
+end
+
+event 4
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 117}         -- "Miner's Only"
+end
+
+event 100
+      Hint = str[7]  -- "House"
+  0:  Exit  {}
+end
+
+event 101
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 515}         -- "Dallia's Home"
+end
+
+event 102
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 516}         -- "Gemstone Residence"
+end
+
+event 103
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 517}         -- "Feldspar's Home"
+end
+
+event 104
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 518}         -- "Fissure Residence"
+end
+
+event 105
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 519}         -- "Garnet House"
+end
+
+event 106
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 520}         -- "Rivenrock Residence"
+end
+
+event 201
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 1}
+end
+
+event 202
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 2}
+end
+
+event 203
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 3}
+end
+
+event 204
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 4}
+end
+
+event 205
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 5}
+end
+
+event 206
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 6}
+end
+
+event 207
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 7}
+end
+
+event 208
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 8}
+  1:  MoveToMap  {X = 3072, Y = -416, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 209
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 9}
+end
+
+event 210
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 10}
+end
+
+event 211
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 11}
+end
+
+event 212
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 12}
+end
+
+event 213
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 13}
+end
+
+event 214
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 14}
+end
+
+event 215
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 15}
+end
+
+event 216
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 16}
+end
+
+event 217
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 17}
+end
+
+event 218
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 18}
+end
+
+event 219
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 19}
+end
+
+event 220
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 0}
+  1:  Cmp  {"QBits", Value = 66,   jump = 4}         -- Placed Golem torso
+  2:  Cmp  {"QBits", Value = 225,   jump = 4}         -- Torso - I lost it
+  3:  Add  {"QBits", Value = 225}         -- Torso - I lost it
+  4:  Exit  {}
+end
+
+event 317
+      Hint = str[25]  -- "Stone City"
+  0:  Exit  {}
+end
+
+event 318
+      Hint = str[26]  -- "Dwarven Barrow"
+  0:  Exit  {}
+end
+
+event 319
+      Hint = str[27]  -- "Mansion"
+  0:  Exit  {}
+end
+
+event 320
+      Hint = str[3]  -- "Well"
+  0:  Exit  {}
+end
+
+event 321
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"PlayerBits", Value = 18,   jump = 7}
+  1:  Cmp  {"AutonotesBits", Value = 26,   jump = 3}         -- ""
+  2:  Add  {"AutonotesBits", Value = 26}         -- ""
+  3:  Add  {"FireResBonus", Value = 25}
+  4:  Add  {"PlayerBits", Value = 18}
+  5:  StatusText  {Str = 70}         -- "+25 Fire Resistance (Temporary)"
+  6:  GoTo  {jump = 8}
+
+  7:  StatusText  {Str = 11}         -- "Refreshing!"
+  8:  Exit  {}
+
+  9:  OnRefillTimer  {Hour = 1}
+  10: ForPlayer  ("All")
+  11: Subtract  {"PlayerBits", Value = 18}
+end
+
+event 322
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"Paralysed", Value = 0,   jump = 2}
+  1:  GoTo  {jump = 5}
+
+  2:  Set  {"MainCondition", Value = const.Condition.Cursed}
+  3:  StatusText  {Str = 71}         -- "Paralysis Relieved"
+  4:  GoTo  {jump = 6}
+
+  5:  StatusText  {Str = 11}         -- "Refreshing!"
+  6:  Exit  {}
+end
+
+event 451
+      Hint = str[52]  -- "Shrine"
+  0:  Exit  {}
+end
+
+event 452
+      Hint = str[53]  -- "Altar"
+  0:  Cmp  {"PlayerBits", Value = 29,   jump = 6}
+  1:  Add  {"BaseEndurance", Value = 10}
+  2:  Add  {"BaseMight", Value = 10}
+  3:  Add  {"PlayerBits", Value = 29}
+  4:  StatusText  {Str = 76}         -- "+10 Endurance and Might(Permanent)"
+  5:  GoTo  {jump = 7}
+
+  6:  StatusText  {Str = 54}         -- "You Pray"
+  7:  Exit  {}
+end
+
+event 453
+      Hint = str[50]  -- "Obelisk"
+  0:  Cmp  {"QBits", Value = 173,   jump = 5}         -- Visited Obelisk in Area 11
+  1:  StatusText  {Str = 51}         -- "ivg_whn_"
+  2:  Add  {"AutonotesBits", Value = 123}         -- ""
+  3:  ForPlayer  ("All")
+  4:  Add  {"QBits", Value = 173}         -- Visited Obelisk in Area 11
+  5:  Exit  {}
+end
+
+event 250
+      Hint = str[100]  -- ""
+
+  0:  OnLoadMap  {}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 16}
+  2:  CheckSeason  {Season = 3,   jump(ok) = 20}
+  3:  SetSprite  {SpriteId = 5, Visible = 1, Name = "tree13"}
+  4:  SetSprite  {SpriteId = 6, Visible = 1, Name = "tree16"}
+  5:  SetSprite  {SpriteId = 7, Visible = 1, Name = "tree22"}
+  6:  SetSprite  {SpriteId = 10, Visible = 1, Name = "0"}
+  7:  GoTo  {jump = 32}
+
+  8:  CheckSeason  {Season = 1,   jump(ok) = 12}
+  9:  CheckSeason  {Season = 0,   jump(ok) = 14}
+  10: StatusText  {Str = 64}         -- ""
+  11: Exit  {}
+
+  12: StatusText  {Str = 61}         -- "You received an apple"
+  13: GoTo  {jump = 31}
+
+  14: StatusText  {Str = 60}         -- "Fruit Tree"
+  15: GoTo  {jump = 31}
+
+  16: SetSprite  {SpriteId = 5, Visible = 1, Name = "tree14"}
+  17: SetSprite  {SpriteId = 6, Visible = 1, Name = "tree17"}
+  18: StatusText  {Str = 62}         -- ""
+  19: GoTo  {jump = 23}
+
+  20: SetSprite  {SpriteId = 5, Visible = 1, Name = "tree15"}
+  21: SetSprite  {SpriteId = 6, Visible = 1, Name = "tree18"}
+  22: StatusText  {Str = 63}         -- ""
+  23: SetSprite  {SpriteId = 7, Visible = 1, Name = "tree24"}
+  24: SetSprite  {SpriteId = 10, Visible = 0, Name = "0"}
+  25: SetSprite  {SpriteId = 51, Visible = 1, Name = "tree30"}
+  26: SetSprite  {SpriteId = 52, Visible = 1, Name = "tree30"}
+  27: SetSprite  {SpriteId = 53, Visible = 1, Name = "tree30"}
+  28: SetSprite  {SpriteId = 54, Visible = 1, Name = "tree30"}
+  29: SetSprite  {SpriteId = 55, Visible = 1, Name = "tree30"}
+  30: SetSprite  {SpriteId = 56, Visible = 1, Name = "tree30"}
+  31: Exit  {}
+
+  32: Cmp  {"MapVar50", Value = 1,   jump = 35}
+  33: SetSprite  {SpriteId = 51, Visible = 1, Name = "tree38"}
+  34: GoTo  {jump = 36}
+
+  35: SetSprite  {SpriteId = 51, Visible = 1, Name = "tree37"}
+  36: Cmp  {"MapVar51", Value = 1,   jump = 39}
+  37: SetSprite  {SpriteId = 52, Visible = 1, Name = "tree38"}
+  38: GoTo  {jump = 40}
+
+  39: SetSprite  {SpriteId = 52, Visible = 1, Name = "tree37"}
+  40: Cmp  {"MapVar52", Value = 1,   jump = 43}
+  41: SetSprite  {SpriteId = 53, Visible = 1, Name = "tree38"}
+  42: GoTo  {jump = 44}
+
+  43: SetSprite  {SpriteId = 53, Visible = 1, Name = "tree37"}
+  44: Cmp  {"MapVar53", Value = 1,   jump = 47}
+  45: SetSprite  {SpriteId = 54, Visible = 1, Name = "tree38"}
+  46: GoTo  {jump = 48}
+
+  47: SetSprite  {SpriteId = 54, Visible = 1, Name = "tree37"}
+  48: Cmp  {"MapVar54", Value = 1,   jump = 51}
+  49: SetSprite  {SpriteId = 55, Visible = 1, Name = "tree38"}
+  50: GoTo  {jump = 52}
+
+  51: SetSprite  {SpriteId = 55, Visible = 1, Name = "tree37"}
+  52: Cmp  {"MapVar55", Value = 1,   jump = 55}
+  53: SetSprite  {SpriteId = 56, Visible = 1, Name = "tree38"}
+  54: GoTo  {jump = 56}
+
+  55: SetSprite  {SpriteId = 56, Visible = 1, Name = "tree"}
+  56: GoTo  {jump = 57}
+
+  57: GoTo  {jump = 8}
+end
+
+event 251
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar50", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar50", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 51, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 252
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar51", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar51", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 52, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 253
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar52", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar52", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 53, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 254
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar53", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar53", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 54, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 255
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar54", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar54", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 55, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 256
+      Hint = str[60]  -- "Fruit Tree"
+  0:  CheckSeason  {Season = 3,   jump(ok) = 7}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  Cmp  {"MapVar55", Value = 1,   jump = 7}
+  3:  Add  {"Inventory", Value = 630}         -- "Red Apple"
+  4:  Set  {"MapVar55", Value = 1}
+  5:  StatusText  {Str = 61}         -- "You received an apple"
+  6:  SetSprite  {SpriteId = 56, Visible = 1, Name = "tree37"}
+  7:  Exit  {}
+end
+
+event 501
+      Hint = str[30]  -- "Enter Stone City"
+  0:  MoveToMap  {X = 256, Y = -4992, Z = 33, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 211, Icon = 2, Name = "D24.blv"}         -- "Stone City"
+end
+
+event 502
+      Hint = str[32]  -- "Enter Mansion"
+  0:  MoveToMap  {X = 2, Y = -1096, Z = -31, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 9, Name = "D37.blv"}
+end
+
+event 503
+      Hint = str[31]  -- "Enter Dwarven Barrow"
+  0:  MoveToMap  {X = 382, Y = 324, Z = -15, Direction = 1280, LookAngle = 0, SpeedZ = 0, HouseId = 189, Icon = 2, Name = "MDT01.blv"}         -- "Arbiter"
+end
+
+event 504
+      Hint = str[31]  -- "Enter Dwarven Barrow"
+  0:  MoveToMap  {X = 106, Y = -666, Z = 49, Direction = 256, LookAngle = 0, SpeedZ = 0, HouseId = 189, Icon = 2, Name = "MDR01.blv"}         -- "Arbiter"
+end
+
+event 505
+      Hint = str[31]  -- "Enter Dwarven Barrow"
+  0:  MoveToMap  {X = -384, Y = -983, Z = 1, Direction = 256, LookAngle = 0, SpeedZ = 0, HouseId = 189, Icon = 2, Name = "MDK01.blv"}         -- "Arbiter"
+end

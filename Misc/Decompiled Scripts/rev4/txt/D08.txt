@@ -1,0 +1,506 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Exit to the Coding Fortress"
+str[3] = "Chest"
+str[4] = "Button"
+str[5] = "Lever"
+str[6] = "Vault"
+str[7] = "Cabinet"
+str[8] = "Switch"
+str[9] = "The Killing Zone"
+str[10] = "Bookcase"
+str[11] = "Phasing Brazier of Succor "
+str[12] = "Ore Vein"
+str[13] = "Cave In !"
+str[14] = "You Successfully disarm the trap"
+str[15] = ""
+str[16] = "Take a Drink"
+str[17] = "Not Very Refreshing"
+str[18] = "Refreshing"
+str[19] = ""
+str[20] = "You need a key to unlock this door"
+str[21] = ""
+str[22] = ""
+str[23] = ""
+str[24] = ""
+str[25] = "Phasing Brazier  of  Succor"
+str[26] = ""
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = ""
+str[31] = ""
+str[32] = ""
+str[33] = ""
+str[34] = ""
+str[35] = ""
+str[36] = ""
+str[37] = ""
+str[38] = ""
+str[39] = ""
+str[40] = ""
+str[41] = ""
+str[42] = ""
+str[43] = ""
+str[44] = ""
+str[45] = ""
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = ""
+str[51] = ""
+str[52] = ""
+str[53] = ""
+str[54] = ""
+str[55] = ""
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = ""
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = ""
+str[71] = ""
+str[72] = ""
+str[73] = ""
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[100]  -- ""
+
+      function events.LoadMap()
+  1:  SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = true}         -- "Generic Monster Group for Dungeons"
+  2:  Cmp  {"MapVar1", Value = 1,   jump = 4}
+  3:  Exit  {}
+
+  4:  SetFacetBit  {Id = 1, Bit = const.FacetBits.Untouchable, On = true}
+  5:  SetFacetBit  {Id = 1, Bit = const.FacetBits.IsWater, On = true}
+  6:  SetTexture  {Facet = 1, Name = "trim11_16"}
+end
+
+event 2
+      Hint = str[100]  -- ""
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Cmp  {"QBits", Value = 351,   jump = 10}         -- Three Use
+  3:  SetNPCGreeting  {NPC = 16, Greeting = 40}         -- "BDJ the Coding Wizard" : "BDJ’s the name, coding wizard’s the Game! And I do trust that you are enjoying the ‘game’."
+  4:  SetNPCTopic  {NPC = 16, Index = 0, Event = 0}         -- "BDJ the Coding Wizard"
+  5:  SetNPCTopic  {NPC = 16, Index = 1, Event = 0}         -- "BDJ the Coding Wizard"
+  6:  SetNPCTopic  {NPC = 16, Index = 2, Event = 0}         -- "BDJ the Coding Wizard"
+  7:  SpeakNPC  {NPC = 16}         -- "BDJ the Coding Wizard"
+  8:  Set  {"QBits", Value = 351}         -- Three Use
+  9:  GoTo  {jump = 17}
+
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 10, X = -4721, Y = -10652, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 10, X = -5159, Y = -10152, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  12: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -4934, Y = -6884, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  13: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 10, X = -4268, Y = -3983, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  14: SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 10, X = -5525, Y = -5947, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  15: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -4606, Y = -1643, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  16: Exit  {}
+
+  17: Subtract  {"NPCs", Value = 18}         -- "Lord Godwinson"
+  18: SetNPCTopic  {NPC = 18, Index = 1, Event = 422}         -- "Lord Godwinson" : "Now that's what I call 'fun'!"
+  19: SetMonGroupBit  {NPCGroup = 7, Bit = const.MonsterBits.Hostile, On = false}         -- "Group fo M2"
+  20: Subtract  {"QBits", Value = 356}         -- 0
+  21: Exit  {}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 12, State = 2}         -- switch state
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 2}         -- switch state
+end
+
+event 5
+      Hint = str[11]  -- "Phasing Brazier of Succor "
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 366,   jump = 4}         -- 0
+  2:  Add  {"HP", Value = 300}
+  3:  Set  {"QBits", Value = 366}         -- 0
+  4:  Exit  {}
+end
+
+event 151
+      Timer(<function>, 2*const.Minute)
+  1:  SetDoorState  {Id = 9, State = 2}         -- switch state
+end
+
+event 152
+      Timer(<function>, 2.5*const.Minute)
+  1:  SetDoorState  {Id = 10, State = 2}         -- switch state
+end
+
+event 153
+      Timer(<function>, 2*const.Minute)
+  1:  SetDoorState  {Id = 11, State = 2}         -- switch state
+end
+
+event 154
+      Timer(<function>, 1.5*const.Minute)
+  1:  SetDoorState  {Id = 1, State = 2}         -- switch state
+end
+
+event 155
+      Timer(<function>, 2*const.Minute)
+  1:  SetDoorState  {Id = 2, State = 2}         -- switch state
+end
+
+event 156
+      Timer(<function>, 1*const.Minute)
+  1:  SetDoorState  {Id = 3, State = 2}         -- switch state
+end
+
+event 157
+  0:  MoveToMap  {X = -5248, Y = -7552, Z = 768, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 158
+  0:  MoveToMap  {X = -4640, Y = -7901, Z = 768, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 159
+  0:  MoveToMap  {X = -5248, Y = -8320, Z = 768, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 160
+  0:  MoveToMap  {X = -6912, Y = 14592, Z = -576, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 161
+  0:  SetDoorState  {Id = 8, State = 2}         -- switch state
+  1:  Set  {"MapVar1", Value = 1}
+  2:  Add  {"MapVar2", Value = 1}
+  3:  SetFacetBit  {Id = 1, Bit = const.FacetBits.Untouchable, On = true}
+  4:  SetFacetBit  {Id = 1, Bit = const.FacetBits.IsWater, On = true}
+  5:  SetTexture  {Facet = 1, Name = "trim11_16"}
+end
+
+event 162
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  MoveToMap  {X = 2353, Y = 6856, Z = 288, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  3:  Exit  {}
+
+  4:  MoveToMap  {X = 256, Y = -128, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  5:  Exit  {}
+
+  6:  MoveToMap  {X = -10624, Y = 2304, Z = -832, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  7:  Exit  {}
+
+  8:  MoveToMap  {X = -4096, Y = -10624, Z = 832, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  9:  Exit  {}
+end
+
+event 163
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  RandomGoTo  {jumpA = 4, jumpB = 6, jumpC = 8, jumpD = 0, jumpE = 0, jumpF = 0}
+  3:  Exit  {}
+
+  4:  MoveToMap  {X = 256, Y = -128, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  5:  Exit  {}
+
+  6:  MoveToMap  {X = -10624, Y = 2304, Z = -832, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  7:  Exit  {}
+
+  8:  MoveToMap  {X = -4096, Y = -10624, Z = 832, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  9:  Exit  {}
+end
+
+event 164
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  MoveToMap  {X = 6016, Y = 6528, Z = 1528, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 165
+  0:  MoveToMap  {X = 2816, Y = 7552, Z = 288, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 176
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 177
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 178
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 179
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 180
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 181
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 182
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+end
+
+event 183
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 8}
+end
+
+event 184
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 9}
+end
+
+event 185
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 10}
+end
+
+event 186
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 11}
+end
+
+event 187
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 12}
+end
+
+event 188
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 13}
+end
+
+event 189
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 14}
+end
+
+event 190
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 15}
+end
+
+event 191
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 16}
+end
+
+event 192
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 17}
+end
+
+event 193
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 18}
+end
+
+event 194
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 19}
+end
+
+event 195
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 0}
+end
+
+event 196
+      Hint = str[12]  -- "Ore Vein"
+  0:  Cmp  {"MapVar14", Value = 1,   jump = 11}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 4, jumpC = 6, jumpD = 8, jumpE = 2, jumpF = 2}
+  2:  Add  {"Inventory", Value = 686}         -- "Iron-laced ore"
+  3:  GoTo  {jump = 9}
+
+  4:  Add  {"Inventory", Value = 687}         -- "Siertal-laced ore"
+  5:  GoTo  {jump = 9}
+
+  6:  DamagePlayer  {Player = "All", DamageType = const.Damage.Fire, Damage = 50}
+  7:  StatusText  {Str = 13}         -- "Cave In !"
+  8:  Add  {"Inventory", Value = 688}         -- "Phylt-laced ore"
+  9:  Set  {"MapVar14", Value = 1}
+  10: SetTexture  {Facet = 2, Name = "cwb1"}
+  11: Exit  {}
+
+      function events.LoadMap()
+  13: Cmp  {"MapVar14", Value = 1,   jump = 15}
+  14: GoTo  {jump = 11}
+
+  15: SetTexture  {Facet = 2, Name = "cwb1"}
+end
+
+event 197
+      Hint = str[12]  -- "Ore Vein"
+  0:  Cmp  {"MapVar15", Value = 1,   jump = 11}
+  1:  RandomGoTo  {jumpA = 2, jumpB = 4, jumpC = 6, jumpD = 8, jumpE = 2, jumpF = 2}
+  2:  Add  {"Inventory", Value = 686}         -- "Iron-laced ore"
+  3:  GoTo  {jump = 9}
+
+  4:  Add  {"Inventory", Value = 687}         -- "Siertal-laced ore"
+  5:  GoTo  {jump = 9}
+
+  6:  DamagePlayer  {Player = "All", DamageType = const.Damage.Fire, Damage = 50}
+  7:  StatusText  {Str = 13}         -- "Cave In !"
+  8:  Add  {"Inventory", Value = 688}         -- "Phylt-laced ore"
+  9:  Set  {"MapVar15", Value = 1}
+  10: SetTexture  {Facet = 3, Name = "cwb1"}
+  11: Exit  {}
+
+      function events.LoadMap()
+  13: Cmp  {"MapVar15", Value = 1,   jump = 15}
+  14: GoTo  {jump = 11}
+
+  15: SetTexture  {Facet = 3, Name = "cwb1"}
+end
+
+event 376
+      Hint = str[1]  -- "Door"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 352,   jump = 22}         -- Four Use
+  2:  Set  {"QBits", Value = 352}         -- Four Use
+  3:  Subtract  {"Inventory", Value = 223}         -- "Magic Potion"
+  4:  Cmp  {"Inventory", Value = 223,   jump = 3}         -- "Magic Potion"
+  5:  Subtract  {"Inventory", Value = 332}         -- "Lloyd's Beacon"
+  6:  Cmp  {"Inventory", Value = 332,   jump = 5}         -- "Lloyd's Beacon"
+  7:  SetNPCGreeting  {NPC = 16, Greeting = 50}         --[[ "BDJ the Coding Wizard" : "I see you’ve found the key to the Coding Fortress. Well done! You’ve probably had a few elemental ‘misunderstandings’ in findings this key, but I assure you that they were minor disputes compared to what you now face.
+
+It’s finally time to ‘run the Gauntlet’ all the way back to the beginning!  Good luck!!" ]]
+  8:  SetNPCTopic  {NPC = 16, Index = 0, Event = 0}         -- "BDJ the Coding Wizard"
+  9:  SetNPCTopic  {NPC = 16, Index = 1, Event = 0}         -- "BDJ the Coding Wizard"
+  10: SetNPCTopic  {NPC = 16, Index = 2, Event = 0}         -- "BDJ the Coding Wizard"
+  11: SpeakNPC  {NPC = 16}         -- "BDJ the Coding Wizard"
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = -4176, Y = -10981, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  13: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = -4824, Y = -9884, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  14: SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 5, X = -4996, Y = -3556, Z = 780, NPCGroup = 512, unk = 0}         -- not found!
+  15: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = -4992, Y = -2175, Z = 780, NPCGroup = 512, unk = 0}         -- not found!
+  16: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = 12012, Y = 3590, Z = 200, NPCGroup = 512, unk = 0}         -- not found!
+  17: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 8, X = 10588, Y = 2888, Z = 0, NPCGroup = 512, unk = 0}         -- not found!
+  18: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 8, X = 10084, Y = 2258, Z = 0, NPCGroup = 512, unk = 0}         -- not found!
+  19: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = 7932, Y = 2156, Z = 144, NPCGroup = 512, unk = 0}         -- not found!
+  20: ForPlayer  ("Current")
+  21: Add  {"Inventory", Value = 160}         -- "Coding Fortress Key"
+  22: ForPlayer  (0)
+  23: Cmp  {"FireSkill", Value = 1,   jump = 31}
+  24: ForPlayer  (1)
+  25: Cmp  {"FireSkill", Value = 1,   jump = 33}
+  26: ForPlayer  (2)
+  27: Cmp  {"FireSkill", Value = 1,   jump = 35}
+  28: ForPlayer  (3)
+  29: Cmp  {"FireSkill", Value = 1,   jump = 37}
+  30: Exit  {}
+
+  31: Set  {"SP", Value = 0}
+  32: GoTo  {jump = 24}
+
+  33: Set  {"SP", Value = 0}
+  34: GoTo  {jump = 26}
+
+  35: Set  {"SP", Value = 0}
+  36: GoTo  {jump = 28}
+
+  37: Set  {"SP", Value = 0}
+  38: SetMonGroupBit  {NPCGroup = 15, Bit = const.MonsterBits.Hostile, On = true}         -- "Group walkers in the Tularean forest"
+  39: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 8, X = -668, Y = 6965, Z = -384, NPCGroup = 512, unk = 0}         -- not found!
+  40: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 5, X = -4721, Y = -10652, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  41: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 5, X = -5159, Y = -10152, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  42: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = -4934, Y = -6884, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  43: SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 5, X = -4268, Y = -3983, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  44: SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 5, X = -5525, Y = -5947, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  45: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = -4606, Y = -1643, Z = 833, NPCGroup = 512, unk = 0}         -- not found!
+  46: Subtract  {"QBits", Value = 366}         -- 0
+  47: GoTo  {jump = 30}
+end
+
+event 501
+      Hint = str[9]  -- "The Killing Zone"
+  0:  MoveToMap  {X = -10624, Y = 2304, Z = -832, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 502
+      Hint = str[2]  -- "Exit to the Coding Fortress"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 160,   jump = 5}         -- "Coding Fortress Key"
+  2:  CastSpell  {Spell = 1, Mastery = const.GM, Skill = 10, FromX = 0, FromY = 0, FromZ = 0, ToX = 0, ToY = 0, ToZ = 0}         -- "Torch Light"
+  3:  StatusText  {Str = 20}         -- "You need a key to unlock this door"
+  4:  Exit  {}
+
+  5:  MoveToMap  {X = 0, Y = -709, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 198, Icon = 9, Name = "D12.blv"}         -- "Clanker's Laboratory"
+end

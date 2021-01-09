@@ -1,0 +1,420 @@
+str[0] = " "
+str[1] = "Demon Lair"
+str[2] = "Drink from Well."
+str[3] = "You feel Strange."
+str[4] = "+5000 Experience, -5000 Gold."
+str[5] = "+30 Level temporary.  Look Out!"
+str[6] = "Drink from Fountain"
+str[7] = "+10 Magic resistance permanent."
+str[8] = "+40 Armor class temporary."
+str[9] = "+5 Elemental resistance permanent."
+str[10] = "Refreshing!"
+str[11] = "Chest"
+str[12] = "You are not a follower of Baa.  Begone!"
+str[13] = "Kriegspire"
+str[14] = "Shrine of Cold"
+str[15] = "You pray at the shrine."
+str[16] = "+10 Cold resistance permanent"
+str[17] = "+3 Cold resistance permanent"
+str[18] = "Pedestal"
+str[19] = "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            t_haat_lt__en_lc"
+str[20] = "Obelisk"
+str[21] = "Shrine of Fire"
+str[22] = "You pray at the shrine."
+str[23] = "+10 Fire permanent"
+str[24] = "+3 Fire permanent"
+str[25] = ""
+
+
+event 2
+      Hint = str[14]  -- "Shrine of Cold"
+      MazeInfo = str[13]  -- "Kriegspire"
+  0:  EnterHouse  {Id = 14}         -- "Knight's Paradise"
+end
+
+event 3
+      Hint = str[14]  -- "Shrine of Cold"
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 14}         -- "Knight's Paradise"
+end
+
+event 4
+      Hint = str[26]
+  0:  EnterHouse  {Id = 26}         -- "Armorworks "
+end
+
+event 5
+      Hint = str[26]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 26}         -- "Armorworks "
+end
+
+event 6
+      Hint = str[36]
+  0:  EnterHouse  {Id = 36}         -- "Unusual Enchantments"
+end
+
+event 7
+      Hint = str[36]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 36}         -- "Unusual Enchantments"
+end
+
+event 8
+      Hint = str[55]
+  0:  EnterHouse  {Id = 55}         -- "King's Highway"
+end
+
+event 9
+      Hint = str[55]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 55}         -- "King's Highway"
+end
+
+event 10
+      Hint = str[87]
+  0:  EnterHouse  {Id = 87}         -- "Lone Tree Training"
+end
+
+event 11
+      Hint = str[87]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 87}         -- "Lone Tree Training"
+end
+
+event 12
+      Hint = str[111]
+  0:  EnterHouse  {Id = 111}         -- "The Broken Promise"
+end
+
+event 13
+      Hint = str[111]
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 111}         -- "The Broken Promise"
+end
+
+event 14
+      Hint = str[40]
+  0:  EnterHouse  {Id = 552}         -- "Hermit's Hut"
+end
+
+event 40
+      Hint = str[235]
+  0:  EnterHouse  {Id = 235}         -- "House"
+end
+
+event 41
+      Hint = str[236]
+  0:  EnterHouse  {Id = 236}         -- "House"
+end
+
+event 42
+      Hint = str[237]
+  0:  EnterHouse  {Id = 237}         -- "House"
+end
+
+event 43
+      Hint = str[238]
+  0:  EnterHouse  {Id = 238}         -- "House"
+end
+
+event 50
+      Hint = str[239]
+  0:  EnterHouse  {Id = 239}         -- "House"
+end
+
+event 51
+      Hint = str[240]
+  0:  EnterHouse  {Id = 240}         -- "House"
+end
+
+event 52
+      Hint = str[241]
+  0:  EnterHouse  {Id = 241}         -- "House"
+end
+
+event 53
+      Hint = str[242]
+  0:  EnterHouse  {Id = 242}         -- "House"
+end
+
+event 54
+      Hint = str[243]
+  0:  EnterHouse  {Id = 243}         -- "House"
+end
+
+event 55
+      Hint = str[244]
+  0:  EnterHouse  {Id = 244}         -- "House"
+end
+
+event 56
+      Hint = str[245]
+  0:  EnterHouse  {Id = 245}         -- "House"
+end
+
+event 57
+      Hint = str[246]
+  0:  EnterHouse  {Id = 246}         -- "House"
+end
+
+event 58
+      Hint = str[29]
+  0:  EnterHouse  {Id = 541}         -- "House"
+end
+
+event 59
+      Hint = str[30]
+  0:  EnterHouse  {Id = 542}         -- "House"
+end
+
+event 60
+      Hint = str[31]
+  0:  EnterHouse  {Id = 543}         -- "House"
+end
+
+event 61
+      Hint = str[32]
+  0:  EnterHouse  {Id = 544}         -- "House"
+end
+
+event 62
+      Hint = str[33]
+  0:  EnterHouse  {Id = 545}         -- "House"
+end
+
+event 63
+      Hint = str[34]
+  0:  EnterHouse  {Id = 546}         -- "House"
+end
+
+event 64
+      Hint = str[35]
+  0:  EnterHouse  {Id = 547}         -- "House"
+end
+
+event 65
+      Hint = str[36]
+  0:  EnterHouse  {Id = 548}         -- "House"
+end
+
+event 75
+      Hint = str[11]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 76
+      Hint = str[11]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 90
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"Inventory", Value = 485,   jump = 4}         -- "Cloak of Baa"
+  2:  StatusText  {Str = 12}         -- "You are not a follower of Baa.  Begone!"
+  3:  Exit  {}
+
+  4:  MoveToMap  {X = 2094, Y = -19, Z = 177, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 197, Icon = 5, Name = "T7.Blv"}         -- "Superior Temple of Baa"
+  5:  Exit  {}
+
+      Hint = str[0]  -- " "
+  6:  EnterHouse  {Id = 197}         -- "Superior Temple of Baa"
+end
+
+event 91
+  0:  MoveToMap  {X = 2702, Y = -2926, Z = 1, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 189, Icon = 5, Name = "D19.Blv"}         -- "Agar's Laboratory"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 189}         -- "Agar's Laboratory"
+end
+
+event 92
+  0:  MoveToMap  {X = -49, Y = -42, Z = -2, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 190, Icon = 5, Name = "D20.Blv"}         -- "Caves of the Dragon Riders"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 190}         -- "Caves of the Dragon Riders"
+end
+
+event 93
+  0:  MoveToMap  {X = 5861, Y = 2720, Z = 169, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 201, Icon = 5, Name = "CD3.Blv"}         -- "Castle Kriegspire"
+  1:  Exit  {}
+
+      Hint = str[0]  -- " "
+  2:  EnterHouse  {Id = 201}         -- "Castle Kriegspire"
+end
+
+event 94
+      Hint = str[1]  -- "Demon Lair"
+  0:  MoveToMap  {X = 1893, Y = 122, Z = 1, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 5, Name = "ZDwj02.Blv"}
+end
+
+event 100
+      Hint = str[2]  -- "Drink from Well."
+  0:  StatusText  {Str = 3}         -- "You feel Strange."
+  1:  MoveToMap  {X = 12768, Y = 4192, Z = 512, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "CD3.Blv"}
+end
+
+event 101
+      Hint = str[2]  -- "Drink from Well."
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 3}
+  1:  StatusText  {Str = 10}         -- "Refreshing!"
+  2:  Exit  {}
+
+  3:  Cmp  {"Gold", Value = 5000,   jump = 5}
+  4:  GoTo  {jump = 1}
+
+  5:  Subtract  {"Gold", Value = 5000}
+  6:  Add  {"Experience", Value = 5000}
+  7:  Subtract  {"MapVar0", Value = 1}
+  8:  StatusText  {Str = 4}         -- "+5000 Experience, -5000 Gold."
+  9:  Set  {"AutonotesBits", Value = 46}         -- "5000 Experience and minus 5000 gold from the southern well in the town of Kriegspire."
+  10: Exit  {}
+
+  11: OnRefillTimer  {Second = 1}
+  12: Set  {"MapVar0", Value = 10}
+end
+
+event 102
+      Hint = str[2]  -- "Drink from Well."
+  0:  Cmp  {"LevelBonus", Value = 30,   jump = 9}
+  1:  Set  {"LevelBonus", Value = 30}
+  2:  StatusText  {Str = 5}         -- "+30 Level temporary.  Look Out!"
+  3:  Set  {"AutonotesBits", Value = 47}         -- "30 Temporary levels from the western well in the town of Kriegspire."
+  4:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -13280, Y = 19696, Z = 160}
+  5:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -13368, Y = 18096, Z = 160}
+  6:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -10976, Y = 18152, Z = 160}
+  7:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 2, X = -9992, Y = 19056, Z = 160}
+  8:  Exit  {}
+
+  9:  StatusText  {Str = 10}         -- "Refreshing!"
+  10: Exit  {}
+end
+
+event 103
+      Hint = str[6]  -- "Drink from Fountain"
+  0:  Cmp  {"PlayerBits", Value = 8,   jump = 7}
+  1:  Set  {"PlayerBits", Value = 8}
+  2:  Add  {"MagicResistance", Value = 10}
+  3:  Set  {"Eradicated", Value = 0}
+  4:  StatusText  {Str = 7}         -- "+10 Magic resistance permanent."
+  5:  Set  {"AutonotesBits", Value = 48}         -- "10 Points of permanent magic resistance from the fountain north of the Dragon Tower in the town of Kriegspire."
+  6:  Exit  {}
+
+  7:  Set  {"Eradicated", Value = 0}
+end
+
+event 104
+      Hint = str[6]  -- "Drink from Fountain"
+  0:  Cmp  {"ArmorClassBonus", Value = 40,   jump = 5}
+  1:  Set  {"ArmorClassBonus", Value = 40}
+  2:  StatusText  {Str = 8}         -- "+40 Armor class temporary."
+  3:  Set  {"AutonotesBits", Value = 49}         -- "40 Points of temporary armor class from the fountain outside of Castle Kriegspire."
+  4:  Exit  {}
+
+  5:  StatusText  {Str = 10}         -- "Refreshing!"
+  6:  Exit  {}
+end
+
+event 105
+      Hint = str[6]  -- "Drink from Fountain"
+  0:  Cmp  {"PlayerBits", Value = 7,   jump = 10}
+  1:  Set  {"PlayerBits", Value = 7}
+  2:  Add  {"FireResistance", Value = 5}
+  3:  Add  {"ElecResistance", Value = 5}
+  4:  Add  {"ColdResistance", Value = 5}
+  5:  Add  {"PoisonResistance", Value = 5}
+  6:  Set  {"Dead", Value = 0}
+  7:  StatusText  {Str = 9}         -- "+5 Elemental resistance permanent."
+  8:  Set  {"AutonotesBits", Value = 50}         -- "5 Points of permanent fire, electricity, cold, and poison resistance from the fountain northwest of the Superior Temple of Baa."
+  9:  Exit  {}
+
+  10: Set  {"Dead", Value = 0}
+end
+
+event 261
+      Hint = str[14]  -- "Shrine of Cold"
+  0:  Cmp  {"MonthIs", Value = 9,   jump = 3}
+  1:  StatusText  {Str = 15}         -- "You pray at the shrine."
+  2:  Exit  {}
+
+  3:  Cmp  {"QBits", Value = 206,   jump = 1}         -- NPC
+  4:  Set  {"QBits", Value = 206}         -- NPC
+  5:  Cmp  {"QBits", Value = 216,   jump = 11}         -- NPC
+  6:  Set  {"QBits", Value = 216}         -- NPC
+  7:  ForPlayer  ("All")
+  8:  Add  {"ColdResistance", Value = 10}
+  9:  StatusText  {Str = 16}         -- "+10 Cold resistance permanent"
+  10: Exit  {}
+
+  11: ForPlayer  ("All")
+  12: Add  {"ColdResistance", Value = 3}
+  13: StatusText  {Str = 17}         -- "+3 Cold resistance permanent"
+end
+
+event 262
+      Hint = str[21]  -- "Shrine of Fire"
+  0:  Cmp  {"MonthIs", Value = 7,   jump = 3}
+  1:  StatusText  {Str = 22}         -- "You pray at the shrine."
+  2:  Exit  {}
+
+  3:  Cmp  {"QBits", Value = 206,   jump = 1}         -- NPC
+  4:  Set  {"QBits", Value = 206}         -- NPC
+  5:  Cmp  {"QBits", Value = 214,   jump = 11}         -- NPC
+  6:  Set  {"QBits", Value = 214}         -- NPC
+  7:  ForPlayer  ("All")
+  8:  Add  {"FireResistance", Value = 10}
+  9:  StatusText  {Str = 23}         -- "+10 Fire permanent"
+  10: Exit  {}
+
+  11: ForPlayer  ("All")
+  12: Add  {"FireResistance", Value = 3}
+  13: StatusText  {Str = 24}         -- "+3 Fire permanent"
+end
+
+event 150
+      Hint = str[18]  -- "Pedestal"
+  0:  Cmp  {"Inventory", Value = 451,   jump = 2}         -- "Bear Statuette"
+  1:  Exit  {}
+
+  2:  Subtract  {"Inventory", Value = 451}         -- "Bear Statuette"
+  3:  SetSprite  {SpriteId = 141, Visible = 1, Name = "ped01"}
+  4:  Set  {"QBits", Value = 223}         -- NPC
+  5:  Cmp  {"QBits", Value = 222,   jump = 7}         -- NPC
+  6:  Exit  {}
+
+  7:  Cmp  {"QBits", Value = 224,   jump = 9}         -- NPC
+  8:  Exit  {}
+
+  9:  Cmp  {"QBits", Value = 225,   jump = 11}         -- NPC
+  10: Exit  {}
+
+  11: Cmp  {"QBits", Value = 226,   jump = 13}         -- NPC
+  12: Exit  {}
+
+  13: MoveNPC  {NPC = 87, HouseId = 0}         -- "Twillen"
+  14: MoveNPC  {NPC = 41, HouseId = 253}         -- "Twillen" -> "House"
+end
+
+event 151
+  0:  OnLoadMap  {}
+  1:  Cmp  {"QBits", Value = 223,   jump = 3}         -- NPC
+  2:  Exit  {}
+
+  3:  SetSprite  {SpriteId = 141, Visible = 1, Name = "ped01"}
+end
+
+event 152
+      Hint = str[20]  -- "Obelisk"
+  0:  SetMessage  {Str = 19}         -- "The surface of the obelisk is blood warm to the touch.  A message swims into view as you remove your hand:                                                                                                                                                            t_haat_lt__en_lc"
+  1:  SimpleMessage  {}
+  2:  Set  {"QBits", Value = 363}         -- NPC
+  3:  Set  {"AutonotesBits", Value = 82}         -- "Obelisk Message # 4:  t_haat_lt__en_lc"
+end

@@ -1,0 +1,37 @@
+str[0] = " "
+str[1] = "Exit Door"
+str[2] = "Chest"
+str[3] = "Switch"
+str[4] = "Blue Torch"
+str[5] = "Empty"
+str[6] = "Empty"
+str[7] = "Door"
+str[8] = "T"
+str[9] = "h"
+str[10] = "e"
+str[11] = "Q"
+str[12] = "u"
+str[13] = "i"
+str[14] = "c"
+str[15] = "k"
+str[16] = "B"
+str[17] = "r"
+str[18] = "o"
+str[19] = "w"
+str[20] = "n"
+str[21] = "F"
+str[22] = "O"
+str[23] = "x"
+str[24] = "Halls of the Adept"
+str[25] = "The Torch is activated."
+str[26] = ""
+str[27] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

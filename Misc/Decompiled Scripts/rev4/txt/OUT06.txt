@@ -1,0 +1,808 @@
+str[0] = " "
+str[1] = "Chest "
+str[2] = "Barrel"
+str[3] = "Well"
+str[4] = "Drink from the Well"
+str[5] = "Fountain"
+str[6] = "Drink from the Fountain"
+str[7] = "House"
+str[8] = "Well of Experience"
+str[9] = "Tent"
+str[10] = "Hut"
+str[11] = "Refreshing!"
+str[12] = "Boat"
+str[13] = "Dock"
+str[14] = "Drink"
+str[15] = "Button"
+str[16] = "Not enough gold"
+str[17] = ""
+str[18] = ""
+str[19] = ""
+str[20] = ""
+str[21] = "This Door is Locked"
+str[22] = "You need the Home Key to use this teleporter."
+str[23] = ""
+str[24] = ""
+str[25] = "School of Sorcery"
+str[26] = "Red Dwarf Mines"
+str[27] = ""
+str[28] = ""
+str[29] = ""
+str[30] = "Enter the School of Sorcery"
+str[31] = "Enter the Red Dwarf Mines"
+str[32] = ""
+str[33] = "To Main Square"
+str[34] = "Tavern"
+str[35] = "Temple"
+str[36] = "Guilds"
+str[37] = "Stables"
+str[38] = "Docks"
+str[39] = "Shops"
+str[40] = "School of Sorcery"
+str[41] = "Red Dwarf Mines"
+str[42] = "East "
+str[43] = "North "
+str[44] = "West"
+str[45] = "South "
+str[46] = ""
+str[47] = ""
+str[48] = ""
+str[49] = ""
+str[50] = "Obelisk"
+str[51] = " ts_rehmu"
+str[52] = "Shrine"
+str[53] = "Altar"
+str[54] = "You Pray"
+str[55] = "Home Portal"
+str[56] = ""
+str[57] = ""
+str[58] = ""
+str[59] = ""
+str[60] = ""
+str[61] = ""
+str[62] = ""
+str[63] = ""
+str[64] = ""
+str[65] = "You make a wish"
+str[66] = ""
+str[67] = ""
+str[68] = ""
+str[69] = ""
+str[70] = "Suddenly, You Don't Feel too Well"
+str[71] = "You Make a Wish"
+str[72] = "+25 Intellect and Personality (Temporary)"
+str[73] = "hmmm, You decide against it."
+str[74] = ""
+str[75] = ""
+str[76] = ""
+str[77] = ""
+str[78] = ""
+str[79] = ""
+str[80] = ""
+str[81] = ""
+str[82] = ""
+str[83] = ""
+str[84] = ""
+str[85] = ""
+str[86] = ""
+str[87] = ""
+str[88] = ""
+str[89] = ""
+str[90] = ""
+str[91] = ""
+str[92] = ""
+str[93] = ""
+str[94] = ""
+str[95] = ""
+str[96] = ""
+str[97] = ""
+str[98] = ""
+str[99] = ""
+str[100] = ""
+str[101] = ""
+str[102] = ""
+str[103] = ""
+str[104] = ""
+str[105] = ""
+str[106] = ""
+str[107] = ""
+str[108] = ""
+str[109] = ""
+str[110] = ""
+str[111] = ""
+str[112] = ""
+str[113] = ""
+str[114] = ""
+str[115] = ""
+str[116] = ""
+str[117] = ""
+str[118] = ""
+str[119] = ""
+str[120] = ""
+str[121] = ""
+
+
+event 1
+      Hint = str[1]  -- "Chest "
+  0:  Exit  {}
+end
+
+event 2
+      function events.LeaveMap()
+  1:  Cmp  {"QBits", Value = 189,   jump = 10}         -- Killed all Bracada Desert Griffins
+  2:  CheckMonstersKilled  {CheckType = 2, Id = 81, Count = 0,   jump(>=) = 4}
+  3:  Exit  {}
+
+  4:  CheckMonstersKilled  {CheckType = 2, Id = 82, Count = 0,   jump(>=) = 6}
+  5:  Exit  {}
+
+  6:  CheckMonstersKilled  {CheckType = 2, Id = 83, Count = 0,   jump(>=) = 8}
+  7:  Exit  {}
+
+  8:  ForPlayer  ("All")
+  9:  Set  {"QBits", Value = 189}         -- Killed all Bracada Desert Griffins
+  10: Exit  {}
+end
+
+event 30
+      Hint = str[55]  -- "Home Portal"
+  0:  ForPlayer  ("All")
+  1:  Cmp  {"QBits", Value = 47,   jump = 7}         -- "Recover the Book of Unmakings from the Strange Temple and return it to Thomas Grey in the School of Sorcery."
+  2:  Cmp  {"Inventory", Value = 670,   jump = 5}         -- "Home Key"
+  3:  StatusText  {Str = 22}         -- "You need the Home Key to use this teleporter."
+  4:  Exit  {}
+
+  5:  MoveToMap  {X = -9853, Y = 8656, Z = -1024, Direction = 2047, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "Out03.Odm"}
+  6:  Exit  {}
+
+  7:  MoveToMap  {X = 0, Y = 0, Z = 0, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "nwc.blv"}
+  8:  Exit  {}
+end
+
+event 35
+      Hint = str[100]  -- ""
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Cmp  {"QBits", Value = 371,   jump = 4}         -- Dwarven Messenger Once
+  3:  Cmp  {"Awards", Value = 8,   jump = 5}         -- "Completed Coding Wizard Quest"
+  4:  Exit  {}
+
+  5:  SetNPCGreeting  {NPC = 27, Greeting = 27}         -- "Messenger" : ""
+  6:  SpeakNPC  {NPC = 27}         -- "Messenger"
+  7:  Set  {"QBits", Value = 369}         -- "Raise the siege of Stone City by killing all creatures in the Barrow Downs within one week and then proceed to King Hothffar for your reward."
+  8:  Set  {"QBits", Value = 371}         -- Dwarven Messenger Once
+  9:  Subtract  {"QBits", Value = 368}         -- Barrow Normal
+  10: Set  {"Counter2", Value = 0}
+  11: Exit  {}
+end
+
+event 50
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+end
+
+event 98
+      Hint = str[13]  -- "Dock"
+  0:  Exit  {}
+end
+
+event 99
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 66}         -- "Enchantress"
+end
+
+event 100
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 66}         -- "Enchantress"
+end
+
+event 101
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 34}         -- "Artifacts & Antiquities"
+end
+
+event 102
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 34}         -- "Artifacts & Antiquities"
+end
+
+event 103
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 47}         -- "Edmond's Ampules"
+end
+
+event 104
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 47}         -- "Edmond's Ampules"
+end
+
+event 105
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 58}         -- "Crystal Caravans"
+end
+
+event 106
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 58}         -- "Crystal Caravans"
+end
+
+event 107
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 79}         -- "Temple of Light"
+end
+
+event 108
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 79}         -- "Temple of Light"
+end
+
+event 109
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 112}         -- "Familiar Place"
+end
+
+event 110
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 112}         -- "Familiar Place"
+end
+
+event 111
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 149}         -- "Master Guild of Water"
+end
+
+event 112
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 149}         -- "Master Guild of Water"
+end
+
+event 113
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 167}         -- "Guild of Illumination"
+end
+
+event 114
+      Hint = str[100]  -- ""
+  0:  Exit  {}
+
+  1:  EnterHouse  {Id = 167}         -- "Guild of Illumination"
+end
+
+event 150
+      Hint = str[7]  -- "House"
+  0:  Exit  {}
+end
+
+event 151
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 474}         -- "Smiling Jack's"
+end
+
+event 152
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 475}         -- "Pederton Residence"
+end
+
+event 153
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 476}         -- "Applebee Manor"
+end
+
+event 154
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 477}         -- "Lightsworn Residence"
+end
+
+event 155
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 478}         -- "Alashandra's Home"
+end
+
+event 156
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 479}         -- "Gayle's"
+end
+
+event 157
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 480}         -- "Brigham's Home"
+end
+
+event 158
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 481}         -- "Rowan's House"
+end
+
+event 159
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 482}         -- "Brand's Home"
+end
+
+event 160
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 483}         -- "Benson Residence"
+end
+
+event 161
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 484}         -- "Zimm's House"
+end
+
+event 162
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 500}         -- "Stone House"
+end
+
+event 163
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 501}         -- "Watershed Residence"
+end
+
+event 164
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 502}         -- "Hollyfield Residence"
+end
+
+event 165
+      Hint = str[100]  -- ""
+  0:  EnterHouse  {Id = 503}         -- "Sweet Residence"
+end
+
+event 201
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 1}
+end
+
+event 202
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 2}
+end
+
+event 203
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 3}
+end
+
+event 204
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 4}
+end
+
+event 205
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 5}
+end
+
+event 206
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 6}
+end
+
+event 207
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 7}
+end
+
+event 208
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 8}
+end
+
+event 209
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 9}
+end
+
+event 210
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 10}
+end
+
+event 211
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 11}
+end
+
+event 212
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 12}
+end
+
+event 213
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 13}
+end
+
+event 214
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 14}
+end
+
+event 215
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 15}
+end
+
+event 216
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 16}
+end
+
+event 217
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 17}
+end
+
+event 218
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 18}
+end
+
+event 219
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 19}
+  1:  Cmp  {"QBits", Value = 71,   jump = 4}         -- Placed Golem head
+  2:  Cmp  {"QBits", Value = 219,   jump = 4}         -- Golem Head - I lost it
+  3:  Add  {"QBits", Value = 219}         -- Golem Head - I lost it
+  4:  Exit  {}
+end
+
+event 220
+      Hint = str[1]  -- "Chest "
+  0:  OpenChest  {Id = 0}
+  1:  Cmp  {"QBits", Value = 72,   jump = 4}         -- Placed Golem Abbey normal head
+  2:  Cmp  {"QBits", Value = 220,   jump = 4}         -- Abby normal head - I lost it
+  3:  Add  {"QBits", Value = 220}         -- Abby normal head - I lost it
+  4:  Exit  {}
+end
+
+event 222
+      Hint = str[100]  -- ""
+
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 100,   jump = 5}         -- Chose the path of Dark
+  2:  Cmp  {"QBits", Value = 270,   jump = 9}         -- Your friends are mad at you 
+  3:  Cmp  {"MapVar4", Value = 2,   jump = 6}
+  4:  GoTo  {jump = 7}
+
+  5:  Set  {"MapVar4", Value = 2}
+  6:  SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = true}         -- "Generic Monster Group for Dungeons"
+  7:  SetMonGroupBit  {NPCGroup = 10, Bit = const.MonsterBits.Hostile, On = true}         -- "Southern Village Group in Harmondy"
+  8:  Exit  {}
+
+  9:  Cmp  {"Counter10", Value = 720,   jump = 11}
+  10: GoTo  {jump = 5}
+
+  11: Subtract  {"QBits", Value = 270}         -- Your friends are mad at you 
+  12: Set  {"MapVar4", Value = 0}
+  13: SetMonGroupBit  {NPCGroup = 5, Bit = const.MonsterBits.Hostile, On = false}         -- "Generic Monster Group for Dungeons"
+  14: GoTo  {jump = 7}
+end
+
+event 301
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -9711, Y = 8872, Z = 2400, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 302
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -5648, Y = 15992, Z = 0, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 303
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = 3000, Y = 17248, Z = 1600, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -14208, Y = -6992, Z = 1344, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 304
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -4608, Y = 16032, Z = 1, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 305
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -6664, Y = 15040, Z = 0, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 306
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -17624, Y = 20360, Z = 800, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 307
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -5616, Y = 14992, Z = 0, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 308
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -16064, Y = 8944, Z = 800, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 309
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -4592, Y = 15000, Z = 0, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 310
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = 6464, Y = -19280, Z = 1376, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 311
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -7160, Y = 13976, Z = 0, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 312
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = 17656, Y = -20704, Z = 800, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 313
+      Hint = str[100]  -- ""
+  0:  RandomGoTo  {jumpA = 1, jumpB = 3, jumpC = 5, jumpD = 7, jumpE = 9, jumpF = 11}
+  1:  MoveToMap  {X = -3040, Y = 992, Z = 1120, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  2:  Exit  {}
+
+  3:  MoveToMap  {X = -14848, Y = -18144, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  4:  Exit  {}
+
+  5:  MoveToMap  {X = 18112, Y = -8736, Z = 182, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  6:  Exit  {}
+
+  7:  MoveToMap  {X = 16288, Y = 17504, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  8:  Exit  {}
+
+  9:  MoveToMap  {X = -16192, Y = 10752, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  10: Exit  {}
+
+  11: MoveToMap  {X = -8192, Y = -64, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  12: Exit  {}
+end
+
+event 314
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -7360, Y = 13504, Z = 1, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 315
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = 9208, Y = 18608, Z = 0, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 316
+      Hint = str[100]  -- ""
+  0:  ForPlayer  (0)
+  1:  Cmp  {"Inventory", Value = 664,   jump = 4}         -- "Emerald Is. Teleportal Key"
+  2:  MoveToMap  {X = -4800, Y = 14552, Z = 0, Direction = 1024, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+  3:  Exit  {}
+
+  4:  MoveToMap  {X = 12409, Y = 4917, Z = -64, Direction = 1040, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "Out01.Odm"}
+end
+
+event 317
+      Hint = str[100]  -- ""
+  0:  MoveToMap  {X = -6192, Y = 12744, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 451
+      Hint = str[52]  -- "Shrine"
+  0:  Exit  {}
+end
+
+event 452
+      Hint = str[53]  -- "Altar"
+  0:  Cmp  {"QBits", Value = 203,   jump = 9}         -- Place item 619 in out06(statue)
+  1:  Cmp  {"QBits", Value = 200,   jump = 3}         -- "Retrieve the three statuettes and place them on the shrines in the Bracada Desert, Tatalia, and Avlee, then return to Thom Lumbra in the Tularean Forest."
+  2:  GoTo  {jump = 9}
+
+  3:  ForPlayer  ("All")
+  4:  Cmp  {"Inventory", Value = 619,   jump = 6}         -- "Angel Statuette"
+  5:  GoTo  {jump = 9}
+
+  6:  SetSprite  {SpriteId = 25, Visible = 1, Name = "0"}
+  7:  Subtract  {"Inventory", Value = 619}         -- "Angel Statuette"
+  8:  Set  {"QBits", Value = 203}         -- Place item 619 in out06(statue)
+  9:  Exit  {}
+end
+
+event 453
+      Hint = str[50]  -- "Obelisk"
+  0:  Cmp  {"QBits", Value = 168,   jump = 5}         -- Visited Obelisk in Area 6
+  1:  StatusText  {Str = 51}         -- " ts_rehmu"
+  2:  Add  {"AutonotesBits", Value = 118}         -- "Obelisk message #5: ts_rehmu"
+  3:  ForPlayer  ("All")
+  4:  Add  {"QBits", Value = 168}         -- Visited Obelisk in Area 6
+  5:  Exit  {}
+end
+
+event 454
+      Hint = str[40]  -- "School of Sorcery"
+  0:  Exit  {}
+end
+
+event 455
+      Hint = str[41]  -- "Red Dwarf Mines"
+  0:  Exit  {}
+end
+
+event 456
+      Hint = str[3]  -- "Well"
+  0:  Exit  {}
+end
+
+event 457
+      Hint = str[4]  -- "Drink from the Well"
+  0:  Cmp  {"BankGold", Value = 99,   jump = 5}
+  1:  Cmp  {"Gold", Value = 199,   jump = 5}
+  2:  Cmp  {"MapVar19", Value = 1,   jump = 5}
+  3:  Add  {"Gold", Value = 200}
+  4:  Set  {"MapVar19", Value = 1}
+  5:  StatusText  {Str = 11}         -- "Refreshing!"
+  6:  Exit  {}
+
+      RefillTimer(<function>, const.Week, true)
+  8:  Set  {"MapVar19", Value = 0}
+end
+
+event 458
+      Hint = str[4]  -- "Drink from the Well"
+  0:  StatusText  {Str = 11}         -- "Refreshing!"
+end
+
+event 459
+      Hint = str[8]  -- "Well of Experience"
+  0:  Cmp  {"Gold", Value = 10000,   jump = 3}
+  1:  StatusText  {Str = 16}         -- "Not enough gold"
+  2:  Exit  {}
+
+  3:  ForPlayer  ("Current")
+  4:  Subtract  {"Gold", Value = 10000}
+  5:  ForPlayer  ("Current")
+  6:  Add  {"Experience", Value = 10000}
+  7:  Exit  {}
+end
+
+event 460
+      Hint = str[14]  -- "Drink"
+  0:  Cmp  {"PoisonedGreen", Value = 0,   jump = 12}
+  1:  Cmp  {"PoisonedYellow", Value = 0,   jump = 12}
+  2:  Cmp  {"PoisonedRed", Value = 0,   jump = 12}
+  3:  RandomGoTo  {jumpA = 5, jumpB = 7, jumpC = 9, jumpD = 0, jumpE = 0, jumpF = 0}
+  4:  GoTo  {jump = 0}
+
+  5:  Set  {"PoisonedGreen", Value = 0}
+  6:  GoTo  {jump = 10}
+
+  7:  Set  {"PoisonedYellow", Value = 0}
+  8:  GoTo  {jump = 10}
+
+  9:  Set  {"PoisonedRed", Value = 0}
+  10: StatusText  {Str = 70}         -- "Suddenly, You Don't Feel too Well"
+  11: GoTo  {jump = 13}
+
+  12: StatusText  {Str = 73}         -- "hmmm, You decide against it."
+  13: Exit  {}
+end
+
+event 461
+      Hint = str[6]  -- "Drink from the Fountain"
+  0:  MoveToMap  {X = 3844, Y = 2906, Z = 0, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "d05.blv"}
+  0:  Cmp  {"PlayerBits", Value = 13,   jump = 8}
+  1:  Cmp  {"AutonotesBits", Value = 18,   jump = 3}         -- "25 points of temporary Intellect and Personality from the fountain outside the School of Sorcery in the Bracada Desert."
+  2:  Add  {"AutonotesBits", Value = 18}         -- "25 points of temporary Intellect and Personality from the fountain outside the School of Sorcery in the Bracada Desert."
+  3:  Add  {"PersonalityBonus", Value = 25}
+  4:  Add  {"IntellectBonus", Value = 25}
+  5:  Add  {"PlayerBits", Value = 13}
+  6:  StatusText  {Str = 72}         -- "+25 Intellect and Personality (Temporary)"
+  7:  GoTo  {jump = 9}
+
+  8:  StatusText  {Str = 11}         -- "Refreshing!"
+  9:  Exit  {}
+
+      Timer(<function>, const.Day, 1*const.Hour)
+  11: ForPlayer  ("All")
+  12: Subtract  {"PlayerBits", Value = 13}
+end
+
+event 462
+      Hint = str[35]  -- "Temple"
+  0:  Exit  {}
+end
+
+event 463
+      Hint = str[39]  -- "Shops"
+  0:  Exit  {}
+end
+
+event 464
+      Hint = str[34]  -- "Tavern"
+  0:  Exit  {}
+end
+
+event 465
+      Hint = str[36]  -- "Guilds"
+  0:  Exit  {}
+end
+
+event 466
+      Hint = str[25]  -- "School of Sorcery"
+  0:  Exit  {}
+end
+
+event 467
+      Hint = str[38]  -- "Docks"
+  0:  Exit  {}
+end
+
+event 468
+      Hint = str[37]  -- "Stables"
+  0:  Exit  {}
+end
+
+event 469
+      Hint = str[33]  -- "To Main Square"
+  0:  Exit  {}
+end
+
+event 500
+      Hint = str[100]  -- ""
+  0:  CheckSeason  {Season = 3,   jump(ok) = 5}
+  1:  CheckSeason  {Season = 2,   jump(ok) = 7}
+  2:  CheckSeason  {Season = 1,   jump(ok) = 9}
+  3:  CheckSeason  {Season = 0,   jump(ok) = 11}
+  4:  Exit  {}
+
+  5:  Exit  {}
+
+  6:  Exit  {}
+
+  7:  Exit  {}
+
+  8:  Exit  {}
+
+  9:  Exit  {}
+
+  10: Exit  {}
+
+  11: Exit  {}
+
+  12: Exit  {}
+end
+
+event 501
+      Hint = str[30]  -- "Enter the School of Sorcery"
+  0:  MoveToMap  {X = 2, Y = -1341, Z = -159, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 201, Icon = 9, Name = "D14.blv"}         -- "School of Sorcery"
+end
+
+event 502
+      Hint = str[31]  -- "Enter the Red Dwarf Mines"
+  0:  MoveToMap  {X = 26, Y = 6, Z = 1, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 202, Icon = 3, Name = "D34.blv"}         -- "Red Dwarf Mines"
+end
+
+event 503
+      Hint = str[100]  -- ""
+  0:  Cmp  {"QBits", Value = 99,   jump = 3}         -- Chose the path of Light
+  1:  Cmp  {"QBits", Value = 100,   jump = 3}         -- Chose the path of Dark
+  2:  Exit  {}
+
+  3:  MoveToMap  {X = -6781, Y = 792, Z = 57, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 8, Name = "D25.blv"}
+end

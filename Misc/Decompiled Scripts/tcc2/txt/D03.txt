@@ -1,0 +1,29 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Chest"
+str[3] = "Switch"
+str[4] = "Exit"
+str[5] = "(removed) White Wine"
+str[6] = "(removed) +1 Luck Permanent"
+str[7] = "(removed) +4 Endurance Temporary"
+str[8] = "(removed) Hic"
+str[9] = "The door is locked."
+str[10] = "(removed) Suspicious Floor"
+str[11] = "(removed) Deleted"
+str[12] = "(removed) +10 Hit Points Temporary"
+str[13] = "(removed) Stout Malt Ale"
+str[14] = "(removed) You're too drunk to find the barrel!"
+str[15] = "Door"
+str[16] = "Tortuga Hall"
+str[17] = "Brianna's Brandy"
+str[18] = "The cauldron is empty"
+str[19] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

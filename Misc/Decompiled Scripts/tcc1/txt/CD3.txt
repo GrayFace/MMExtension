@@ -1,0 +1,366 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Chest"
+str[3] = "The door won't budge"
+str[4] = "Exit  "
+str[5] = "Empty"
+str[6] = " Switch"
+str[7] = "Memory crystal"
+str[8] = "Guardian of the Fortress"
+str[9] = "The Guardian of the Fortress proclaims, 'For 50,000 gold, the secret will be revealed!'"
+str[10] = "Accept (Yes/No)?"
+str[11] = "Yes"
+str[12] = "Y"
+str[13] = "Get Lost!"
+str[14] = "Curator of the Fortress"
+str[15] = "The Curator of the Fortress proclaims, 'For 10,000 gold you shall be healed.'"
+str[16] = "Cage"
+str[17] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+      MazeInfo = str[17]  -- ""
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 3, State = 1}
+end
+
+event 4
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 5, State = 1}
+end
+
+event 6
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 6, State = 1}
+end
+
+event 7
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 9, State = 1}
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 11, State = 1}
+end
+
+event 12
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 12, State = 1}
+end
+
+event 13
+      Hint = str[8]  -- "Guardian of the Fortress"
+  0:  Cmp  {"QBits", Value = 340,   jump = 9}         -- NPC
+  1:  SetMessage  {Str = 9}         -- "The Guardian of the Fortress proclaims, 'For 50,000 gold, the secret will be revealed!'"
+  2:  Question  {Question = 10, Answer1 = 11, Answer2 = 12,   jump(ok) = 5}         -- "Accept (Yes/No)?" ("Yes", "Y")
+  3:  StatusText  {Str = 13}         -- "Get Lost!"
+  4:  Exit  {}
+
+  5:  Cmp  {"Gold", Value = 50000,   jump = 8}
+  6:  StatusText  {Str = 13}         -- "Get Lost!"
+  7:  Exit  {}
+
+  8:  Subtract  {"Gold", Value = 50000}
+  9:  MoveToMap  {X = 13487, Y = 3117, Z = 673, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 15
+  0:  MoveToMap  {X = 5773, Y = 5678, Z = -848, Direction = 0, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 17
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 17, State = 1}
+end
+
+event 18
+  0:  SetDoorState  {Id = 18, State = 1}
+end
+
+event 19
+      Hint = str[35]
+  0:  MoveToMap  {X = -11534, Y = -9562, Z = 97, Direction = 1536, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "OutB1.Odm"}
+end
+
+event 27
+      Hint = str[14]  -- "Curator of the Fortress"
+  0:  SetMessage  {Str = 15}         -- "The Curator of the Fortress proclaims, 'For 10,000 gold you shall be healed.'"
+  1:  Question  {Question = 10, Answer1 = 11, Answer2 = 12,   jump(ok) = 4}         -- "Accept (Yes/No)?" ("Yes", "Y")
+  2:  StatusText  {Str = 13}         -- "Get Lost!"
+  3:  Exit  {}
+
+  4:  Cmp  {"Gold", Value = 10000,   jump = 7}
+  5:  StatusText  {Str = 13}         -- "Get Lost!"
+  6:  Exit  {}
+
+  7:  Subtract  {"Gold", Value = 10000}
+  8:  ForPlayer  ("All")
+  9:  Set  {"MainCondition", Value = const.Condition.Cursed}
+  10: Add  {"HasFullHP", Value = 0}
+  11: Add  {"HasFullSP", Value = 0}
+  12: Subtract  {"ReputationIs", Value = 500}
+end
+
+event 20
+  0:  Cmp  {"MapVar1", Value = 1,   jump = 15}
+  1:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = 13458, Y = 3830, Z = 673}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = 13458, Y = 4084, Z = 673}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = 13458, Y = 4518, Z = 673}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = 13054, Y = 4878, Z = 673}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = 12677, Y = 4878, Z = 673}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = 12364, Y = 4878, Z = 673}
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = 11991, Y = 4505, Z = 673}
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = 11991, Y = 4122, Z = 673}
+  9:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 11991, Y = 3688, Z = 673}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 12424, Y = 3368, Z = 673}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 12776, Y = 3368, Z = 673}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 5, X = 12770, Y = 3355, Z = 673}
+  13: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 13182, Y = 3368, Z = 673}
+  14: Set  {"MapVar1", Value = 1}
+  15: Exit  {}
+end
+
+event 21
+  0:  Cmp  {"MapVar2", Value = 1,   jump = 15}
+  1:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 1, X = 14033, Y = 4539, Z = 673}
+  2:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 1, X = 14033, Y = 4131, Z = 673}
+  3:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 1, X = 14033, Y = 3720, Z = 673}
+  4:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 1, X = 14444, Y = 3362, Z = 673}
+  5:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 1, X = 14779, Y = 3362, Z = 673}
+  6:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 1, X = 15195, Y = 3362, Z = 673}
+  7:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 1, X = 15548, Y = 3749, Z = 673}
+  8:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 1, X = 15548, Y = 4100, Z = 673}
+  9:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 15548, Y = 4460, Z = 673}
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 15142, Y = 4872, Z = 673}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 14765, Y = 4872, Z = 673}
+end
+
+event 5
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = 14755, Y = 4865, Z = 673}
+end
+
+event 21
+  13: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 14361, Y = 4872, Z = 673}
+  14: Set  {"MapVar2", Value = 1}
+  15: Exit  {}
+end
+
+event 22
+  0:  Cmp  {"MapVar3", Value = 1,   jump = 15}
+  1:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = 12990, Y = 1356, Z = 673}
+  2:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 1, Count = 1, X = 12454, Y = 1356, Z = 673}
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = 13482, Y = 1741, Z = 673}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = 13482, Y = 2360, Z = 673}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 13000, Y = 2830, Z = 673}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 12414, Y = 2830, Z = 673}
+  7:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 1, X = 13147, Y = 2142, Z = 673}
+  8:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 1, Count = 1, X = 12388, Y = 2142, Z = 673}
+  9:  SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 1, X = 12750, Y = 2501, Z = 673}
+  10: SummonMonsters  {TypeIndexInMapStats = 2, Level = 2, Count = 1, X = 12750, Y = 1703, Z = 673}
+  11: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 12441, Y = 1760, Z = 673}
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 5, X = 12435, Y = 1750, Z = 673}
+  13: SummonMonsters  {TypeIndexInMapStats = 2, Level = 3, Count = 1, X = 13115, Y = 2297, Z = 673}
+  14: Set  {"MapVar3", Value = 1}
+  15: Exit  {}
+end
+
+event 23
+  0:  Cmp  {"MapVar4", Value = 1,   jump = 6}
+  1:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 3, X = 14373, Y = 2407, Z = 256}
+  2:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 1, Count = 3, X = 14373, Y = 1670, Z = 256}
+  3:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 2, Count = 3, X = 15056, Y = 1670, Z = 256}
+  4:  SummonMonsters  {TypeIndexInMapStats = 3, Level = 3, Count = 3, X = 15056, Y = 2407, Z = 256}
+  5:  Set  {"MapVar4", Value = 1}
+  6:  Exit  {}
+end
+
+event 24
+  0:  Cmp  {"MapVar5", Value = 1,   jump = 3}
+  1:  Set  {"MapVar5", Value = 1}
+  2:  Add  {"Gold", Value = 15000}
+  3:  Exit  {}
+end
+
+event 25
+  0:  Cmp  {"MapVar6", Value = 1,   jump = 3}
+  1:  Set  {"MapVar6", Value = 1}
+  2:  Add  {"Gold", Value = 15000}
+  3:  Exit  {}
+end
+
+event 26
+      Hint = str[16]  -- "Cage"
+  0:  Cmp  {"MapVar8", Value = 1,   jump = 3}
+  1:  Add  {"Inventory", Value = 576}         -- "Forseti's Sword"
+  2:  Set  {"MapVar8", Value = 1}
+  3:  Exit  {}
+end
+
+event 31
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 31, State = 1}
+  1:  SetDoorState  {Id = 32, State = 1}
+end
+
+event 41
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 42
+      Hint = str[2]  -- "Chest"
+  0:  Cmp  {"MapVar0", Value = 1,   jump = 2}
+  1:  Cmp  {"QBits", Value = 299,   jump = 6}         -- NPC
+  2:  OpenChest  {Id = 2}
+  3:  Set  {"QBits", Value = 299}         -- NPC
+  4:  Set  {"MapVar0", Value = 1}
+  5:  Exit  {}
+
+  6:  OpenChest  {Id = 9}
+end
+
+event 43
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 44
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 4}
+end
+
+event 45
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 5}
+end
+
+event 46
+  0:  MoveToMap  {X = 6383, Y = 4644, Z = 222, Direction = 315, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 49
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 6}
+end
+
+event 50
+      Hint = str[2]  -- "Chest"
+  0:  OpenChest  {Id = 7}
+end
+
+event 58
+      Hint = str[1]  -- "Door"
+  0:  StatusText  {Str = 3}         -- "The door won't budge"
+end
+
+event 59
+      Hint = str[37]
+  0:  Set  {"MapVar7", Value = 1}
+  1:  SetDoorState  {Id = 19, State = 1}
+end
+
+event 60
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 2}
+  1:  Exit  {}
+
+  2:  SetDoorState  {Id = 33, State = 1}
+  3:  SetDoorState  {Id = 34, State = 1}
+end
+
+event 61
+  0:  MoveToMap  {X = 9111, Y = 2540, Z = 121, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 0, Name = "0"}
+end
+
+event 62
+  0:  Exit  {}
+
+  10: Hint  {Str = 38}
+  10: ForPlayer  ("All")
+  11: Cmp  {"QBits", Value = 104,   jump = 8}         -- CD3
+  12: Cmp  {"Inventory", Value = 553,   jump = 8}         -- "Urn #5"
+  13: SetSprite  {SpriteId = 290, Visible = 1, Name = "crysdisc"}
+  14: ForPlayer  ("Current")
+  15: Add  {"Inventory", Value = 553}         -- "Urn #5"
+  16: Set  {"QBits", Value = 104}         -- CD3
+  17: Set  {"QBits", Value = 194}         -- Quest item bits for seer
+  8:  Exit  {}
+end
+
+event 63
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Cmp  {"QBits", Value = 104,   jump = 4}         -- CD3
+  3:  Cmp  {"Inventory", Value = 553,   jump = 4}         -- "Urn #5"
+  4:  Exit  {}
+
+  5:  SetSprite  {SpriteId = 290, Visible = 1, Name = "crysdisc"}
+end
+
+event 64
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 442,   jump = 4}         -- Fortress of Ancients Once
+  2:  Set  {"QBits", Value = 442}         -- Fortress of Ancients Once
+  3:  Cmp  {"QBits", Value = 508,   jump = 5}         -- Warrior
+  4:  Exit  {}
+
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 7270, Y = 4051, Z = 73}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = 6714, Y = 4295, Z = 73}
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 1, X = 12358, Y = 6199, Z = 145}
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 2, Count = 3, X = 12368, Y = 6961, Z = 145}
+  9:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 9637, Y = 4580, Z = 161}
+  10: Cmp  {"QBits", Value = 507,   jump = 12}         -- Death Wish
+  11: Exit  {}
+
+  12: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 3, X = 7270, Y = 4051, Z = 73}
+  13: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 4, X = 6710, Y = 4290, Z = 73}
+  14: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 12350, Y = 6205, Z = 145}
+  15: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 3, X = 12365, Y = 6968, Z = 145}
+  16: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 3, X = 9637, Y = 4580, Z = 161}
+end
+
+event 100
+      function events.LoadMap()
+  1:  Cmp  {"QBits", Value = 507,   jump = 3}         -- Death Wish
+  2:  Exit  {}
+
+  3:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 6347, Y = 2720, Z = 164}
+  4:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 6410, Y = 4708, Z = 73}
+  5:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 8145, Y = 4040, Z = 113}
+  6:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 14769, Y = 3925, Z = 241}
+  7:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 14756, Y = 1976, Z = 241}
+  8:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 12742, Y = 2169, Z = 241}
+  9:  SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 12743, Y = 4107, Z = 241}
+  10: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 9822, Y = 3145, Z = 241}
+  11: SummonMonsters  {TypeIndexInMapStats = 1, Level = 3, Count = 1, X = 9798, Y = 2773, Z = 241}
+end

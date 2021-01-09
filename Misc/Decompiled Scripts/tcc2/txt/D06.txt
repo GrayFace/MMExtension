@@ -1,0 +1,19 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Switch"
+str[3] = "Chest"
+str[4] = "Double Door"
+str[5] = "The door won't budge"
+str[6] = "Lever"
+str[7] = "Exit"
+str[8] = "Caverns of Timbol"
+str[9] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

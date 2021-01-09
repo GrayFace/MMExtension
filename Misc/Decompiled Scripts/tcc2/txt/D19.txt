@@ -1,0 +1,26 @@
+str[0] = " "
+str[1] = "Switch"
+str[2] = "Elevator platform"
+str[3] = "Chest"
+str[4] = "Door"
+str[5] = "Pushing this switch gives you a bad feeling."
+str[6] = "Uh oh...."
+str[7] = "Here we go again…."
+str[8] = "The switch doesn’t seem to work.."
+str[9] = "Exit"
+str[10] = "Chandelier"
+str[11] = "Cauldron"
+str[12] = "+50 Intellect permanent."
+str[13] = "The Garrison"
+str[14] = ""
+
+
+event 2
+  86: GoTo  {jump = 0}
+end
+
+event 1
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

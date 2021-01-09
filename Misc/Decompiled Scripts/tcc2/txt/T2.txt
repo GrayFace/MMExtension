@@ -1,0 +1,26 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Cabinet"
+str[3] = "Crystal of Accuracy"
+str[4] = "Full sack"
+str[5] = "Switch"
+str[6] = "Flickering Torch"
+str[7] = "Empty barrel"
+str[8] = "The skulls seem to sap your might"
+str[9] = "You have restored the Crystal of Accuracy."
+str[10] = "You pull the torch and it shifts in your hand"
+str[11] = "The door won't budge"
+str[12] = "(removed) The keg is empty"
+str[13] = "Exit"
+str[14] = "(removed) Keg"
+str[15] = "Wrenford's Retreat"
+str[16] = ""
+
+
+event 1
+  110: GoTo  {jump = 0}
+
+      function events.LoadMap()
+  1:  ForPlayer  ("All")
+  2:  Set  {"Eradicated", Value = 0}
+end

@@ -1,0 +1,324 @@
+str[0] = " "
+str[1] = "Door"
+str[2] = "Switch"
+str[3] = "Chest"
+str[4] = "Altar of Might"
+str[5] = "Altar of Life"
+str[6] = "Altar of Endurance"
+str[7] = "Altar of Accuracy"
+str[8] = "Altar of Speed"
+str[9] = "Altar of Luck"
+str[10] = "Altar of the Moon"
+str[11] = "Plaque"
+str[12] = "The door won't budge"
+str[13] = "You kneel at the altar for a moment of silent prayer."
+str[14] = "Life above all, Accuracy before Might, Endurance before Speed, and finally, Luck."
+str[15] = "Ouch!"
+str[16] = "Exit"
+str[17] = "Temple of the Moon"
+str[18] = ""
+
+
+event 1
+      Hint = str[1]  -- "Door"
+      MazeInfo = str[17]  -- "Temple of the Moon"
+  0:  SetDoorState  {Id = 1, State = 1}
+end
+
+event 2
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 2, State = 1}
+end
+
+event 3
+      Hint = str[1]  -- "Door"
+  0:  Cmp  {"MapVar6", Value = 21,   jump = 3}
+  1:  StatusText  {Str = 12}         -- "The door won't budge"
+  2:  Exit  {}
+
+  3:  SetDoorState  {Id = 3, State = 1}
+  4:  SetDoorState  {Id = 4, State = 1}
+end
+
+event 5
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 5, State = 1}
+  1:  SetDoorState  {Id = 6, State = 1}
+end
+
+event 7
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 7, State = 1}
+end
+
+event 8
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 8, State = 1}
+end
+
+event 9
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 9, State = 1}
+end
+
+event 10
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 10, State = 1}
+end
+
+event 11
+      Hint = str[2]  -- "Switch"
+  0:  SetDoorState  {Id = 11, State = 2}         -- switch state
+  1:  SetDoorState  {Id = 12, State = 2}         -- switch state
+  2:  SetDoorState  {Id = 16, State = 2}         -- switch state
+end
+
+event 13
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 1}
+end
+
+event 14
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 2}
+end
+
+event 15
+      Hint = str[3]  -- "Chest"
+  0:  OpenChest  {Id = 3}
+end
+
+event 16
+      Hint = str[4]  -- "Altar of Might"
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 3}
+  1:  Cmp  {"MapVar3", Value = 1,   jump = 19}
+  2:  Cmp  {"MapVar0", Value = 1,   jump = 9}
+  3:  DamagePlayer  {Player = "All", DamageType = const.Damage.Phys, Damage = 10}
+  4:  Set  {"MapVar7", Value = 1}
+  5:  Set  {"MapVar3", Value = 1}
+  6:  Add  {"MapVar6", Value = 3}
+  7:  StatusText  {Str = 15}         -- "Ouch!"
+  8:  Exit  {}
+
+  9:  Set  {"MapVar3", Value = 1}
+  10: Add  {"MapVar6", Value = 3}
+  11: ForPlayer  (0)
+  12: Add  {"BaseMight", Value = 5}
+  13: ForPlayer  (1)
+  14: Add  {"BaseMight", Value = 5}
+  15: ForPlayer  (2)
+  16: Add  {"BaseMight", Value = 5}
+  17: ForPlayer  (3)
+  18: Add  {"BaseMight", Value = 5}
+  19: StatusText  {Str = 13}         -- "You kneel at the altar for a moment of silent prayer."
+  20: Exit  {}
+end
+
+event 17
+      Hint = str[5]  -- "Altar of Life"
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 14}
+  1:  Cmp  {"MapVar5", Value = 1,   jump = 12}
+  2:  Set  {"MapVar5", Value = 1}
+  3:  Add  {"MapVar6", Value = 1}
+  4:  ForPlayer  (0)
+  5:  Add  {"BasePersonality", Value = 5}
+  6:  ForPlayer  (1)
+  7:  Add  {"BasePersonality", Value = 5}
+  8:  ForPlayer  (2)
+  9:  Add  {"BasePersonality", Value = 5}
+  10: ForPlayer  (3)
+  11: Add  {"BasePersonality", Value = 5}
+  12: StatusText  {Str = 13}         -- "You kneel at the altar for a moment of silent prayer."
+  13: Exit  {}
+
+  14: DamagePlayer  {Player = "All", DamageType = const.Damage.Phys, Damage = 10}
+  15: Set  {"MapVar5", Value = 1}
+  16: Add  {"MapVar6", Value = 1}
+  17: StatusText  {Str = 15}         -- "Ouch!"
+  18: Exit  {}
+end
+
+event 18
+      Hint = str[6]  -- "Altar of Endurance"
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 3}
+  1:  Cmp  {"MapVar1", Value = 1,   jump = 19}
+  2:  Cmp  {"MapVar3", Value = 1,   jump = 9}
+  3:  DamagePlayer  {Player = "All", DamageType = const.Damage.Phys, Damage = 10}
+  4:  Set  {"MapVar7", Value = 1}
+  5:  Set  {"MapVar1", Value = 1}
+  6:  Add  {"MapVar6", Value = 4}
+  7:  StatusText  {Str = 15}         -- "Ouch!"
+  8:  Exit  {}
+
+  9:  Set  {"MapVar1", Value = 1}
+  10: Add  {"MapVar6", Value = 4}
+  11: ForPlayer  (0)
+  12: Add  {"BaseEndurance", Value = 5}
+  13: ForPlayer  (1)
+  14: Add  {"BaseEndurance", Value = 5}
+  15: ForPlayer  (2)
+  16: Add  {"BaseEndurance", Value = 5}
+  17: ForPlayer  (3)
+  18: Add  {"BaseEndurance", Value = 5}
+  19: StatusText  {Str = 13}         -- "You kneel at the altar for a moment of silent prayer."
+  20: Exit  {}
+end
+
+event 19
+      Hint = str[7]  -- "Altar of Accuracy"
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 3}
+  1:  Cmp  {"MapVar0", Value = 1,   jump = 19}
+  2:  Cmp  {"MapVar5", Value = 1,   jump = 9}
+  3:  DamagePlayer  {Player = "All", DamageType = const.Damage.Phys, Damage = 10}
+  4:  Set  {"MapVar7", Value = 1}
+  5:  Add  {"MapVar6", Value = 2}
+  6:  Set  {"MapVar0", Value = 1}
+  7:  StatusText  {Str = 15}         -- "Ouch!"
+  8:  Exit  {}
+
+  9:  Set  {"MapVar0", Value = 1}
+  10: Add  {"MapVar6", Value = 2}
+  11: ForPlayer  (0)
+  12: Add  {"BaseAccuracy", Value = 5}
+  13: ForPlayer  (1)
+  14: Add  {"BaseAccuracy", Value = 5}
+  15: ForPlayer  (2)
+  16: Add  {"BaseAccuracy", Value = 5}
+  17: ForPlayer  (3)
+  18: Add  {"BaseAccuracy", Value = 5}
+  19: StatusText  {Str = 13}         -- "You kneel at the altar for a moment of silent prayer."
+  20: Exit  {}
+end
+
+event 20
+      Hint = str[8]  -- "Altar of Speed"
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 3}
+  1:  Cmp  {"MapVar4", Value = 1,   jump = 19}
+  2:  Cmp  {"MapVar1", Value = 1,   jump = 9}
+  3:  Set  {"MapVar4", Value = 1}
+  4:  Set  {"MapVar7", Value = 1}
+  5:  DamagePlayer  {Player = "All", DamageType = const.Damage.Phys, Damage = 10}
+  6:  Add  {"MapVar6", Value = 5}
+  7:  StatusText  {Str = 15}         -- "Ouch!"
+  8:  Exit  {}
+
+  9:  Set  {"MapVar4", Value = 1}
+  10: Add  {"MapVar6", Value = 5}
+  11: ForPlayer  (0)
+  12: Add  {"BaseSpeed", Value = 5}
+  13: ForPlayer  (1)
+  14: Add  {"BaseSpeed", Value = 5}
+  15: ForPlayer  (2)
+  16: Add  {"BaseSpeed", Value = 5}
+  17: ForPlayer  (3)
+  18: Add  {"BaseSpeed", Value = 5}
+  19: StatusText  {Str = 13}         -- "You kneel at the altar for a moment of silent prayer."
+  20: Exit  {}
+end
+
+event 21
+      Hint = str[9]  -- "Altar of Luck"
+  0:  Cmp  {"MapVar7", Value = 1,   jump = 3}
+  1:  Cmp  {"MapVar2", Value = 1,   jump = 19}
+  2:  Cmp  {"MapVar4", Value = 1,   jump = 9}
+  3:  DamagePlayer  {Player = "All", DamageType = const.Damage.Phys, Damage = 10}
+  4:  Set  {"MapVar7", Value = 1}
+  5:  Set  {"MapVar2", Value = 1}
+  6:  Add  {"MapVar6", Value = 6}
+  7:  StatusText  {Str = 15}         -- "Ouch!"
+  8:  Exit  {}
+
+  9:  ForPlayer  (0)
+  10: Add  {"BaseLuck", Value = 5}
+  11: ForPlayer  (1)
+  12: Add  {"BaseLuck", Value = 5}
+  13: ForPlayer  (2)
+  14: Add  {"BaseLuck", Value = 5}
+  15: ForPlayer  (3)
+  16: Add  {"BaseLuck", Value = 5}
+  17: Set  {"MapVar2", Value = 1}
+  18: Add  {"MapVar6", Value = 6}
+  19: StatusText  {Str = 13}         -- "You kneel at the altar for a moment of silent prayer."
+  20: Exit  {}
+end
+
+event 27
+      Hint = str[10]  -- "Altar of the Moon"
+  0:  Cmp  {"QBits", Value = 174,   jump = 5}         -- NPC
+  1:  Cmp  {"QBits", Value = 119,   jump = 3}         -- "Visit the Altar of the Moon in the Temple of the Moon at midnight of a full moon."
+  2:  Exit  {}
+
+  3:  Cmp  {"HourIs", Value = 1,   jump = 5}
+  4:  Cmp  {"HourIs", Value = 0,   jump = 6}
+  5:  Exit  {}
+
+  6:  SpeakNPC  {NPC = 306}         -- "Loretta Fleise"
+end
+
+event 22
+      Hint = str[11]  -- "Plaque"
+  0:  SetMessage  {Str = 14}         -- "Life above all, Accuracy before Might, Endurance before Speed, and finally, Luck."
+  1:  SimpleMessage  {}
+end
+
+event 23
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 13, State = 1}
+end
+
+event 24
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 14, State = 1}
+end
+
+event 25
+      Hint = str[1]  -- "Door"
+  0:  SetDoorState  {Id = 15, State = 1}
+end
+
+event 50
+      Hint = str[16]  -- "Exit"
+  0:  MoveToMap  {X = -18178, Y = 19695, Z = 161, Direction = 512, LookAngle = 0, SpeedZ = 0, HouseId = 0, Icon = 6, Name = "outc2.odm"}
+end
+
+event 51
+  0:  Cmp  {"MapVar19", Value = 1,   jump = 3}
+  1:  Set  {"MapVar19", Value = 1}
+  2:  GiveItem  {Strength = 6, Type = const.ItemType.Cloak_, Id = 0}
+  3:  Exit  {}
+end
+
+event 52
+  0:  Cmp  {"MapVar20", Value = 1,   jump = 3}
+  1:  Set  {"MapVar20", Value = 1}
+  2:  Add  {"Inventory", Value = 239}         -- "Stone to Flesh"
+  3:  Exit  {}
+end
+
+event 53
+  0:  Cmp  {"MapVar21", Value = 1,   jump = 3}
+  1:  Set  {"MapVar21", Value = 1}
+  2:  Add  {"Inventory", Value = 239}         -- "Stone to Flesh"
+  3:  Exit  {}
+end
+
+event 54
+  0:  Cmp  {"MapVar22", Value = 1,   jump = 3}
+  1:  Set  {"MapVar22", Value = 1}
+  2:  Add  {"Inventory", Value = 239}         -- "Stone to Flesh"
+  3:  Exit  {}
+end
+
+event 55
+  0:  Cmp  {"MapVar23", Value = 1,   jump = 3}
+  1:  Set  {"MapVar23", Value = 1}
+  2:  Add  {"Inventory", Value = 239}         -- "Stone to Flesh"
+  3:  Exit  {}
+end
+
+event 56
+  0:  Cmp  {"MapVar24", Value = 1,   jump = 3}
+  1:  Set  {"MapVar24", Value = 1}
+  2:  Add  {"Inventory", Value = 239}         -- "Stone to Flesh"
+  3:  Exit  {}
+end
