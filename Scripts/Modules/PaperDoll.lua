@@ -1,5 +1,5 @@
 --[=[!File
-To use, first place the PaperDol.txt file from https://github.com/GrayFace/MMExtension/tree/master/Misc corresponding to your game of choice into DataFiles folder (create it right next to Data folder of the game if it doesn't exist). Modifiy it as needed. You'll later distribute this file inside your mod's LOD achive.
+To use, first place the PaperDol.txt file #[[https://github.com/GrayFace/MMExtension/tree/master/Misc/Paper%20Doll]]from here# corresponding to your game of choice into DataFiles folder (create it right next to Data folder of the game if it doesn't exist). Modifiy it as needed. You'll later distribute this file inside your mod's LOD achive.
 
 Including the module:
 !LUA[[
