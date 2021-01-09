@@ -1,3 +1,4 @@
+#define mm6
 #include "MM6evtInclude.bt"
 #include "MMevtIncludeCommon.bt"
 #include "MMevtCommon.bt"

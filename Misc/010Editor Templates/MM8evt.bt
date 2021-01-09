@@ -1,3 +1,4 @@
+#define mm8
 #include "MM8evtInclude.bt"
 #include "MMevtIncludeCommon.bt"
 #include "MMevtCommon.bt"

@@ -54,9 +54,9 @@ enum <short> TEvtZAngle
 };
 
 typedef struct
-{ // if some of 'Each' vars or 'FirstYear' is set, others are ignored
-  ubyte FisrtYear;
+{
   ubyte EachYear;
+  ubyte EachMonth;
   ubyte EachWeek;
   ubyte Hour;
   ubyte Min;
@@ -303,21 +303,24 @@ void WriteTEvtString(TEvtString &a, string str)
 enum <ubyte> TEvtCmd
 {
   end   		= 0x01, // Exit
-  SpeakInHouse		= 0x02,
+  EnterHouse		= 0x02,
   PlaySound		= 0x03,
   hint  		= 0x04, // text shown on mouse over
   LocationName		= 0x05, // MM6 only
   MoveToMap		= 0x06,
   OpenChest		= 0x07,
-  ShowFace		= 0x08, // Like when pulling a sword out of stone
-  SrikeWithDamage	= 0x09,
-  WeatherEffect 	= 0x0A, // MM6 only, do nothing in MM8
+  FaceExpression		= 0x08, // Like when pulling a sword out of stone
+  DamagePlayer	= 0x09,
+  SetSnow 	= 0x0A, // MM6 only, do nothing in MM8
   SetTexture		= 0x0B,
-  ShowMovie		= 0x0C,
-   // 0x0C is a kind of SetTexture in MM6!
+#ifdef mm6
+  SetTextureOutdoors    = 0x0C,
+#else
+  ShowMovie   = 0x0C,
+#endif
   SetSprite		= 0x0D,
   cmp   		= 0x0E, // >= for int, 'contains' for sets, == for some variables
-  SwitchAnimation	= 0x0F,
+  SetDoorState	= 0x0F,
   add   		= 0x10,
   sub   		= 0x11,
   set			= 0x12, // assign, 'add' for sets
@@ -326,51 +329,55 @@ enum <ubyte> TEvtCmd
   CastSpell		= 0x15,
   SpeakNPC		= 0x16, // Without a big picture
   SetFacesBit		= 0x17,
-  SetModelBit		= 0x18, // (something for NPCGroups in MM8)
+#ifdef mm6
+  SetFacetBitOutdoors		= 0x18, // (something for NPCGroups in MM8)
+#else
+  SetMonsterBit   = 0x18,
+#endif
   RandomGoTo		= 0x19,
-  InputString		= 0x1A, // Works only inside a house in MM8!
+  Question		= 0x1A, // Works only inside a house in MM8!
   // 1B - not used at all? (present in MM6 D09)
   // 1C - not used at all? (present in MM6 D09)
   StatusText		= 0x1D, // Like "Refreshing!"
-  ShowMessage		= 0x1E, // Like puzzles in the Shadow Guild in White Cup & obelisks
+  SetMessage		= 0x1E, // Like puzzles in the Shadow Guild in White Cup & obelisks
   OnTimer		= 0x1F,
   SetGlow		= 0x20,
-  PressAnyKey		= 0x21, // Used with ShowMessage
-  SummonItem		= 0x22,
-  ForPartyMember	= 0x23, // 23 05 = apply to whole team
+  SimpleMessage		= 0x21, // Used with SetMessage
+  SummonObject		= 0x22,
+  ForPlayer	= 0x23, // 23 05 = apply to whole team
   jmp   		= 0x24,
-  OnMapReload		= 0x25,
-  OnLongTimer		= 0x26,
+  OnLoadMap		= 0x25,
+  OnRefillTimer		= 0x26,
   SetNPCTopic		= 0x27,
   MoveNPC		= 0x28,
   GiveItem		= 0x29,
   ChangeEvent		= 0x2A, // Used to change "Red Barrel" into "Empty Barrel"
   CheckSkill		= 0x2B,
-  OnCanShowDialogItemCmp = 0x2C,
-  EndCanShowDialogItem	= 0x2D,
-  SetCanShowDialogItem	= 0x2E,
-  SetMonGroupNews	= 0x2F,
-  // 30 - nowhere (NPC or Monster management)
-  NPCSetItem		= 0x31, // Sets items to be found in the corpse
+  CanShowTopic_Cmp = 0x2C,
+  CanShowTopic_End	= 0x2D,
+  CanShowTopic_Set	= 0x2E,
+  SetNPCGroupNews	= 0x2F,
+  SetMonsterGroup = 0x30,
+  SetNPCItem = 0x31, // Sets items to be found in the corpse
   SetNPCGreeting	= 0x32,
-  IsNPCGroupSmallerThan	= 0x33,
-  // 34 - nowhere (not used in MM8?)
-  OnMapLeave		= 0x35,
-  // 36 - nowhere (NPC or Monster management)
+  CheckMonstersKilled	= 0x33,
+  CanShowTopic_CheckMonstersKilled = 0x34,
+  OnLeaveMap		= 0x35,
+  ChangeGroupToGroup = 0x36,
   ChangeGroupAlly = 0x37,
   CheckSeason		= 0x38,
   SetMonGroupBit	= 0x39,
-  ChestSetTrapped	= 0x3A,
-  CharacterAnimation	= 0x3B,
-  MonSetItem		= 0x3C, // Used for Tolberty and Robert the Wise
+  SetChestBit	= 0x3A,
+  FaceAnimation	= 0x3B,
+  SetMonsterItem		= 0x3C, // Used for Tolberty and Robert the Wise
   OnDateTimer		= 0x3D,
   EnableDateTimer	= 0x3E,
-  StopAnimation		= 0x3F, // Stops animation in its current state (between ending states). Like in Abandoned Temple in MM8
+  StopDoor		= 0x3F, // Stops animation in its current state (between ending states). Like in Abandoned Temple in MM8
   CheckItemsCount	= 0x40, // As in "Do you have ingredients?"
   RemoveItems		= 0x41, // As in "Do you have ingredients?"
-  SpecialJump		= 0x42,
-  IsTotalBountyHuntingAwardInRange = 0x43,
-  IsNPCInParty		= 0x44
+  Jump		= 0x42,
+  IsTotalBountyInRange = 0x43,
+  IsPlayerInParty		= 0x44
 };
 
 //------------------------------------------------------
@@ -487,7 +494,7 @@ typedef struct // Exit
 } Cmd_01;
 
 //-------------------------
-typedef struct // SpeakInHouse
+typedef struct // EnterHouse
 {
   uint id2DEvent;
    // 600(dec) = you won
@@ -550,7 +557,7 @@ typedef struct // OpenChest
 } Cmd_07;
 
 //-------------------------
-typedef struct // ShowFace
+typedef struct // FaceExpression
 {
   TPartyMember PartyMember;
   ubyte Face;
@@ -558,7 +565,7 @@ typedef struct // ShowFace
 } Cmd_08;
 
 //-------------------------
-typedef struct // SrikeWithDamage
+typedef struct // DamagePlayer
 {
   TPartyMember PartyMember;
   ubyte DmgType; // damage type (in most cases 00; 02 is used for a door in Shadow Guild)
@@ -567,7 +574,7 @@ typedef struct // SrikeWithDamage
 } Cmd_09;
 
 //-------------------------
-typedef struct // WeatherEffect
+typedef struct // SetSnow
 {
   ubyte EffectID; // 00 = snow in MM6
   ubyte On;
@@ -618,7 +625,7 @@ typedef struct // cmp
 } Cmd_0E;
 
 //-------------------------
-typedef struct // SwitchAnimation
+typedef struct // SetDoorState
 {
   ubyte AnimationID;
   ubyte State; // 00 - off, 01 - on, 02 - switch state
@@ -736,7 +743,7 @@ typedef struct // RandomGoto
 } Cmd_19;
 
 //-------------------------
-typedef struct // InputString
+typedef struct // Question
 {
   if (MMVersion == 8)
     EvtInt QuestionNPCText;
@@ -771,7 +778,7 @@ typedef struct // StatusText
 } Cmd_1D;
 
 //-------------------------
-typedef struct // ShowMessage
+typedef struct // SetMessage
 {
   EvtInt StringID;
   
@@ -795,14 +802,14 @@ typedef struct // SetGlow
 } Cmd_20;
 
 //-------------------------
-typedef struct // PressAnyKey
+typedef struct // SimpleMessage
 {
   ubyte unused;
   
 } Cmd_21;
 
 //-------------------------
-typedef struct // SummonItem
+typedef struct // SummonObject
 {
   int ItemIndex; // + 1000*EnchantementStrength (1-6) (like described in the end of STDITEMS.TXT)
   int X;
@@ -815,7 +822,7 @@ typedef struct // SummonItem
 } Cmd_22;
 
 //-------------------------
-typedef struct // ForPartyMember
+typedef struct // ForPlayer
 {
   TPartyMember PartyMember;
   
@@ -829,14 +836,14 @@ typedef struct // jmp
 } Cmd_24;
 
 //-------------------------
-typedef struct // OnMapReload
+typedef struct // OnLoadMap
 {
   ubyte unk_1;
   
 } Cmd_25;
 
 //-------------------------
-typedef struct // OnLongTimer
+typedef struct // OnRefillTimer
 {
   TEvtDateTime Interval;
   
@@ -940,7 +947,7 @@ typedef struct // SetNPCGreeting
 } Cmd_32;
 
 //-------------------------
-typedef struct // IsNPCGroupSmallerThan
+typedef struct // CheckMonstersKilled
 {
   ubyte checkType; // 0..4, 0 = number of monsters alive
   uint idNPCGroup;
