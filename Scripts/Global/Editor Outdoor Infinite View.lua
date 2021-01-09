@@ -16,30 +16,31 @@ end
 local addr = 0x47F0CD
 local CodeStd = mem.string(addr, 6, true)
 
-mem.asmpatch(addr, [[
-	mov dword [ebp - 0x58], 0
-	savereg ecx, edi
-	
-	mov edi, 0x7AB810
-	mov ecx, (0x7ABA10 - 0x7AB810)/4
-	mov eax, 2
-	rep stosd
-	
-	mov edi, 0x7AB410
-	mov ecx, (0x7AB610 - 0x7AB410)/4
-	mov eax, 125
-	rep stosd
-	
-	mov ecx, 128
-@loop:
-	mov [0x7ABA10 + ecx*4], ecx
-	dec ecx
-	jnz @loop
-	
-	loadreg
-	mov eax, 128
-	jmp absolute 0x47F707
-]])
+if CodeStd == "\15\135\52\6\0\0" then
+	mem.asmpatch(addr, [[
+		mov dword [ebp - 0x58], 0
+		savereg ecx, edi
+		
+		mov edi, 0x7AB810
+		mov ecx, (0x7ABA10 - 0x7AB810)/4
+		mov eax, 2
+		rep stosd
+		
+		mov edi, 0x7AB410
+		mov ecx, (0x7AB610 - 0x7AB410)/4
+		mov eax, 125
+		rep stosd
+		
+		mov ecx, 128
+	@loop:
+		mov [0x7ABA10 + ecx*4], ecx
+		dec ecx
+		jnz @loop
+		
+		loadreg
+		mov eax, 128
+		jmp absolute 0x47F707
+	]])
 
 -- mem.hook(addr, function(d)
 	-- i4[d.ebp - 0x58] = 0
@@ -55,6 +56,7 @@ mem.asmpatch(addr, [[
 	-- end
 	-- u4[d.esp] = 0x47F707
 -- end, 6)
+end
 
 local CodeMine = mem.string(addr, 6, true)
 
@@ -86,7 +88,9 @@ function Editor.UpdateVisibility(full)
 			end
 		end
 		
-		mem.copy(addr, on and CodeMine or CodeStd, 6)
+		if CodeStd ~= CodeMine then
+			mem.copy(addr, on and CodeMine or CodeStd, 6)
+		end
 	end
 	mem.IgnoreProtection(false)
 end
