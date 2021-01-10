@@ -1311,6 +1311,7 @@ function structs.f.PatchOptions(define)
 	int  'MaxMLookUpAngle'
 	bool  'FixIceBoltBlast'  Info "[MM7+]"
 	int  'MonSpritesSizeMul'  Info "Default is 0 - disabled. 0x10000 stands for 1.0."
+	bool  'FixEnergyDamageType'  Info "[MM7+]"
 	
 	function define.f.Present(name)
 		return not not addr[name]
