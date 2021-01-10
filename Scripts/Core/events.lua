@@ -34,7 +34,7 @@ do
 
 	local procs_hookfunction = {
 		hookfunction = true,
-		hookcall = true,
+		hookcall = false,
 	}
 
 	function HookManager(ref)
@@ -116,7 +116,7 @@ end
 local OnEventUsed = {}
 internal.OnEventUsed = OnEventUsed
 
-internal.EventsSetup{
+local EventsT = internal.EventsSetup{
 	EventUsed = function(name, on)
 		local f = OnEventUsed[name]
 		if f then
@@ -127,7 +127,9 @@ internal.EventsSetup{
 
 local function Conditional(hooks, name)
 	OnEventUsed[name] = hooks.Switch
-	hooks.Switch(false)
+	if not EventsT[name] then
+		hooks.Switch(false)
+	end
 end
 
 
@@ -278,7 +280,16 @@ function internal.SetFogRange()
 	events.cocalls("FogRange")
 end
 
+local delayedDefs = {}
+
+local function delayed(f)
+	delayedDefs[f] = true
+end
+
 function internal.GameInitialized1()
+	for f in pairs(delayedDefs) do
+		f()
+	end
 	GameInitialized1 = true
 	-- loaded .bin data
 	events.cocalls("GameInitialized1")
@@ -1329,7 +1340,7 @@ if mmver > 6 then
 			Result = def(this, skill),
 		}
 		t.PlayerIndex, t.Player = GetPlayer(this)
-		--!k{Player :structs.Player}
+		--!k{Player :structs.Player} [MM7+]
 		events.cocall("GetSkill", t)
 		return t.Result
 	end)
@@ -1382,6 +1393,22 @@ if mmver == 6 then
 else
 	SimplePlayerHook(mm78(0x491252, 0x4902DF), "GetPerceptionTotalSkill")
 	SimplePlayerHook(mm78(0x49130F, 0x49036E), "GetLearningTotalSkill")
+end
+if false then  -- for help
+	local t = {
+		Result = 1,
+		-- :structs.Player
+		Player = 1,
+		PlayerIndex = 1,
+	}
+	events.cocall("GetMerchantTotalSkill", t)
+	events.cocall("GetDisarmTrapTotalSkill", t)
+	-- [MM6]
+	events.cocall("GetDiplomacyTotalSkill", t)
+	-- [MM7+]
+	events.cocall("GetPerceptionTotalSkill", t)
+	-- [MM7+]
+	events.cocall("GetLearningTotalSkill", t)
 end
 
 -- DoBadThingToPlayer
@@ -1585,6 +1612,17 @@ mem.autohook(mmv(0x4A465D, 0x4BD307, 0x4BB2B6), function(d)
 	events.cocall("GuildItemsGenerated", t)
 end)
 
+do
+	local hooks = HookManager()
+	hooks.autohook(mmv(0x4A6113, 0x4BF09B, 0x4BCCCE), function(d)
+		local t = {
+			House = Game.GetCurrentHouse(),
+		}
+		events.cocall("HouseMovieFrame", t)
+	end)
+	Conditional(hooks, "HouseMovieFrame")
+end
+
 
 local AddFields_damageMonsterFromParty
 do
@@ -1669,7 +1707,7 @@ if mmver > 6 then
 		-- :const.Damage
 		t.DamageKind = i4[kind]
 		t.Vampiric = (i4[vampiric] ~= 0)
-		--!k{Monster :structs.MapMonster, Player :structs.Player} 'Monster', 'MonsterIndex', 'Player' and 'PlayerIndex' fields are only set if the function is called by the game itself and not a script
+		--!k{Monster :structs.MapMonster, Player :structs.Player} [MM7+] 'Monster', 'MonsterIndex', 'Player' and 'PlayerIndex' fields are only set if the function is called by the game itself and not from a script
 		events.cocall("ItemAdditionalDamage", t)
 		i4[kind] = t.DamageKind
 		i4[vampiric] = (t.Vampiric and 1 or 0)
@@ -1738,7 +1776,7 @@ if mmver > 6 then
 			end
 		end
 		t.MonsterIndex, t.Monster = GetMonster(mon)
-		--!k{Monster :structs.MapMonster}
+		--!k{Monster :structs.MapMonster} [MM7+]
 		events.cocall("CastTelepathy", t)
 		t.CallDefault()
 	end)
@@ -1747,20 +1785,47 @@ end
 -- CanMonsterCastSpell
 if mmver > 6 then
 	local hooks = HookManager()
-	hooks.hookfunction(mm78(0x4270B9, 0x4254BA), 1, 2, function(d, def, ai, mon, spell)
-		local t = {
-			Spell = spell,
-			Allow = def(ai, mon, spell),
-		}
-		t.MonsterIndex, t.Monster = GetMonster(mon)
-		--!k{Monster :structs.MapMonster}
-		events.cocall("CanMonsterCastSpell", t)
-		return t.Allow
+	delayed(|| do
+		local p1 = hooks.hookfunction(mm78(0x4270B9, 0x4254BA), 1, mm78(2, 3), function(d, def, ai, mon, monIndex, spell, dist)
+			local t = {
+				Spell = spell,
+				Monster = mon,
+				MonsterIndex = monIndex,
+				-- [MM8]
+				Distance = dist,
+				Allow = def(ai, mon, monIndex, spell, dist),
+			}
+			--!k{Monster :structs.MapMonster} [MM7+]
+			events.cocall("CanMonsterCastSpell", t)
+			return t.Allow
+		end)
+		Conditional(hooks, "CanMonsterCastSpell")
 	end)
-	Conditional(hooks, "CanMonsterCastSpell")
 end
 
-
+-- MonsterChooseAction
+do
+	local hooks = HookManager()
+	hooks.hookfunction(mmv(0x421C50, 0x427002, 0x4253DF), 1, mmv(1, 2, 3), function(d, def, ai, mon, monIndex, dist)
+		local t = {
+			Action = nil,
+			Monster = mon,
+			MonsterIndex = (mmver == 6 and GetMonster(mon) or monIndex),
+			-- [MM8]
+			Distance = dist,
+		}
+		-- function!Params[[()]]
+		t.CallDefault = function()
+			local r = def(ai, mon, monIndex, dist)
+			t.Action = r
+			return r
+		end
+		--!k{Monster :structs.MapMonster} 'Action' starts uninitialized. Each time you call 'CallDefault', it generates new result, assigns it to 'Action' and returns the value.
+		events.cocall("MonsterChooseAction", t)
+		return t.Action or def(ai, mon, monIndex, dist)
+	end)
+	Conditional(hooks, "MonsterChooseAction")
+end
 
 -- Sprite hooks
 -- local function GetSprite(p)

@@ -567,6 +567,7 @@ local function mem_function(def)
 	if must > deflen then
 		deflen = must
 	end
+	local fixed = def.fixed
 	local rettype = def.ret
 
 	return function(...)
@@ -586,6 +587,9 @@ local function mem_function(def)
 					par[i] = tostring(v)
 				-- end
 			end
+		end
+		for i = 1, fixed and #fixed or 0 do
+			table_insert(par, i, fixed[i])
 		end
 		
 		if pfunc then
@@ -2038,7 +2042,7 @@ function _mem.hookfunction(p, nreg, nstack, f, size)
 		d.eax = f(d, def, d:getparams(nreg, nstack))
 		d:ret(nstack*4)
 	end, size)
-	return p
+	return code
 end
 
 -- Replaces an existing CALL instruction and uses the same protocol as #hookfunction:mem.hookfunction#
@@ -2052,7 +2056,6 @@ function _mem.hookcall(p, nreg, nstack, f)
 		d.eax = f(d, def, d:getparams(nreg, nstack))
 		d:ret(nstack*4)
 	end, 5)
-	return p
 end
 
 -- Creates a Lua callback (because any use of FFI for function calls leads to random bugs)

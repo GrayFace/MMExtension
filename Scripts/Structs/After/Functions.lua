@@ -129,6 +129,42 @@ function ReplaceNPCTopic(old, new)
 	end
 end
 
+-- Rebuilds house dialog, e.g. after you've moved an NPC to or from this house
+-- Can seemlessly transition between different houses
+function ReloadHouse(id)
+	local old = Game.SoundVolume
+	Game.SoundVolume = 0
+	while Game.CurrentScreen ~= 0 do
+		Game.Actions.Add(113)
+		Game.Actions.Process()
+	end
+	evt.EnterHouse(id)
+	Game.SoundVolume = old
+end
+
+-- Exits currently playing movie and loads the specified one
+function SwitchHouseMovie(s, loop)
+	Game.EndMovie()
+	Game.LoadHouseMovie(s, loop)
+end
+
+do
+	local DummyDlg
+
+	-- Draw simple message in screens where it isn't normally supposed to be
+	function DrawSimpleMessage()
+		local old = mem.u4[0x507A64]
+		if old == 0 and not DummyDlg then
+			local s = "\0\0\0\0\0\0\0\0\128\2\0\0\224\1\0\0\127\2\0\0\223\1\0\0\19\0\0\0\33\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+			DummyDlg = mem.malloc(#s)
+			mem.copy(DummyDlg, s, #s)
+		end
+		mem.u4[0x507A64] = old ~= 0 and old or DummyDlg
+		mem.call(0x444FE1, 0)
+		mem.u4[0x507A64] = old
+	end
+end
+
 function AddGoldExp(gold, exp)
 	if gold and gold ~= 0 then
 		evt[0][gold > 0 and "Add" or "Sub"]("Gold", abs(gold))

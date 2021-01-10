@@ -425,6 +425,15 @@ function structs.f.GameStructure(define)
 	define
 	.func{name = "DoShowMovie", p = mmv(0x4A59A0, 0x4BE671, 0x4BC1F1), cc = 2, must = 1; "", 0, true, true}
 	 .Info{Sig = "Name, Y, DoubleSize, ExitCurrentScreen"; "Only call from #events.ShowMovie:#, use #evt.ShowMovie:# otherwise."}
+	.func{name = "LoadHouseMovie", p = mmv(0x4A63E0, 0x4BF1F5, 0x4BCE28), cc = 1, fixed = {mmv(0x9DE330, 0xF8B988, 0xFFDD80)}, must = 1; "", true}
+	 .Info{Sig = "Name, Loop = true"}
+	.func{name = "EndMovie", p = mmv(0x4A5D10, 0x4BEB3A, 0x4BC755), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
+	[mmv(0x9DE330 + 16, 0xF8B988 + 100, 0xFFDD80 + 100)].b4  'IsMovieLooped'
+	[mmv(0x9DE330, 0xF8B988 + 156, 0xFFDD80 + 156)].i4  'MovieKind'
+	 .Info "0 - No movie, 1 - Smack, 2 - Bink"
+	.func{name = "RestartHouseMovie", p = mmv(0x4A68B0, 0x4BF518, 0x4BD165), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
+	.func{name = "PlayShopSound", p = mmv(0x496520, 0x4B1DF5, 0x4B065F), cc = 2, must = 2}
+	 .Info{Sig = "House, SoundIndex"}
 	.func{name = "CalcSpellDamage", p = mmv(0x47F0A0, 0x43B006, 0x438B05), cc = 0, must = 4}
 	 .Info{Sig = "Spell, Skill, Mastery, MonsterHP"}
 	.func{name = "GetSpellDamageType", p = mmv(0x481A60, 0x48E189, 0x48D618), cc = 0, must = 1}
@@ -439,6 +448,7 @@ function structs.f.GameStructure(define)
 		define[internal.MonsterKindPtr].parray{lenA = i4, lenP = internal.MonsterKindPtr + 4}.struct(structs.MonsterKind)  'MonsterKinds'
 		.func{name = "IsMonsterOfKind", p = mmv(nil, 0x438BCE, 0x436542), cc = 2, must = 2}
 		 .Info{Sig = "Id, Kind:const.MonsterKind"}
+		.func{name = "IsMoviePlaying", p = mm78(0x4BF35F, 0x4BCFA0), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
 	end
 	
 	function define.f.LoadSound(soundId, unk, unk2)
@@ -1143,7 +1153,7 @@ local DrawStyles = {
 }
 
 -- 'style':
---   "transparent", 'false' - draw treating color index 0 as transparent
+--   "transparent", 'false' - draw treating color index 0 as transparent (default)
 --   "opaque", 'true' - draw without transparency
 --   "red" - draw broken item
 --   "green" - draw unidentified item

@@ -7,6 +7,9 @@ local function mmv(...)
 	assert(ret ~= nil)
 	return ret
 end
+local function mm78(...)
+	return (select(mmver - 5, nil, ...))
+end
 
 local _KNOWNGLOBALS = BinarySearch, Game, Party, Map, Mouse
 
@@ -1050,6 +1053,8 @@ function structs.f.MapMonster(define)
 		[0x214+o].i4  'NameId'  -- NAME_ID
 		 .Info "From PlaceMon.txt"
 		[0x218+o].skip(3*3)  -- RESERVED
+		.method{p = mm78(0x40104C, 0x401051), cc = 2, name = "IsAgainst"; 0}
+		 .Info{Sig = "Mon2:structs.MapMonster";  "If 'Mon2' isn't specified, attitude towards party is checked"}
 	end
 	define.size = mmv(0x224, 0x344, 0x3CC)
 
@@ -1094,7 +1099,9 @@ function structs.f.MapMonster(define)
 	end
 	function define.m:SetId(id)
 		self.Id = id
-		self.Id2 = id
+		if self.Id2 ~= 0 then
+			self.Id2 = id
+		end
 	end
 	-- function define.m:SetId(id)
 		-- self.Id = id
@@ -1396,9 +1403,13 @@ else
 	function structs.f.SpellInfo(define)
 		define
 		[0x0].bit('CastByMonster', 0x0001)  -- M
+		 .Info '"M" in "Stats" from spells.txt'
 		[0x0].bit('CastByEvent', 0x0002)  -- E
+		 .Info '"E" in "Stats" from spells.txt'
 		[0x0].bit('CauseDamage', 0x0004)  -- C
+		 .Info '"C" in "Stats" from spells.txt'
 		[0x0].bit('SpecialDamage', 0x0008)  -- X
+		 .Info '"X" in "Stats" from spells.txt'
 		-- from spells.txt
 		[0x0].u2  'Bits'
 		 .Info '"Stats" from spells.txt'
