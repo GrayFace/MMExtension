@@ -37,7 +37,7 @@ Doll	ItemPicture	Image	X	Y	Piece	Comments
 12	PlayerBody	grldarm2	513	101	hand2h	note: numbered PlayerBody takes precedence over simple PlayerBody
 	PlayerBody	RTHAND	606	186	hand2	2nd hand drawn when dual-wielding (can also be used to shift weapon position in 2nd hand)
 	PlayerBody	LEFTHAND	513	160	hand1	main hand, always drawn
-	ItemExtraHand		572	26	hand2	2nd hand weapon offset (such offsets can be followed by player face number)
+	ItemExtraHand		91	26	hand2	2nd hand weapon offset (such offsets can be followed by player face number)
 						piece 'shield' is used for drawing shield, so ItemExtraHand with piece 4 can set shield offset
 						piece 'scarf' can be used for cloaks, then it's drawn above the head and helmet
 	
