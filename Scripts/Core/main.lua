@@ -68,7 +68,13 @@ local error = error
 local offsets = offsets
 local events = events
 local table_copy = table.copy
+local table_invert = table.invert
+local sortpairs = sortpairs
 local d_findupvalue = debug.findupvalue
+local path_find = path.find
+local path_addslash = path.addslash
+local path_name = path.name
+local package = package
 
 local function roError(a, lev)  error('attempt to modify a read-only field "'..a..'".', lev + 1)  end
 local function readonly(t, a)  roError(a, 2)  end
@@ -444,16 +450,31 @@ end
 
 -- call structs
 
+local PathList = table_invert{GamePath, GitPath}
+internal.PathList = PathList
+
+function _G.AddGamePath(s)
+	s = path_addslash(s)
+	if not PathList[s] then
+		package.path = package.path..";"..s.."Scripts\\Modules\\?.lua"
+	end
+	PathList[s] = true
+end
+
 local function RunFiles(path, func)
-	if GitPath then
-		for s in _G.path.find(GitPath..path) do
-			dofile(s)
+	local t = {}
+	for dir in pairs(PathList) do
+		for s in path_find(dir..path) do
+			t[(path_name(s)..'\0'..dir):lower()] = s
 		end
 	end
-	for s in _G.path.find(GamePath..path) do
+	for _, s in sortpairs(t) do
 		(func or dofile)(s)
 	end
 end
+internal.RunFiles = RunFiles
+
+RunFiles("Scripts/Include/*.lua")
 
 RunFiles("Scripts/Structs/*.lua")
 
@@ -482,31 +503,30 @@ local function CheckNoDel(fname)
 	end
 end
 
-local function RunOrDel(fname)
-	if CheckNoDel(fname) then
-		dofile(fname)
-	end
-end
-
 RunFiles("Scripts/Structs/After/*.lua")
 
 function _G.ReloadLocalization()
-	for f in _G.path.find(AppPath.."Scripts/Localization/*.txt") do
+	for f in path_find(AppPath.."Scripts/Localization/*.txt") do
 		_G.LoadTextTable(f, _G.LocalizeAll{})
 		-- _G.LocalizeAll(_G.LoadTextTable(f), true)
 	end
-	for f in _G.path.find(GamePath.."Scripts/Localization/*.lua") do
+	for f in path_find(GamePath.."Scripts/Localization/*.lua") do
 		dofile(f)
 	end
 end
 _G.ReloadLocalization()
 
 -- delete MMExtension.txt
-for f in _G.path.find(AppPath.."MMExtension.txt") do
-	CheckNoDel(f)
+if isMM then
+	for f in path_find(AppPath.."MMExtension.txt") do
+		CheckNoDel(f)
+	end
+	for f in path_find(AppPath.."Scripts/General/*.lua") do
+		CheckNoDel(f)
+	end
 end
 
-RunFiles("Scripts/General/*.lua", isMM and RunOrDel)
+RunFiles("Scripts/General/*.lua")
 
 events.cocalls("ScriptsLoaded")
 

@@ -88,8 +88,8 @@ end
 internal.OnBeforeLoadGame = OnLeaveGame
 internal.OnExitToMainMenu = OnLeaveGame
 
-local function DoLoadScripts(fpath, t)
-	for f in path.find(fpath) do
+local function LoadScripts(fpath, t)
+	internal.RunFiles(fpath, function(f)
 		local chunk, err = loadfile(f)
 		if chunk == nil then
 			debug.ErrorMessage(err)
@@ -97,14 +97,7 @@ local function DoLoadScripts(fpath, t)
 			t[debug.FunctionFile(chunk)] = true
 			cocall2(chunk)
 		end
-	end
-end
-
-local function LoadScripts(fpath, t)
-	if internal.GitPath then
-		DoLoadScripts(internal.GitPath..fpath, t)
-	end
-	DoLoadScripts(fpath, t)
+	end)
 end
 
 function internal.BeforeMapLoad()
