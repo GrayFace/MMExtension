@@ -32,6 +32,11 @@ do
 		asmpatch = true,
 	}
 
+	local procs_hookfunction = {
+		hookfunction = true,
+		hookcall = true,
+	}
+
 	function HookManager(ref)
 		local t = {}
 		function t.AddEx(RetMem, memf, addr, hookf, size, ...)
@@ -90,6 +95,14 @@ do
 		for proc, RetMem in pairs(asmprocs) do
 			t[proc] = function(addr, code, ...)
 				return t.AddEx(RetMem, mem[proc], addr, t.ProcessAsm(code), ...)
+			end
+		end
+		for proc, RetMem in pairs(procs_hookfunction) do
+			local function reorder(p, f, size, nreg, nstack)
+				return mem[proc](p, nreg, nstack, f, size)
+			end
+			t[proc] = function(p, nreg, nstack, f, size)
+				return t.AddEx(RetMem, reorder, p, f, size, nreg, nstack)
 			end
 		end
 		t.asmproc = function(code)
@@ -1439,7 +1452,7 @@ end
 -- Regeneration
 
 do
-	local hooks = HookManager{}
+	local hooks = HookManager()
 	hooks[mmver == 7 and 'hook' or 'autohook'](mmv(0x487F74, 0x493DC0, 0x49216B), function(d)
 		if mmver == 7 and d.zf then
 			u4[d.esp] = 0x493E76
@@ -1713,7 +1726,7 @@ end)
 
 -- CastTelepathy
 if mmver > 6 then
-	mem.hookfunction(mmv(nil, 0x4086E9, 0x408E89), 1, 0, function(d, def, mon)
+	mem.hookfunction(mm78(0x4086E9, 0x408E89), 1, 0, function(d, def, mon)
 		local t = {
 			Allow = true,
 		}
@@ -1729,6 +1742,22 @@ if mmver > 6 then
 		events.cocall("CastTelepathy", t)
 		t.CallDefault()
 	end)
+end
+
+-- CanMonsterCastSpell
+if mmver > 6 then
+	local hooks = HookManager()
+	hooks.hookfunction(mm78(0x4270B9, 0x4254BA), 1, 2, function(d, def, ai, mon, spell)
+		local t = {
+			Spell = spell,
+			Allow = def(ai, mon, spell),
+		}
+		t.MonsterIndex, t.Monster = GetMonster(mon)
+		--!k{Monster :structs.MapMonster}
+		events.cocall("CanMonsterCastSpell", t)
+		return t.Allow
+	end)
+	Conditional(hooks, "CanMonsterCastSpell")
 end
 
 

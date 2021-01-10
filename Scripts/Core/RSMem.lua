@@ -2038,6 +2038,7 @@ function _mem.hookfunction(p, nreg, nstack, f, size)
 		d.eax = f(d, def, d:getparams(nreg, nstack))
 		d:ret(nstack*4)
 	end, size)
+	return p
 end
 
 -- Replaces an existing CALL instruction and uses the same protocol as #hookfunction:mem.hookfunction#
@@ -2051,6 +2052,7 @@ function _mem.hookcall(p, nreg, nstack, f)
 		d.eax = f(d, def, d:getparams(nreg, nstack))
 		d:ret(nstack*4)
 	end, 5)
+	return p
 end
 
 -- Creates a Lua callback (because any use of FFI for function calls leads to random bugs)
