@@ -1322,6 +1322,7 @@ function structs.f.PatchOptions(define)
 	bool  'FixIceBoltBlast'  Info "[MM7+]"
 	int  'MonSpritesSizeMul'  Info "Default is 0 - disabled. 0x10000 stands for 1.0."
 	bool  'FixEnergyDamageType'  Info "[MM7+]"
+	bool  'FixMonsterSpells'
 	
 	function define.f.Present(name)
 		return not not addr[name]

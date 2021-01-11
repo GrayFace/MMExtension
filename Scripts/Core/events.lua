@@ -1821,6 +1821,11 @@ do
 			return r
 		end
 		--!k{Monster :structs.MapMonster} 'Action' starts uninitialized. Each time you call 'CallDefault', it generates new result, assigns it to 'Action' and returns the value.
+		-- 'Action' values:
+		-- 0 - attack 1,
+		-- 1 - attack 2,
+		-- 2 - spell 1,
+		-- 3 - spell 2 (MM7+)
 		events.cocall("MonsterChooseAction", t)
 		return t.Action or def(ai, mon, monIndex, dist)
 	end)

@@ -1550,7 +1550,7 @@ function structs.f.MapObject(define)
 	.u1  'Range'
 	 .Info  "Distance to target: 0 - less than 307.2, 1 - less than 1024, 2 - less then 2560, 3 - 2560 or more"
 	.u1  'AttackType'
-	 .Info  "0 - Attack1, 1 - Attack2, 2 - Spell, 3 - Spell2"
+	 .Info  "0 - Attack1, 1 - Attack2, 2 - Spell, 3 - Spell2, 4 - Explode"
 	.skip(2)
 	.alt.array(3).i4  'StartPos'
 	.i4  'StartX'
