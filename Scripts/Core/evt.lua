@@ -123,7 +123,7 @@ function internal.BeforeMapLoad()
 			--!v([]) [MM7+]  Functions that can return 'true' or 'false' to change topic visibility
 			evt.CanShowTopic = events.new()
 		end
-		LoadScripts("Scripts/Global/*.lua", GlobalScripts)
+		LoadScripts("Global/*.lua", GlobalScripts)
 	end
 	events.cocall("BeforeLoadMap", WasInGame)
 end
@@ -161,8 +161,8 @@ function internal.OnLoadMap()
 	if not NoScripts then
 		internal.ResetEvtPlayer()
 		events.cocall("BeforeLoadMapScripts", WasInGame)
-		LoadScripts("Scripts/Maps/"..path.setext(MapName, ".lua"), CurMapScripts)
-		LoadScripts("Scripts/Maps/*."..path.setext(MapName, ".lua"), CurMapScripts)
+		LoadScripts("Maps/"..path.setext(MapName, ".lua"), CurMapScripts)
+		LoadScripts("Maps/*."..path.setext(MapName, ".lua"), CurMapScripts)
 		internal.ResetEvtPlayer()
 		events.cocall("LoadMapScripts", WasInGame)
 	end

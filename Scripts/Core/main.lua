@@ -450,13 +450,13 @@ end
 
 -- call structs
 
-local PathList = table_invert{GamePath, GitPath}
+local PathList = table_invert{GamePath..'Scripts/', GitPath and GitPath..'Scripts/'}
 internal.PathList = PathList
 
-function _G.AddGamePath(s)
+function _G.AddScriptsPath(s)
 	s = path_addslash(s)
 	if not PathList[s] then
-		package.path = package.path..";"..s.."Scripts\\Modules\\?.lua"
+		package.path = package.path..";"..s.."Modules\\?.lua"
 	end
 	PathList[s] = true
 end
@@ -474,9 +474,9 @@ local function RunFiles(path, func)
 end
 internal.RunFiles = RunFiles
 
-RunFiles("Scripts/Include/*.lua")
+RunFiles("Include/*.lua")
 
-RunFiles("Scripts/Structs/*.lua")
+RunFiles("Structs/*.lua")
 
 -- for a, v in pairs(structs.f) do
 	-- structs[a] = mem.struct(v)
@@ -503,14 +503,14 @@ local function CheckNoDel(fname)
 	end
 end
 
-RunFiles("Scripts/Structs/After/*.lua")
+RunFiles("Structs/After/*.lua")
 
 function _G.ReloadLocalization()
-	for f in path_find(AppPath.."Scripts/Localization/*.txt") do
+	for f in path_find(AppPath.."Localization/*.txt") do
 		_G.LoadTextTable(f, _G.LocalizeAll{})
 		-- _G.LocalizeAll(_G.LoadTextTable(f), true)
 	end
-	for f in path_find(GamePath.."Scripts/Localization/*.lua") do
+	for f in path_find(GamePath.."Localization/*.lua") do
 		dofile(f)
 	end
 end
@@ -521,12 +521,12 @@ if isMM then
 	for f in path_find(AppPath.."MMExtension.txt") do
 		CheckNoDel(f)
 	end
-	for f in path_find(AppPath.."Scripts/General/*.lua") do
+	for f in path_find(AppPath.."General/*.lua") do
 		CheckNoDel(f)
 	end
 end
 
-RunFiles("Scripts/General/*.lua")
+RunFiles("General/*.lua")
 
 events.cocalls("ScriptsLoaded")
 
