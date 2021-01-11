@@ -1,0 +1,751 @@
+<br>
+<h2>en|General Information|ru|Общая информация|</h2>
+en|You will need|ru|Для моддинга Вам понадобится| <a href="https://sites.google.com/site/sergroj/mm/MMArchive.rar?attredirects=0">MMArchive</a>. ru|Также могут пригодиться |<a href="http://sourceforge.net/projects/mm8leveleditor/files/MM8LevelEditor/">mm8leveleditor</a> en|and|ru|и| <a href="http://sites.google.com/site/angelddeath/#TOC-Might-Magic-6-8-Map-Viewer">MM Map Viewer</a>en| may also come in handy|.
+<br>
+en|Extract all <'>*.txt</'> files from appropriate LOD archive:
+<'>icons.lod</'> in MM6, <'>events.lod</'> in MM7, <'>EnglishT.lod</'> in MM8. You will need them.|
+ru|Извлеките все файлы <'>*.txt</'> из соответствующих архивов LOD: <'>icons.lod</'> в MM6, <'>events.lod</'> в MM7, <'>EnglishT.lod</'> в MM8. Вам они понадобятся.|
+<br>
+en|Easiest thing to start with is editing text tables with|ru|Проще всего начать с редактирования текстовых таблиц с помощью| <a href="https://sites.google.com/site/sergroj/wog/TxtEdit.rar?attredirects=0">TxtEdit</a>.
+en|In addition to <'>*.txt</'> files that you've extracted from LOD archives MMExtension will create some tables in <b>Data\Tables</b> folder on first launch. You can change any values in them and add new lines to many of them.|
+ru|В добавок к файлам <'>*.txt</'>, которые Вы извлекли из LOD-архива MMExtension создаст некоторые таблицы в папке <b>Data\Tables</b> при первом запуске. Вы можете менять в них любые значения и добавлять новые строки ко многим из них.|
+<br>
+<br>
+
+en|<b>Lua</b> is a simple, yet powerful scripting language. You can read about it <a href="http://www.lua.org/manual/5.1/">here</a>,
+<a href="http://www.lua.org/pil/">here</a> and <a href="http://luajit.org/extensions.html">here</a>. MMExtension exposes all standard Lua and LuaJIT libraries.<br>
+I used to use SciTE to edit Lua scripts before I switched to Sublime Text. Here are some of my settings for SciTE:|
+ru|<b>Lua</b> - это простой, но гибкий скриптовый язык. Вы можете прочитать о нём <a href="http://www.lua.org/manual/5.1/">здесь</a>, <a href="http://www.lua.org/pil/">здесь</a> и <a href="http://luajit.org/extensions.html">здесь</a>. MMExtension предоставляет все стандартные библиотеки Lua и LuaJIT.<br>
+Пока я не перешёл на Sublime Text, я использовал SciTE для редактирования скриптов Lua. Вот некоторые мои настройки для SciTE:|
+<table class="table">
+<tbody>
+<tr>
+<td>
+en|Open|ru|Откройте| SciTEGlobal.properties.<br>
+<br>
+<b>en|Find and set up these settings:|ru|Найдите и установите следующие параметры:|</b><br>
+tabsize=2<br>
+indent.size=2<br>
+braces.autoclose=0<br>
+<br>
+<b>en|Find|ru|Найдите|</b> user.shortcuts=\<br>
+<b>en|delete line with|ru|удалите строку с|</b> Alt+X<br>
+<b>en|add line|ru|добавьте строку|:</b> Ctrl+Shift+Z|IDM_REDO|\<br>
+<b>en|add line|ru|добавьте строку|:</b> Ctrl+R|IDM_REPLACE|\<br>
+</td>
+</tr>
+</tbody>
+</table>
+<br>
+en|All scripts are located in Scripts directory. Subfolders determine when scripts get loaded and unloaded:|
+ru|Все скрипты находятся в директории Scripts. Скрипты в разных подпапках загружаются и выгружаются в разные моменты:|
+<br>
+<table class="table width-500">
+<tbody>
+<tr>
+<td><i>&nbsp;en|Subfolder|ru|Подпапка|
+</i></td>
+<td><i>&nbsp;en|Description|ru|Описание|
+</i></td>
+</tr>
+<tr>
+<td>Core</td>
+<td>en|MMExtension core scripts. Don't put your scripts here.|ru|Скрипты ядра MMExtension. Не кладите сюда свои скрипты.|
+</td>
+</tr>
+<tr>
+<td>General</td>
+<td>en|These scripts are loaded before the game starts and are never unloaded.|
+ru|Эти скрипты загружаются перед началом игры и никогда не выгружается.|
+</td>
+</tr>
+<tr>
+<td>Global</td>
+<td>en|These scripts are loaded when a new game is started or a saved game is loaded and are unloaded
+when user exits to main menu or loads another game. This is a good place for most of your scripts that don't belong to specific maps. Quests scripts in particular.|
+ru|Эти скрипты загружаются, когда запускается новая игра или загружается сохраненная игра, и выгружаются,
+когда пользователь выходит в главное меню или загружает другую игру. Это хорошее место для большинства скриптов, которые не относятся к конкретной карте. В частности, для скриптов заданий.|
+</td>
+</tr>
+<tr>
+<td>Localization</td>
+<td>en|These scripts and text files are loaded on game start just before "General" scripts and can be reloaded with <#>ReloadLocalization():ReloadLocalization</#> function. They should be used for mods localization.|
+ru|Эти скрипты загружаются при старте игры перед загрузкой скриптов из папки "General" и могут быть загружены снова вызовом функции <#>ReloadLocalization():ReloadLocalization</#>. Они предназначены для локализации модов.|
+</td>
+</tr>
+<tr>
+<td>Maps</td>
+<td>en|These scripts correspond to maps. For example, scripts named <'>oute3.lua</'> and <'>some_name.oute3.lua</'> would be loaded when
+<'>oute3.odm</'> map (New Sorpigal) is loaded and unloaded when it is left.|
+ru|Эти скрипты соответствуют картам. Например, скрипты под названием <'>oute3.lua</'> и <'>любое_имя.oute3.lua</'> будет загружаться при
+загрузке карты <'>Oute3.odm</'> (Нью-Сорпигал) и выгружаться при выходе из неё.|
+</td>
+</tr>
+<tr>
+<td>Modules</td>
+<td>en|These scripts aren't loaded automatically. Instead they can be loaded with <a href="http://www.lua.org/manual/5.1/manual.html#pdf-require">require</a> function.|
+ru|Эти скрипты не загружаются автоматически. Вместо этого, их можно загружать при помощи функции <a href="http://www.lua.org/manual/5.1/manual.html#pdf-require">require</a>.|
+</td>
+</tr>
+<tr>
+<td>Structs</td>
+<td>en|These scripts are intended for structs definitions. These things are low-level, so I won't describe them yet.
+If you find some interesting address with ArtMoney or disassembler, contact me.|
+ru|Эти скрипты предназначены для определения структур. Эти вещи низкого уровня, так что пока я не буду описывать их.
+Если вы нашли интересный адрес с помощью ArtMoney или дизассемблера, свяжитесь со мной.|
+</td>
+</tr>
+<tr>
+<td colspan="2">en|You can create your own subfolders. Scripts in them won't be loaded automatically and
+won't be unloaded either.|
+ru|Вы можете создавать свои собственные подпапки. Скрипты в них не будут загружаться автоматически и не будет выгружаться.|
+<br>
+<br>
+en|The word 'unload' means removing all events of a script. As a consequence of global and maps scripts
+being unloaded and then loaded again, you can change them and test changes by simply reloading a saved game.
+No need to exit Might and Magic for this.|
+ru|Слово "выгружать" означает удаление всех событий скрипта. Благодаря выгрузке и последующей повторной загрузке глобальных скриптов и скриптов карт, вы можете их изменить и протестировать изменения, просто перезагрузив сохраненную игру.
+Не нужно для этого выходить из игры Меч и Магия.|
+<br>
+</td>
+</tr>
+</tbody>
+</table>
+<br>
+en|<b>Debug console</b> is a convenient way to quickly test things. Press Ctrl+F1 to open it.
+You can write any script here. For example, <lua1>dump(Party[0].Stats)</lua1> would output first player's stats.<br>
+Press Ctrl+Enter to execute a script.<br>
+Press Ctrl+E to repeat the last script.<br>
+Press Esc to cancel debug console.<br>|
+ru|<b>Отладочная консоль</b> - это удобный способ быстро проверить что-нибудь. Нажмите Ctrl + F1, чтобы открыть её.
+Здесь Вы можете писать любые скрипты. Например, <lua1>dump(Party[0].Stats)</lua1> выведет значения характеристик первого персонажа.<br>
+Нажмите Ctrl + Enter, чтобы выполнить скрипт.<br>
+Нажмите Ctrl + E, чтобы повторить последний скрипт.<br>
+Нажмите Esc, чтобы закрыть консоль.<br>|
+<br>
+en|<b>Variables</b> used by your scripts can be of 4 types:<br>
+Local variables, declared with the word <b>local</b> in Lua.
+They can be used in the place where they were declared (i.e. function, script or code block) and aren't stored is saved games.<br>
+Global variables. They can be accessed from anywhere, but aren't stored in saved games.<br>
+Variables in <#>vars</#> table. They can be accessed from anywhere and are stored in savegames.<br>
+Variables in <#>mapvars</#> table. They belong to current map. When a new map is entered
+the appropriate variables table is set as <#>mapvars</#> table. They are stored in savegames. When a map is refilled, new <#>mapvars</#> table is created, but the old one is accessible at this moment as <#>Map.Refilled:structs.GameMap.Refilled</#>.<br>|
+
+ru|<b>Переменные</b>, используемые скриптами, могут быть 4 типов:<br>
+Локальные переменные, объявленные со словом <b>local</b> в Lua.
+Они могут быть использованы в месте, где они были объявлены (т.е. функция, скрипт или блок кода) и не хранятся в сохранении игры.<br>
+Глобальные переменные. Они могут быть доступны из любого места, но они не хранятся в сохранении игры.<br>
+Переменные в таблице <#>vars</#>. Они могут быть доступны из любого места и хранятся в сохранении игры.<br>
+Переменные в таблице <#>mapvars</#>. Они относятся к текущей карте. При загрузке карты, 
+соответствующая таблица с переменными устанавливается, как <#>mapvars</#>. Они хранятся в сохранении игры. При перезаполнении карты таблица <#>mapvars</#> пересоздаётся, старая таблица в этот момент доступна, как <#>Map.Refilled:structs.GameMap.Refilled</#>.<br>|
+<br>
+
+<h3>en|Hello world!|ru|Привет мир!|</h3>
+en|Let's first use the debug console. In the game press Ctrl+F1 and paste this script:|
+ru|Для начала используем отладочную консоль. В игре нажмите Ctrl+F1 и вставьте следующий скрипт:|
+<lua>
+Message("Hello world!")
+</lua>
+en|Press Ctrl+Enter to execute your welcome script.|
+ru|Нажмите Ctrl+Enter, чтобы исполнить свой приветственный скрипт.|<br><br>
+
+en|To make your first game script create <'>out01.lua</'> file (or <'>oute3.lua</'> for MM6) in <b>Scripts\Maps</b> directory and write this text there:<br>|
+ru|Для того, чтобы сделать свой первый скрипт игры, создайте файл <'>out01.lua</'> (или <'>oute3.lua</'> для MM6) в каталоге <b>Scripts\Maps</b> и напишите в нём этот текст:<br>|
+<lua>
+MessageBox("Hello world!")
+</lua>
+en|This script will show a <#>system message box:MessageBox</#> each time you enter the first map.<br><br>
+
+To show a native MM message you can use a script like this:|
+ru|Этот скрипт будет показывать <#>системное окно сообщения:MessageBox</#> каждый раз при входе в первую карту.<br><br>
+
+Чтобы показать родное сообщение МM, вы можете использовать подобный скрипт:|
+<lua>
+Game.NeedRedraw = true  -- I remember having problems with minimap not getting drawn
+Sleep(1)  -- sleep for 1 tick to let it be drawn
+Message("Hello world!")
+</lua>
+en|The reason for the first two lines of code is that Might and Magic doesn't support showing simple messages when the map is just loaded.<br>|
+ru|Первые 2 строки в нём понадобились из-за того, что Меч и Магия не поддерживает показ простых сообщений в момент загрузки карты.<br>|
+<br>
+
+
+
+<h3>en|Decompiled Scripts|ru|Декомпилированные скрипты|</h3>
+en|Original Might and Magic scripts are stored in binary format in files with extension <'>.evt</'>. MMExtension can decompile these scripts.|ru|Оригинальные скрипты Меча и Магии хранятся в двоичном формате в файлах с расширением <'>.evt</'>. MMExtension может декомпилировать эти скрипты.|
+<a href="https://gitlab.com/GrayFace/mmext-scripts/-/tree/master/Decompiled%20Scripts">en|Get decompiled scripts here.|ru|Ссылка на декомпилированные скрипты.|</a><br>
+en|Decompiled scripts come in the form of Lua scripts and also pseudo code that directly corresponds to binary format.<br>
+Just so you know, here are the differences between pseudo code commands and real MMExtension commands:<br>
+1) "evt." isn't written in them.<br>
+2) They use jumps instead of if-then and loops. They have their lines numbered.<br>
+3) They almost always supply parameter names in calls to Evt functions. You can do the same, but you can also use calls without parameter names.<br>
+4) Some commands are replaced by better analogs in MMExtension.
+For example, you cannot use <'>evt.OnTimer</'> command, instead you should use <#>Timer</#> function.<br>
+5) There are other differences, like declaration of events.<br>|
+
+ru|Декомпилированные скрипты представлены в виде скриптов Lua и в псевдокоде, который напрямую соответствует бинарному формату.<br>
+Просто для информации, далее приведены различия между командами псевдокода и реальными командами MMExtension:<br>
+1) "evt." в них не пишется.<br>
+2) Они используют goto, а не структурные условные операторы и циклы. Их строки пронумерованы.<br>
+3) Они почти всегда проставляют имена параметров в вызовах функций Evt. Вы можете сделать то же самое, но вы также можете использовать вызовы без имен параметров.<br>
+Некоторые команды заменены лучшими аналогами в MMExtension. Например, вы не можете использовать команду <'>evt.OnTimer</'>, вместо этого вы должны использовать функцию <#>Timer</#>.<br>
+5) Есть и другие отличия в синтаксисе скриптов - например, объявление событий.<br>|
+
+<br>
+en|Here's an example (a Lua script)|ru|Пример (в формате Lua)|:
+<br>
+<lua>
+Game.MapEvtLines:RemoveEvent(60)  -- remove original event
+evt.map[60] = function()
+	local i
+	if evt.Cmp("MapVar0", 4) then
+		evt.StatusText(5)         -- "Nothing here"
+	else
+		evt.Add("MapVar0", 1)
+		evt.StatusText(4)         -- "You found something!"
+		i = Game.Rand() % 6
+		if i == 1 then
+			evt.Add("Inventory", 1)         -- "Longsword"
+		elseif i == 2 then
+			evt.Add("Inventory", 15)         -- "Dagger"
+		elseif i == 3 then
+			evt.Add("Inventory", 58)         -- "Club"
+		elseif i == 4 then
+			evt.Add("Inventory", 161)         -- "Phirna Root"
+		elseif i == 5 then
+			evt.Add("Inventory", 309)         -- "Inferno"
+		else
+			evt.Add("Inventory", 94)         -- "Cloth Hat"
+		end
+	end
+end
+</lua>
+
+en|It comes from a decompiled script <'>ZNWC.lua</'> of MM6. I just added the first line to make it remove original event handler, so that this code fragment can be used on its own. Decompiled scripts remove all standard event handlers at once with <lua1>Game.MapEvtLines.Count = 0</lua1> command. If you want to modify parts of decompiled scripts, you should also extract them like I did here. See <#>RemoveEvent:structs.EventLine.RemoveEvent</#> method for more info.<br>|
+ru|Это код из декомпилированного скрипта <'>ZNWC.lua</'> из MM6. Я только добавил первую строчку, которая убрает оригинальный обработчик события, чтобы этот фрагмент кода можно использовать сам по себе. Декомпилированные скрипты убирают сразу все оригинальные обработчики командой <lua1>Game.MapEvtLines.Count = 0</lua1>. Если вы хотите изменить некоторые события в декомпилированных скриптах, вытаскивайте эти события в отдельный скрипт, как сделал здесь я. Подробнее см. в описании метода <#>RemoveEvent:structs.EventLine.RemoveEvent</#>.<br>|
+<br>
+en|Now it's time for a script doing the same thing (if you play the game from start with it), but written using more fitting MMExtension features:|ru|Если же полноценно использовать возможности MMExtension, то скрипт, делающий то же самое (если играть с ним с самого начала игры), будет выглядеть так:|
+<br>
+
+
+<a name="LocalizeScriptExample"></a>
+<lua>
+local TXT = Localize{
+	NothingHere = "Nothing here",
+	FoundSomething = "You found something!",
+}
+local items = {1, 15, 58, 161, 309, 94}
+Game.MapEvtLines:RemoveEvent(60)  -- remove original event
+evt.map[60] = function()
+	if mapvars.Shelf60 == 4 then
+		return Game.StatusText(TXT.NothingHere)
+	end
+	mapvars.Shelf60 = (mapvars.Shelf60 or 0) + 1
+	Game.StatusText(TXT.FoundSomething)
+	local i = math.random(1, #items)
+	evt.Add("Inventory", items[i])  -- alternatively: evt.GiveItem{Id = items[i]}
+end
+</lua>
+<br>
+en|You can decompile scripts by yourself if you ever need to.
+To do so, extract all <'>*.evt</'> and <'>*.str</'> files from the same LOD archive you used to extract <'>*.txt</'> files.
+
+Create "Decompile" sub-folder inside the game folder, put these files there and run this simple script:|
+ru|Вы можете декомпилировать скрипты самостоятельно, если Вам это когда-то понадобится.
+
+Для этого извлеките все <'>*.evt</'> и <'>*.str</'> файлы из того же архива LOD, что вы использовали для извлечения <'>*.txt</'> файлов.
+
+Создайте папку "Decompile" в папке с игрой, положите их туда, и выполните этот простой скрипт:|
+<br>
+<lua>
+local dir = "Decompile/"
+for f in path.find(dir.."*.evt") do
+	evt.Decompile(f, 0, dir.."Scripts/"..path.setext(path.name(f), ".lua"))
+	evt.Decompile(f, 0, dir.."Scripts/txt/"..path.setext(path.name(f), ".txt"), true)
+end
+</lua>
+<br>
+
+en|<i>Note:</i> You can't turn a decompiled script back into EVT file, even if it's in text form. In case you do need to edit raw EVT files, you can use|ru|<i>Примечание:</i> Невозможно преобразовать декомпилированный скрипт даже в текстовой форме обратно в файл EVT. Если Вам надо отредактировать EVT, используйте| <a href="https://gitlab.com/GrayFace/mmext-scripts/-/tree/master/010Editor%20Templates">en|my 010Editor Templates|ru|мои шаблоны для 010Editor|</a>.
+<br>
+<br>
+
+
+
+<h3>en|Short functions syntax|ru|Сокращённый синтаксис объявления функций|</h3>
+en|MMExtension features one language extension - short syntax for functions declaration. Here's an example:|ru|MMExtension вносит одно дополнение в синтаксис Lua - cокращённый синтаксис объявления функций. Пример:|
+<lua>
+sum = |x, y| x + y
+-- en|translates into|ru|превращается в|
+sum = function(x, y)
+	return x + y
+end
+</lua>
+en|<b>Return</b> operator is only added when appropriate. For example,|ru|Оператор <b>return</b> добавляется только когда он уместен. Например,|
+<lua>
+check = |b| if b then
+	print(b)
+end
+-- en|translates into|ru|превращается в|
+check = function(b)
+	if b then
+		print(b)
+	end
+end
+</lua>
+en|Since such short functions can return only one value, you'll have no problems using them in function calls and table declarations:|ru|Поскольку не заключённые в скобки короткие функции возвращают одно значение, нет проблем с передачей их в функции и конструкторы таблиц:|
+<lua>
+Timer(|| evt.DamagePlayer{Damage = 1}, const.Minute)
+-- en|translates into|ru|превращается в|
+Timer(function()
+	return evt.DamagePlayer{Damage = 1}
+end, const.Minute)
+</lua>
+en|If you want to return more than one value, put the whole short function into parentheses:|ru|Если Вы хотите вернуть более одного значения, заключите всю короткую функцию в скобки:|
+<lua>
+switch = (|x, y| y, x)
+-- en|translates into|ru|превращается в|
+switch = (function(x, y)
+	return y, x
+end)
+</lua>
+en|You can even put multiple statements inside a short function in parentheses:|ru|Внутри заключённой в скобки короткой функции можно даже использовать несколько строчек кода:|
+<lua>
+print2 = (|x, y|
+	print(x)
+	print(y)
+)
+-- en|translates into|ru|превращается в|
+print2 = (function(x, y)
+	print(x)
+	print(y)
+end)
+</lua>
+en|Using <'>do</'> block for the same effect would look better:|ru|Для того же эффекта лучше будет выглядить блок <'>do</'>:|
+<lua>
+print2 = |x, y| do
+	print(x)
+	print(y)
+end
+-- en|translates into|ru|превращается в|
+print2 = function(x, y)
+	do
+		print(x)
+		print(y)
+	end
+end
+</lua>
+en|But don't go too wild with short functions, it's best to use traditional syntax for such multiline functions.|ru|Но не стоит перебарщивать с короткими функциями - для многострочных функций предпочтителен традиционный синтаксис.|
+<br>
+<br>
+
+<h3>en|Quests|ru|Задания|</h3>
+en|Original MM quests were spread across multiple files and manually programmed, which is inconvenient and error prone. My quests support has undergone a few iterations and I'm very happy with it now.|ru|Оригинальные задания MM были разбросаны по нескольким файлам и программировались вручную, это неудобно и чревато ошибками. Поддержка заданий в MMExtension прошла несколько итераций и сейчас я ею очень доволен. |<br>
+<a href="https://gitlab.com/GrayFace/mmext-scripts/-/tree/master/Quests%20Examples%20(for%20MM8)">en|Here are 6 examples|ru|Здесь 6 примеров|</a>.
+en|They are for MM8. At the end of most examples there is extra information about functions used. Most examples utilize <#>short functions syntax:Short-functions-syntax</#>.|
+ru|Они предназначены для MM8. В конце большинства примеров есть дополнительная информация об использованных функциях. В большинстве примеров используется <#>сокращённый синтаксис объявления функций:Short-functions-syntax</#>.|<br>
+<br>
+en|Start with <b>Quest Example Simple.lua</b>. It contains a simple <#>quest:Quest</#> and two <#>text topics:NPCTopic</#>, as well as a <#>greeting:Greeting</#>.|
+ru|Начните с <b>Quest Example Simple.lua</b>. Это простое <#>задание:Quest</#> с двумя дополнительными <#>пунктами разговора:NPCTopic</#>, а также <#>приветствием:Greeting</#>.|
+<luaf>%MMExtScripts%\Quests Examples (for MM8)\Scripts\Global\Quest Example Simple.lua</luaf>
+<b>Quest Example.lua</b>
+en|contains basically the same quest, but it is more complex. It has different NPC greetings depending on <#>quest state:vars.Quests</#> and conditionally shown topics, one of which lets you buy items from NPC.|
+ru|содержит копию того же задания, и кое-что дополнительно: приветствие NPC зависит от <#>состояния задания:vars.Quests</#>, есть пункты диалога, показываемые при определённых условиях, один из которых - покупка предмета у NPC.|
+<luaf>%MMExtScripts%\Quests Examples (for MM8)\Scripts\Global\Quest Example.lua</luaf>
+<b>Quest With 2 NPCs.lua</b> 
+en|is an example of a quest that requires going to another NPC.|
+ru|- это пример задания, для выполнения которого надо пойти к другому NPC.|
+<luaf>%MMExtScripts%\Quests Examples (for MM8)\Scripts\Global\Quest With 2 NPCs.lua</luaf>
+<b>Quest Alchemy.lua</b> 
+en|demonstrates a quest similar to "collect ingredients for a potion" quests with a little extra twist.|
+ru|- это пример задания, подобного стандартным "собери ингредиенты для зелья" с небольшой дополнительной фишкой.|
+<luaf>%MMExtScripts%\Quests Examples (for MM8)\Scripts\Global\Quest Alchemy.lua</luaf>
+<b>Quest Kill Monsters.lua</b> 
+en|has two <#>"kill monsters":KillMonstersQuest</#> quests, MMExtension supports them natively so you don't have to add all the checks for slain monsters into effected maps.|
+ru|содержит 2 задания <#>"убить определённых монстров":KillMonstersQuest</#> - MMExtension поддерживает такие задания "из коробки", так что Вам не придётся прописывать проверки убийства вручную во все задействованные карты.|
+<luaf>%MMExtScripts%\Quests Examples (for MM8)\Scripts\Global\Quest Kill Monsters.lua</luaf>
+<b>Multilevel Quest.lua</b> 
+en|is a complex tree-style dialog, yet elegant in execution. <#>QuestBranch</#> function is utilized.|
+ru|создаёт сложный древовидный диалог, но код остаётся вполне элегантным. Используется функция <#>QuestBranch</#>.|
+<luaf>%MMExtScripts%\Quests Examples (for MM8)\Scripts\Global\Multilevel Quest.lua</luaf>
+en|Some examples also work in MM7 if you find the NPCs they operate on. As for MM6, it lacks NPC greetings and only has 3 dialog topics, plus two text-only topics. The first quest should work in it.|
+ru|В MM7 часть примеров тоже будет работать, если Вы найдёте персонажей, к которыми они применяются. Что касается MM6, в нём нет приветствий персонажей и всего 3 пункта диалога, плюс 2 исключительно текстовых пункта. Первый пример задания на нём должен работать.|
+<br>
+<br>
+
+<h3>en|Localization|ru|Локализация|</h3>
+en|In order to make a script localizeable you should call <#>Localize</#> function in it, passing a table with default strings. The function will return a table with localized strings. See |
+ru|Чтобы сделать скрипт локализуемым, Вы должны в нём вызвать функцию <#>Localize</#>, передав ей таблицу со строками по умолчанию. Она вернёт таблицу с локализованными строками. См. | 
+<a href="#LocalizeScriptExample">en|an example above|ru|предыдущий пример|</a>.<br>
+
+en|For strings shared by multiple scripts you should use <#>LocalizeAll</#> function which works the same way, but normally you should only use the table returned by <#>Localize</#>. It automatically falls back to common localization strings if there is no script-specific one.<br>
+Also note that you aren't limited to strings, localization table can contain any values, including subtables.<br>
+Quests are localized automatically.|
+
+ru|Для общих строк, используемых несколькими скриптами, используйте функцию <#>LocalizeAll</#>. Она работает так же, но Вам не потребуется возвращаемая ей таблица. Таблица, возвращаемая <#>Localize</#>, автоматически берёт отсутствующие строки из таблицы общих строк.<br>
+Вообще, таблицы локализации могут содержать любые значения, а не только строки. В том числе, подтаблицы.<br>
+Задания локализуются автоматически.|
+<br>
+<br>
+en|Localization is very much automated. <#>GenerateLocalization():GenerateLocalization</#> function automatically extracts localization information from all scripts and generates localization files. It requires scripts in <b>Maps</b> and <b>Modules</b> folders not to do anything prior to calling <#>Localize</#> and/or <#>LocalizeAll</#> functions. Also, each function should be called at most once per script, otherwise strings passed in subsequent calls may get ignored.|
+ru|Локализация максимально автоматизирована. Функция <#>GenerateLocalization():GenerateLocalization</#> автоматически извлекает информацию о локализации из всех скриптов и генерирует файлы локализации. Она накладывает ограничения на скрипты в папках <b>Maps</b> и <b>Modules</b>. Эти скрипты не должны ничего делать до вызова функций <#>Localize</#> и/или <#>LocalizeAll</#>. К тому же, каждую функцию они должны вызывать только 1 раз, иначе строки, переданные в последующих вызовах, могут быть проигнорированы.|
+<br>
+en|To generate localization files for all scripts, load any game, press Ctrl+F1, write <b>GenerateLocalization()</b> and press Ctrl+Enter. It will generate the following files in <b>Scripts\Localization</b> folder:|
+ru|Чтобы сгенерировать файлы локализации для всех скриптов, загрузите любую игру, нажмите Ctrl+F1, напишите <b>GenerateLocalization()</b> и нажмите Ctrl+Enter. В папке <b>Scripts\Localization</b> будут созданы следующие файлы:|
+<table class="table">
+<tbody>
+	<tr><td><i>&nbsp;en|File|ru|Файл|</i></td><td><i>&nbsp;en|Description|ru|Описание|</i></td></tr>
+	<tr><td>Quests.txt</td><td>en|Quests localization.|ru|Локализация заданий.|</td></tr>
+	<tr><td>Common.txt</td><td>en|Strings passed to <#>LocalizeAll</#> function.|ru|Строки, переданные в функцию <#>LocalizeAll</#>.|</td></tr>
+	<tr><td>Scripts.txt</td><td>en|Strings passed to <#>Localize</#> function.|ru|Строки, переданные в функцию <#>Localize</#>.|</td></tr>
+</tbody>
+</table>
+en| These files should be edited with |ru| Для редактирования этих файлов используйте |<a href="https://sites.google.com/site/sergroj/wog/TxtEdit.rar">Txt Tables Editor</a>.<br>
+en| Alternatively, you can run <b>GenerateLocalization(true)</b> to generate <'>*.lua</'> localization files. Choose whichever format you prefer.|
+ru| Или же можно запустить команду <b>GenerateLocalization(true)</b>, чтобы сгенерировать файлы локализации <'>*.lua</'>. Выбирайте тот формат, который Вам удобнее.|<br>
+en| To generate localization only for quests you can use <#>GenerateQuestsLocalization():GenerateQuestsLocalization</#> command.<br>
+To generate localization excluding quests you can use <b>GenerateLocalization(false, false)</b> command.|
+ru| Чтобы сгенерировать локализацию только для заданий, можно использовать команду <#>GenerateQuestsLocalization():GenerateQuestsLocalization</#>.<br>
+Чтобы сгенерировать локализацию для всего, кроме заданий, можно использовать команду <b>GenerateLocalization(false, false)</b>.|
+<br>
+<br>
+en| To test localization changes without restarting the game you can create a script in <b>Global</b> folder with this line:|
+ru| Чтобы тестировать изменения локализации без перезапуска игры, можно создать скрит в папке <b>Global</b> со следующей строкой:|
+<br>
+<lua>ReloadLocalization()</lua>
+en| Then you'll only need to reload a saved game to test localization changes.|
+ru| После этого для для тестирования изменений локализации достаточно будет перезагрузить сохраненную игру.|
+<br>
+<br>
+
+<h3>en|Known Issues|ru|Известные ошибки|</h3>
+en|You shouldn't call any|ru|Не вызываёте| <#>en|evt.* commands|ru|команды evt.*|:Evt-Commands</#> en|from inside|ru|из обработчика события| <#>events.EnterNPC:</#> en|or|ru|или| <#>events.ShowNPCTopics:</#> en|event handlers. It would cause the commands list to be overwritten, thus ending currently executed sequence.|ru|. Такой вызов изменит список команд и прекратит выполнение текущей последовательности.|
+<br>
+<br>
+
+<br>
+<hr>
+<h2>en|Examples|ru|Примеры|</h2>
+
+en|You can find more examples in the|ru|Вы найдёте больше примеров в| <a href="http://www.celestialheavens.com/forums/viewtopic.php?t=10423">en|MMExtension discussion thread|ru|теме для обсуждения MMExtension|</a>.
+
+<h3>en|Players Skills And Spells|ru|Умения и заклинания игроков|</h3>
+en|Below are some scripts demonstrating how you can work with skills and spells. You can test them by pasting the one you like into debug console.<br>|
+ru|Здесь есть кое-какие скрипты, показывающие, как можно работать с умениями и заклинаниями. Скопируйте приглянувшийся скрипт в отладочную консоль, чтобы протестировать его.<br>|
+<lua>
+-- learn all spells
+for _, pl in Party do
+	for i in pl.Spells do
+		pl.Spells[i] = true
+	end
+end
+</lua>
+<lua>
+-- give Expert Perception for all players
+for _, pl in Party do
+	local skill, mastery = SplitSkill(pl.Skills[const.Skills.Perception])
+	pl.Skills[const.Skills.Perception] = JoinSkill(math.max(skill, 4), math.max(mastery, const.Expert))
+end
+</lua>
+<lua>
+-- get all skills at Master 12
+for _, pl in Party do
+	for i, val in pl.Skills do
+		local skill, mastery = SplitSkill(val)
+		pl.Skills[i] = JoinSkill(math.max(skill, 12), math.max(mastery, const.Master))
+	end
+end
+</lua>
+<lua>
+-- get all learned skills to Master 12
+for _, pl in Party do
+	for i, val in pl.Skills do
+		if val ~= 0 then
+			local skill, mastery = SplitSkill(val)
+			pl.Skills[i] = JoinSkill(math.max(skill, 12), math.max(mastery, const.Master))
+		end
+	end
+end
+</lua>
+<lua>
+-- learn all available skills at Expert
+for _, pl in Party do
+	for i, learn in EnumAvailableSkills(pl.Class) do
+		if learn >= const.Expert then
+			local skill, mastery = SplitSkill(pl.Skills[i])
+			skill = math.max(skill, 4)  -- learn at least level 4
+			mastery = math.max(mastery, const.Expert)  -- learn the mastery
+			pl.Skills[i] = JoinSkill(skill, mastery)
+		end
+	end
+end
+</lua>
+<lua>
+-- learn all available skills at their maximum level
+local LearnLevel = (Game.Version > 6 and {1, 4, 7, 10} or {1, 4, 12})
+
+for _, pl in Party do
+	for i, learn in EnumAvailableSkills(pl.Class) do
+		local skill, mastery = SplitSkill(pl.Skills[i])
+		skill = math.max(skill, LearnLevel[learn])  -- learn at least the usual needed level
+		mastery = math.max(mastery, learn)  -- learn the mastery
+		pl.Skills[i] = JoinSkill(skill, mastery)
+	end
+end
+</lua>
+<br>
+
+<h3>en|Artifact Bonuses|ru|Бонусы артефактов|</h3>
+Giving Hareck's Leather an 'Of Earth Magic' enhancement. (untested)
+<lua>
+function events.CalcStatBonusByItems(t)
+	if t.Stat ~= const.Stats.EarthMagic or t.Player.Skills[const.Skills.EarthMagic] == 0 then
+		return
+	end
+	for item, slot in t.Player:EnumActiveItems() do
+		if item.Number == 516 then
+			t:SetMagicBonus(SplitSkill(t.Player.Skills[const.Skill.EarthMagic]):div(2))
+			return
+		end
+	end
+end
+</lua>
+<br>
+Giving Hareck's Leather 'Armsmaster + 8' bonus. (untested)
+<lua>
+function events.CalcStatBonusByItems(t)
+	if t.Stat ~= const.Stats.Armsmaster or t.Player.Skills[const.Skills.Armsmaster] == 0 then
+		return
+	end
+	for item, slot in t.Player:EnumActiveItems() do
+		if item.Number == 516 then
+			t:SetArtifactBonus(8)
+			return
+		end
+	end
+end
+</lua>
+<br>
+Q: Is there a way to change values of enchantments? For example, to make Of the Gods one give say +30 stats instead of +10?<br>
+A: (untested)
+<lua>
+function events.CalcStatBonusByItems(t)
+	if t.Stat >= const.Stats.Might and t.Stat <= const.Stats.Luck then
+		for it in t.Player:EnumActiveItems() do
+			if it.Bonus2 == 2 then
+				t.Result = t.Result + 20
+			end
+		end
+	end
+end
+</lua>
+<br>
+
+<h3>en|Spells Damage|ru|Урон заклинания|</h3>
+Change damage of spell 2 - Flame Arrow. You can also make damage depend on <'>t.Mastery</'> and <'>t.HP</'> (monster hit points).
+<lua>
+local function Randoms(min, max, count)
+	local r = 0
+	for i = 1, count do
+		r = r + math.random(min, max)
+	end
+	return r
+end
+
+function events.CalcSpellDamage(t)
+	if t.Spell == 2 then  -- Flame Arrow
+		t.Result = 100 + Randoms(1, 100, t.Skill)  -- 100 + (1-100) per skill level
+	end
+end
+</lua>
+<br>
+
+<h3>en|Controlling monsters aggression in MM6|ru|Управление агрессией монстров в MM6|</h3>
+en|Put this script into <b>Scripts\Global</b> folder. It would make archers in Free Haven friendly
+and female peasants aggressive. In other places archers would still be aggressive and peasants still friendly.|
+ru|Положите этот скрипт в папку <b>Scripts\Global</b>. Это делает лучников в Free Haven дружественными, а крестьян - агрессивными. В других местах лучники будут по-прежнему агрессивными, а крестьяне - дружелюбными.|
+<lua>
+function events.BeforeLoadMap() 
+	if Game.Map.Name == "outc2.odm" then 
+		LocalMonstersTxt()
+		Game.MonstersTxt[1].HostileType = 0  -- ArcherA 
+		Game.MonstersTxt[2].HostileType = 0  -- ArcherB 
+		Game.MonstersTxt[3].HostileType = 0  -- ArcherC 
+		Game.MonstersTxt[121].HostileType = 4  -- PeasantF1A 
+		Game.MonstersTxt[122].HostileType = 4  -- PeasantF1B 
+		Game.MonstersTxt[123].HostileType = 4  -- PeasantF1C 
+	end
+end
+</lua>
+en|Instead of map name check you can put any condition. For example, after player completes a quest you can make some monsters friendly or aggressive.|
+ru|Вместо проверки имени карты вы можете поставить любое условие. Например, после того как игрок выполнит задание, вы можете сделать некоторых монстров дружественными или агрессивными.|<br>
+<br>
+
+<h3>en|Flowers you can pick up (MM8)|ru|Цветы, которые можно подобрать (MM8)|</h3>
+en|Put this script into <b>Scripts\Global</b> folder.|
+ru|Положите этот скрипт в папку <b>Scripts\Global</b>.|
+<lua>
+-- You can find such flowers in Ravenshore at X = 16921, Y = 4112
+-- Flowers disappear when picked up, which makes life easier than in Barrels script
+-- The game remembers which sprites are hidden by itself
+
+local SpriteEvents = 20000
+local TXT = Localize{
+	FlowerHint = "Flowers",
+}
+
+local function Flower(EvtId)
+	local i = EvtId - SpriteEvents
+	evt.Add("Inventory", 208)
+	evt.SetSprite(i, false)  -- alternatively, for the same effect:  Map.Sprites[i].Invisible = true
+end
+
+local function InitFlower(i, a)
+	a.Event = SpriteEvents + i
+	evt.map[SpriteEvents + i] = Flower
+	evt.hint[SpriteEvents + i] = TXT.FlowerHint
+end
+
+function events.LoadMap()
+	for i, a in Map.Sprites do
+		if a.DecName == "plant27" then
+			InitFlower(i, a)
+		end
+	end
+end
+</lua>
+<br>
+
+<h3>en|Unusually looking barrels (MM7)|ru|Необычно выглядящие бочки (MM7)|</h3>
+en|Put this script into <b>Scripts\Global</b> folder to turn trees into barrels.|ru|Положите этот скрипт в папку <b>Scripts\Global</b>, чтобы превратить деревья в бочки.|
+<lua>
+-- Turns trees into barrels
+
+local SpriteEvents = 20000
+local TopicBase = 383
+local TextBase = 582
+local Reorder = {[0] = 0, 1, 4, 3, 5, 2, 6, 7}  -- NPC topics order is messed up
+local AutonotesBase = 32
+
+local function Barrel(EvtId)
+	local i = EvtId - SpriteEvents
+	local v = mapvars.Barrels[i]
+	Game.ShowStatusText(Game.NPCText[TextBase + Reorder[v]])
+	if v > 0 then
+		evt.Add(evt.VarNum.BaseStats[v - 1], 2)
+		evt.Set("AutonotesBits", AutonotesBase + v)
+		mapvars.Barrels[i] = 0
+		evt.hint[SpriteEvents + i] = Game.NPCTopic[TopicBase]
+	end
+end
+
+local function InitBarrel(i, a)
+	mapvars.Barrels = mapvars.Barrels or {}
+	mapvars.Barrels[i] = mapvars.Barrels[i] or math.random(1, 7)
+	
+	a.Event = SpriteEvents + i
+	evt.map[SpriteEvents + i] = Barrel
+	evt.hint[SpriteEvents + i] = Game.NPCTopic[TopicBase + Reorder[mapvars.Barrels[i]]]
+end
+
+function events.LoadMap()
+	for i, a in Map.Sprites do
+		if a.DecName and a.DecName:match("^tree") then
+			InitBarrel(i, a)
+		end
+	end
+end
+</lua>
+<br>
+
+<h3>en|Other Examples|ru|Еще примеры|</h3>
+en|Summon monster (Peasant)|ru|Призвать монстра (крестьянина)|:
+<lua>
+local mon = SummonMonster(151, Party.X, Party.Y, Party.Z, true)
+mon.NPC_ID = 52
+mon.Hostile = false
+</lua>
+<br>
+en|See global event number (copy to console to quickly test what event is triggered by a dialog item):|ru|Посмотреть номер глобального события (скопируйте в консоль, чтобы легко увидеть, какое событие вызывает пункт диалога):|
+<lua>
+-- on:
+function events.EvtGlobal(evt)
+	Message(evt)
+end
+</lua>
+<lua>
+-- off:
+events.EvtGlobal.clear()
+</lua>
+<br>
+en|See current house and NPC indeces (run it from console):|ru|Посмотреть номера текущего дома и NPC (вызывайте из консоли):|
+<lua>
+Game.GetCurrentHouse(), GetCurrentNPC()
+</lua>
+<br>
+Q: How to change the home position after the death of the team on current map?<br>
+A: Pass any coordinates in call to <#>XYZ</#> and set any <#>Direction:Party.Direction</#>:
+<lua>
+function events.DeathMap(t)
+	t.Name = "out05.odm"
+	XYZ(Party, 0, 0, 0)
+	Party.Direction = 0
+	Party.LookAngle = 0
+end
+</lua>
+<br>
+Changing starting map (similar to previous example):
+<lua>
+Game.NewGameMap = "out05.odm"
+function events.NewGameMap()
+	XYZ(Party, 0, 0, 0)
+	Party.Direction = 0
+	Party.LookAngle = 0
+end
+</lua>
+<br>
+Q: How to run a method when a user presses a specific key?<br>
+Method 1:
+<lua>
+function Keys.F1(t)
+	Message("F1 pressed")
+end
+</lua>
+Method 2:
+<lua>
+function events.KeyDown(t)
+	if t.Key == const.Keys.F1 then
+		Message("F1 pressed")
+	end
+end
+</lua>
+Absolete method provided for backward compatibility: <i>(This is NOT the same as setting Keys.F1)</i>
+<lua>
+Keys[const.Keys.F1] = function()
+	Message("F1 pressed")
+end
+</lua>
+<br>
+<!--
+<lua>
+</lua>
+<br>
+
+<lua>
+</lua>
+<br>
+
+<lua>
+</lua>
+<br>
+
+<lua>
+</lua>
+<br>
+
+<lua>
+</lua>
+<br>
+-->
+<br>
+<hr>

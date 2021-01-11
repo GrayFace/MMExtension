@@ -1,0 +1,7 @@
+Typical way to invoke it:
+
+package.path = package.path..';'..DevPath..'Scripts/Help/?.lua'
+HelpPath = {
+	MMExtScripts = <path to MMExt-Scripts project from GitLab (not needed if it's right next to MMExt project)>
+}
+require'RunHelp'()

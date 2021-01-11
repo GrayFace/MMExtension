@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang=en|"en"|ru|"ru"|>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>en|MMExtension v<AppVer></AppVer> Help|ru|Справка MMExtension <AppVer></AppVer>|</title>
+
+<DefStyle></DefStyle>
+<style>
+	td {
+		padding: 5px 6px;
+		position: relative;
+	}
+	ul {
+		list-style-type: none;
+		margin-top: 0px;
+		margin-bottom: 7px;
+		padding-left: 20px;
+		text-indent: -10px;
+	}
+	ul a {
+		text-decoration: none;
+	}
+	ul a:link {
+		color: black;
+	}
+	a:link:hover, a:visited:hover {
+		background-color: #E8E8FF;
+		border-radius: 4px;
+	}
+	a:link:active, a:visited:active {
+		color: #d00;
+	}
+	
+	.table tr:not(:first-of-type) td {
+		border-top: 1px solid #a5a5a5;
+	}
+	.table td:not(:first-of-type) {
+		border-left: 1px solid #a5a5a5;
+	}
+	
+	body {
+		padding: 0 0;
+		margin: 0 0;
+		background-color: #f3f5fd;
+	}
+	#content {
+		padding: 0;
+		margin: 5px 5px 5px 260px;
+		border: 1px solid #ddd;
+		background-color: white;
+	}
+	#content2 {
+		padding: 0 17px;
+	}
+	h1 {
+		padding: 10px 10px 10px 20px;
+		margin: 3px 1px 15px;
+		border-bottom: 3px double #dadade;
+	}
+	#toc {
+		position: fixed;
+		z-index: 10;
+		width: 240px;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		padding: 10px;
+		overflow-y: scroll;
+		background-color: white;
+		border-right: 1px solid #ddd;
+	}
+	#toc > ul {
+		margin-left: -10px;
+	}
+	#toc > h3 {
+		margin-top: 5px;
+		margin-bottom: 15px;
+	}
+	#uarr {
+		display: none;
+	}
+	.toc-check, .info-hover, .info-trigger, #toc-trigger {
+		display: none;
+	}
+	<ForSite>
+	#back {
+		float: right;
+		margin: 0 0 2px 5px;
+		padding: 0 6px;
+		text-decoration: none;
+		opacity: 0.5;
+		background-color: transparent;
+		border: 1px solid #6fa2e1; /* rgba(119, 167, 227, 0.7); */
+		border-right-width: 2px;
+		border-bottom-width: 2px;
+		border-radius: 6px;
+		font-size: 93%;
+	}
+	#back:not(:hover):not(:active) {
+		color: #ccc;
+		border-color: #c3ccd6;
+	}
+	#back:active {
+		border-width: 1px;
+		padding: 0 6px 1px 7px;
+		background-color: #e8e8e8;
+	}
+	</ForSite>
+</style>
+<!--[if !IE]><!--><style>
+	#content2 > h2, #content2 > h3 {
+		display: table;
+		padding: 3px 8px;
+		border-radius: 10px;
+		border: 1px solid rgba(0,0,0,0.25);
+		box-shadow: 1px 1px 0 0 rgba(0,0,0,0.4);
+		margin-left: -4px;
+	}
+	.toc-check, .info-hover {
+		display: inline;
+	}
+	.toc-check-info {
+		display: block;
+		margin-bottom: -0.5em;
+	}
+	#toc-check:not(:checked) ~ .toc-check-info {
+		display: none;
+	}
+	#toc:not(:hover):not(:active) {
+		opacity: 0;
+	}
+	#toc-check:not(:checked) ~ #toc {
+		opacity: 1;
+		width: 240px;
+		transition: opacity 0.25s;
+	}
+	#toc-check:checked ~ #toc {
+		width: 249px;
+		transition: opacity 0.25s, width 0s linear 0.25s;
+	}
+	#toc-check, #toc-label {
+		cursor: pointer;
+		line-height: 150%;
+		font-size: 110%;
+		color: #c00;
+	}
+	#toc-label {
+		margin-left: -1em;
+		padding-left: 1em;
+		user-select: none;
+	}
+@media (pointer:none) {
+	#toc:not(#a):not(#b) {
+		overflow-y: visible;
+		position: static;
+		width: auto;
+		padding: 20px 0;
+		background-color: transparent;
+		transition: none;
+		opacity: 1;
+		box-shadow: none;
+	}
+	.toc-check, .info-hover, .info-trigger, #toc-trigger:not(#a):not(#b) {
+		display: none;
+	}
+}
+@media (pointer:coarse) {
+	#toc-check:checked ~ #toc {
+		width: 245px;
+		box-shadow: 0px 0px 5px 3px rgba(0,0,0,0.37), 1px 0px 2px 10px rgba(255,255,255,0.37);
+	}
+}
+@media (max-width: 1000px), (pointer:none) {
+	.info-hover {
+		display: none;
+	}
+	.info-trigger {
+		display: inline;
+	}
+	body {
+		margin: unset;
+		padding: unset;
+		background-color: white;
+	}
+	#content {
+		margin: 0;
+		border: none;
+		background-color: transparent;
+	}
+	#toc-check:not(:checked) ~ #toc {
+		overflow-y: visible;
+		position: static;
+		left: -300px;
+		width: auto;
+		padding: 20px 0 0;
+		background-color: transparent;
+		transition: none;
+		border-right: none;
+	}
+	#toc-check:checked ~ #toc {
+		left: -300px;
+		opacity: 0;
+		width: 249px;
+		transition: opacity 0.25s, left 0s linear 0.25s;
+		box-shadow: 0px 0px 5px 3px rgba(0,0,0,0.43), 1px 0px 2px 10px rgba(255,255,255,0.43);
+	}
+	#toc-check:checked ~ #toc-trigger {
+		display: block;
+		position: fixed;
+		left: -100px;
+		top: 0;
+		bottom: 0;
+		width: 17px;
+		padding: 0;
+		z-index: 20;
+		user-select: none;
+		opacity: 0;
+		transition: left 0s linear 0.05s;
+	}
+	#toc-check:checked ~ #toc-trigger:not(:focus) {
+		cursor: pointer;
+		left: 0;
+		transition: none;
+	}
+	#toc-trigger:active ~ #toc, #toc-trigger:focus ~ #toc, #toc:not(#a):active {
+		left: 0;
+		opacity: 1;
+		transition: opacity 0.25s;
+	}
+}
+@media (max-width: 300px) {
+	#toc-check:checked ~ #toc {
+		width: calc(100% - 50px);
+		margin-left: calc(20px - 100%);
+	}
+}
+@media (max-width: 1100px) {
+	.def-left {
+		width: 40%;
+	}
+}
+@media (max-width: 640px) {
+	#content2 {
+		padding: 0 13px;
+	}
+	h1 {
+		padding: 10px 9px 10px 16px;
+	}
+	#content2 > h2, #content2 > h3 {
+		margin-left: -2px;
+	}
+}
+@media (max-width: 550px) {
+	.width-500 {
+		width: 100%;
+		max-width: 500px;
+	}
+}
+@media (max-width: 500px) {
+	#content2 {
+		padding: 0 8px;
+	}
+	h1 {
+		padding: 10px 9px 10px 11px;
+	}
+	.def-left {
+		width: auto;
+		margin-right: 12px;
+		border-color: #777;
+	}
+	.def-right {
+		margin-left: 12px;
+		border: none;
+		border-left: 1px dotted #a5a5a5;
+		padding-top: 0.25px;
+		padding-bottom: 0;
+		margin-top: 0.75px;
+		margin-bottom: 4px;
+	}
+	.def-table, .def-table td:not(.def-left):not(.def-right) {
+		border: none;
+	}
+	.def-table, .def-table tbody, .def-table tr, .def-table td {
+		display: block;
+	}
+	.pre-outer, .spoiler {
+		margin-left: -5px;
+		margin-right: -5px;
+	}
+}
+/* Spoilers */
+	.spoiler {
+		position: relative;
+	}
+	.spoiler-checkbox {
+		display: inline-block;
+		opacity: 0;
+		position: absolute;
+		left: 0;
+		top: 0;
+		pointer-events: none;
+	}
+	.spoiler-space, .spoiler-label {
+		display: inline-block;
+		margin: 8px;
+		padding: 6px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		border-right-width: 2px;
+		border-bottom-width: 2px;
+	}
+	.spoiler-space {
+		float: right;
+		visibility: hidden;
+	}
+	.spoiler-label {
+		position: absolute;
+		top: 0;
+		right: 0;
+		cursor: pointer;
+		user-select: none;
+		z-index: 1;
+	}
+	.spoiler-checkbox:focus ~ label {
+		border-color: #b2c4ee;
+	}
+	.spoiler-label:active:hover, .spoiler-checkbox:active ~ label {
+		border: 1px solid #b2c4ee;
+		background-color: #f0f0f0;
+	}
+	.spoiler-checkbox:not(:checked) ~ label {
+		color: #c00;
+	}
+	.spoiler-label::after, .spoiler-space::after {
+		content: "Expand";
+	}
+	.spoiler-checkbox:checked ~ label::after, .spoiler-checkbox:checked ~ .spoiler-scroll .spoiler-space::after {
+		content: "Collapse";
+	}
+	.spoiler-scroll {
+		overflow-x: auto;
+		overflow-y: visible;
+		transition: opacity 0.15s;
+	}
+	.spoiler-checkbox:not(:checked) ~ .spoiler-scroll {
+		max-height: 70px;
+		overflow: hidden;
+		opacity: 0.4;
+	}
+	.spoiler-checkbox:not(:checked) ~ .spoiler-fade {
+		display: block;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 22px;
+		pointer-events: none;
+		background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 30%, rgba(255,255,255,0.8) 70%, rgba(255,255,255,1) 90%);
+	}
+</style><!--<![endif]-->
+
+</head>
+<body>
+	<div id="content">
+		<h1>en|MMExtension v<AppVer></AppVer> Help|ru|Справка MMExtension <AppVer></AppVer>|<ForSite><a id="back" href="..">en|Back|ru|Назад|</a><span style="clear:both"></span></ForSite></h1>
+		<div id="content2">
+			<input type="checkbox" id="toc-check" class="toc-check" checked value=""/><label id="toc-label" class="toc-check" for="toc-check"><span class="info-hover">en|Show the table of contents only on mouse hover.|ru|Показывать оглавление только когда на него наведена мышь.|</span><span class="info-trigger">en|Show the table of contents by clicking on the left side of the screen near the border.|ru|Показывать оглавление кликом по левому краю окна.|</span></label>
+			<div class="info-hover toc-check-info">
+				en|Hover your mouse over empty space on the left side of the page to see the table of contents.|ru|Наведите мышь на пустое место слева, чтобы увидеть содержание.|
+			</div>
+			<div id="toc-trigger" tabindex="0"></div>
+			<div id="toc">
+				<h3>en|Contents|ru|Содержание|</h3>
+				<TOC></TOC>
+			</div>
+			<ALL></ALL>
+		</div>
+	</div>
+</body>
+</html>
