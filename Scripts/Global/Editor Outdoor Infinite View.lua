@@ -51,8 +51,8 @@ if CodeStd == "\15\135\52\6\0\0" then
 	  add ebx, %m7%*0x76DA48 + %m8%*0x7ABA10  ; beginx
 		mov ecx, 128
 	@loop:
-		mov [ebx + ecx*4], ecx
 		dec ecx
+		mov [ebx + ecx*4], ecx
 		jnz @loop
 
 	  pop ebx
