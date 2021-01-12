@@ -43,15 +43,17 @@ local function FindInObjList(id)
 	end
 end
 
-local function AddAction(type, info1, info2)
-	local a = Game.Actions
-	local i = a.Count
-	if i < 40 then
-		a.Count = i + 1
-		a = a[i]
-		a.Type = type
-		a.Info1 = info1 or 0
-		a.Info2 = info2 or 0
+local function AddAction(name)
+	return function(type, info1, info2)
+		local a = Game[name]
+		local i = a.Count
+		if i < 40 then
+			a.Count = i + 1
+			a = a[i]
+			a.Action = type
+			a.Param = info1 or 0
+			a.Param2 = info2 or 0
+		end
 	end
 end
 
@@ -65,7 +67,10 @@ function events.StructsLoaded()
 	rawset(Game, "Version", offsets.MMVersion)
 	rawset(Game.MapStats, "Find", FindInMapStats)
 	rawset(Game.ObjListBin, "Find", FindInObjList)
-	rawset(Game.Actions, "Add", AddAction)
+	rawset(Game.Actions, "Add", AddAction'Actions')
+	if mmver > 6 then
+		rawset(Game.ActionsNext, "Add", AddAction'ActionsNext')
+	end
 	rawset(Game.Actions, "Process", mem.func{p = mmv(0x42ADA0, 0x4304D6, 0x42EDD8)})
 end
 
@@ -1500,9 +1505,9 @@ end
 
 function structs.f.ActionItem(define)
 	define
-	.i4  'Type'
-	.i4  'Info1'
-	.i4  'Info2'
+	.i4  'Action'
+	.i4  'Param'
+	.i4  'Param2'
 end
 
 function structs.f.MapObject(define)
@@ -2547,4 +2552,22 @@ function structs.f.PlayerAnimationInfo(define)
 	.u1  'Expression3'
 	.u1  'Expression4'
 	.u1  'Expression5'
+end
+
+function structs.f.ShopItemKind(define)
+	define
+	.i2  'Level'
+	.array(1, 4).i2  'Types'
+	 .Info{Sig = '[1..4]', Type = "const.ItemType"}
+	.indexmember  'Types'
+	.newindexmember  'Types'
+end
+
+function structs.f.GeneralStoreItemKind(define)
+	define
+	.i2  'Level'
+	.array(1, 6).i2  'Items'
+	 .Info{Sig = '[1..6]', "If it's zero, random Boots or Gountlets are generated."}
+	.indexmember  'Items'
+	.newindexmember  'Items'
 end

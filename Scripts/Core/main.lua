@@ -147,7 +147,7 @@ if isMM then
 	end
 	local freeMM = mem.freeMM
 
-	function mem.reallocMM(p, OldSize, NewSize)
+	function mem.reallocMM(p, OldSize, NewSize, NoFree)
 		local t = type(p) == "table" and p
 		if t then
 			p = t["?ptr"]
@@ -162,7 +162,9 @@ if isMM then
 		else
 			mem_copy(new, p, NewSize)
 		end
-		freeMM(p)
+		if not NoFree then
+			freeMM(p)
+		end
 		if t then
 			t["?ptr"] = new
 		end

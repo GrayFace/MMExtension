@@ -887,9 +887,17 @@ const.HouseScreens = {
 	Sell = 3,
 	Identify = 4,
 	Repair = 5,
+	BuySpecialMM6 = 6,
 	BankDeposit = 7,
 	BankWithdraw = 8,
+	Heal = 10,
+	Donate = 11,
+	TavernSleep = 15,
+	TavernFood = 16,
+	Train = 17,
 	BuySpells = 18,
+	TavernDrink = 25,
+	TavernTip = 26,
 	DisplayInventory = 94,
 	BuySpecial = 95,
 	LearnSkills = 96,
@@ -899,7 +907,24 @@ const.HouseScreens = {
 	ArcomageRules = 102,
 	ArcomageConditions = 103,
 	Arcomage = 104,
+	Travel1 = 106,
+	Travel2 = 107,
+	Travel3 = 108,
+	Travel4 = 109,
+	BuySpellsFire = 110,  -- [MM8]
+	BuySpellsAir = 111,  -- [MM8]
+	BuySpellsWater = 112,  -- [MM8]
+	BuySpellsEarth = 113,  -- [MM8]
+	BuySpellsSpirit = 114,  -- [MM8]
+	BuySpellsMind = 115,  -- [MM8]
+	BuySpellsBody = 116,  -- [MM8]
+	BuySpellsLight = 117,  -- [MM8]
+	BuySpellsDark = 118,  -- [MM8]
 }
+
+for k, v in pairs(const.Skills) do
+	const.HouseScreens['Learn'..k] = v + 36
+end
 
 const.FaceAnimation = {
 	KillSmallEnemy = 1,

@@ -8,7 +8,7 @@ end
 
 DataTables = {Files = {}, LazyMode = false}
 
-local _KNOWNGLOBALS_F
+local _KNOWNGLOBALS_F = ParseNamedColTable, WriteNamedColTable
 
 local function SplitToTable(str, startIdx, pattern)
 	local t, i, n = {}, startIdx or 1, #str
@@ -152,17 +152,17 @@ local function ReadWriteTable(f, a, str, onerror)
 		end
 	end
 	local ok, ret = pcall(doit)
-	if not ok then
-		local s = str and 'row %s, column %s - value "%s"' or 'row %s - column %s'
-		local i = ret:find("\001")
-		ret = ret:sub(1, i - 1)..s:format(erY, erX, erVal)..ret:sub(i + 1)
-		if onerror then
-			onerror()
-		end
-		error(ret, 0)
+	if ok then
+		errorinfo(einfoOld)
+		return ret
 	end
-	errorinfo(einfoOld)
-	return ret
+	local s = str and 'row %s, column %s - value "%s"' or 'row %s - column %s'
+	local i = ret:find("\001")
+	ret = ret:sub(1, i - 1)..s:format(erY, erX, erVal)..ret:sub(i + 1)
+	if onerror then
+		onerror()
+	end
+	error(ret, 0)
 end
 DataTables.ReadWriteTable = ReadWriteTable
 
@@ -476,6 +476,125 @@ function DataTables.HouseMovies(str)
 		t.IgnoreFields = {Background = true}
 	end
 	return DataTables.StructsArray(Game.HouseMovies, structs.o.HouseMovie, t, str)
+end
+
+-- DataTables.ShopProps
+do
+	local MapToShop = {
+		weapon = 'ShopWeaponKinds', armor = 'ShopArmorKinds', magic = 'ShopMagicLevels',
+		general = 'GeneralStoreItemKinds', alchemist = 'ShopAlchemistLevels',
+		training = 'TrainingLevels', guild = 'GuildSpellLevels'
+	}
+	local ShopOrder = {'Weapon', 'Armor', 'Magic', mmver == 6 and 'General' or 'Alchemist', 'Training', 'Guild'}
+	local ItemTypeInv = table.invert(const.ItemType)
+	local comments = {[[
+'Weapon' defines items for Buy dialog.
+'SWeapon' defines items for ]]..(mmver == 6 and '' or 'Buy ')..[[Special dialog.
+Each item is chosen at random from any of these types.
+Look up const.ItemType for a list of item types.
+]],[[
+'Armor1' defines items on the upper shelf.
+'Armor2' defines items on the lower shelf.
+'SArmor1' and 'SArmor2' define items for ]]..(mmver == 6 and '' or 'Buy ')..[[Special dialog.
+]],[[
+'Magic' defines items for Buy dialog.
+'SMagic' defines items for ]]..(mmver == 6 and '' or 'Buy ')..[[Special dialog.
+]], mmver == 6 and [[
+The numbers are item indexes.
+An index of 0 means a random item, either Boots or Gountlet.
+]] or [[
+'Alchemist' defines reagents for Buy dialog.
+'SAlchemist' defines potions for Buy Special dialog.
+]],[[
+Training cap. '-1' means no cap.
+]],[[
+Maximum spell number withing the magic school.
+]]
+	}
+
+	local function ReadShopProps(t)
+		local einfoOld, line = errorinfo(), nil
+		errorinfo((einfoOld ~= "") and einfoOld.." - \001" or "\001")
+		
+		local function doit()
+			local i
+			for _, q in ipairs(t) do
+				line = _
+				if (q.Shop or '') == '' then
+					break
+				end
+				i = tonumber(q.Event2D) or i
+				local spc, name, j = q.Shop:lower():match('(s?)(%a+)(%d?)')
+				-- print(spc, name, j)
+				local a0 = Game[MapToShop[name]..(spc ~= '' and 'Special' or '')]
+				local a = a0[i]
+				if type(a) ~= 'table' then
+					a0[i] = q.Level + 0
+				else
+					a = (tonumber(j) and a[j + 0] or a)
+					a.Level = q.Level + 0
+					for k in a do
+						local s = q[k..''] --or ''
+						-- if s ~= '' then
+							a[k] = name ~= 'general' and const.ItemType[s] or s + 0
+						-- end
+					end
+				end
+			end
+		end
+		local ok, ret = pcall(doit)
+		if ok then
+			errorinfo(einfoOld)
+			return ret
+		end
+		error(ret:gsub("\001", 'row '..(line + 1), 1), 0)
+	end
+
+	local function AddShopLine(t, i, name, a, name0)
+		if name0 == 'Armor' then
+			for j, b in a do
+				AddShopLine(t, i, name..j, b)
+				i = ''
+			end
+			return
+		end
+		local q = {Shop = name, Event2D = i}
+		t[#t + 1] = q
+		if type(a) ~= 'table' then
+			q.Level = a
+			return
+		end
+		q.Level = a.Level
+		for j, v in a do
+			q[j] = name0 ~= 'General' and ItemTypeInv[v] or v
+		end
+	end
+
+	function DataTables.ShopProps(str)
+		if str then
+			return ReadShopProps(ParseNamedColTable(str))
+		end
+		local t = {[0] = {'Event2D','Shop','Level', 1, 2, 3, 4, mmv(5) or 'Comments', mmv(6), mmv'Comments'}}
+		local starts = {}
+		for kind, name in ipairs(ShopOrder) do
+			starts[kind] = #t + 1
+			local shop = MapToShop[name:lower()]
+			for i, a in Game[shop] do
+				AddShopLine(t, i, name, a, name)
+				if kind <= 4 then
+					AddShopLine(t, '', 'S'..name, Game[shop..'Special'][i], name)
+				end
+			end
+		end
+		for i, ss in pairs(comments) do
+			local j = starts[i]
+			for s in ss:gmatch('[^\n]+') do
+				t[j].Comments = s
+				j = j + 1
+			end
+		end
+		return WriteNamedColTable(t)
+	end
 end
 
 -----------------------------------------------------

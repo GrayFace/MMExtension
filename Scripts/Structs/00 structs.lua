@@ -96,7 +96,10 @@ function structs.f.GameStructure(define)
 	[mmv(0x56B6C0, 0x5C8560, 0x5E48F0)].array(mmv(18, 36, 36)).EditPChar  'ClassDescriptions'
 	 .Info{Sig = "[class:const.Class]"}
 	[mmv(0x4D5F4C, 0x50CA54, 0x51E334)].array{40, lenA = i4, lenP = mmv(0x4D5F48, 0x50CA50, 0x51E330)}.struct(structs.ActionItem)  'Actions'
-	.func{name = "ProcessActions", p = mmv(0x42ADA0, 0x4304D6, 0x42EDD8)}
+	if mmver > 6 then
+		define[mm78(0x50C86C, 0x51E14C)].array{40, lenA = i4, lenP = mm78(0x50C868, 0x51E148)}.struct(structs.ActionItem)  'ActionsNext'
+	end
+	define.func{name = "ProcessActions", p = mmv(0x42ADA0, 0x4304D6, 0x42EDD8)}
 	[mmv(0x52D29C, 0x576EAC, 0x587ADC)].b4  'NeedRedraw'
 	[mmv(0x55BC04, 0x5C32A8, 0x5DB758)].string(200)  'StatusMessage'
 	.string(200)  'MouseOverStatusMessage'
@@ -245,6 +248,26 @@ function structs.f.GameStructure(define)
 	 .Info{Sig = "[house][slot]"}
 	[mmv(0x91663C, 0xADF894, 0xB87D6C)].array(mmv(119, 139, 139), mmv(140, 170, 172)).array(mmv(1, 1, 12)).array(12).struct(structs.Item)  'GuildItems'
 	 .Info{Sig = "[house][school][slot]"; "In MM8 in each guild items for all 12 schools of magic are generated. In MM6 and MM7 'school' can only be 0."}
+	[mmv(0x4C43DC, 0x4F0288, 0x5007F0)].array(1, 14).struct(structs.ShopItemKind)  'ShopWeaponKinds'
+	[mmv(0x4C4468, 0x4F0318, 0x500880)].array(15, 28).array(1,2).struct(structs.ShopItemKind)  'ShopArmorKinds'
+	[mmv(0x4C4580, 0x4F0430, 0x500998)].array(29, 41).i2  'ShopMagicLevels'
+	[mmv(0x4C45F8, 0x4F04C8, 0x500A30)].array(1, 14).struct(structs.ShopItemKind)  'ShopWeaponKindsSpecial'
+	[mmv(0x4C4684, 0x4F0558, 0x500AC0)].array(15, 28).array(1,2).struct(structs.ShopItemKind)  'ShopArmorKindsSpecial'
+	[mmv(0x4C479C, 0x4F0670, 0x500BD8)].array(29, 41).i2  'ShopMagicLevelsSpecial'
+	[mmv(0x4C3E80, 0x4F0798, 0x500D5C)].array(mmv(79, 89, 89), mmv(88, 98, 101)).i2  'TrainingLevels'
+	[mmv(0x4C48B0, 0x4F0DB0, 0x501238)].array(mmv(119, 139, 139), mmv(140, 170, 172)).i2  'GuildSpellLevels'
+	if mmver > 6 then
+		define
+		[mm78(0x4F044C, 0x50099E)].array(42, 53).i2  'ShopAlchemistLevels'
+		[mm78(0x4F068C, 0x500BF4)].array(42, 53).i2  'ShopAlchemistLevelsSpecial'
+	else
+		define
+		[0x4C459C].array(42, 47).struct(structs.GeneralStoreItemKind)  'GeneralStoreItemKinds'
+		[0x4C47B8].array(42, 47).struct(structs.GeneralStoreItemKind)  'GeneralStoreItemKindsSpecial'
+		 .Info "Yes, MM6 generates special items in general stores, but there's no menu item for them."
+	end
+	
+	
 	-- if mmver == 6 then
 	-- 	define[0x91663C].array(119, 140).array(12).struct(structs.Item)  'GuildItems'
 	-- elseif mmver == 7 then
@@ -1321,7 +1344,7 @@ function structs.f.PatchOptions(define)
 	int  'MaxMLookUpAngle'
 	bool  'FixIceBoltBlast'  Info "[MM7+]"
 	int  'MonSpritesSizeMul'  Info "Default is 0 - disabled. 0x10000 stands for 1.0."
-	bool  'FixEnergyDamageType'  Info "[MM7+]"
+	bool  'FixMonsterAttackTypes'  Info "[MM7+]"
 	bool  'FixMonsterSpells'
 	
 	function define.f.Present(name)

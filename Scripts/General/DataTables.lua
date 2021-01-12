@@ -161,6 +161,7 @@ local function update()
 		DataTable('Monster Kinds', StructsArray(Game.MonsterKinds, nil, {Resisable = false, RowHeaders = hdr}))
 	end
 	-- DataTable('Player Animations', StructsArray(Game.PlayerAnimations, nil, {Resisable = false, IgnoreFields = {Sounds = true, Expressions = true}}))
+	DataTable('Shop Props', DataTables.ShopProps)
 	events.DataTablesUpdate1(DataTable)
 	FixFileTimes()  -- just to be sure
 end
