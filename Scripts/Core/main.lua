@@ -58,7 +58,8 @@ dofile(CoreGamePath.."offsets.lua")
 offsets = offsets or {}
 dofile(CoreScriptsPath.."Common.lua")
 internal.NoGlobals.Options.NameCharCodes[("?"):byte()] = true
-package.path = AppPath.."Scripts\\Modules\\?.lua"..(GitPath and ";"..GitPath.."Scripts\\Modules\\?.lua" or "")
+local package_main = AppPath.."Scripts\\Modules\\?.lua"
+package.path = package_main..(GitPath and ";"..GitPath.."Scripts\\Modules\\?.lua" or "")
 GitPath = internal.GitPath  -- allow changing GitPath by offsets.lua
 
 local loadfile = loadfile
@@ -439,27 +440,39 @@ mem.structs.types.m = definer
 
 --------------------------- Load Core Scripts and Structs -------------------------
 
-dofile(CoreScriptsPath.."Debug.lua")
-d_debug = _G.debug.debug
-dofile(CoreGamePath.."ConstAndBits.lua")
-dofile(CoreGamePath.."events.lua")
-if isMM then
-	dofile(CoreScriptsPath.."timers.lua")
-	dofile(CoreScriptsPath.."evt.lua")
-end
-
--- call structs
-
 local PathList = table_invert{GamePath..'Scripts/', GitPath and GitPath..'Scripts/'}
 internal.PathList = PathList
 
 function _G.AddScriptsPath(s)
 	s = path_addslash(s)
 	if not PathList[s] then
-		package.path = package.path..";"..s.."Modules\\?.lua"
+		local sp = package.path
+		local n1, n2 = sp:find(package_main, 1, true)
+		if n1 then
+			package.path = sp:sub(1, n1)..';'..s..'Modules\\?.lua'..sp:sub(n2)
+		else
+			package.path = s..'Modules\\?.lua;'..sp
+		end
 	end
 	PathList[s] = true
 end
+
+-- core files
+
+dofile(CoreScriptsPath.."Debug.lua")
+d_debug = _G.debug.debug
+
+local CoreFiles = offsets.CoreFiles or {
+	CoreGamePath.."ConstAndBits.lua",
+	CoreGamePath.."events.lua",
+	isMM and CoreGamePath.."timers.lua" or nil,
+	isMM and CoreGamePath.."evt.lua" or nil,
+}
+for _, s in ipairs(CoreFiles) do
+	dofile(s)
+end
+
+-- call structs
 
 local function RunFiles(path, func)
 	local t = {}
@@ -516,7 +529,8 @@ function _G.ReloadLocalization()
 end
 _G.ReloadLocalization()
 
--- delete MMExtension.txt
+-- Delete very old absolete files. Since MMExt is distributed as an archive not an installer,
+-- I just distribute these "DeleteMe" files that overwrite the old ones.
 if isMM then
 	for f in path_find(AppPath.."MMExtension.txt") do
 		CheckNoDel(f)
