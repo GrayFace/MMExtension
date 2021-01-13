@@ -14,6 +14,74 @@ local OldCount, NewCount = mmv(68, 77, 77), nil
 local BatchAdd = mem.BatchAdd
 local patched
 
+
+mem.ExtendGameStructure{'MapDoorSound', Size = 2,
+	Refs = mmv({0x45552C, 0x455541, 0x4603F0}, {0x460CE9, 0x46F23F}, {0x447171, 0x45E5EA, 0x46DD17}),
+	Fill = 0,
+}
+
+if mmver > 6 then
+	mem.ExtendGameStructure{'MapFogChances', Size = 4,
+		Refs = mmv(nil, {0x4894C6}, {0x488DC8}),
+		Fill = 0,
+	}
+end
+
+-- mem.ExtendGameStructure{'', Size = ,
+-- 	Refs = mmv({}, {}, {}),
+-- 	CountRefs = mmv({}, {}, {}),
+-- }
+
+local NPCDistPatched
+
+local NPCDistProc = mmver == 7 and function(n, _, dp)
+	if NPCDistPatched or dp == 0 then
+		return
+	end
+	NPCDistPatched = true
+
+	mem.asmpatch(0x476BC1, [[
+		cmp ebx, [0x453FF0]
+		jge absolute 0x476BDF
+	]])
+	
+	mem.asmhook2(0x476BFC, [[
+		cmp ecx, [0x453FF0]
+	]])
+
+	mem.asmhook2(0x476C20, [[
+		pop ecx
+		push dword [0x453FF0]
+	]])
+	
+	-- make caring of it unaccessory
+	mem.asmhook(0x4774FB, [[
+		test ebx, ebx
+		jnz @std
+		mov ecx, 56
+		idiv ecx
+		mov eax, edx
+		cmp eax, 38-3
+		jl @f
+		inc eax
+		cmp eax, 51-3
+		jl @f
+		inc eax
+	@@:
+		jmp absolute 0x477516
+	@std:
+	]])
+end
+
+local NPCDistResize = mmver == 7 and mem.ExtendGameStructure{Size = 64,
+	Struct = {
+		['?ptr'] = 0x73A594,
+		limit = 77,
+	},
+	Refs = {0x476B62, 0x476BD9, 0x476C22, 0x4774F1, 0x47750A},
+	Custom = {NPCDistProc},
+}
+
 local function Extend(p, size, t, tend, extraSize)
 	local esize = tonumber(extraSize) or 0
 	local new = mem.StaticAlloc(size*NewCount + esize)
@@ -63,16 +131,21 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 		]]):format(NewCount))
 	end
 
+	Game.MapDoorSound.Resize(NewCount)
+	if mmver > 6 then
+		Game.MapFogChances.Resize(NewCount)
+	end
+
 	if NewCount <= OldCount then
 		return mem.IgnoreProtection(false)
 	end
 
 	-- extend the array
 	local ptr, door, fog
+	
 
 	if mmver == 6 then
 		
-		door = Extend(Game.MapDoorSound['?ptr'], 2, {0x45552C, 0x455541, 0x4603F0}, nil, 'fill')  -- door sounds
 		-- fog chances!
 		
 		ptr = Extend(Game.MapStats['?ptr'], 0x38,
@@ -85,13 +158,6 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 		
 	elseif mmver == 7 then
 
-		local old = OldCount
-		OldCount = OldCount + 1
-		door = Extend(Game.MapDoorSound['?ptr'], 2, {0x460CE9, 0x46F23F}, nil, 'fill')  -- door sounds
-		OldCount = 16
-		fog = Extend(Game.MapFogChances['?ptr'], 4, {0x4894C6}, nil, 'fill')  -- fog chances
-		OldCount = old
-		
 		ptr = Extend(Game.MapStats['?ptr'], 0x44,
 			{0x410DBB, 0x410DCB, 0x410FB2, 0x413C39, 0x413C7A, 0x413D8F, 0x413F97, 0x41CC24, 0x42042E, 0x42045C, 0x42EC03, 0x42EC1C, 0x432F72, 0x43331B, 0x43349C, 0x4334B1, 0x4334CD, 0x4334FB, 0x4338D1, 0x433969, 0x433B9F, 0x433C1B, 0x4340A4, 0x4340D8, 0x438D72, 0x438E35, 0x438E4E, 0x444565, 0x444577, 0x44495D, 0x44496F, 0x4449C5, 0x4449D7, 0x444A8A, 0x444BCB, 0x444D38, 0x444D60, 0x444E05, 0x444F02, 0x444F80, 0x448D30, 0x448D7F, 0x45025C, 0x450275, 0x456DCA, 0x4603B0, 0x4603C7, 0x460B7F, 0x460B96, 0x46116E, 0x464945, 0x47A3EC, 0x47A404, 0x489482, 0x49594A, 0x49595C, 0x497F94, 0x4ABF59, 0x4ABF71, 0x4ABFC6, 0x4ABFE0, 0x4AC02A, 0x4AC0D1, 0x4B2A1F, 0x4B3518, 0x4B41EA, 0x4B69DF, 0x4B6A91, 0x4B6DE2, 0x4BE045, 0x4BE05A},
 			{0x4340CD},
@@ -114,50 +180,8 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 		end
 		
 		-- NPCDist.txt
-		local p = Extend(0x73A594, 64, {0x476B62, 0x476BD9, 0x476C22, 0x4774F1, 0x47750A})
-		
-		if not patched then
-			mem.asmpatch(0x476BC1, [[
-				cmp ebx, [0x453FF0]
-				jge absolute 0x476BDF
-			]])
-			
-			mem.asmhook2(0x476BFC, [[
-				cmp ecx, [0x453FF0]
-			]])
-
-			mem.asmhook2(0x476C20, [[
-				pop ecx
-				push dword [0x453FF0]
-			]])
-			
-			-- NPCDist.txt - make caring of it unaccessory
-			mem.asmhook(0x4774FB, [[
-				test ebx, ebx
-				jnz @std
-				mov ecx, 56
-				idiv ecx
-				mov eax, edx
-				cmp eax, 38-3
-				jl @f
-				inc eax
-				cmp eax, 51-3
-				jl @f
-				inc eax
-			@@:
-				jmp absolute 0x477516
-			@std:
-			]])
-		end
+		NPCDistResize(NewCount)
 	else
-
-		local old = OldCount
-		OldCount = OldCount + 1
-		door = Extend(Game.MapDoorSound['?ptr'], 2, {0x447171, 0x45E5EA, 0x46DD17}, nil, 'fill')  -- door sounds
-		OldCount = 16
-		fog = Extend(Game.MapFogChances['?ptr'], 4, {0x488DC8}, nil, 'fill')  -- fog chances
-		OldCount = old
-		
 		ptr = Extend(Game.MapStats['?ptr'], 0x44,
 			{0x4121C9, 0x4121DC, 0x41336B, 0x4133A7, 0x41C145, 0x41F926, 0x41F936, 0x4307E0, 0x430BBA, 0x430D3D, 0x430D60, 0x430D79, 0x430D9F, 0x431186, 0x43120F, 0x4313B6, 0x431433, 0x4319B0, 0x4319D0, 0x4367C7, 0x4367DF, 0x441440, 0x441452, 0x441886, 0x441898, 0x4418FA, 0x44190C, 0x441A16, 0x441B68, 0x441D48, 0x441E1E, 0x441E97, 0x446160, 0x446193, 0x44D984, 0x44D998, 0x454661, 0x45DE1A, 0x45DE28, 0x45E499, 0x45E4B0, 0x45EA89, 0x462C8C, 0x4795DE, 0x4795F6, 0x47E2CC, 0x488DA8, 0x493C17, 0x493C29, 0x4949AA, 0x4AA3ED, 0x4AA400, 0x4AA45A, 0x4AA474, 0x4AA4BE, 0x4AA565, 0x4B1232, 0x4B1E34, 0x4B2C94, 0x4B5290, 0x4B52F0, 0x4B5656, 0x4D1827},
 			{0x4319C5},
@@ -184,9 +208,4 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 	
 	ChangeGameArray("MapStats", ptr)
 	internal.SetArrayUpval(Game.MapStats, "lenP", ptr + structs.MapStatsItem["?size"]*NewCount)
-	
-	ChangeGameArray("MapDoorSound", door)
-	if fog then
-		ChangeGameArray("MapFogChances", fog)
-	end
 end)
