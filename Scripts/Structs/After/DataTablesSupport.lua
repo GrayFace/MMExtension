@@ -523,7 +523,7 @@ Maximum spell number withing the magic school.
 				if (q.Shop or '') == '' then
 					break
 				end
-				i = tonumber(q.Event2D) or i
+				i = tonumber(q.House) or i
 				local spc, name, j = q.Shop:lower():match('(s?)(%a+)(%d?)')
 				-- print(spc, name, j)
 				local a0 = Game[MapToShop[name]..(spc ~= '' and 'Special' or '')]
@@ -558,7 +558,7 @@ Maximum spell number withing the magic school.
 			end
 			return
 		end
-		local q = {Shop = name, Event2D = i}
+		local q = {Shop = name, House = i}
 		t[#t + 1] = q
 		if type(a) ~= 'table' then
 			q.Level = a
@@ -574,7 +574,7 @@ Maximum spell number withing the magic school.
 		if str then
 			return ReadShopProps(ParseNamedColTable(str))
 		end
-		local t = {[0] = {'Event2D','Shop','Level', 1, 2, 3, 4, mmv(5) or 'Comments', mmv(6), mmv'Comments'}}
+		local t = {[0] = {'House','Shop','Level', 1, 2, 3, 4, mmv(5) or 'Comments', mmv(6), mmv'Comments'}}
 		local starts = {}
 		for kind, name in ipairs(ShopOrder) do
 			starts[kind] = #t + 1

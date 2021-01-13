@@ -4,6 +4,7 @@ mem.IgnoreProtection(true)
 
 local OldCount = 2000
 local NewCount = (FacetRefsLimit or 8192) + 64*128  -- support drawing all facets and half of all tiles at once
+local BatchAdd = mem.BatchAdd
 
 if mmver == 6 then
 
@@ -18,16 +19,10 @@ if mmver == 6 then
 	local endrefs = {0x469FC2+1, 0x469FD9+1}
 	local refs2 = {0x4798A1, 0x4798E4, 0x479951}
 
-	local function Process(t, d)
-		for _, p in ipairs(t) do
-			u4[p] = u4[p] + d
-		end
-	end
-
-	Process(counts, dn)
-	Process(refs, Offset)
-	Process(endrefs, Offset + dn*PolySize)
-	Process(refs2, Offset2)
+	BatchAdd(counts, dn)
+	BatchAdd(refs, Offset)
+	BatchAdd(endrefs, Offset + dn*PolySize)
+	BatchAdd(refs2, Offset2)
 
 elseif mmver == 7 then
 
@@ -41,16 +36,10 @@ elseif mmver == 7 then
 	local endrefs = {0x47A57A+1, 0x47A592+1, 0x487DBA+1}
 	local refs2 = {0x4873BD, 0x4873ED, 0x48747A}
 
-	local function Process(t, d)
-		for _, p in ipairs(t) do
-			u4[p] = u4[p] + d
-		end
-	end
-
-	Process(counts, dn)
-	Process(refs, Offset)
-	Process(endrefs, Offset + dn*PolySize)
-	Process(refs2, Offset2)
+	BatchAdd(counts, dn)
+	BatchAdd(refs, Offset)
+	BatchAdd(endrefs, Offset + dn*PolySize)
+	BatchAdd(refs2, Offset2)
 
 else
 	
@@ -64,16 +53,10 @@ else
 	local endrefs = {0x4876CB+1, 0x479762+1, 0x47977A+1}
 	local refs2 = {0x486CFD, 0x486D31, 0x4872C5}
 
-	local function Process(t, d)
-		for _, p in ipairs(t) do
-			u4[p] = u4[p] + d
-		end
-	end
-
-	Process(counts, dn)
-	Process(refs, Offset)
-	Process(endrefs, Offset + dn*PolySize)
-	Process(refs2, Offset2)
+	BatchAdd(counts, dn)
+	BatchAdd(refs, Offset)
+	BatchAdd(endrefs, Offset + dn*PolySize)
+	BatchAdd(refs2, Offset2)
 
 	-- SW limits
 	do
@@ -87,24 +70,24 @@ else
 		local size = 0x24
 		local sizes = {0x4863BF, 0x4868A9}
 		local counts = {0x4864EC+6}  -- strange: 0x4876F9
-		Process(counts, dn)
-		Process(sizes, dn*size)
+		BatchAdd(counts, dn)
+		BatchAdd(sizes, dn*size)
 		
 		-- edges
 		local size = 0x34
 		local sizes = {0x4863A2, 0x486823}
 		local counts = {0x486502}
 		local dn = NewEdgeCount - OldEdgeCount
-		Process(counts, dn)
-		Process(sizes, dn*size)
+		BatchAdd(counts, dn)
+		BatchAdd(sizes, dn*size)
 
 		-- spans
 		local size = 0x18
 		local sizes = {0x486386}
 		local counts = {0x486AAB+6, 0x486B94+6}
 		local dn = NewSpansCount - OldSpansCount
-		Process(counts, dn)
-		Process(sizes, dn*size)
+		BatchAdd(counts, dn)
+		BatchAdd(sizes, dn*size)
 	end
 	
 end

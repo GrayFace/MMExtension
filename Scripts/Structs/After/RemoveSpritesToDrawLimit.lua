@@ -26,12 +26,6 @@ local refs = mmv(
 	{0x43C44B, 0x43CBF1, 0x43CF93, 0x43D2CB, 0x43DC81, 0x468BDE, 0x468DA7, 0x47A111, 0x47A288, 0x47ABF2, 0x47AE23, 0x4BE2B0, 0x4BE31E, 0x4BE4DB, 0x4BEDFE, 0x4BEE07, 0x4BF09E, 0x4C1062}
 )
 
-local function Process(t, d)
-	for _, p in ipairs(t) do
-		u4[p] = u4[p] + d
-	end
-end
-
 --!-
 function SetSpritesToDrawLimit(NewCount)
 	NewCount = NewCount + 1
@@ -41,8 +35,8 @@ function SetSpritesToDrawLimit(NewCount)
 	mem.IgnoreProtection(true)
 	NewBlock = ffi.new("uint8_t[?]", size*NewCount)
 	mem.fill(ffi.cast("int", NewBlock), NewCount)
-	Process(counts, NewCount - OldCount)
-	Process(refs, ffi.cast("int", NewBlock) - OldPtr)
+	mem.BatchAdd(counts, NewCount - OldCount)
+	mem.BatchAdd(refs, ffi.cast("int", NewBlock) - OldPtr)
 	OldCount = NewCount
 	OldPtr = ffi.cast("int", NewBlock)
 	mem.IgnoreProtection(false)

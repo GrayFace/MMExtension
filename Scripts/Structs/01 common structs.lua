@@ -2571,3 +2571,23 @@ function structs.f.GeneralStoreItemKind(define)
 	.indexmember  'Items'
 	.newindexmember  'Items'
 end
+
+function structs.f.NPCProfTxtItem(define)
+	if mmver == 6 then
+		define
+		.i4  'Chance'
+		.i4  'Cost'
+		.i4  'Personality'
+		.EditPChar  'Benefit'
+		.EditPChar  'JoinText'
+		.array(7).EditPChar 'ProfNewsTopic'
+		.array(7).EditPChar 'ProfNewsText'
+	else
+		define
+		.i4  'Cost'
+		.EditPChar  'ActionText'
+		.EditPChar  'Benefit'
+		.EditPChar  'JoinText'
+		.EditPChar  'DismissText'
+	end
+end
