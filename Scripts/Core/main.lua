@@ -22,6 +22,7 @@ local d_setmetatable = debug.setmetatable
 local os_time = os.time
 local debug_getinfo = debug.getinfo
 local d_setupvalue = debug.setupvalue
+local d_getupvalue = debug.getupvalue
 local table_insert = table.insert
 local table_remove = table.remove
 local table_concat = table.concat
@@ -424,6 +425,12 @@ end
 function internal.SetArrayUpval(t, name, val)
 	local f = getmetatable(t).__newindex
 	d_setupvalue(f, d_findupvalue(f, name), val)
+end
+
+function internal.GetArrayUpval(t, name)
+	local f = getmetatable(t).__newindex
+	local k, v = d_getupvalue(f, d_findupvalue(f, name))
+	return v
 end
 
 -- stuff for Help generation

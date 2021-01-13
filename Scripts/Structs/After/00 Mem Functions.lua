@@ -13,13 +13,13 @@ mem.BatchAdd = BatchAdd
 local function ChangeGameArray(name, p, count, lenP)
 	if p then
 		structs.o.GameStructure[name] = p
-		internal.SetArrayUpval(Game[name], "o", p)
+		internal.SetArrayUpval(Game[name], 'o', p)
 	end
 	if count then
-		internal.SetArrayUpval(Game[name], "count", count)
+		internal.SetArrayUpval(Game[name], 'count', count)
 	end
 	if lenP then
-		internal.SetArrayUpval(Game[name], "lenP", lenP)
+		internal.SetArrayUpval(Game[name], 'lenP', lenP)
 	end
 end
 mem.ChangeGameArray = ChangeGameArray
@@ -35,9 +35,9 @@ function mem.ExtendGameStructure(t)
 			return
 		end
 		count, limit = newCount, a.limit or limit
-		local dp, dnum, dlim = 0, count - OldCount, count - limit
-		if dlim > 0 then
-			local old = ptr or a['?ptr']
+		local dp, dlim, dnum, old = 0, 0, count - OldCount, ptr or a['?ptr']
+		if count > limit then
+			dlim = count - limit
 			ptr = mem.reallocMM(old, limit*size + esize, count*size + esize, not ptr)
 			if endSize ~= 0 then
 				mem.copy(ptr + start + count*size, ptr + start + limit*size, endSize)
@@ -57,10 +57,20 @@ function mem.ExtendGameStructure(t)
 		BatchAdd(t.SizeRefs or {}, dnum*size)
 		BatchAdd(t.EndRefs or {}, dp + dnum*size)
 		for _, s in ipairs(t) do
-			ChangeGameArray(s, ptr, count)
+			-- If lenP is set, 'count' acts as a limit and should be set only if dp ~= 0
+			-- If lenP is inside the relocated area, correct it.
+			-- If it's at the end of it, also move it by 'dlim*size'.
+			local lenP = internal.GetArrayUpval(Game[s], 'lenP')
+			local n = (not lenP or dp ~= 0) and count or nil
+			if lenP and n and lenP >= old and lenP < old + (limit - dlim)*size + esize then
+				lenP = lenP + dp + (lenP < old + start and 0 or dlim*size)
+			else
+				lenP = nil
+			end
+			ChangeGameArray(s, ptr, n, lenP)
 		end
 		for _, f in ipairs(t.Custom or {}) do
-			f(count, OldCount, dp, ptr, size)
+			f(count, OldCount, dp, ptr or old, size)
 		end
 	end
 	local function SetHigh(newMax, canShrink)
