@@ -56,11 +56,11 @@ function mem.ExtendGameStructure(t)
 		BatchAdd(t.CountRefs or {}, dnum)
 		BatchAdd(t.SizeRefs or {}, dnum*size)
 		BatchAdd(t.EndRefs or {}, dp + dnum*size)
-		for _, f in ipairs(t.Custom or {}) do
-			f(count, OldCount, dp, size)
-		end
 		for _, s in ipairs(t) do
 			ChangeGameArray(s, ptr, count)
+		end
+		for _, f in ipairs(t.Custom or {}) do
+			f(count, OldCount, dp, ptr, size)
 		end
 	end
 	local function SetHigh(newMax, canShrink)
