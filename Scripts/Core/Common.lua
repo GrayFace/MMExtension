@@ -70,6 +70,8 @@ local ShortFunctions = dofile(CoreScriptsPath.."ShortFunctions.lua")
 NoGlobals.CheckChunkFile(ShortFunctions.HookParser, 1)
 ShortFunctions.HookParser(NoGlobals)
 
+local raw_loadstring = loadstring or load
+
 local PreprocessHook = dofile(CoreScriptsPath.."RSPreprocessHook.lua")
 internal.PreprocessHook = PreprocessHook
 internal.ShortFunctions = ShortFunctions
@@ -82,11 +84,14 @@ internal.ShortFunctions = ShortFunctions
 -- 	return NoGlobals.GetConvertedStr(), err
 -- end
 
-local ChunkLog = {}
+local ChunkLog = {last = 0}
 internal.ChunkLog = ChunkLog
 
 function PreprocessHook.ProcessCallback(str, ChunkName)
 	local err = NoGlobals.CheckStr(str, ChunkName)
+	if found then
+		_G.print(err)
+	end
 	if err then
 		internal.ErrorChunk = str
 		local s = ShortFunctions.ConvertStr(str)
@@ -95,9 +100,25 @@ function PreprocessHook.ProcessCallback(str, ChunkName)
 		return s, err
 	end
 	local s = NoGlobals.GetConvertedStr()
-	table_insert(ChunkLog, 1, s)
-	ChunkLog[51] = nil
+	local n = ChunkLog.last%50 + 1
+	ChunkLog.last = n
+	ChunkLog[n] = s
 	return s, err
+end
+
+function PreprocessHook.LoadCallback(str, ...)
+	local s, err = PreprocessHook.ProcessCallback(str, string_match(... or "", "^@?(.*)"), (...))
+	if s then
+		local f, err2 = raw_loadstring(s, ...)
+		if not f then
+			internal.ErrorChunk = str
+			internal.ErrorChunkC = s
+			return nil, err2
+		elseif not err then
+			return f
+		end
+	end
+	return nil, err
 end
 
 PreprocessHook.Activate()

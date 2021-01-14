@@ -79,7 +79,7 @@ local LastTok
 function parse.Options.OnExpEnd(E, exp)
 	E.LastExp = exp
 	LastTok = max(LastTok, (exp[#exp] or {}).End)
-	if E.ShortFunction and not E.ShortFunctionEnclosed and (exp[2] or not exp[1].ShortFunctionReturn or LL.GetToken().s == "," or LL.GetToken().s == ";") then
+	if E.ShortFunction and (exp[2] or not exp[1].ShortFunctionReturn or not E.ShortFunctionEnclosed and LL.GetToken().s == "," or LL.GetToken().s == ";") then
 		E.ShortFunctionDone = true
 		LL.End()
 	end
@@ -103,10 +103,11 @@ function parse.Options.OnListEnd(E)
 	end
 	Replace(LastTok, " end ", 0)
 	if not E.ShortFunctionDone then
+		-- LastTok = max(LastTok, (E.Exp[#E.Exp] or {}).End)
 		LL.End()
 		LL.NewStatement()
 	end
-	if _E().ShortFunction and not _E().ShortFunctionEnclosed then
+	if _E().ShortFunction then
 		LL.NewStatement()
 	end
 end
