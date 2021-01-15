@@ -1054,6 +1054,9 @@ end
 ----------- Module functions ------------
 
 local function GetChunkName(chunk)
+	if type(chunk) == "string" then
+		return chunk
+	end
 	local d = debug_getinfo and debug_getinfo(chunk, "nSu")
 	return d and (d.name ~= "" and d.name or d.short_src)
 end
@@ -1079,9 +1082,7 @@ local function CheckStr(fstr, chunk)
 	Block()
 	ParseLoop()
 	if C.Error and chunk then
-		if type(chunk) ~= "string" then
-			chunk = GetChunkName(chunk) or "?"
-		end
+		chunk = GetChunkName(chunk) or "?"
 		return chunk..":"..C.Error
 	end
 	return C.Error

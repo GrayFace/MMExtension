@@ -514,7 +514,11 @@ end
 
 local function ProcessFunctions(dir, modules)
 	for f in _G.path.find(DevPath.."Scripts/"..dir.."/*.lua") do
-		parse.CheckFile(f)
+		local err = internal.NoGlobals.CheckStr(io.load(f), f)
+		if err then
+			error(err)
+		end
+		parse.CheckStr(internal.NoGlobals.GetConvertedStr(), f)
 		local t = parse.Help
 		if t[2] then
 			local name = f:match("[^\\/:]*[\\/:][^\\/:]*$") -- path.GetRelativePath(DevPath.."Scripts", f):match([[^%.?\?(.*)$]])
