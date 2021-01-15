@@ -41,6 +41,87 @@ local function PrettifyElseIf(str, unindent)
 	)
 end
 
+local function FindLabels(t, i1, n)
+	local lab = {}
+	for i = i1, i1 + n - 1 do
+		lab[i - i1] = t[i]:match('::(_%d+)::')
+	end
+	return lab
+end
+
+local function NeutralizeLua(t, i1, n, pl, lab)
+	local lab1 = FindLabels(t, i1, n)
+	local q, map1, map2 = {}, {}, {}
+	for i, v in pairs(lab1) do
+		if lab[i] then
+			map1['goto '..v] = 'goto '..lab[i]
+			map2['::'..v..'::'] = '::'..lab[i]..'::'
+		end
+	end
+	for i = i1, i1 + n - 1 do
+		local s, s2 = t[i]:match('^(.-)(%-%- .*)')
+		s, s2 = s or t[i], s2 or ''
+		s = s:gsub('goto _%d+', map1)
+		s = s:gsub('::_%d+::', map2)
+		s = s:gsub('ForPlayer%('..pl..'%)', 'ForPlayer(pl)')
+		s = s:gsub('Player = '..pl, 'Player = pl')
+		q[i - i1 + 1] = s..s2
+	end
+	return table.concat(q, '\r\n'), lab1
+end
+
+local function DoPartyLoop(t, i1, n)
+	local s, lab = NeutralizeLua(t, i1, n, 1, {})
+	if NeutralizeLua(t, i1 + n, n, 2, lab) ~= s then
+		return i1
+	end
+	local fin = (NeutralizeLua(t, i1 + n*2, n, 3, lab) == s) and 3 or 2
+	local start = (NeutralizeLua(t, i1 - n, n, 0, lab) == s) and 0 or 1
+	if fin - start < 2 then
+		return i1
+	elseif fin == 2 then
+		for i = i1 + n*2, #t do
+			if t[i]:match'ForPlayer%([0-2]%)' or t[i]:match'Player = [0-2]' then
+				break
+			end
+			local s, s2 = t[i]:match('^(.-)(%-%- .*)')
+			s, s2 = s or t[i], s2 or ''
+			s = s:gsub('ForPlayer%(3%)', 'ForPlayer(Party.High)')
+			s = s:gsub('Player = 3', 'Player = Party.High')
+			t[i] = s..s2
+		end
+	end
+	if start == 0 then
+		i1 = i1 - n
+	end
+	for i = 4, n*(fin - start + 1) do  -- I need 3 strings, thus 1+3 = 4
+		table.remove(t, i1)
+	end
+	t[i1] = s:match('^\9*')..'for pl = '..start..', Party.High'..(fin == 3 and '' or ' - 1')..' do'
+	t[i1 + 1] = '\9'..s:gsub('\n\9', '\n\9\9')
+	t[i1 + 2] = s:match('^\9*')..'end'
+	return i1 + 2
+end
+
+local function FindPartyLoops(s)
+	if mmver == 8 then
+		return s
+	end
+	local t, i = s:split('\r\n', true), 1
+	while t[i] do
+		if t[i]:find('ForPlayer(1)', 1, true) or t[i]:find('Player = 1', 1, true) then
+			for j = i + 1, #t do
+				if t[j]:find('ForPlayer(2)', 1, true) or t[j]:find('Player = 2', 1, true) then
+					i = DoPartyLoop(t, i, j - i)
+					break
+				end
+			end
+		end
+		i = i + 1
+	end
+	return table.concat(t, '\13\10')
+end
+
 function evt.Decompile(fileName, funcMode, outFile, asTxt)
 
 	local InLua = not asTxt
@@ -522,9 +603,12 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 		return n1
 	end
 	
+	local loopPl = {1,2,3}
+	
 	local function Priority(n1, n2)
 		local n
 		local start
+		local players = {}
 		while N(n1) do
 			if n1 == n2 then
 				return -1000
@@ -532,9 +616,14 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 				return 1/0
 			elseif n1.Next[2] then
 				n = -1
+			elseif n1.cmd.num == 0x23 and loopPl[n1.cmd.struct.Player] then  -- for better player loops recognition
+				players[n1.cmd.struct.Player] = true
 			end
 			n1, start = n1.Next[1], start or n1
 			n = n or -10
+		end
+		if next(players) and not players[0] then
+			return 1/0
 		end
 		return n or 0
 	end
@@ -1060,7 +1149,7 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 	mem.free(buf)
 	s = table.concat(str):gsub("\r?\n", "\r\n")
 	if InLua then
-		s = PrettifyElseIf(s)
+		s = PrettifyElseIf(FindPartyLoops(s))
 	end
 	if outFile then
 		io.save(outFile, s)
