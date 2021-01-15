@@ -75,20 +75,6 @@ local function DataTable(name, f, checkBin)
 	errorinfo('')
 end
 
-local function StructsArray(arr, offs, tabl)
-	tabl = tabl or {}
-	return function(str)
-		return DataTables.StructsArray(arr, offs, table.copy(tabl, {Resisable = true, IgnoreFields = {SFTIndex = true, Bits = true}, IgnoreRead = {['#'] = true}}, true), str)
-	end
-end
-
-local function NameHeader(hdr, arr)
-	for i, a in arr do
-		hdr[i] = ("%s  %s"):format(i, a.Name)
-	end
-	return hdr
-end
-
 local function SaveBin(name, t)
 	os.mkdir(BinFolder)
 	io.save(BinFolder.."d"..name..".bin", DataTables.ToBin(t))
@@ -104,63 +90,57 @@ local function update()
 	DataTable('Class Starting Skills', DataTables.StartingSkills)
 	DataTable('Class Starting Stats', DataTables.StartingStats)
 	DataTable('House Movies', DataTables.HouseMovies)
-	local FtIgnore = {TotalTime = true, NotGroupEnd = true, Bits = true, SpriteIndex = true, PaletteIndex = true, IconIndex = true, Index = true, Loaded = true}
-	local FtIgnoreRead = Game.Version == 6 and {Images3 = true, Glow = true, Transparent = true} or nil
-	if DataTable('SFT', StructsArray(Game.SFTBin.Frames, structs.o.SFTItem, {IgnoreFields = FtIgnore, IgnoreRead = FtIgnoreRead}), true) then
+	if DataTable('SFT', DataTables.SFTBin, true) then
 		sameSFT = false
 		DataTables.UpdateSFTGroups()
 		io.save(BinFolder.."dsft.bin", DataTables.STFToBin())
 		FixFileTimes()
 	end
-	if DataTable('DecList', StructsArray(Game.DecListBin, nil), sameSFT) then
+	if DataTable('DecList', DataTables.DecListBin, sameSFT) then
 		SaveBin('declist', Game.DecListBin)
 	end
-	if DataTable('PFT', StructsArray(Game.PFTBin, nil, {NoRowHeaders = true, IgnoreFields = FtIgnore}), true) then
+	if DataTable('PFT', DataTables.PFTBin, true) then
 		DataTables.UpdatePFTGroups()
 		SaveBin('pft', Game.PFTBin)
 	end
-	if DataTable('IFT', StructsArray(Game.IFTBin, nil, {IgnoreFields = FtIgnore}), true) then
+	if DataTable('IFT', DataTables.IFTBin, true) then
 		DataTables.UpdateIFTGroups()
 		SaveBin('ift', Game.IFTBin)
 	end
-	if DataTable('TFT', StructsArray(Game.TFTBin, nil, {NoRowHeaders = true, IgnoreFields = FtIgnore}), true) then
+	if DataTable('TFT', DataTables.TFTBin, true) then
 		DataTables.UpdateTFTGroups()
 		SaveBin('tft', Game.TFTBin)
 	end
-	if DataTable('Chest', StructsArray(Game.ChestBin, nil), true) then
+	if DataTable('Chest', DataTables.ChestBin, true) then
 		SaveBin('chest', Game.ChestBin)
 	end
-	if DataTable('Overlay', StructsArray(Game.OverlayBin, nil, {NoRowHeaders = true}), sameSFT) then
+	if DataTable('Overlay', DataTables.OverlayBin, sameSFT) then
 		SaveBin('overlay', Game.OverlayBin)
 	end
-	local param = {NoRowHeaders = true, IgnoreFields = {SFTIndex = true, Bits = true, LoadedParticlesColor = true}}
-	if DataTable('ObjList', StructsArray(Game.ObjListBin, nil, param), sameSFT) then
+	if DataTable('ObjList', DataTables.ObjListBin, sameSFT) then
 		SaveBin('objlist', Game.ObjListBin)
 	end
-	if DataTable('MonList', StructsArray(Game.MonListBin, nil, {IgnoreFields = {Tint = true}}), sameSFT) then
+	if DataTable('MonList', DataTables.MonListBin, sameSFT) then
 		SaveBin('monlist', Game.MonListBin)
 	end
-	local param = {NoRowHeaders = true, IgnoreFields = {Locked = true, Bits = true, Data3D = true, Decompressed = true},
-	               Alias = {Type = {system = 1, swap = 2, lock = 4}}}
-	if DataTable('Sounds', StructsArray(Game.SoundsBin, nil, param), true) then
+	if DataTable('Sounds', DataTables.SoundsBin, true) then
 		SaveBin('sounds', Game.SoundsBin)
 	end
-	if DataTable('Tile', StructsArray(Game.TileBin, nil, {IgnoreFields = {Bits = true, Bitmap = true}}), true) then
+	if DataTable('Tile', DataTables.TileBin, true) then
 		SaveBin('tile', Game.TileBin)
 	end
 	if Game.Version == 8 then
-		if DataTable('Tile2', StructsArray(Game.Tile2Bin, nil, {IgnoreFields = {Bits = true, Bitmap = true}}), true) then
+		if DataTable('Tile2', DataTables.Tile2Bin, true) then
 			SaveBin('tile2', Game.Tile2Bin)
 		end
-		if DataTable('Tile3', StructsArray(Game.Tile3Bin, nil, {IgnoreFields = {Bits = true, Bitmap = true}}), true) then
+		if DataTable('Tile3', DataTables.Tile3Bin, true) then
 			SaveBin('tile3', Game.Tile3Bin)
 		end
 	end
 	if Game.Version > 6 then
-		local hdr = NameHeader({[-1] = "Monster"}, Game.MonListBin)
-		DataTable('Monster Kinds', StructsArray(Game.MonsterKinds, nil, {Resisable = false, RowHeaders = hdr}))
+		DataTable('Monster Kinds', DataTables.MonsterKinds)
 	end
-	-- DataTable('Player Animations', StructsArray(Game.PlayerAnimations, nil, {Resisable = false, IgnoreFields = {Sounds = true, Expressions = true}}))
+	-- DataTable('Player Animations', DataTables.PlayerAnimations)
 	DataTable('Shop Props', DataTables.ShopProps)
 	events.DataTablesUpdate1(DataTable)
 	FixFileTimes()  -- just to be sure
@@ -168,17 +148,9 @@ end
 
 local function update2()
 	DataTable('Town Portal', DataTables.TownPortal)
-	do  -- Spells2
-		local hdr = NameHeader({[-1] = "Spell"}, Game.SpellsTxt)
-		local is6 = (Game.Version == 6) or nil
-		DataTable('Spells2', StructsArray(Game.Spells, nil, {Resisable = false, RowHeaders = hdr, IgnoreFields = 
-		          {CastByMonster = true, CastByEvent = true, CauseDamage = true, SpecialDamage = true, Bits = true,
-		           SpellPointsNormal = is6, SpellPointsExpert = is6, SpellPointsMaster = is6}}))
-	end
-	DataTable('Transport Index', StructsArray(Game.TransportIndex, {[1] = 1, [2] = 2, [3] = 3, [4] = Game.Version > 6 and 4 or nil},
-		{Resisable = false, RowHeaders = {[Game.TransportIndex.low - 1] = "2D Event"}}))
-	DataTable('Transport Locations', StructsArray(Game.TransportLocations, nil,
-		{Resisable = false, IgnoreFields = {MapIndex = true}}))
+	DataTable('Spells2', DataTables.Spells2)
+	DataTable('Transport Index', DataTables.TransportIndex)
+	DataTable('Transport Locations', DataTables.TransportLocations)
 	events.DataTablesUpdate2(DataTable)
 	FixFileTimes()  -- just to be sure
 	events.DataTablesLoaded()

@@ -24,10 +24,15 @@ local function ChangeGameArray(name, p, count, lenP)
 end
 mem.ChangeGameArray = ChangeGameArray
 
-function mem.ExtendGameStructure(t)
-	local name, size, endSize, start = t[1], t.Size, t.EndSize or 0, t.StartSize or 0
+local ItemSize = |t| t[t.low]['?size']
+
+local function Extend(t)
+	local name, size, endSize, start = t[1], t.Size or ItemSize(Game[t[1]]), t.EndSize or 0, t.StartSize or 0
 	local esize = endSize + start
 	local ptr, count, limit
+	if not size then
+		error('size unspecified: '..(name or ('%X'):format(t.Struct['?ptr'])))
+	end
 	local function Resize(newCount, canShrink)
 		local a = name and Game[name] or t.Struct
 		local OldCount = count or t.UseDynCount and a.count or a.limit
@@ -52,6 +57,10 @@ function mem.ExtendGameStructure(t)
 			BatchAdd(t.LimCountRefs or {}, dlim)
 			BatchAdd(t.LimSizeRefs or {}, dlim*size)
 			BatchAdd(t.LimEndRefs or {}, dp + dlim*size)
+			for _, f in ipairs(t.CustomOnce or {}) do
+				f(count, OldCount, dp, ptr or old, size, t)
+			end
+			t.CustomOnce = {}
 		end
 		BatchAdd(t.CountRefs or {}, dnum)
 		BatchAdd(t.SizeRefs or {}, dnum*size)
@@ -70,7 +79,7 @@ function mem.ExtendGameStructure(t)
 			ChangeGameArray(s, ptr, n, lenP)
 		end
 		for _, f in ipairs(t.Custom or {}) do
-			f(count, OldCount, dp, ptr or old, size)
+			f(count, OldCount, dp, ptr or old, size, t)
 		end
 	end
 	local function SetHigh(newMax, canShrink)
@@ -81,4 +90,36 @@ function mem.ExtendGameStructure(t)
 		rawset(Game[s], 'SetHigh', SetHigh)
 	end
 	return Resize, SetHigh
+end
+mem.ExtendGameStructure = Extend
+
+local function SaveLoad(name, p0, sz0)
+	local sname = 'Extra'..name
+	function events.InternalBeforeSaveGame()
+		local t, sgd = Game[name], internal.SaveGameData
+		local p, sz = t['?ptr'], t['?size'] - sz0
+		mem.copy(p0, p, sz0)
+		sgd[sname] = mem.string(p + sz0, sz, true)
+	end
+	events.InternalBeforeLoadMap = |was, loaded| if not was then
+		local t, sgd = Game[name], internal.SaveGameData
+		local p, sz, s = t['?ptr'], t['?size'] - sz0, sgd[sname] or ''
+		if not loaded then
+			return mem.fill(p, sz + sz0)
+		end
+		mem.copy(p, p0, sz0)
+		p = p + sz0
+		mem.copy(p, s, min(#s, sz))
+		if #s < sz then
+			mem.fill(p + #s, sz - #s)
+		end
+	end
+end
+
+function mem.ExtendAndSaveGameStructure(t)
+	local name = t[1]
+	local p0, size0 = Game[name]['?ptr'], Game[name]['?size']
+	t.CustomOnce = t.CustomOnce or {}
+	t.CustomOnce[#t.CustomOnce + 1] = || SaveLoad(name, p0, size0)
+	return Extend(t)
 end

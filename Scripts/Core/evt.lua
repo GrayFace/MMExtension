@@ -55,7 +55,7 @@ local UpdateEventJustHint
 local CurMapScripts = {}
 local GlobalScripts = {}
 local MayShow = 0  -- 0 in loading screen, 1 after the game was loaded
-local WasInGame
+local WasInGame, WasLoaded
 
 local function OnLeaveMap()
 	internal.ResetEvtPlayer()
@@ -85,7 +85,10 @@ local function OnLeaveGame()
 	ClearMapStr()
 	internal.MapName = nil
 end
-internal.OnBeforeLoadGame = OnLeaveGame
+internal.OnBeforeLoadGame = function()
+	OnLeaveGame()
+	internal.GameLoading = true
+end
 internal.OnExitToMainMenu = OnLeaveGame
 
 local function LoadScripts(fpath, t)
@@ -114,9 +117,10 @@ function internal.BeforeMapLoad()
 	--!v Variables stored in a saved game that belong to current map. On map refill 'mapvars' are cleared, but old table is stored in #Map.Refilled:#.
 	mapvars = tget(sgd, "Maps", MapName)
 	MapVars = mapvars
-	WasInGame = internal.InGame
+	WasInGame, WasLoaded = internal.InGame, internal.GameLoading
+	events.cocall("InternalBeforeLoadMap", WasInGame, WasLoaded)
 	if not WasInGame then
-		internal.InGame = true
+		internal.InGame, internal.GameLoading = true, nil
 		evt.Global = MakeEventsTable()
 		evt.global = evt.Global
 		if mmver > 6 then
@@ -125,7 +129,7 @@ function internal.BeforeMapLoad()
 		end
 		LoadScripts("Global/*.lua", GlobalScripts)
 	end
-	events.cocall("BeforeLoadMap", WasInGame)
+	events.cocall("BeforeLoadMap", WasInGame, WasLoaded)
 end
 
 function internal.OnLoadMap()

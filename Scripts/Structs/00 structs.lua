@@ -129,7 +129,7 @@ function structs.f.GameStructure(define)
 	if mmver == 6 then
 		define[0x55F628].array{100, lenA = i4, lenP = 0x55F628 + 5600}.struct(structs.MapStatsItem)  'MapStats'
 	else
-		define[mmv(nil, 0x5CAA38, 0x5E6E00)].array{77, lenA = i4, lenP = mmv(nil, 0x5CAA38, 0x5E6E00) + 0x44*77}.struct(structs.MapStatsItem)  'MapStats'
+		define[mm78(0x5CAA38, 0x5E6E00)].array{77, lenA = i4, lenP = mm78(0x5CAA38, 0x5E6E00) + 0x44*77}.struct(structs.MapStatsItem)  'MapStats'
 	end
 	define
 	[mmv(0x4C3B74, 0x4EFEC8, 0x5004E8)].array(mmv(68, 78, 78)).i2  'MapDoorSound'
@@ -242,17 +242,31 @@ function structs.f.GameStructure(define)
 	[mmv(0x4D519C, 0x50BA7C, 0x51D354)].i4  'TimeDelta'
 	 .Info "Time since last tick"
 	-- MM6: 4C4468 - something related to shop items generation
-	[mmv(0x90EC2C, 0xAD45B4, 0xB7CA8C)].array(mmv(1, 0, 0), mmv(47, 52, 52)).array(12).struct(structs.Item)  'ShopItems'
+	[mmv(0x90EADC, 0xAD45B4, 0xB7CA8C)].array(0, mmv(47, 52, 52)).array(12).struct(structs.Item)  'ShopItems'
 	 .Info{Sig = "[house][slot]"}
 	[mmv(0x9129DC, 0xAD9F24, 0xB823FC)].array(mmv(1, 0, 0), mmv(41, 52, 52)).array(12).struct(structs.Item)  'ShopSpecialItems'
 	 .Info{Sig = "[house][slot]"}
 	[mmv(0x91663C, 0xADF894, 0xB87D6C)].array(mmv(119, 139, 139), mmv(140, 170, 172)).array(mmv(1, 1, 12)).array(12).struct(structs.Item)  'GuildItems'
 	 .Info{Sig = "[house][school][slot]"; "In MM8 in each guild items for all 12 schools of magic are generated. In MM6 and MM7 'school' can only be 0."}
+	[mmv(0x9DDDA4, 0xF8AFE8, 0xFFD3D4)].array(12).i4  'GuildItemIconPtr'
+	 .Info{Sig = "[slot]"; [[Loaded icons for current guild's items.
+Example:
+!Lua[=[function events.GuildItemsGenerated(t)
+	local a = Game.GuildItems[t.House][0]   -- items array for this guild (for MM6 and MM7)
+	a[0]:Randomize(5, const.ItemType.Book)  -- put random powerful book into first slot
+	a[0].Identified = true
+	Game.GuildItemIconPtr[0] = Game.IconsLod:LoadBitmapPtr(a[0]:T().Picture)
+end]=]
+]]}
+	[mmv(0x90E894, 0xACCEC4, 0xB20F1C)].array(mmv(0, 0, 0), mmv(47, 52, 52)).i8  'ShopNextRefill'
+	 .Info{Sig = "[house]"}
+	[mmv(0x90EA0C, 0xACD06C, 0xB210C4)].array(mmv(119, 139, 139), mmv(140, 170, 172)).i8  'GuildNextRefill'
+	 .Info{Sig = "[house]"}
 	[mmv(0x4C43DC, 0x4F0288, 0x5007F0)].array(1, 14).struct(structs.ShopItemKind)  'ShopWeaponKinds'
-	[mmv(0x4C4468, 0x4F0318, 0x500880)].array(15, 28).array(1,2).struct(structs.ShopItemKind)  'ShopArmorKinds'
-	[mmv(0x4C4580, 0x4F0430, 0x500998)].array(29, 41).i2  'ShopMagicLevels'
 	[mmv(0x4C45F8, 0x4F04C8, 0x500A30)].array(1, 14).struct(structs.ShopItemKind)  'ShopWeaponKindsSpecial'
+	[mmv(0x4C4468, 0x4F0318, 0x500880)].array(15, 28).array(1,2).struct(structs.ShopItemKind)  'ShopArmorKinds'
 	[mmv(0x4C4684, 0x4F0558, 0x500AC0)].array(15, 28).array(1,2).struct(structs.ShopItemKind)  'ShopArmorKindsSpecial'
+	[mmv(0x4C4580, 0x4F0430, 0x500998)].array(29, 41).i2  'ShopMagicLevels'
 	[mmv(0x4C479C, 0x4F0670, 0x500BD8)].array(29, 41).i2  'ShopMagicLevelsSpecial'
 	[mmv(0x4C3E80, 0x4F0798, 0x500D5C)].array(mmv(79, 89, 89), mmv(88, 98, 101)).i2  'TrainingLevels'
 	[mmv(0x4C48B0, 0x4F0DB0, 0x501238)].array(mmv(119, 139, 139), mmv(140, 170, 172)).i2  'GuildSpellLevels'
@@ -260,28 +274,18 @@ function structs.f.GameStructure(define)
 		define
 		[mm78(0x4F044C, 0x50099E)].array(42, 53).i2  'ShopAlchemistLevels'
 		[mm78(0x4F068C, 0x500BF4)].array(42, 53).i2  'ShopAlchemistLevelsSpecial'
+		[mm78(0xACD16C, 0xB211D4)].array(53).i8  'ShopTheftExpireTime'
 	else
 		define
 		[0x4C459C].array(42, 47).struct(structs.GeneralStoreItemKind)  'GeneralStoreItemKinds'
 		[0x4C47B8].array(42, 47).struct(structs.GeneralStoreItemKind)  'GeneralStoreItemKindsSpecial'
-		 .Info "Yes, MM6 generates special items in general stores, but there's no menu item for them."
+		 .Info "Yes, MM6 generates special items in general stores, but doesn't support buying them."
 	end
 	
-	
-	-- if mmver == 6 then
-	-- 	define[0x91663C].array(119, 140).array(12).struct(structs.Item)  'GuildItems'
-	-- elseif mmver == 7 then
-	-- 	define[0xADF894].array(139, 170).array(12).struct(structs.Item)  'GuildItems'
-	-- else
-	-- 	define[0xB87D6C].array(139, 172).array(12).array(12).struct(structs.Item)  'GuildItems'
-	-- 	 .Info{Sig = "[shop][slot]"}
-	-- end
 	if mmver < 8 then
 		define[mmv(0x4CA718, 0x505828)].array(480).i4  'ScanlineOffset'
 	end
 	define
-	[mmv(0x90E894, 0xACCEC4, 0xB20F1C)].array(mmv(1, 0, 0), mmv(47, 52, 52)).i8  'ShopNextRefill'
-	 .Info{Sig = "[house]"}
 	[mmv(0x9B1090, 0xE31A9C, 0xF019B4)].parray(480).array(640).struct(structs.ObjectRef)  'ObjectByPixel'
 	 .Info{Sig = "[y][x]"}
 	[mmv(0x918938, 0xAE2F74, 0xBB2E04)].i4  'ArmageddonTimeLeft'
@@ -330,6 +334,13 @@ function structs.f.GameStructure(define)
 	define
 	[mmv(0x4BDD6E, 0x4E3C46, 0x4F486E)].array(0, mmv(99, 99, 132)).struct(structs.SpellInfo)  'Spells'
 	[mmv(0x56ABD0, 0x5CBEB0, 0x5E8278)].array(0, mmv(99, 99, 132)).struct(structs.SpellsTxtItem)  'SpellsTxt'
+	if mmver > 6 then
+		define
+		[mm78(0x44FA9D, 0x44D1FB)].EditConstPChar  'SummonElementalA'
+		[mm78(0x44FA96, 0x44D1F4)].EditConstPChar  'SummonElementalB'
+		[mm78(0x44FA8A, 0x44D1DD)].EditConstPChar  'SummonElementalC'
+	end
+	define
 	[mmv(0x6A8808, 0x722D94, 0x760394)].array(1, 512).EditPChar  'QuestsTxt'
 	if mmver == 6 then
 		define[0x6A900C].array{1, 87}.EditPChar  'AwardsTxt'

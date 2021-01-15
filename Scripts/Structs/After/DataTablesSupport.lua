@@ -479,12 +479,17 @@ function DataTables.HouseMovies(str)
 end
 
 -- DataTables.ShopProps
+
 do
 	local MapToShop = {
 		weapon = 'ShopWeaponKinds', armor = 'ShopArmorKinds', magic = 'ShopMagicLevels',
 		general = 'GeneralStoreItemKinds', alchemist = 'ShopAlchemistLevels',
 		training = 'TrainingLevels', guild = 'GuildSpellLevels'
 	}
+	local HouseTypeShop = {'Weapon', 'Armor', 'Magic', mmver == 6 and 'General' or 'Alchemist', [const.HouseType.Training] = 'Training'}
+	for i = 5, 16 do
+		HouseTypeShop[i] = 'Guild'
+	end
 	local ShopOrder = {'Weapon', 'Armor', 'Magic', mmver == 6 and 'General' or 'Alchemist', 'Training', 'Guild'}
 	local ItemTypeInv = table.invert(const.ItemType)
 	local comments = {[[
@@ -511,6 +516,10 @@ Training cap. '-1' means no cap.
 Maximum spell number withing the magic school.
 ]]
 	}
+	local ShopBaseMax = {}
+	for i, name in ipairs(ShopOrder) do
+		ShopBaseMax[name] = Game[MapToShop[name:lower()]].high
+	end
 
 	local function ReadShopProps(t)
 		local einfoOld, line = errorinfo(), nil
@@ -527,6 +536,7 @@ Maximum spell number withing the magic school.
 				local spc, name, j = q.Shop:lower():match('(s?)(%a+)(%d?)')
 				-- print(spc, name, j)
 				local a0 = Game[MapToShop[name]..(spc ~= '' and 'Special' or '')]
+				a0.SetHigh(i)
 				local a = a0[i]
 				if type(a) ~= 'table' then
 					a0[i] = q.Level + 0
@@ -580,9 +590,12 @@ Maximum spell number withing the magic school.
 			starts[kind] = #t + 1
 			local shop = MapToShop[name:lower()]
 			for i, a in Game[shop] do
-				AddShopLine(t, i, name, a, name)
-				if kind <= 4 then
-					AddShopLine(t, '', 'S'..name, Game[shop..'Special'][i], name)
+				-- only output if house type matches it
+				if i <= ShopBaseMax[name] or i > Game.Houses.high or HouseTypeShop[Game.Houses[i].Type] == name then
+					AddShopLine(t, i, name, a, name)
+					if kind <= 4 then
+						AddShopLine(t, '', 'S'..name, Game[shop..'Special'][i], name)
+					end
 				end
 			end
 		end
@@ -595,6 +608,85 @@ Maximum spell number withing the magic school.
 		end
 		return WriteNamedColTable(t)
 	end
+end
+
+-- Some basic data tables
+
+local function StructsArray(arr, offs, tabl)
+	tabl = tabl or {}
+	return function(str)
+		return DataTables.StructsArray(arr, offs, table.copy(tabl, {Resisable = true, IgnoreFields = {SFTIndex = true, Bits = true}, IgnoreRead = {['#'] = true}}, true), str)
+	end
+end
+
+local function NameHeader(hdr, arr)
+	for i, a in arr do
+		hdr[i] = ("%s  %s"):format(i, a.Name)
+	end
+	return hdr
+end
+
+DataTables.TransportIndex = StructsArray(Game.TransportIndex, {[1] = 1, [2] = 2, [3] = 3, [4] = Game.Version > 6 and 4 or nil},
+		{Resisable = false, RowHeaders = {[Game.TransportIndex.low - 1] = "2D Event"}})
+
+DataTables.TransportLocations = StructsArray(Game.TransportLocations, nil, {Resisable = false, IgnoreFields = {MapIndex = true}})
+
+do
+	local FtIgnore = {TotalTime = true, NotGroupEnd = true, Bits = true, SpriteIndex = true, PaletteIndex = true, IconIndex = true, Index = true, Loaded = true}
+	local FtIgnoreRead = Game.Version == 6 and {Images3 = true, Glow = true, Transparent = true} or nil
+	DataTables.SFTBin = StructsArray(Game.SFTBin.Frames, structs.o.SFTItem, {IgnoreFields = FtIgnore, IgnoreRead = FtIgnoreRead})
+
+
+	DataTables.DecListBin = StructsArray(Game.DecListBin, nil)
+
+
+	DataTables.PFTBin = StructsArray(Game.PFTBin, nil, {NoRowHeaders = true, IgnoreFields = FtIgnore})
+
+
+	DataTables.IFTBin = StructsArray(Game.IFTBin, nil, {IgnoreFields = FtIgnore})
+
+
+	DataTables.TFTBin = StructsArray(Game.TFTBin, nil, {NoRowHeaders = true, IgnoreFields = FtIgnore})
+
+
+	DataTables.ChestBin = StructsArray(Game.ChestBin, nil)
+
+
+	DataTables.OverlayBin = StructsArray(Game.OverlayBin, nil, {NoRowHeaders = true})
+
+
+	local param = {NoRowHeaders = true, IgnoreFields = {SFTIndex = true, Bits = true, LoadedParticlesColor = true}}
+	DataTables.ObjListBin = StructsArray(Game.ObjListBin, nil, param)
+
+
+	DataTables.MonListBin = StructsArray(Game.MonListBin, nil, {IgnoreFields = {Tint = true}})
+
+
+	local param = {NoRowHeaders = true, IgnoreFields = {Locked = true, Bits = true, Data3D = true, Decompressed = true},
+	               Alias = {Type = {system = 1, swap = 2, lock = 4}}}
+	DataTables.SoundsBin = StructsArray(Game.SoundsBin, nil, param)
+
+
+	DataTables.TileBin = StructsArray(Game.TileBin, nil, {IgnoreFields = {Bits = true, Bitmap = true}})
+
+	if mmver == 8 then
+		DataTables.Tile2Bin = StructsArray(Game.Tile2Bin, nil, {IgnoreFields = {Bits = true, Bitmap = true}})
+		DataTables.Tile3Bin = StructsArray(Game.Tile3Bin, nil, {IgnoreFields = {Bits = true, Bitmap = true}})
+	end
+
+
+	local hdr = NameHeader({[-1] = "Monster"}, Game.MonListBin)
+	DataTables.MonsterKinds = StructsArray(Game.MonsterKinds, nil, {Resisable = false, RowHeaders = hdr})
+
+
+	local hdr = NameHeader({[-1] = "Spell"}, Game.SpellsTxt)
+	local is6 = (Game.Version == 6) or nil
+	DataTables.Spells2 = StructsArray(Game.Spells, nil, {Resisable = false, RowHeaders = hdr, IgnoreFields = 
+			          {CastByMonster = true, CastByEvent = true, CauseDamage = true, SpecialDamage = true, Bits = true,
+			           SpellPointsNormal = is6, SpellPointsExpert = is6, SpellPointsMaster = is6}})
+
+
+	DataTables.PlayerAnimations = StructsArray(Game.PlayerAnimations, nil, {Resisable = false, IgnoreFields = {}})
 end
 
 -----------------------------------------------------

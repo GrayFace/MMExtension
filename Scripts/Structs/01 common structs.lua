@@ -2417,6 +2417,10 @@ function structs.f.BitmapsLod(define)
 		u1[bmpbuf + 63] = 0
 		return call(mmv(0x40B430, 0x40FB2C, 0x410D70), 1, self["?ptr"], bmpbuf, (self == Game.IconsLod and 2 or 0), 0, EnglishD or 0)
 	end
+	function define.m:LoadBitmapPtr(name, EnglishD)
+		local i = self:LoadBitmap(name, EnglishD)
+		return self.Bitmaps[i]['?ptr']
+	end
 	function define.m:LoadTFTBitmap(name)
 		name = name or ""
 		mem.copy(bmpbuf, name, min(#name + 1, 63))

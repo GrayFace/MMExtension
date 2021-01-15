@@ -764,6 +764,7 @@ do
 		if internal.SaveGameData then  -- if not New Game
 			internal.TimersSaveGame()
 			events.cocalls("BeforeSaveGame")
+			events.cocalls("InternalBeforeSaveGame")
 			internal.MonstersRestore(true)
 		end
 		local buf, err = internal.persist(internal.SaveGameData) --, permanentsSave)
@@ -1609,6 +1610,7 @@ mem.autohook(mmv(0x4A465D, 0x4BD307, 0x4BB2B6), function(d)
 		House = house,
 		HouseType = Game.Houses[house].Type,
 	}
+	-- Note that you'll have to update #Game.GuildItemIconPtr:# if you change items in this event.
 	events.cocall("GuildItemsGenerated", t)
 end)
 
