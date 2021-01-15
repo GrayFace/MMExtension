@@ -141,7 +141,7 @@ local function update()
 		DataTable('Monster Kinds', DataTables.MonsterKinds)
 	end
 	-- DataTable('Player Animations', DataTables.PlayerAnimations)
-	DataTable('Shop Props', DataTables.ShopProps)
+	DataTable('Shops', DataTables.ShopProps)
 	events.DataTablesUpdate1(DataTable)
 	FixFileTimes()  -- just to be sure
 end
