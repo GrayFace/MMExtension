@@ -129,17 +129,31 @@ function ReplaceNPCTopic(old, new)
 	end
 end
 
+local SuppressCount, OnSuppress = 0, |t| t.Allow = false
+
+function SuppressSound(on)
+	SuppressCount = SuppressCount + (on and 1 or -1)
+	if on and SuppressCount == 1 then
+		events.PlaySound = OnSuppress
+	elseif SuppressCount == 0 then
+		events.remove('PlaySound', OnSuppress)
+	elseif SuppressCount < 0 then
+		SuppressCount = 0
+	end
+	return SuppressCount > 0
+end
+
 -- Rebuilds house dialog, e.g. after you've moved an NPC to or from this house
 -- Can seemlessly transition between different houses
 function ReloadHouse(id)
-	local old = Game.SoundVolume
-	Game.SoundVolume = 0
+	id = id or Game.GetCurrentHouse()
+	SuppressSound(true)
 	while Game.CurrentScreen ~= 0 do
 		Game.Actions.Add(113)
 		Game.Actions.Process()
 	end
 	evt.EnterHouse(id)
-	Game.SoundVolume = old
+	SuppressSound(false)
 end
 
 -- Exits currently playing movie and loads the specified one

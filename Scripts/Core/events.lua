@@ -1224,6 +1224,30 @@ mem.hookfunction(mmv(0x4A59A0, 0x4BE671, 0x4BC1F1), 2, mmv(1, 2, 2), function(d,
 	t.CallDefault()
 end)
 
+-- PlaySound
+mem.hookfunction(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, 8, function(d, def, this, snd, obj, loops, x, y, unk, vol, rate)
+	local t = {
+		Sound = snd,
+		ObjRef = obj,
+		Loops = loops,
+		X = x,
+		Y = y,
+		UnkParam = unk,
+		Volume = vol,
+		Speed = rate,
+		Allow = true,
+	}
+	-- function!Params[[()]]
+	t.CallDefault = function()
+		if t.Allow then
+			def(this, t.Sound, t.ObjRef, t.Loops, t.X, t.Y, t.UnkParam, t.Volume, t.Speed)
+			t.Allow = false
+		end
+	end
+	events.cocall("PlaySound", t)
+	t.CallDefault()
+end)
+
 -- dungeon enter from house (draw properly)
 if mmver == 7 then
 	mem.asmpatch(0x4B351C, [[
