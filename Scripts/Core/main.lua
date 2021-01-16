@@ -62,7 +62,6 @@ internal.NoGlobals.Options.NameCharCodes[("?"):byte()] = true
 local package_main = AppPath.."Scripts\\Modules\\?.lua"
 package.path = package_main..(GitPath and ";"..GitPath.."Scripts\\Modules\\?.lua" or "")
 GitPath = internal.GitPath  -- allow changing GitPath by offsets.lua
-
 local loadfile = loadfile
 local loadstring = loadstring
 local dofile = dofile
@@ -458,7 +457,7 @@ function _G.AddScriptsPath(s)
 		local sp = package.path
 		local n1, n2 = sp:find(package_main, 1, true)
 		if n1 then
-			package.path = sp:sub(1, n1)..';'..s..'Modules\\?.lua'..sp:sub(n2)
+			package.path = sp:sub(1, n2)..';'..s..'Modules\\?.lua'..sp:sub(n2 + 1)
 		else
 			package.path = s..'Modules\\?.lua;'..sp
 		end
