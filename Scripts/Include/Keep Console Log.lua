@@ -1,13 +1,17 @@
 -- log all
 local LogPath = DevPath..'Scripts/my/Logs/'
+local LogCount = 9
 os.mkdir(LogPath)
 PrintToFile(LogPath..'mm'..offsets.MMVersion..'.txt')  -- optional. To avoid opening particular game folder every time.
 
 local function backup()
-	for s in path.find(LogPath.."consoleLog.txt") do
-		os.remove(LogPath.."consoleLog3.txt", NoLogsInTrash)
-		os.rename(LogPath.."consoleLog2.txt", LogPath.."consoleLog3.txt")
-		os.rename(s, LogPath.."consoleLog2.txt")
+	local log = LogPath.."consoleLog"
+	for s in path.find(log..'.txt') do
+		os.remove(log..LogCount..'.txt', NoLogsInTrash)
+		for i = LogCount, 3, -1 do
+			os.rename(log..(i-1)..'.txt', log..i..'.txt')
+		end
+		os.rename(s, log..'2.txt')
 	end
 	backup = function() end
 end

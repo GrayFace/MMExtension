@@ -244,8 +244,8 @@ function structs.f.GameStructure(define)
 	-- MM6: 4C4468 - something related to shop items generation
 	[mmv(0x90EADC, 0xAD45B4, 0xB7CA8C)].array(0, mmv(47, 52, 52)).array(12).struct(structs.Item)  'ShopItems'
 	 .Info{Sig = "[house][slot]"}
-	[mmv(0x9129DC, 0xAD9F24, 0xB823FC)].array(mmv(1, 0, 0), mmv(41, 52, 52)).array(12).struct(structs.Item)  'ShopSpecialItems'
-	 .Info{Sig = "[house][slot]"}
+	[mmv(0x9129DC, 0xAD9F24, 0xB823FC)].array(mmv(1, 0, 0), mmv(46, 52, 52)).array(12).struct(structs.Item)  'ShopSpecialItems'
+	 .Info{Sig = "[house][slot]"}  -- in reality it starts with index 0, but ShopItems overflows, just like ShopSpecialItems overflows into GuildItems
 	[mmv(0x91663C, 0xADF894, 0xB87D6C)].array(mmv(119, 139, 139), mmv(140, 170, 172)).array(mmv(1, 1, 12)).array(12).struct(structs.Item)  'GuildItems'
 	 .Info{Sig = "[house][school][slot]"; "In MM8 in each guild items for all 12 schools of magic are generated. In MM6 and MM7 'school' can only be 0."}
 	[mmv(0x9DDDA4, 0xF8AFE8, 0xFFD3D4)].array(12).i4  'GuildItemIconPtr'
@@ -258,7 +258,7 @@ Example:
 	Game.GuildItemIconPtr[0] = Game.IconsLod:LoadBitmapPtr(a[0]:T().Picture)
 end]=]
 ]]}
-	[mmv(0x90E894, 0xACCEC4, 0xB20F1C)].array(mmv(0, 0, 0), mmv(47, 52, 52)).i8  'ShopNextRefill'
+	[mmv(0x90E894, 0xACCEC4, 0xB20F1C)].array(mmv(0, 0, 0), mmv(46, 52, 52)).i8  'ShopNextRefill'
 	 .Info{Sig = "[house]"}
 	[mmv(0x90EA0C, 0xACD06C, 0xB210C4)].array(mmv(119, 139, 139), mmv(140, 170, 172)).i8  'GuildNextRefill'
 	 .Info{Sig = "[house]"}
@@ -350,16 +350,16 @@ end]=]
 		[mmv(nil, 0x723D0C, 0x761654)].array{1, 104, ItemSize = 8}.i4  'AwardsSort'
 	end
 	if mmver == 6 then
-		define[0x6BA62C].array{1, 128}.EditPChar  'AutonoteTxt'
+		define[0x6BA628].array{0, 128}.EditPChar  'AutonoteTxt'
 	elseif mmver == 7 then
 		define
-		[0x723598].array{1, 195, ItemSize = 8}.EditPChar  'AutonoteTxt'
-		[0x72359C].array{1, 195, ItemSize = 8}.i4  'AutonoteCategory'
+		[0x723598].array{0, 195, ItemSize = 8}.EditPChar  'AutonoteTxt'
+		[0x72359C].array{0, 195, ItemSize = 8}.i4  'AutonoteCategory'
 		 .Info "0 = potion\n1 = stat\n2 = obelisk\n3 = seer\n4 = misc\n5 = teacher"
 	else
 		define
-		[0x760BA0].array{1, 300, ItemSize = 8}.EditPChar  'AutonoteTxt'
-		[0x760BA4].array{1, 300, ItemSize = 8}.i4  'AutonoteCategory'
+		[0x760B98].array{0, 300, ItemSize = 8}.EditPChar  'AutonoteTxt'
+		[0x760B9C].array{0, 300, ItemSize = 8}.i4  'AutonoteCategory'
 		 .Info "0 = potion\n1 = stat\n2 = obelisk\n3 = seer\n4 = misc\n5 = teacher"
 	end
 	define
@@ -368,9 +368,9 @@ end]=]
 	[mmv(0x4D50EC, 0x507A70, 0x519354)].b1  'RightButtonPressed'
 	[mmv(0x4C1F98, 0x4ECA60, 0x4FCA88)].array(6).struct(structs.TownPortalTownInfo)  'TownPortalInfo'
 	[mmv(0x4BCAE4, 0x4E1D2C, 0x501BC8)].array(6).i2  'TownPortalX'
-	 .Info "Town portal picture: townport"
+	 .Info "(Town portal picture: townport)"
 	[mmv(0x4BCAF0, 0x4E1D38, 0x501BD4)].array(6).i2  'TownPortalY'
-	 .Info "Town portal icons [MM7+]: tpharmndy, tpelf, tpwarlock, tpisland, tpheaven, tphell"
+	 .Info "(Town portal icons [MM7+]: tpharmndy, tpelf, tpwarlock, tpisland, tpheaven, tphell)"
 	if mmver < 8 then
 		define
 		[mmv(0x4BCB08, 0x4E1D50)].array(6).i2  'TownPortalHeight'
@@ -397,7 +397,7 @@ end]=]
 		end
 	end)
 	[mmv(0x42F187, 0x433B0C, 0x43132C)].EditConstPChar  'WinMapIndex'
-	 .Info "Number represented as a string.\n[MM6] Index in games.lod\n[MM7,8] Index in mapstats.txt"
+	 .Info "Number represented as a string.\n[MM6] Index in games.lod\n[MM7+] Index in mapstats.txt"
 	[mmv(0x53CB6C, 0x598570, 0x5AC9E0)].array{mmv(3000, 4400, 5000), lenA = i4, lenP = mmv(0x54D038, 0x5A53B0, 0x5BB440)}.struct(structs.EventLine)  'GlobalEvtLines'
 	[mmv(0x552F58, 0x5B6458, 0x5CCCE8)].array{mmv(3000, 4400, 5000), lenA = i4, lenP = mmv(0x533EB4, 0x5B0F90, 0x5C7020)}.struct(structs.EventLine)  'MapEvtLines'
 	[mmv(0x55DD88, 0x5C6C40, 0x5E2FD0)].struct(structs.SFT)  'SFTBin'
