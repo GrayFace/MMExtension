@@ -610,7 +610,7 @@ Award number required to access the guild.
 		end
 		for i, ss in pairs(comments) do
 			local j = starts[i]
-			for s in ss:gmatch('[^\r\n]+') do
+			for s in (j and ss or ''):gmatch('[^\r\n]+') do
 				t[j].Comments = s
 				j = j + 1
 			end
