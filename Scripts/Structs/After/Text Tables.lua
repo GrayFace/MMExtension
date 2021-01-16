@@ -149,32 +149,6 @@ function _G.LoadTextTable(s, r, SkipEmpty, AssignTables)
 	return ParseTextTable(io_load(s), r, SkipEmpty, AssignTables)
 end
 
--- slower:
--- local function ParseBasicTextTable(s, StartingLinesCount)
--- 	local m = 1
--- 	for i = 1, StartingLinesCount or 0 do
--- 		m = s:match('\r\n()', m) or #s + 1
--- 	end
--- 	local s1, s2
--- 	local q, n = {}, m
--- 	local t, i, j = {q}, 1, 1
--- 	while m <= #s do
--- 		s1, n, s2 = s:match('^[^\t\r]*(.)()(.?)', n)
--- 		if s1 == '\t' then
--- 			q[j], j, m = s:sub(m, n - 2), j + 1, n
--- 		elseif not s1 or s2 == '\n' then
--- 			n = n or (#s + 2)
--- 			q[j], q, i, j = s:sub(m, n - 2), {}, i + 1, 1
--- 			t[i], m, n = q, n + 1, n + 1
--- 		end
--- 	end
--- 	if not q[1] then
--- 		t[i] = nil
--- 	end
--- 	return t
--- end
--- _G.ParseBasicTextTable = ParseBasicTextTable
-
 local function ParseBasicTextTable(s, SkipLinesCount, StartingIndex)
 	local m = 1
 	for i = 1, SkipLinesCount or 0 do
