@@ -6,6 +6,7 @@ local string_byte = string.byte
 local string_sub = string.sub
 local string_match = string.match
 local string_split = string.split
+local string_find = string.find
 local io_load = io.load
 local io_save = io.save
 
@@ -148,22 +149,57 @@ function _G.LoadTextTable(s, r, SkipEmpty, AssignTables)
 	return ParseTextTable(io_load(s), r, SkipEmpty, AssignTables)
 end
 
+-- slower:
+-- local function ParseBasicTextTable(s, StartingLinesCount)
+-- 	local m = 1
+-- 	for i = 1, StartingLinesCount or 0 do
+-- 		m = s:match('\r\n()', m) or #s + 1
+-- 	end
+-- 	local s1, s2
+-- 	local q, n = {}, m
+-- 	local t, i, j = {q}, 1, 1
+-- 	while m <= #s do
+-- 		s1, n, s2 = s:match('^[^\t\r]*(.)()(.?)', n)
+-- 		if s1 == '\t' then
+-- 			q[j], j, m = s:sub(m, n - 2), j + 1, n
+-- 		elseif not s1 or s2 == '\n' then
+-- 			n = n or (#s + 2)
+-- 			q[j], q, i, j = s:sub(m, n - 2), {}, i + 1, 1
+-- 			t[i], m, n = q, n + 1, n + 1
+-- 		end
+-- 	end
+-- 	if not q[1] then
+-- 		t[i] = nil
+-- 	end
+-- 	return t
+-- end
+-- _G.ParseBasicTextTable = ParseBasicTextTable
 
-local function ParseBasicTextTable(s, StartingLinesCount)
-	local t, s = string_split(s, "\r\n", true), nil
-	for i = (StartingLinesCount or 0) + 1, #t do
-		s = t[i]
-		t[i] = string_split(s, "\t", true)
+local function ParseBasicTextTable(s, SkipLinesCount, StartingIndex)
+	local m = 1
+	for i = 1, SkipLinesCount or 0 do
+		m = (string_find(s, '\r\n', m, true) or #s) + 2
 	end
-	if s == '' then
-		t[#t] = nil
+	local q, ln, tab, i = {}, string_find(s, '\r\n', m, true), string_find(s, '\t', m, true), StartingIndex or 1
+	local t, j = {[i] = q}, 1
+	while m <= #s do
+		if (tab or 1/0) < (ln or 1/0) then
+			q[j], j, m, tab = string_sub(s, m, tab - 1), j + 1, tab + 1, string_find(s, '\t', tab + 1, true)
+		else
+			ln = ln or #s + 1
+			q[j], q, i, j = string_sub(s, m, ln - 1), {}, i + 1, 1
+			t[i], m, ln = q, ln + 2, string_find(s, '\r\n', ln + 2, true)
+		end
+	end
+	if not q[1] then
+		t[i] = nil
 	end
 	return t
 end
 _G.ParseBasicTextTable = ParseBasicTextTable
 
-function _G.LoadBasicTextTable(s, StartingLinesCount)
-	return ParseBasicTextTable(io_load(s), StartingLinesCount)
+function _G.LoadBasicTextTable(s, SkipLinesCount, StartingIndex)
+	return ParseBasicTextTable(io_load(s), SkipLinesCount, StartingIndex)
 end
 
 local function WriteBasicTextTable(t, fname)
@@ -202,21 +238,14 @@ end
 
 
 local function ParseNamedColTable(s)
-	local t, s = string_split(s, "\r\n", true), nil
-	local names = string_split(t[1], "\t", true)
-	t[0] = string_split(t[1], "\t", true)
-	for i = 1, #t - 1 do
-		s = t[i + 1]
-		local q = string_split(s, "\t", true)
-		local q2 = {}
+	local t = ParseBasicTextTable(s, 0, 0)
+	local names = t[0]
+	for i = 1, #t do
+		local q, q2 = t[i], {}
 		for i, k in ipairs(names) do
 			q2[k] = q[i]
 		end
 		t[i] = q2
-	end
-	t[#t] = nil
-	if s == '' then
-		t[#t] = nil
 	end
 	return t
 end

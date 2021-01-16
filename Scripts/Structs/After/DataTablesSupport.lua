@@ -8,7 +8,7 @@ end
 
 DataTables = {Files = {}, LazyMode = false}
 
-local _KNOWNGLOBALS_F = ParseNamedColTable, WriteNamedColTable
+local _KNOWNGLOBALS_F = ParseBasicTextTable, ParseNamedColTable, WriteNamedColTable
 
 local function SplitToTable(str, startIdx, pattern)
 	local t, i, n = {}, startIdx or 1, #str
@@ -22,16 +22,17 @@ local function SplitToTable(str, startIdx, pattern)
 	return t
 end
 
--- \r\n, \r
+--!- backward compatibility. \r\n, \r
 function SplitLines(str, startIdx)
 	return SplitToTable(str, startIdx, "([^\r]*)()\r?\n?")
 end
 
--- \r\n, \n, \r
+--!- backward compatibility. \r\n, \n, \r
 function SplitLinesAny(str, startIdx)
 	return SplitToTable(str, startIdx, "([^\r\n]*)()\r?\n?")
 end
 
+--!- backward compatibility
 function SplitTabs(str, startIdx)
 	return SplitToTable(str, startIdx, "([^\t]*)()\t?")
 end
@@ -73,7 +74,7 @@ end
 
 local function ReadWriteTable(f, a, str, onerror)
 	local h = a.Header or ""
-	local ht = SplitLines(h)
+	local ht = h:split('\t')
 	local hn = #ht
 	if ht[hn] == "" then
 		hn = hn - 1
@@ -91,7 +92,7 @@ local function ReadWriteTable(f, a, str, onerror)
 	local rh = a.RowHeaders or {}
 	local rl = a.RowHeadersLow or yl
 	local norh = a.NoRowHeaders
-	local rhskip = norh and 1 or 0
+	local rhskip = norh and 0 or 1
 
 	local einfoOld = errorinfo()
 	errorinfo((einfoOld ~= "") and einfoOld.." - \001" or "\001")
@@ -101,20 +102,24 @@ local function ReadWriteTable(f, a, str, onerror)
 	local function doit()
 		if str then
 			-- read
-			profile"split lines"
-			local lines = SplitLines(str, 1 - hn)
+			profile"split table"
+			local lines = ParseBasicTextTable(str, 0, 1 - hn)
 			profile"read"
+			if norh == 'auto' then
+				rhskip = lines[1 - hn][1] == '#' and 1 or 0
+			end
+			xn = xn and xn + rhskip
 			for y = 1, yn or #lines do
-				local t = SplitTabs(lines[y] or "", rhskip)
+				local t = lines[y]
 				if xn == nil then
 					xn = #t
 				elseif t[xn] == nil then
 					return
 				end
-				for x = 1, xn do
+				for x = 1 + rhskip, xn do
 					local v = t[x]
-					erY, erX, erVal = y + hn, x - rhskip + 1, v
-					f(x - 1 + xl, y - 1 + yl, v, #lines)
+					erY, erX, erVal = y + hn, x, v
+					f(x - 1 - rhskip + xl, y - 1 + yl, v, #lines)
 				end
 			end
 			profile(nil)
@@ -142,7 +147,7 @@ local function ReadWriteTable(f, a, str, onerror)
 					dx = 1
 				end
 				for x = 1, xn do
-					erY, erX = y + hn, x - rhskip + 1
+					erY, erX = y + hn, x + rhskip
 					t[x + dx] = assert(f(x - 1 + xl, y - 1 + yl))
 				end
 				ss[#ss + 1] = table.concat(t, "\t").."\r\n"
@@ -498,8 +503,8 @@ do
 Each item is chosen at random from any of these types.
 Look up const.ItemType for a list of item types.
 ]],[[
-'Armor1' defines items on the upper shelf.
-'Armor2' defines items on the lower shelf.
+'Armor1' defines items on the upper shelf of Buy dialog.
+'Armor2' defines items on the lower shelf of Buy dialog.
 'SArmor1' and 'SArmor2' define items for ]]..(mmver == 6 and '' or 'Buy ')..[[Special dialog.
 ]],[[
 'Magic' defines items for Buy dialog.
@@ -536,7 +541,7 @@ Maximum spell number withing the magic school.
 				local spc, name, j = q.Shop:lower():match('(s?)(%a+)(%d?)')
 				-- print(spc, name, j)
 				local a0 = Game[MapToShop[name]..(spc ~= '' and 'Special' or '')]
-				a0.SetHigh(i)
+				a0.SetHigh(i)  -- unclean: reallocates arrays after reading each new shop
 				local a = a0[i]
 				if type(a) ~= 'table' then
 					a0[i] = q.Level + 0
@@ -634,19 +639,19 @@ DataTables.TransportLocations = StructsArray(Game.TransportLocations, nil, {Resi
 do
 	local FtIgnore = {TotalTime = true, NotGroupEnd = true, Bits = true, SpriteIndex = true, PaletteIndex = true, IconIndex = true, Index = true, Loaded = true}
 	local FtIgnoreRead = Game.Version == 6 and {Images3 = true, Glow = true, Transparent = true} or nil
-	DataTables.SFTBin = StructsArray(Game.SFTBin.Frames, structs.o.SFTItem, {IgnoreFields = FtIgnore, IgnoreRead = FtIgnoreRead})
+	DataTables.SFTBin = StructsArray(Game.SFTBin.Frames, structs.o.SFTItem, {IgnoreFields = FtIgnore, IgnoreRead = FtIgnoreRead, NoRowHeaders = 'auto'})
 
 
-	DataTables.DecListBin = StructsArray(Game.DecListBin, nil)
+	DataTables.DecListBin = StructsArray(Game.DecListBin, nil, {NoRowHeaders = 'auto'})
 
 
 	DataTables.PFTBin = StructsArray(Game.PFTBin, nil, {NoRowHeaders = true, IgnoreFields = FtIgnore})
 
 
-	DataTables.IFTBin = StructsArray(Game.IFTBin, nil, {IgnoreFields = FtIgnore})
+	DataTables.IFTBin = StructsArray(Game.IFTBin, nil, {IgnoreFields = FtIgnore, NoRowHeaders = 'auto'})
 
 
-	DataTables.TFTBin = StructsArray(Game.TFTBin, nil, {NoRowHeaders = true, IgnoreFields = FtIgnore})
+	DataTables.TFTBin = StructsArray(Game.TFTBin, nil, {NoRowHeaders = 'auto', IgnoreFields = FtIgnore})
 
 
 	DataTables.ChestBin = StructsArray(Game.ChestBin, nil)
@@ -676,11 +681,15 @@ do
 
 
 	local hdr = NameHeader({[-1] = "Monster"}, Game.MonListBin)
+	events.GameInitialized1 = || NameHeader(hdr, Game.MonListBin)
+
 	DataTables.MonsterKinds = StructsArray(Game.MonsterKinds, nil, {Resisable = false, RowHeaders = hdr})
 
 
-	local hdr = NameHeader({[-1] = "Spell"}, Game.SpellsTxt)
 	local is6 = (Game.Version == 6) or nil
+	local hdr = NameHeader({[-1] = "Spell"}, Game.SpellsTxt)
+	events.GameInitialized2 = || NameHeader(hdr, Game.SpellsTxt)
+
 	DataTables.Spells2 = StructsArray(Game.Spells, nil, {Resisable = false, RowHeaders = hdr, IgnoreFields = 
 			          {CastByMonster = true, CastByEvent = true, CauseDamage = true, SpecialDamage = true, Bits = true,
 			           SpellPointsNormal = is6, SpellPointsExpert = is6, SpellPointsMaster = is6}})
