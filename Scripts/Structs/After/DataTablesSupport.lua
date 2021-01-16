@@ -489,14 +489,14 @@ do
 	local MapToShop = {
 		weapon = 'ShopWeaponKinds', armor = 'ShopArmorKinds', magic = 'ShopMagicLevels',
 		general = 'GeneralStoreItemKinds', alchemist = 'ShopAlchemistLevels',
-		training = 'TrainingLevels', guild = 'GuildSpellLevels'
+		training = 'TrainingLevels', guild = 'GuildSpellLevels', guildaward = 'GuildAwards',
 	}
 	local HouseTypeShop = {'Weapon', 'Armor', 'Magic', mmver == 6 and 'General' or 'Alchemist', [const.HouseType.Training] = 'Training'}
 	for i = 5, 18 do
 		HouseTypeShop[i] = 'Guild'
 	end
 	HouseTypeShop[const.HouseType['Town Hall']] = nil
-	local ShopOrder = {'Weapon', 'Armor', 'Magic', mmver == 6 and 'General' or 'Alchemist', 'Training', 'Guild'}
+	local ShopOrder = {'Weapon', 'Armor', 'Magic', mmver == 6 and 'General' or 'Alchemist', 'Training', 'Guild', mmver < 8 and 'GuildAward' or nil}
 	local ItemTypeInv = table.invert(const.ItemType)
 	local comments = {[[
 'Weapon' defines items for Buy dialog.
@@ -519,8 +519,10 @@ An index of 0 means a random item, either Boots or Gountlet.
 ]],[[
 Training cap. '-1' means no cap.
 ]],[[
-'Level' is the maximum spell number withing the magic school.
-]]..(mmver == 8 and '' or "\n'1' is the award number required to access the guild")
+Maximum spell number withing the magic school.
+]],[[
+Award number required to access the guild.
+]]
 	}
 	local ShopBaseMax = {}
 	for i, name in ipairs(ShopOrder) do
@@ -546,18 +548,12 @@ Training cap. '-1' means no cap.
 				local a = a0[i]
 				if type(a) ~= 'table' then
 					a0[i] = q.Level + 0
-					if name == 'guild' and mmver < 8 then
-						Game.GuildAwards.SetHigh(i)
-						Game.GuildAwards[i] = tonumber(q['1'])
-					end
 				else
 					a = (tonumber(j) and a[j + 0] or a)
 					a.Level = q.Level + 0
 					for k in a do
-						local s = q[k..''] --or ''
-						-- if s ~= '' then
-							a[k] = name ~= 'general' and const.ItemType[s] or s + 0
-						-- end
+						local s = q[k..'']
+						a[k] = name ~= 'general' and const.ItemType[s] or s + 0
 					end
 				end
 			end

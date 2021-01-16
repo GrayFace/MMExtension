@@ -294,11 +294,9 @@ Extend{'TransportLocations',
 	Fill = 0,
 }
 
-local function StructsArray(arr, offs, tabl)
-	tabl = tabl or {}
-	return function(str)
-		return DataTables.StructsArray(arr, offs, table.copy(tabl, {Resisable = true, IgnoreFields = {SFTIndex = true, Bits = true}, IgnoreRead = {['#'] = true}}, true), str)
-	end
+-- fix MM6 General Stores overflow bug
+if mmver == 6 then
+	events.GameInitialized1 = || Game.ShopSpecialItems.SetHigh(47)
 end
 
 local DoTransportIndex = DataTables.TransportIndex
