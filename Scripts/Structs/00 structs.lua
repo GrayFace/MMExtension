@@ -248,6 +248,7 @@ function structs.f.GameStructure(define)
 	 .Info{Sig = "[house][slot]"}  -- in reality it starts with index 0, but ShopItems overflows, just like ShopSpecialItems overflows into GuildItems
 	[mmv(0x91663C, 0xADF894, 0xB87D6C)].array(mmv(119, 139, 139), mmv(140, 170, 172)).array(mmv(1, 1, 12)).array(12).struct(structs.Item)  'GuildItems'
 	 .Info{Sig = "[house][school][slot]"; "In MM8 in each guild items for all 12 schools of magic are generated. In MM6 and MM7 'school' can only be 0."}
+	[mmv(0x4C3E94, 0x4F07B0, 0x500D78)].array(mmv(119, 139, 139), mmv(152, 170, 170)).i4  'GuildAwards'
 	[mmv(0x9DDDA4, 0xF8AFE8, 0xFFD3D4)].array(12).i4  'GuildItemIconPtr'
 	 .Info{Sig = "[slot]"; [[Loaded icons for current guild's items.
 Example:

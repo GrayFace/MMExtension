@@ -483,7 +483,7 @@ function DataTables.HouseMovies(str)
 	return DataTables.StructsArray(Game.HouseMovies, structs.o.HouseMovie, t, str)
 end
 
--- DataTables.ShopProps
+-- DataTables.Shops
 
 do
 	local MapToShop = {
@@ -492,9 +492,10 @@ do
 		training = 'TrainingLevels', guild = 'GuildSpellLevels'
 	}
 	local HouseTypeShop = {'Weapon', 'Armor', 'Magic', mmver == 6 and 'General' or 'Alchemist', [const.HouseType.Training] = 'Training'}
-	for i = 5, 16 do
+	for i = 5, 18 do
 		HouseTypeShop[i] = 'Guild'
 	end
+	HouseTypeShop[const.HouseType['Town Hall']] = nil
 	local ShopOrder = {'Weapon', 'Armor', 'Magic', mmver == 6 and 'General' or 'Alchemist', 'Training', 'Guild'}
 	local ItemTypeInv = table.invert(const.ItemType)
 	local comments = {[[
@@ -518,15 +519,15 @@ An index of 0 means a random item, either Boots or Gountlet.
 ]],[[
 Training cap. '-1' means no cap.
 ]],[[
-Maximum spell number withing the magic school.
-]]
+'Level' is the maximum spell number withing the magic school.
+]]..(mmver == 8 and '' or "\n'1' is the award number required to access the guild")
 	}
 	local ShopBaseMax = {}
 	for i, name in ipairs(ShopOrder) do
 		ShopBaseMax[name] = Game[MapToShop[name:lower()]].high
 	end
 
-	local function ReadShopProps(t)
+	local function ReadShops(t)
 		local einfoOld, line = errorinfo(), nil
 		errorinfo((einfoOld ~= "") and einfoOld.." - \001" or "\001")
 		
@@ -545,6 +546,10 @@ Maximum spell number withing the magic school.
 				local a = a0[i]
 				if type(a) ~= 'table' then
 					a0[i] = q.Level + 0
+					if name == 'guild' and mmver < 8 then
+						Game.GuildAwards.SetHigh(i)
+						Game.GuildAwards[i] = tonumber(q['1'])
+					end
 				else
 					a = (tonumber(j) and a[j + 0] or a)
 					a.Level = q.Level + 0
@@ -577,6 +582,9 @@ Maximum spell number withing the magic school.
 		t[#t + 1] = q
 		if type(a) ~= 'table' then
 			q.Level = a
+			if name == 'Guild' and mmver < 8 then
+				q[1] = Game.GuildAwards[i]
+			end
 			return
 		end
 		q.Level = a.Level
@@ -585,9 +593,9 @@ Maximum spell number withing the magic school.
 		end
 	end
 
-	function DataTables.ShopProps(str)
+	function DataTables.Shops(str)
 		if str then
-			return ReadShopProps(ParseNamedColTable(str))
+			return ReadShops(ParseNamedColTable(str))
 		end
 		local t = {[0] = {'House','Shop','Level', 1, 2, 3, 4, mmv(5) or 'Comments', mmv(6), mmv'Comments'}}
 		local starts = {}
@@ -606,7 +614,7 @@ Maximum spell number withing the magic school.
 		end
 		for i, ss in pairs(comments) do
 			local j = starts[i]
-			for s in ss:gmatch('[^\n]+') do
+			for s in ss:gmatch('[^\r\n]+') do
 				t[j].Comments = s
 				j = j + 1
 			end

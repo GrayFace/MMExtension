@@ -103,12 +103,11 @@ local function SaveLoad(name, p0, sz0)
 	end
 	events.InternalBeforeLoadMap = |was, loaded| if not was then
 		local t, sgd = Game[name], internal.SaveGameData
-		local p, sz, s = t['?ptr'], t['?size'] - sz0, sgd[sname] or ''
+		local p, sz, s = t['?ptr'] + sz0, t['?size'] - sz0, sgd[sname] or ''
 		if not loaded then
-			return mem.fill(p, sz + sz0)
+			return mem.fill(p, sz)
 		end
-		mem.copy(p, p0, sz0)
-		p = p + sz0
+		mem.copy(p - sz0, p0, sz0)
 		mem.copy(p, s, min(#s, sz))
 		if #s < sz then
 			mem.fill(p + #s, sz - #s)

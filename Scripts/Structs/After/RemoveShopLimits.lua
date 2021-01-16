@@ -30,10 +30,12 @@ local ExtendAndSave = mem.ExtendAndSaveGameStructure
 -- end
 
 
-local ShopLim = mem.StaticAlloc(4*6)
+local ShopLim = mem.StaticAlloc(4*7)
 local TheftLim = ShopLim + 4*5
+local TrainLim = ShopLim + 4*6
 i4[ShopLim] = 0
 i4[TheftLim] = 53
+i4[TrainLim] = 12  -- only used in MM8
 local lims = {'ShopWeaponKinds', 'ShopArmorKinds', 'ShopMagicLevels', mmver == 6 and 'GeneralStoreItemKinds' or 'ShopAlchemistLevels'}
 local function UpdateShopLim(i)
 	local s = lims[i]
@@ -45,7 +47,7 @@ UpdateShopLim(3)
 UpdateShopLim(4)
 
 local UpdateTheft = |s| mmver > 6 and (|| Game.ShopTheftExpireTime.SetHigh(Game[s].high)) or nil
-local UpdateRefill = |s| || Game.ShopNextRefill.SetHigh(Game[s].high)
+local UpdateRefill = |_1,_2,_3,_4,_5, t| Game.ShopNextRefill.SetHigh(Game[t[1]].high)
 local UpdateShopItems = |i| Game.ShopItems.SetHigh(Game[lims[i]].high)
 local UpdateShopSpecialItems = |i| Game.ShopSpecialItems.SetHigh(Game[lims[i]..'Special'].high)
 
@@ -53,7 +55,7 @@ local function PatchShops()
 	local jumpsT = mmv(
 		{0x49FCBB, 0x49FB72, 0x49FBB1, 0x49FC01, 0x49FC1C;  0x49FEBB, 0x49FD72, 0x49FDB1, 0x49FE01, 0x49FE1C},
 		{0x4B8E8F, 0x4B8DCC, 0x4B8DFC, 0x4B8E3B, 0x4B8E4C;  0x4B9005, 0x4B8F27, 0x4B8F57, 0x4B8F9B, 0x4B8FB0},
-		{0x4B7487, 0x4B7328, 0x4B735D, 0x4B739E, 0x4B73BC;  0x4B75C3, 0x4B74E6, 0x4B7514, 0x4B755A, 0x4B756F}
+		{0x4B7487, 0x4B7328, 0x4B735D, 0x4B739E, 0x4B73BC;  0x4B75C3, 0x4B74E6, 0x4B7516, 0x4B755A, 0x4B756F}
 	)
 	local buf = mem.StaticAlloc(4*11)
 	for i, v in ipairs(jumpsT) do
@@ -86,21 +88,53 @@ local function PatchShops()
 		]], len2)
 	end
 	
-	patch(mmv(0x49FB65, 0x4B8DBF, 0x4B7316), 7,            mmv('edx', 'ecx', 'ecx'), buf + 4,       mmv(0x49FC16, 0x4B8E47, 0x4B73B6), mmv(0, 3, 0))
-	patch(mmv(0x49FD65, 0x4B8F1C, 0x4B74DB), mmv(7, 5, 5), mmv('edx', 'eax', 'eax'), buf + 4 + 4*5, mmv(0x49FE16, 0x4B8FAA, 0x4B7569), 0)
+	patch(mmv(0x49FB65, 0x4B8DBF, 0x4B7316), 8,            mmv('edx', 'ecx', 'ecx'), buf + 4,       mmv(0x49FC16, 0x4B8E47, 0x4B73B6), mmv(0, 3, 0))
+	patch(mmv(0x49FD65, 0x4B8F1C, 0x4B74DB), mmv(8, 6, 6), mmv('edx', 'eax', 'eax'), buf + 4 + 4*5, mmv(0x49FE16, 0x4B8FAA, 0x4B7569), 0)
 end
 
-
+local function PatchGuildTravel()
+	if not PatchGuildTravel then
+		return
+	end
+	PatchGuildTravel = nil
+	local hk = HookManager{
+		pic = structs.o.GameStructure.HousePicType,
+		train = const.HouseType.Training,
+		guild0 = const.HouseType['Fire Guild'],
+		guildMerc = const.HouseType['Merc Guild'],
+		guildEnd = const.HouseType['Town Hall'],
+		v = mmver,
+		jmpTrain = mmv(0x43C76D, 0x4465D5, false),
+		jmpNone = mmv(0x43C779, 0x4465E1, 0x4434A0),
+	}.asmhook2(mmv(0x43C721, 0x44657C, 0x44348F), [[
+		jle @std
+		mov eax, [%pic%]
+	if %v% eq 8
+		cmp edi, 172  ; skip standard shops
+		jle absolute %jmpNone%
+		cmp eax, %train%
+		je @std
+		jmp absolute %jmpNone%
+	else 
+		cmp eax, %train%
+		je absolute %jmpTrain%
+		cmp eax, %guild0%
+		jl absolute %jmpNone%
+		cmp eax, %guildMerc%
+		je @std
+		cmp eax, %guildEnd%
+	end if
+	@std:  ; mm6,7 - guild or none, mm8 - training
+	]], mmver == 8 and 3 or nil)
+end
 
 ExtendAndSave{'ShopItems',
 	Refs = mmv(
 		{0x41F462, 0x47D1FE, 0x4960A8, 0x49A895, 0x49AA1C, 0x49AAAE, 0x49AB6D, 0x49FC81, 0x49FC9B, 0x49FCD6, 0x49FD04, 0x4A0335, 0x4A04BC, 0x4A0559, 0x4A1448, 0x4A15CF, 0x4A1661, 0x4A1D65, 0x4A1EED, 0x4A1F81, 0x4A4988, 0x4A4A1D, 0x4A5285},
-		
-		{0x4B574A, 0x4B5804, 0x4B5A3D, 0x4B5B4F, 0x4B6A0E, 0x4B8E5D, 0x4B8E7A, 0x4B8E9B, 0x4B8EC0, 0x4B985C, 0x4B998F, 0x4B9AA1, 0x4BA2EB, 0x4BA3A7, 0x4BA5E9, 0x4BA6FB, 0x4BB099, 0x4BB22B, 0x4BB341, 0x4BD5D4, 0x4BD65C, 0x4BDFF1},
-		
+		{0x4B1AA8, 0x4B574A, 0x4B5804, 0x4B5A3D, 0x4B5B4F, 0x4B6A0E, 0x4B8E5D, 0x4B8E7A, 0x4B8E9B, 0x4B8EC0, 0x4B985C, 0x4B998F, 0x4B9AA1, 0x4BA2EB, 0x4BA3A7, 0x4BA5E9, 0x4BA6FB, 0x4BB099, 0x4BB22B, 0x4BB341, 0x4BD5D4, 0x4BD65C, 0x4BDFF1},
 		{0x4B02A8, 0x4B4194, 0x4B424F, 0x4B4490, 0x4B4572, 0x4B73CD, 0x4B73EA, 0x4B7410, 0x4B743F, 0x4B7468, 0x4B747F, 0x4B7E04, 0x4B7F3B, 0x4B801D, 0x4B885B, 0x4B8918, 0x4B8B68, 0x4B8C4A, 0x4B9599, 0x4B9748, 0x4B982A, 0x4BB081, 0x4BB10D, 0x4BBC26}
 	),
-	Custom = {UpdateRefill'ShopItems', UpdateTheft'ShopItems'},
+	Custom = {UpdateRefill, UpdateTheft'ShopItems'},
 	-- ItemNumRefs = mmv({0x47D207-4}, {}, {}),
 }
 
@@ -110,7 +144,7 @@ ExtendAndSave{'ShopSpecialItems',
 		{0x4B1AB1, 0x4B58B5, 0x4B596F, 0x4B5A62, 0x4B5B58, 0x4B8FC2, 0x4B8FF4, 0x4B9012, 0x4B903B, 0x4B98EE, 0x4B99B4, 0x4B9AAA, 0x4BA462, 0x4BA51B, 0x4BA60E, 0x4BA704, 0x4BB15B, 0x4BB250, 0x4BB34A, 0x4BB50A, 0x4BB59C, 0x4BB614, 0x4BD6C0, 0x4BD748, 0x4BDFFD},
 		{0x4B02B1, 0x4B4301, 0x4B43BC, 0x4B44BB, 0x4B457B, 0x4B7580, 0x4B75B2, 0x4B75D1, 0x4B75FA, 0x4B7E97, 0x4B7F66, 0x4B8026, 0x4B89D7, 0x4B8A94, 0x4B8B93, 0x4B8C53, 0x4B9668, 0x4B9773, 0x4B9833, 0x4B99E6, 0x4B9A6F, 0x4B9AFD, 0x4BB16F, 0x4BB1FB, 0x4BBC32}
 	),
-	Custom = {UpdateRefill'ShopSpecialItems', UpdateTheft'ShopSpecialItems'},
+	Custom = {UpdateRefill, UpdateTheft'ShopSpecialItems'},
 }
 
 ExtendAndSave{'GuildItems',
@@ -139,6 +173,25 @@ ExtendAndSave{'GuildNextRefill', Size = 8,
 	),
 }
 
+if mmver < 8 then
+	Extend{'GuildAwards', Size = 4,
+		Refs = mmv(
+			{0x43C72D, 0x49BF4D, 0x49C7DE},
+			{0x446588, 0x4B6121, 0x4B6584}
+		),
+		CustomOnce = {PatchGuildTravel},
+	}
+	if mmver == 7 then  -- fix mercenary guild
+		mem.prot(true)
+		u4[0x4B6584] = u4[0x446588]
+		i1[0x4B65DC] = 1
+		i1[0x4B66D5] = 1
+		i1[0x4B64B2] = 1
+		mem.prot(false)
+	end
+end
+
+-- ShopTheftExpireTime
 if mmver > 6 then
 	local PatchPlaces = mm78(
 		{0x4158E7, 0x41591E, 0x4463A7, jumps = {0x4160A3, 0x4160A3, 0x4463E8}, reg = {'eax', 'eax', 'esi'}},
@@ -151,7 +204,7 @@ if mmver > 6 then
 			reg = PatchPlaces.reg[i],
 		}.asmpatch(p, [[
 			cmp %reg%, [%buf%]
-			jge %jmp%
+			jge absolute %jmp%
 		]])
 	end
 	
@@ -217,13 +270,19 @@ Extend{'GuildSpellLevels', Size = 2,
 	Custom = {|| Game.GuildItems.SetHigh(Game.GuildSpellLevels.high)}
 }
 
+local PatchTraining = || HookManager{p = TrainLim}.asmhook(0x4B3206, [[
+	cmp eax, [%p%]
+]])
+
 Extend{'TrainingLevels', Size = 2,
 	Refs = mmv({0x499DE9}, {0x4B4704, 0x4BCAB4}, {0x4B314B, 0x4B324A, 0x4BAAEC}),
+	CountRefs = mmv({}, {}, {TrainLim}),
+	CustomOnce = mmv({}, {}, {PatchTraining})
 }
 
 Extend{'TransportIndex',
 	Refs = mmv({0x49CDA8, 0x49D13E, 0x49D700, 0x4A44EF}, {0x4B6855, 0x4B69B2, 0x4B6CD4, 0x4BCC2F}, {0x4B50CF, 0x4B518F, 0x4B5589, 0x4BAB6E}), 
-	CountRefs = mmv({0x43C76B-4}, {0x4465D2}, {0x443492-4}),
+	CustomOnce = {PatchGuildTravel},
 }
 
 Extend{'TransportLocations',
