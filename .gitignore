@@ -5,6 +5,7 @@ socket.lib
 vc80.idb
 *.bak
 /Build/
+/Logs/
 MMExtension.map
 
 ## BDS 2006
