@@ -48,8 +48,8 @@ if CodeStd == "\15\135\52\6\0\0" then
 		rep stosd
 
 	  neg ebx
-	  add ebx, %m7%*0x76DA48 + %m8%*0x7ABA10  ; beginx
-		mov ecx, 128
+	  add ebx, %m7%*0x76DA48 + %m8%*0x7ABA10 + 4  ; beginx
+		mov ecx, 127
 	@loop:
 		dec ecx
 		mov [ebx + ecx*4], ecx
