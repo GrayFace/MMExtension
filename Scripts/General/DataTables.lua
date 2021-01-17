@@ -5,6 +5,7 @@ local BinFolder = "DataFiles/"
 -- /Config
 
 BinFolder = path.addslash(BinFolder)
+local mmver = Game.Version
 
 local UpdateMode
 local TimesTable = {}
@@ -27,8 +28,12 @@ local function FixFileTimes()
 	TimesTable = {}
 end
 
-local function DataTable(name, f, checkBin)
-	nameTxt = DataTables.Files[name] or "Data/Tables/"..name..'.txt'
+local function DataTable(name, f, checkBin, VeryLazy)
+	local nameTxt = DataTables.Files[name] or "Data/Tables/"..name..'.txt'
+	local nameBin = BinFolder.."d"..name..'.bin'
+	if VeryLazy and not path.FindFirst(nameTxt) and not path.FindFirst(nameBin) then
+		return
+	end
 	local dir = path.dir(nameTxt)
 	errorinfo('file "'..nameTxt..'"')
 	if dir == '' then
@@ -55,7 +60,7 @@ local function DataTable(name, f, checkBin)
 		io.save(nameTxt, f())
 	else
 		if checkBin then
-			for _, a in path.find(BinFolder.."d"..name..'.bin') do
+			for _, a in path.find(nameBin) do
 				local t1, t2 = a.LastWriteTimeLow, a.LastWriteTimeHigh
 				time1 = (time2 ~= t2 or time1 ~= t1) and time1
 			end
@@ -67,7 +72,7 @@ local function DataTable(name, f, checkBin)
 			f(io.load(nameTxt))
 			errorinfo('')
 			if checkBin then
-				TimesTable[#TimesTable + 1] = {BinFolder.."d"..name..'.bin', time1, time2}
+				TimesTable[#TimesTable + 1] = {nameBin, time1, time2}
 			end
 			return true
 		end
@@ -84,7 +89,7 @@ end
 local function update()
 	local sameSFT = true
 	DataTable('Class HP SP', DataTables.HPSP)
-	if Game.Version ~= 6 then
+	if mmver ~= 6 then
 		DataTable('Class Skills', DataTables.Skills)
 	end
 	DataTable('Class Starting Skills', DataTables.StartingSkills)
@@ -114,7 +119,7 @@ local function update()
 	if DataTable('Chest', DataTables.ChestBin, true) then
 		SaveBin('chest', Game.ChestBin)
 	end
-	if DataTable('Overlay', DataTables.OverlayBin, sameSFT) then
+	if DataTable('Overlay', DataTables.OverlayBin, sameSFT, mmver > 6) then
 		SaveBin('overlay', Game.OverlayBin)
 	end
 	if DataTable('ObjList', DataTables.ObjListBin, sameSFT) then
@@ -129,7 +134,7 @@ local function update()
 	if DataTable('Tile', DataTables.TileBin, true) then
 		SaveBin('tile', Game.TileBin)
 	end
-	if Game.Version == 8 then
+	if mmver == 8 then
 		if DataTable('Tile2', DataTables.Tile2Bin, true) then
 			SaveBin('tile2', Game.Tile2Bin)
 		end
@@ -137,7 +142,7 @@ local function update()
 			SaveBin('tile3', Game.Tile3Bin)
 		end
 	end
-	if Game.Version > 6 then
+	if mmver > 6 then
 		DataTable('Monster Kinds', DataTables.MonsterKinds)
 	end
 	-- DataTable('Player Animations', DataTables.PlayerAnimations)

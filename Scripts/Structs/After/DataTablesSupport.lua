@@ -635,14 +635,14 @@ local function NameHeader(hdr, arr)
 	return hdr
 end
 
-DataTables.TransportIndex = StructsArray(Game.TransportIndex, {[1] = 1, [2] = 2, [3] = 3, [4] = Game.Version > 6 and 4 or nil},
+DataTables.TransportIndex = StructsArray(Game.TransportIndex, {[1] = 1, [2] = 2, [3] = 3, [4] = mmver > 6 and 4 or nil},
 		{Resisable = false, RowHeaders = {[Game.TransportIndex.low - 1] = "2D Event"}})
 
 DataTables.TransportLocations = StructsArray(Game.TransportLocations, nil, {Resisable = false, IgnoreFields = {MapIndex = true}})
 
 do
 	local FtIgnore = {TotalTime = true, NotGroupEnd = true, Bits = true, SpriteIndex = true, PaletteIndex = true, IconIndex = true, Index = true, Loaded = true}
-	local FtIgnoreRead = Game.Version == 6 and {Images3 = true, Glow = true, Transparent = true} or nil
+	local FtIgnoreRead = mmver == 6 and {Images3 = true, Glow = true, Transparent = true} or nil
 	DataTables.SFTBin = StructsArray(Game.SFTBin.Frames, structs.o.SFTItem, {IgnoreFields = FtIgnore, IgnoreRead = FtIgnoreRead, NoRowHeaders = 'auto'})
 
 
@@ -690,7 +690,7 @@ do
 	DataTables.MonsterKinds = StructsArray(Game.MonsterKinds, nil, {Resisable = false, RowHeaders = hdr})
 
 
-	local is6 = (Game.Version == 6) or nil
+	local is6 = (mmver == 6) or nil
 	local hdr = NameHeader({[-1] = "Spell"}, Game.SpellsTxt)
 	events.GameInitialized2 = || NameHeader(hdr, Game.SpellsTxt)
 
