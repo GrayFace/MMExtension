@@ -45,7 +45,7 @@ type
 
 function RSExcludeClipRect(DC:HDC; Rect:TRect):Integer; stdcall; external gdi32 name 'ExcludeClipRect';
 
-function RSLoadPic(const Path:string; APixelFormat:TPixelFormat=pf24bit;
+function RSLoadPic(const Path:string; APixelFormat:TPixelFormat=pfCustom;
                    Pic:TBitmap=nil):TBitmap;
 
  // Fixes Delphi bugs with bitmaps
@@ -134,9 +134,14 @@ type
   TRSTransformColorProc = procedure(var per, col:TRSFourIntArray; AllP:int;
     a:pint; ColorData:int);
 
+// Bylinear
 procedure RSTransformSmoothProc(var per, col:TRSFourIntArray; AllP:int; a:pint;
             Data:int);
+// Finds the color closest to bylinear among the 4 colors, then mixes in bylinear color with Mix parameter
 procedure RSTransformSmartProc(var per, col:TRSFourIntArray; AllP:int; a:pint;
+            Mix:int);
+// Mixes nearest neighbour with bylinear color with Mix parameter (0 - full nearest, 255 - full bylinear)
+procedure RSTransformSmartProc2(var per, col:TRSFourIntArray; AllP:int; a:pint;
             Mix:int);
 
             
@@ -321,7 +326,7 @@ begin
   Result.eM22:=eM21*v.eM12+eM22*v.eM22;
 end;
 
-function RSLoadPic(const Path:string; APixelFormat:TPixelFormat=pf24bit; Pic:TBitmap=nil):TBitmap;
+function RSLoadPic(const Path:string; APixelFormat:TPixelFormat=pfCustom; Pic:TBitmap=nil):TBitmap;
 var p:TPicture;
 begin
   p:= nil;
@@ -339,14 +344,16 @@ begin
 
     with Result do
       try
-        HandleType:= bmDIB;
-        PixelFormat:= APixelFormat;
         if p<>nil then
         begin
-          Width:= p.Width;
+          Assign(p.Graphic);
+          {Width:= p.Width;
           Height:= p.Height;
-          Canvas.Draw(0, 0, p.Graphic);
+          Canvas.Draw(0, 0, p.Graphic);}
         end;
+        HandleType:= bmDIB;
+        if APixelFormat <> pfCustom then
+          PixelFormat:= APixelFormat;
       except
         if Pic = nil then
           Free;
@@ -2179,6 +2186,25 @@ begin
     a^:=RSMixColorsRGB(aa,col[AllP],int(Mix));
 end;
 
+procedure RSTransformSmartProc2(var per, col:TRSFourIntArray; AllP:int; a:pint;
+            Mix:int);
+var
+  aa, bb, i, k:int;
+begin
+  if AllP<255 then
+    aa:=RSMixColorsRGB(@col[0],@per[0],4)
+  else
+    aa:=RSMixColorsRGBNorm(@col[0],@per[0],4);
+  k:= 0;
+  for i:= 0 to high(per) do
+    if per[i] > k then
+    begin
+      k:= per[i];
+      bb:= col[i];
+    end;
+
+  a^:=RSMixColorsRGB(aa,bb,int(Mix));
+end;
 
 function RSAnyTransform32(Source:TBitmap; proc:TRSSmoothTransformProc;
            Width, Height:integer; NoCl:TColor; PreserveNoCl:Boolean;

@@ -56,6 +56,19 @@ type
   pext = ^ext;
 
   PPIntegerArray = ^PIntegerArray;
+  PByteArray = ^TByteArray;
+  TByteArray = array[0..$7ffffffe] of Byte;
+
+  PWordArray = ^TWordArray;
+  TWordArray = array[0..$3ffffffe] of Word;
+  PInt2Array = ^TInt2Array;
+  TInt2Array = array[0..$3ffffffe] of int2;
+
+  PDWordArray = ^TDWordArray;
+  TDWordArray = array[0..$1ffffffe] of DWord;
+
+  PPtrArray = ^TPtrArray;
+  TPtrArray = array[0..$ffffffe] of ptr;
 
 const
   VK_PGUP = VK_PRIOR;
@@ -128,6 +141,9 @@ procedure ArrayDelete(var Arr; Index:int; Size:int);
 procedure ArrayInsert(var Arr; Index:int; Size:int);
 function SqDifference(cl1,cl2:int):int; //deprecated;
 function FileAge(const FileName: string): Integer;
+function RectW(const r: TRect): int; inline;
+function RectH(const r: TRect): int; inline;
+function RDiv(i, j: int): int; inline;  // round(i/j)
 {$IFDEF MSWINDOWS}
 // Borland's original routines bug: they don't consider '/' a path delimiter.
 function FileExists(const FileName: string): Boolean;
@@ -500,7 +516,27 @@ begin
 {$WARNINGS ON}
 end;
 
-// code mostly by DVM
+function RectW(const r: TRect): int; inline;
+begin
+  with r do
+    Result:= Right - Left;
+end;
+
+function RectH(const r: TRect): int; inline;
+begin
+  with r do
+    Result:= Bottom - Top;
+end;
+
+function RDiv(i, j: int): int; inline;
+var
+  jj: int;
+begin
+  jj:= j;
+  Result:= (i + jj div 2) div jj;
+end;
+
+// code mostly by DVM from delphimaster.ru forum
 function FileExists(const FileName: string): Boolean;
 
   function ExistsLockedOrShared(const Filename: string): Boolean;

@@ -1,7 +1,7 @@
 object RSLodEdit: TRSLodEdit
   Left = 192
   Top = 115
-  ClientHeight = 800
+  ClientHeight = 765
   ClientWidth = 985
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,14 +19,14 @@ object RSLodEdit: TRSLodEdit
   OnDestroy = FormDestroy
   DesignSize = (
     985
-    800)
+    765)
   PixelsPerInch = 120
   TextHeight = 17
   object Splitter1: TSplitter
     Left = 348
     Top = 31
     Width = 6
-    Height = 733
+    Height = 698
     MinSize = 50
     ResizeStyle = rsUpdate
     ExplicitHeight = 851
@@ -35,14 +35,13 @@ object RSLodEdit: TRSLodEdit
     Left = 0
     Top = 31
     Width = 348
-    Height = 733
+    Height = 698
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitHeight = 877
     object Splitter2: TSplitter
       Left = 0
-      Top = 370
+      Top = 335
       Width = 348
       Height = 6
       Cursor = crVSplit
@@ -52,7 +51,7 @@ object RSLodEdit: TRSLodEdit
     end
     object Panel1: TRSPanel
       Left = 0
-      Top = 376
+      Top = 341
       Width = 348
       Height = 357
       Align = alBottom
@@ -60,7 +59,6 @@ object RSLodEdit: TRSLodEdit
       TabOrder = 0
       OnDblClick = Image1DblClick
       OnPaint = Panel1Paint
-      ExplicitTop = 520
       DesignSize = (
         348
         357)
@@ -199,7 +197,7 @@ object RSLodEdit: TRSLodEdit
       Left = 0
       Top = 0
       Width = 348
-      Height = 370
+      Height = 335
       Align = alClient
       BevelInner = bvSpace
       BevelKind = bkFlat
@@ -232,7 +230,6 @@ object RSLodEdit: TRSLodEdit
         00094600610076006F0072006900740065007300}
       OnCancelEdit = TreeView1CancelEdit
       OnWndProc = TreeView1WndProc
-      ExplicitHeight = 514
     end
   end
   object Panel3: TRSPanel
@@ -262,7 +259,7 @@ object RSLodEdit: TRSLodEdit
     Left = 354
     Top = 31
     Width = 631
-    Height = 733
+    Height = 698
     Align = alClient
     BevelInner = bvSpace
     BevelKind = bkFlat
@@ -285,17 +282,15 @@ object RSLodEdit: TRSLodEdit
     OnMouseDown = ListView1MouseDown
     TotalCmdNovigation = True
     OnWndProc = ListView1WndProc
-    ExplicitHeight = 877
   end
   object Panel4: TRSPanel
     Left = 0
-    Top = 764
+    Top = 729
     Width = 985
     Height = 36
     Align = alBottom
     TabOrder = 3
     Visible = False
-    ExplicitTop = 908
     DesignSize = (
       985
       36)
@@ -329,7 +324,7 @@ object RSLodEdit: TRSLodEdit
   end
   object PanelRebuilding: TRSPanel
     Left = 288
-    Top = 367
+    Top = 350
     Width = 411
     Height = 72
     Anchors = []
@@ -342,14 +337,13 @@ object RSLodEdit: TRSLodEdit
     ParentFont = False
     TabOrder = 4
     Visible = False
-    ExplicitTop = 440
   end
   object OpenDialog1: TRSOpenSaveDialog
     DefaultExt = '.lod'
     Filter = 
-      'Might&Magic or Heroes 3 archives (*.lod; *.snd; *.vid; *.mm6; *.' +
-      'mm7; *.dod; *.pac)|*.lod;*.snd;*.vid;*.mm6;*.mm7;*.dod;*.pac|All' +
-      ' files|*.*'
+      'Might&Magic or Heroes 3 archives (*.lod; *.lwd; *.snd; *.vid; *.' +
+      'mm6; *.mm7; *.dod; *.pac)|*.lod;*.lwd;*.snd;*.vid;*.mm6;*.mm7;*.' +
+      'dod;*.pac|All files|*.*'
     FilterIndex = 0
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Left = 480
@@ -1573,26 +1567,22 @@ object RSLodEdit: TRSLodEdit
       Caption = 'Palette'
       Visible = False
       object Default1: TMenuItem
-        AutoCheck = True
         Caption = 'Default'
         Checked = True
         RadioItem = True
         OnClick = Default1Click
       end
       object FirstKind1: TMenuItem
-        AutoCheck = True
         Caption = 'First Kind'
         RadioItem = True
         OnClick = Default1Click
       end
       object SecondKind1: TMenuItem
-        AutoCheck = True
         Caption = 'Second Kind'
         RadioItem = True
         OnClick = Default1Click
       end
       object ThirdKind1: TMenuItem
-        AutoCheck = True
         Caption = 'Third Kind'
         RadioItem = True
         OnClick = Default1Click
@@ -1649,6 +1639,11 @@ object RSLodEdit: TRSLodEdit
         GroupIndex = 1
         OnClick = Associate1Click
       end
+      object Associate5: TMenuItem
+        Caption = 'Associate with *.lwd'
+        GroupIndex = 1
+        OnClick = Associate5Click
+      end
       object Associate2: TMenuItem
         Caption = 'Associate with *.snd'
         GroupIndex = 1
@@ -1687,17 +1682,17 @@ object RSLodEdit: TRSLodEdit
   object SaveDialogNew: TSaveDialog
     DefaultExt = '.lod'
     Filter = 
-      'Any archive (*.lod;*.snd;*.vid;*.pac;*.mm6;*.mm7;*.dod)|*.lod;*.' +
-      'snd;*.vid;*.pac;*.mm6;*.mm7;*.dod|Heroes 3 LOD archive (*.lod; *' +
-      '.pac)|*.lod;*.pac|Heroes 3 sound archive (*.snd)|*.snd|MM sound ' +
-      'archive (*.snd)|*.snd|Heroes 3 or MM 7-8 video archive (*.vid)|*' +
-      '.vid|MM 6 video archive (*.vid)|*.vid|MM bitmaps archive (*.lod)' +
-      '|*.bitmaps.lod;*.lod|MM icons archive (*.lod)|*.icons.lod;*.lod|' +
-      'MM sprites archive (*.lod)|*.sprites.lod;*.lod|MM 8 localization' +
-      ' archive (*.lod)|*.T.lod;*.lod|MM 7-8 games archive (*.lod)|*.ga' +
-      'mes.lod;*.lod|MM 6 games archive (*.lod)|*.games.lod;*.lod|MM 7-' +
-      '8 saved game archive (*.lod;*.mm7;*.dod)|*.lod;*.mm7;*.dod|MM 6 ' +
-      'saved game archive (*.lod;*.mm6)|*.lod;*.mm6|All files|*.*'
+      'Any Heroes 3 archive (*.lod; *.snd; *.vid; *.pac)|*.lod;*.snd;*.' +
+      'vid;*.pac|Heroes 3 LOD archive (*.lod; *.pac)|*.lod;*.pac|Heroes' +
+      ' 3 sound archive (*.snd)|*.snd|MM sound archive (*.snd)|*.snd|He' +
+      'roes 3 or MM 7-8 video archive (*.vid)|*.vid|MM 6 video archive ' +
+      '(*.vid)|*.vid|MM bitmaps archive (*.lod;*.lwd)|*.bitmaps.lod;*.l' +
+      'od;*.lwd|MM icons archive (*.lod)|*.icons.lod;*.lod|MM sprites a' +
+      'rchive (*.lod)|*.sprites.lod;*.lod|MM 8 localization archive (*.' +
+      'lod)|*.T.lod;*.lod|MM 7-8 games archive (*.lod)|*.games.lod;*.lo' +
+      'd|MM 6 games archive (*.lod)|*.games.lod;*.lod|MM 7-8 saved game' +
+      ' archive (*.lod;*.mm7;*.dod)|*.lod;*.mm7;*.dod|MM 6 saved game a' +
+      'rchive (*.lod;*.mm6)|*.lod;*.mm6|All files|*.*'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofExtensionDifferent, ofEnableSizing]
     Title = 'New Archive'
     OnTypeChange = SaveDialogNewTypeChange
@@ -1714,9 +1709,9 @@ object RSLodEdit: TRSLodEdit
   object OpenDialogMerge: TRSOpenSaveDialog
     DefaultExt = '.lod'
     Filter = 
-      'Might&Magic or Heroes 3 archives (*.lod; *.snd; *.vid; *.mm6; *.' +
-      'mm7; *.dod; *.pac)|*.lod;*.snd;*.vid;*.mm6;*.mm7;*.dod;*.pac|All' +
-      ' files|*.*'
+      'Might&Magic or Heroes 3 archives (*.lod; *.lwd; *.snd; *.vid; *.' +
+      'mm6; *.mm7; *.dod; *.pac)|*.lod;*.lwd;*.snd;*.vid;*.mm6;*.mm7;*.' +
+      'dod;*.pac|All files|*.*'
     FilterIndex = 0
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Title = 'Choose archive to add by merging'
@@ -1750,8 +1745,9 @@ object RSLodEdit: TRSLodEdit
   end
   object SaveDialogSaveSelectionAs: TSaveDialog
     Filter = 
-      'Any archive (*.lod;*.snd;*.vid;*.pac;*.mm6;*.mm7;*.dod)|*.dod;*.' +
-      'lod;*.snd;*.vid;*.pac;*.mm6;*.mm7|All files|*.*'
+      'Might&Magic or Heroes 3 archives (*.lod; *.lwd; *.snd; *.vid; *.' +
+      'mm6; *.mm7; *.dod; *.pac)|*.lod;*.lwd;*.snd;*.vid;*.mm6;*.mm7;*.' +
+      'dod;*.pac|All files|*.*'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Title = 'Export Selected Files As'
     Left = 448

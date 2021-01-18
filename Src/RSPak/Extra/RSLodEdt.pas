@@ -70,8 +70,23 @@ Version 1.2.1:
 [-] Crash when loading another archive while in Compare To mode
 [-] After drag-drop of the same archive, files list wasn't updated after operations
 
-перемещение цвета фона в правильное место при импорте в icons.lod
-drag&drop из MMArchive во вне
+Version 1.3:
+[+] bitmaps.lwd support
+[+] Better transparent color detection
+[+] Palettes preview
+[+] After you create an archive from a selection of files, it's added to recent files list
+[-] Unpacking errors while dragging files onto other apps were leading to MMArchive hanging
+[-] "Ignore Unpacking Errors" option state wasn't preserved on program restart
+[-] When creating new archive default file type was misleading  
+
+Version 1.3.1:
+[+] When importing a texture or a sprite that isn't 8 bit, previous palette is used if the file exists in the archive
+[-] Mipmaps for transparent textures were generated with a blue border
+
+Version 1.3.2:
+[-] Empty bitmaps in icons.lod were treated as palettes
+
+Генерация палитры для всех дропнутых кадров?
 Возможность выбора номера анимации дефа для показа
 other file types
 }
@@ -214,6 +229,8 @@ type
     SaveDialogSaveSelectionAs: TSaveDialog;
     CompareTo1: TMenuItem;
     OpenDialogCompare: TRSOpenSaveDialog;
+    Associate5: TMenuItem;
+    procedure Associate5Click(Sender: TObject);
     procedure CompareTo1Click(Sender: TObject);
     procedure SaveSelectionAsArchive1Click(Sender: TObject);
     procedure CommonExtractionFolder1Click(Sender: TObject);
@@ -382,6 +399,7 @@ type
     FMyTempPath: string;
     FCopyStr: WideString;
     FDragFilesList: TStringList;
+    FDragException: string;
     Ini: TIniFile;
     FilterItemVisible: array of Boolean;
     procedure CreateParams(var Params: TCreateParams); override;
@@ -503,7 +521,7 @@ var
   SelectingIndex:pint;
   CanSelectListView:boolean=true;
   ClipboardFormat:DWord; ClipboardBackup: string;
-  Association1, Association2, Association3, Association4: TRSFileAssociation;
+  Association1, Association2, Association3, Association4, Association5: TRSFileAssociation;
   ExceptionsSilenced: Boolean;
   DefColumnWidth: int = -1;
   FavsChanged: Boolean;
@@ -971,6 +989,7 @@ begin
   Timer2.Enabled:= false;
   if (VideoPlayer <> nil) and (Timer1.Interval <> 0) then
     VideoPlayer.Pause:= not Timer1.Enabled;
+  FSFTNotFound:= false;
 
   if FirstActivate then
   begin
@@ -1008,7 +1027,7 @@ begin
     if sl.Count = 1 then
     begin
       s:= LowerCase(ExtractFileExt(sl[0])) + '!';
-      if RSParseStringSingleToken(s, 1, ['.lod', '.snd', '.vid', '.pac', '.mm6', '.mm7', '.dod']) = '!' then
+      if RSParseStringSingleToken(s, 1, ['.lod', '.lwd', '.snd', '.vid', '.pac', '.mm6', '.mm7', '.dod']) = '!' then
       begin
         BeginLoad(sl[0], AnyExt);
         EndLoad(false);
@@ -1364,6 +1383,7 @@ begin
   end;
   //RSSaveTextFile(AppPath + LangDir + 'tmp.txt', RSLanguage.MakeLanguage);
 
+  RSMenu.Font.Charset:= Font.Charset;
   TreeView1.Items[0].Text:= SFavorites;
 
   for i := 0 to length(Toolbar) - 1 do
@@ -1560,6 +1580,8 @@ begin
 end;
 
 procedure TRSLodEdit.LoadFile(Index: int);
+const
+  DimStr: array[Boolean] of string = ('%dx%d', '%dx%d. %s');
 var
   ft: TMyFileType;
   s: string;
@@ -1628,7 +1650,7 @@ begin
       end else
       begin
         FileBitmap:= Archive.ExtractArrayOrBmp(Index, FileBuffer);
-        if (ft = aBmp) and (FileBitmap = nil) then
+        if (ft = aBmp) and (FileBitmap = nil) and (Archive is TRSLod) and (TRSLod(Archive).Version = RSLodBitmaps) then
           ft:= aPal;
       end;
     except
@@ -1637,12 +1659,16 @@ begin
     end;
   end;
   if ft = aBmp then
+  begin
     if (LastPalString = '') and (Archive is TRSLod) and (TRSLod(Archive).LastPalette <> 0) then
-      Label1.Caption:= Format(SPalette, [TRSLod(Archive).LastPalette])
+      s:= Format(SPalette, [TRSLod(Archive).LastPalette])
     else
-      Label1.Caption:= LastPalString
-  else
-    Label1.Caption:= '';
+      s:= LastPalString;
+  end else
+    s:= '';
+  if FileBitmap <> nil then
+    s:= Format(DimStr[s <> ''], [FileBitmap.Width, FileBitmap.Height, s]);
+  Label1.Caption:= s;
 
   Timer1.Interval:=0;
   Timer2.Enabled:=false;
@@ -1675,6 +1701,11 @@ begin
         j:=1;
         SetPreviewBmp(FileBitmap);
         FileBitmap:= nil;
+      end;
+      aPal:
+      begin
+        j:=1;
+        SetPreviewBmp(RSMMPaletteToBitmap(FileBuffer));
       end;
       aTxt:
       begin
@@ -1740,6 +1771,7 @@ begin
       Language:= ReadString('General', 'Language', 'English');
       SwitchCheck(Sortbyextension1, ReadBool('General', 'Sort By Extension', false));
       Backup1.Checked:= ReadBool('General', 'Backup Original Files', true);
+      IgnoreUnpackingErrors1.Checked:= ReadBool('General', 'Ignore Unpacking Errors', false);
       OpenDialog1.InitialDir:= ReadString('General', 'Open Path', '');
       SaveDialogExport.InitialDir:= ReadString('General', 'Export Path', '');
       CommonExtractionFolder1.Checked:= (ReadString('General', 'Export Path', '|') <> SaveDialogExport.InitialDir);
@@ -1864,6 +1896,8 @@ var
   a: PPalFix;
   s: string;
 begin
+  // Delphi messes up window height
+  ClientHeight:= RDiv(740*ClientWidth, 985);
   RSHookFlatBevels(self);
   if not ThemeServices.ThemesEnabled then
     ComboExtFilter.BevelKind:= bkFlat;
@@ -1882,6 +1916,8 @@ begin
          'MMArchive Backup', '"' + s + '" "%1"', s + ',0');
   Association4:= TRSFileAssociation.Create('.pac', 'MMArchive.Pac',
          'MMArchive Backup', '"' + s + '" "%1"', s + ',0');
+  Association5:= TRSFileAssociation.Create('.lwd', 'MMArchive.Lwd',
+         'MMArchive Backup', '"' + s + '" "%1"', s + ',0');
 
   PalFixList:= TStringList.Create;
   PalFixList.Sorted:= true;
@@ -1893,16 +1929,6 @@ begin
     inc(a);
   end;
   FDragFilesList:= TMyStringList.Create;
-
-{
-  with RSMemo1 do
-  begin
-    Width:=Panel1.Width-10;
-    Height:=Panel1.Height-10;
-  end;
-}
-//  Panel1.FullRepaint:=false;
-//  Panel2.FullRepaint:=false;
 end;
 
 procedure TRSLodEdit.ListView1Edited(Sender: TObject; Item: TListItem;
@@ -2389,6 +2415,11 @@ begin
   Association4.Associated:= not Associate4.Checked;
 end;
 
+procedure TRSLodEdit.Associate5Click(Sender: TObject);
+begin
+  Association5.Associated:= not Associate5.Checked;
+end;
+
 procedure TRSLodEdit.AddFolder1Click(Sender: TObject);
 begin
   AddTreeNode(SNewFolder, 1, true);
@@ -2818,14 +2849,31 @@ end;
 
 procedure TRSLodEdit.DropFileSource1AfterDrop(Sender: TObject;
   DragResult: TDragResult; Optimized: Boolean);
+var
+  e: Exception;
 begin
   DragAcceptFiles(Handle, true);
+  if FDragException <> '' then
+  begin
+    e:= Exception.Create(FDragException);
+    try
+      Application.ShowException(e);
+    finally
+      e.Free;
+    end;
+  end;
 end;
 
 procedure TRSLodEdit.DropFileSource1Drop(Sender: TObject; DragType: TDragType;
   var ContinueDrop: Boolean);
 begin
-  ExtractDropSource;
+  try
+    ExtractDropSource;
+    FDragException:= '';
+  except
+    on e: Exception do
+      FDragException:= e.Message;
+  end;
 end;
 
 procedure TRSLodEdit.LoadTree(FileName:string);
@@ -2846,7 +2894,7 @@ begin
   case SaveDialogNew.FilterIndex of
     3, 4: SaveDialogNew.DefaultExt:= '.snd';
     5, 6: SaveDialogNew.DefaultExt:= '.vid';
-    7: SaveDialogNew.DefaultExt:= '.bitmaps.lod';
+    7: SaveDialogNew.DefaultExt:= '';
     8: SaveDialogNew.DefaultExt:= '.icons.lod';
     9: SaveDialogNew.DefaultExt:= '.sprites.lod';
     10: SaveDialogNew.DefaultExt:= '.T.lod';
@@ -2864,6 +2912,7 @@ begin
       WriteString('General', 'Language', Language);
       WriteBool('General', 'Sort By Extension', Sortbyextension1.Checked);
       WriteBool('General', 'Backup Original Files', Backup1.Checked);
+      WriteBool('General', 'Ignore Unpacking Errors', IgnoreUnpackingErrors1.Checked);
       WriteString('General', 'Open Path', DialogToFolder(OpenDialog1));
       WriteString('General', 'Export Path', DialogToFolder(SaveDialogExport));
       WriteString('General', 'Import Path', DialogToFolder(OpenDialogImport));
@@ -3028,6 +3077,7 @@ begin
     if a0 <> nil then  output.RawFiles.FreeAsIsFileStream(0, a0);
     output.Free;
   end;
+  Recent.Add(SaveDialogSaveSelectionAs.FileName, false);
 end;
 
 procedure WriteTextNode(sl: TStringList; Node: TMyNode; Indent: string);
@@ -4046,6 +4096,7 @@ begin
   Associate2.Checked:= Association2.Associated;
   Associate3.Checked:= Association3.Associated;
   Associate4.Checked:= Association4.Associated;
+  Associate5.Checked:= Association5.Associated;
 end;
 
 procedure TRSLodEdit.File1Click(Sender: TObject);
@@ -4082,6 +4133,8 @@ begin
 end;
 
 procedure TRSLodEdit.FindSpritePal(name: string; var pal: int2; Kind: int);
+var
+  sl: TStringList;
 const
   size6 = $38;
   size7 = $3C;
@@ -4096,15 +4149,7 @@ const
     p, p1: PChar;
   begin
     n:= pint(FSFT.Memory)^;
-
     size:= (FSFT.Size - pint(PChar(FSFT.Memory) + 4)^*2) div n;
-
-    p:= PChar(FSFT.Memory) + 8 + OffName;
-    for i := 0 to n - 1 do
-    begin
-      StrLower(p);
-      inc(p, size);
-    end;
 
     p:= PChar(FSFT.Memory) + 8 + OffName;
     if size = size7 then
@@ -4146,10 +4191,22 @@ const
     Result:= false;
   end;
 
+  procedure FindLods(const mask: string);
+  begin
+    with TRSFindFile.Create(mask) do
+      try
+        while FindEachFile do
+          sl.Add(FileName);
+      finally
+        Free;
+      end;
+  end;
+
 var
   Lod: TRSLod;
   fs: TFileStream;
   s, name1: string;
+  mm8: Boolean;
   size, i, j: int;
   p: PChar;
 begin
@@ -4170,25 +4227,45 @@ begin
           Free;
         end;
       s:= s + 'T.lod';
+      mm8:= false;
 
       if FileExists(name1 + s) then
-        Lod:= TRSLod.Create(name1 + s)
+        mm8:= true
       else if FileExists(name1 + 'EnglishT.lod') then
-        Lod:= TRSLod.Create(name1 + 'EnglishT.lod')
+      begin
+        s:= 'EnglishT.lod';
+        mm8:= true;
+      end
       else if FileExists(name1 + 'events.lod') then
-        Lod:= TRSLod.Create(name1 + 'events.lod')
+        s:= 'events.lod'
       else if FileExists(name1 + 'icons.lod') then
-        Lod:= TRSLod.Create(name1 + 'icons.lod')
+        s:= 'icons.lod'
       else
         exit; // !!! show dialog
 
+      Lod:= nil;
+      sl:= TStringList.Create;
       try
-        if not Lod.RawFiles.FindFile('dsft.bin', j) then  exit;
-        FSFT:= TMemoryStream.Create;
-        Lod.Extract(j, FSFT);
+        FindLods(name1 + s);
+        if mm8 then
+          FindLods(name1 + '*.T.lod');
+        FindLods(name1 + '*.' + s);
+        Lod:= TRSLod.Create;
+        for i:= sl.Count - 1 downto 0 do
+        begin
+          Lod.Load(sl[i]);
+          if Lod.RawFiles.FindFile('dsft.bin', j) then
+          begin
+            FSFT:= TMemoryStream.Create;
+            Lod.Extract(j, FSFT);
+            break;
+          end;
+        end;
       finally
-        FreeAndNil(Lod);
+        sl.Free;
+        Lod.Free;
       end;
+      if FSFT = nil then  exit;
     end else
     begin
       fs:= TFileStream.Create(name1 + '..\DataFiles\dsft.bin', fmOpenRead);
@@ -4247,16 +4324,23 @@ var
   PalData: array[0..767] of Byte;
   pal: int;
 begin
-  if Bitmap.PixelFormat <> pf8bit then
+  if (Palette < 0) and (Bitmap.PixelFormat <> pf8bit) then
     raise Exception.Create(SEPaletteMustExist);
-  RSWritePalette(@PalData, Bitmap.Palette);
   if Sender.BitmapsLods = nil then
   begin
     NeedBitmapsLod(Sender);
     if Sender.BitmapsLods = nil then
-      exit;
+      if Bitmap.PixelFormat <> pf8bit then
+        raise Exception.Create(SEPaletteMustExist)
+      else
+        exit;
   end;
+  if Bitmap.PixelFormat <> pf8bit then
+    exit;  // convert to the same palette
+  RSWritePalette(@PalData, Bitmap.Palette);
 
+  if (Palette >= 0) and RSMMArchivesIsSamePalette(Sender.BitmapsLods, PalData, Palette) then
+    exit;
   pal:= RSMMArchivesFindSamePalette(Sender.BitmapsLods, PalData);
   if pal <> 0 then
     Palette:= pal
@@ -4280,14 +4364,15 @@ const
   );
 var
   ver: TRSLodVersion;
-  s: string;
+  s, dir: string;
 begin
   SaveDialogNew.InitialDir:= DialogToFolder(OpenDialog1);
   SaveDialogNew.FileName:= '';
   if not SaveDialogNew.Execute then exit;
   FreeArchive;
   OpenDialog1.FileName:= SaveDialogNew.FileName;
-  RSCreateDir(ExtractFilePath(SaveDialogNew.FileName));
+  dir:= ExtractFilePath(SaveDialogNew.FileName);
+  RSCreateDir(dir);
   s:= ExtractFileExt(SaveDialogNew.FileName);
   ver:= vers[SaveDialogNew.FilterIndex - 1];
   if SameText(s, '.snd') then
@@ -4325,14 +4410,18 @@ var
 
 var
   pal: array[-1..255] of int;
-  w, h: int;
+  w, h, i: int;
 begin
   w:= b.Width - 1;
   h:= b.Height - 1;
-  if NotBest(0, 0) and NotBest(0, h) and NotBest(w, h) then  NotBest(w, 0);
   Result:= HPal;
-  if best = 0 then  exit;
   GetPaletteEntries(HPal, 0, 256, pal[0]);
+  if NotBest(0, 0) and NotBest(0, h) and NotBest(w, h) and NotBest(w, 0) then
+    for i:= 1 to 255 do
+      if (pal[i] = $FFFF00) or
+         (best = 0) and ((pal[i] = $FF00FF) or (pal[i] = $FC00FC) or (pal[i] = $FCFC00)) then
+        best:= i;
+  if best = 0 then  exit;
   zSwap(pal[0], pal[best]);
   pal[-1]:= $1000300;
   Result:= CreatePalette(PLogPalette(@pal)^);
@@ -4771,7 +4860,7 @@ begin
       Rectangle(0, 0, Image1.Left, Height);
       w:= PreviewBmp.Width;
       h:= PreviewBmp.Height;
-      DoReStretch(RSSpeedButton1.Down, Image1.Width, Image1.Height, w, h);
+      DoReStretch(RSSpeedButton1.Down or (FileType = aPal), Image1.Width, Image1.Height, w, h);
       r:= Bounds(Image1.Left, Image1.Top, w, h);
       StretchDraw(r, PreviewBmp);
       Rectangle(r.Right, 0, Width, r.Bottom);
@@ -4917,6 +5006,7 @@ end;
 
 procedure TRSLodEdit.Default1Click(Sender: TObject);
 begin
+  TMenuItem(Sender).Checked:= true;
   if Sender = FirstKind1 then
     FSFTKind:= 1
   else if Sender = SecondKind1 then
