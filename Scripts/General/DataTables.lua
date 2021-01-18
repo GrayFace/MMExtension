@@ -31,16 +31,16 @@ end
 local function DataTable(name, f, checkBin, VeryLazy)
 	local nameTxt = DataTables.Files[name] or "Data/Tables/"..name..'.txt'
 	local nameBin = BinFolder.."d"..name..'.bin'
-	if VeryLazy and not path.FindFirst(nameTxt) and not path.FindFirst(nameBin) then
-		return
-	end
-	local dir = path.dir(nameTxt)
+	local dir, old = path.dir(nameTxt), errorinfo()
 	errorinfo('file "'..nameTxt..'"')
 	if dir == '' then
 		if nameTxt ~= '' then
 			f(Game.LoadTextFileFromLod(nameTxt))
 		end
-		errorinfo('')
+		errorinfo(old)
+		return
+	elseif VeryLazy and not path.FindFirst(nameTxt) and not path.FindFirst(nameBin) then
+		errorinfo(old)
 		return
 	end
 	local time1, time2
@@ -77,7 +77,7 @@ local function DataTable(name, f, checkBin, VeryLazy)
 			return true
 		end
 	end
-	errorinfo('')
+	errorinfo(old)
 end
 
 local function SaveBin(name, t)

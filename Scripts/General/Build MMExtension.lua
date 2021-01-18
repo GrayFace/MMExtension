@@ -17,9 +17,11 @@ local function UpdateList()
 	end
 
 	IncludeMask(DevPath.."Data/*")
-	for f in path.find(DevPath.."Scripts/*", true) do
-		IncludeMask(f.."/*")
-	end
+	IncludeMask(DevPath.."Scripts/Core/*")
+	IncludeMask(DevPath.."Scripts/General/*")
+	IncludeMask(DevPath.."Scripts/Global/*")
+	IncludeMask(DevPath.."Scripts/Modules/*")
+	IncludeMask(DevPath.."Scripts/Structs/*")
 	IncludeMask(DevPath.."Scripts/Structs/After/*")
 	IncludeMask(DevPath.."ExeMods/*")
 	IncludeMask(DevPath.."ExeMods/MMExtension/*")
@@ -74,7 +76,7 @@ function Build(...)
 	events.Build(...)
 	
 	for id in pairs(list) do
-		if id:match("/[eE]ditor") or id:match("MMEditor") then
+		if id:match("/[eE]ditor") or id:match("MMEditor") or id:match("Convert Blv") then
 			CopyFile(id, "MMEditor")
 		else
 			CopyFile(id, "MMExtension")
