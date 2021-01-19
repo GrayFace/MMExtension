@@ -376,14 +376,27 @@ local VarNumToStr, PlayerToStr = {}, {}
 local Deco = {CmdStructs = {}, CmdNames = {}, CmdInfo = {}, DeclareCmd = DeclareCmd, CmdDef = CmdDef, VarNumToStr = VarNumToStr, PlayerToStr = PlayerToStr}
 internal.EvtInternal = Deco
 
-local EvtBuf = internal.EvtBuf
-local BufPtr, LineN
+local EvtBuf, LinesBuf = internal.EvtBuf, offsets.EvtLinesBuf
+local BufPtr, EvtBufEnd, LinesEnd = EvtBuf, EvtBuf + (internal.EvtBufSize or 0x10000), LinesBuf + offsets.EvtLinesBufCount
+local LineN
+
+-- in case of an overflow error reset evt buffers
+local function EvtAssert(cond, msg)
+	if cond then
+		return
+	end
+	EvtBuf, LinesBuf = internal.EvtBuf, offsets.EvtLinesBuf
+	BufPtr = EvtBuf
+	error(msg)
+end
 
 local function FillLine()
-	local p = offsets.EvtLinesBuf + LineN*12
+	EvtAssert(LinesBuf < LinesEnd, 'evt lines overfow')
+	local p = LinesBuf
 	u4[p] = 0x7FFF
 	u4[p + 4] = LineN
 	u4[p + 8] = BufPtr - EvtBuf
+	LinesBuf = LinesBuf + 12
 	LineN = LineN + 1
 end
 
@@ -430,21 +443,23 @@ local function MakeCmd(name, num, f, invis)
 	end
 
 	DeclareCmd[num] = function(t)
+		local len = #def
+		EvtAssert(BufPtr + len + 5 <= EvtBufEnd, 'evt buffer overfow')
 		u2[BufPtr + 1] = 0x7FFF
 		u1[BufPtr + 3] = LineN
 		u1[BufPtr + 4] = num
 		FillLine()
-		local len = #def
 		mem.copy(BufPtr + 5, def, len)
 		if t then
 			local a = cmdStruct:new(BufPtr + 5)
 			local kn
 			for k,v in pairs(t) do
 				kn = order[k] or k
-				a[kn] = v
 				if kn == textName then
 					len = cmdStruct["?size"] + #v
+					EvtAssert(BufPtr + len + 5 <= EvtBufEnd, 'evt buffer overfow')
 				end
+				a[kn] = v
 			end
 		end
 		u1[BufPtr] = len + 4
@@ -464,8 +479,10 @@ local function MakeCmd(name, num, f, invis)
 				t[jump] = 3
 			end
 
-			local old1, old2, old3 = u4[offsets.CurrentEvtBuf], u4[offsets.CurrentEvtLines], i4[offsets.AbortEvt]
-			BufPtr = EvtBuf
+			local o = offsets
+			local old1, old2, old3, old4 = u4[o.CurrentEvtBuf], u4[o.CurrentEvtLines], u4[o.CurrentEvtLinesCount], i4[o.AbortEvt]
+			local oldEvt, oldLines, oldPlayer, oldCurrentPlayer = EvtBuf, LinesBuf, evt.Player, evt.CurrentPlayer
+			EvtBuf = BufPtr
 			LineN = 0
 			DeclareCmd[0]()  -- for buggy commands like 0x1A
 			DeclareCmd[num](t)
@@ -478,28 +495,29 @@ local function MakeCmd(name, num, f, invis)
 				mem.u4[0xFFD45C] = 0
 			end
 
-			u4[offsets.CurrentEvtLinesCount] = LineN
+			u4[o.CurrentEvtLinesCount] = LineN
 			local IsGlobal = t.Global == true and (GlobalEventInfo ~= 0 and GlobalEventInfo or 1) or t.Global == false and 0 or GlobalEventInfo
 			local oldGlobalEventInfo
-			if IsGlobal or u4[offsets.GlobalEventInfo] == 0 then
-				oldGlobalEventInfo = u4[offsets.GlobalEventInfo]
-				u4[offsets.GlobalEventInfo] = IsGlobal or (Game.CurrentScreen == 4 or Game.CurrentScreen == 13) and 1 or 0
+			if IsGlobal or u4[o.GlobalEventInfo] == 0 then
+				oldGlobalEventInfo = u4[o.GlobalEventInfo]
+				u4[o.GlobalEventInfo] = IsGlobal or (Game.CurrentScreen == 4 or Game.CurrentScreen == 13) and 1 or 0
 			end
-			u4[offsets.EvtTargetObj] = TargetObj or 0
+			u4[o.EvtTargetObj] = TargetObj or 0
 			local player = player or evt.Player
 			if not player or player == evt.Players.Current then
 				player = evt.CurrentPlayer or evt.Players.Current
 			end
-			u4[offsets.CurrentEvtBuf] = EvtBuf  -- tmp
-			u4[offsets.CurrentEvtLines] = offsets.EvtLinesBuf  -- tmp
+			u4[o.CurrentEvtBuf] = EvtBuf
+			u4[o.CurrentEvtLines] = oldLines
 
 			local ret = mem.call(internal.CallProcessEvent2, 0, 0x7FFF, t.KeepSound and 1 or 0, player, MayShow)
-			local abort = i4[offsets.AbortEvt] ~= 0
+			local abort = i4[o.AbortEvt] ~= 0
 
 			if oldGlobalEventInfo then
-				u4[offsets.GlobalEventInfo] = oldGlobalEventInfo
+				u4[o.GlobalEventInfo] = oldGlobalEventInfo
 			end
-			u4[offsets.CurrentEvtBuf], u4[offsets.CurrentEvtLines], i4[offsets.AbortEvt] = old1, old2, old3
+			EvtBuf, LinesBuf, evt.Player, evt.CurrentPlayer = oldEvt, oldLines, oldPlayer, oldCurrentPlayer
+			u4[o.CurrentEvtBuf], u4[o.CurrentEvtLines], u4[o.CurrentEvtLinesCount], i4[o.AbortEvt] = old1, old2, old3, old4
 
 			if abort then -- don't overwrite async command if aborted due to lack of gold
 				if not t.OnDone and not t.NoYield and coroutine.running() then

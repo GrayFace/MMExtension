@@ -426,6 +426,7 @@ end
 
 -- allow Evt calls stacking
 do
+	-- instead of copying evt lines, store their address in the first 4 bytes of CurrentEvtLines
 	if mmver == 6 then
 		mem.asmhook2(0x43C8E3, [[
 			mov [edi], esi
@@ -439,6 +440,7 @@ do
 		]])
 	end
 	
+	-- modify line address by the offset from CurrentEvtLines to stored evt lines address
 	HookManager{
 		reg = mmv('eax', 'edx', 'ecx'),
 		lines = offsets.CurrentEvtLines,
