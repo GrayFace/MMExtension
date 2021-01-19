@@ -2396,21 +2396,21 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="events.MonsterKilled" class="abs"></a><h4 class="def-h4">MonsterKilled</h4><b class="def-largs">(</b><a href="#structs.MapMonster">mon</a>, monIndex, defaultHandler, <a href="#structs.Player">player</a>, playerIndex<b class="def-rargs">)</b>
+<a id="events.MonsterKilled" class="abs"></a><h4 class="def-h4">MonsterKilled</h4><b class="def-largs">(</b><a href="#structs.MapMonster">mon</a>, monIndex, defaultHandler, t<b class="def-rargs">)</b>
 </td><td class="def-right">
- <b class="def-param">player</b> and <b class="def-param">playerIndex</b> parameters are only passed in some cases
+ <a href="#structs.Player">t.Player</a> and <b class="def-param">t.PlayerIndex</b> are set if monster is killed by the party.<br><a href="#structs.MapMonster">t.ByMonster</a> and <b class="def-param">t.ByMonsterIndex</b> fields are set if monster is killed by another monster.<br><a href="#structs.MapObject">t.Object</a> and <b class="def-param">t.ObjectIndex</b> are set if monster is killed by a missile.
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="events.ItemAdditionalDamage" class="abs"></a><h4 class="def-h4">ItemAdditionalDamage</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span><a href="#const.Damage">DamageKind</a><br><span class="def-nbsp">  </span>Item<br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>Result<br><span class="def-nbsp">  </span>Vampiric<br><b class="def-rargs">}</b>
+<a id="events.ItemAdditionalDamage" class="abs"></a><h4 class="def-h4">ItemAdditionalDamage</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span><a href="#const.Damage">DamageKind</a><br><span class="def-nbsp">  </span>Item<br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span><a href="#structs.MapObject">Object</a><br><span class="def-nbsp">  </span>ObjectIndex<br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>Result<br><span class="def-nbsp">  </span>Vampiric<br><b class="def-rargs">}</b>
 </td><td class="def-right">
- <span class="def-ver">[MM7+]</span> <b class="def-param">Monster</b>, <b class="def-param">MonsterIndex</b>, <b class="def-param">Player</b> and <b class="def-param">PlayerIndex</b> fields are only set if the function is called by the game itself and not from a script
+ <span class="def-ver">[MM7+]</span> <b class="def-param">Monster</b>, <b class="def-param">MonsterIndex</b>, <b class="def-param">Player</b> and <b class="def-param">PlayerIndex</b> fields are only set if the function is called by the game itself and not from a script.<br><b class="def-param">Object</b> and <b class="def-param">ObjectIndex</b> are set if monster is hit by a missile.
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="events.CalcDamageToMonster" class="abs"></a><h4 class="def-h4">CalcDamageToMonster</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span>Damage<br><span class="def-nbsp">  </span><a href="#const.Damage">DamageKind</a><br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span>MonsterIndex<br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>Result<br><b class="def-rargs">}</b>
+<a id="events.CalcDamageToMonster" class="abs"></a><h4 class="def-h4">CalcDamageToMonster</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span><a href="#structs.MapMonster">ByMonster</a><br><span class="def-nbsp">  </span>ByMonsterIndex<br><span class="def-nbsp">  </span>Damage<br><span class="def-nbsp">  </span><a href="#const.Damage">DamageKind</a><br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span>MonsterIndex<br><span class="def-nbsp">  </span><a href="#structs.MapObject">Object</a><br><span class="def-nbsp">  </span>ObjectIndex<br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>PlayerIndex<br><span class="def-nbsp">  </span>Result<br><b class="def-rargs">}</b>
 </td><td class="def-right">
- <b class="def-param">Player</b> and <b class="def-param">PlayerIndex</b> fields are only set in some cases. For example, in MM6 they're not set when bonus elemental damage of weapons is applied
+ <b class="def-param">Player</b> and <b class="def-param">PlayerIndex</b> fields are only set when monster is hit by the party.<br><b class="def-param">ByMonster</b> and <b class="def-param">ByMonsterIndex</b> fields are set if monster is hit by another monster.<br><b class="def-param">Object</b> and <b class="def-param">ObjectIndex</b> are set if monster is hit by a missile.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -2434,7 +2434,7 @@ Id
 <td class="def-left">
 <a id="events.MonsterChooseAction" class="abs"></a><h4 class="def-h4">MonsterChooseAction</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span>Action<br><span class="def-nbsp">  </span>CallDefault = function<b class="def-largs-i">(</b><b class="def-rargs-i">)</b><br><span class="def-nbsp">  </span>Distance <span class="def-ver">[MM8]</span><br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span>MonsterIndex<br><b class="def-rargs">}</b>
 </td><td class="def-right">
- <b class="def-param">Action</b> starts uninitialized. Each time you call <b class="def-param">CallDefault</b>, it generates new result, assigns it to <b class="def-param">Action</b> and returns the value.<br><b class="def-param">Action</b> values:<br>0 &ndash; attack 1,<br>1 &ndash; attack 2,<br>2 &ndash; spell 1,<br>3 &ndash; spell 2 (MM7+)
+ <b class="def-param">Action</b> starts uninitialized. Each time you call <b class="def-param">CallDefault</b>, it generates new result, assigns it to <b class="def-param">Action</b> and returns the value.<br><b class="def-param">Action</b> values:<br>0 &ndash; attack 1,<br>1 &ndash; attack 2,<br>2 &ndash; spell 1,<br>3 &ndash; spell 2 <span class="def-ver">[MM7+]</span>
 </td>
 </tr></tbody>
 </table>
@@ -4235,6 +4235,12 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.GameStructure.MainMenuCode" class="abs"></a>MainMenuCode
+</td><td class="def-right">
+ -1 = in game, 1 = show new game, 6 = in new game, 3 = load menu, 4 = exit, 2 = show credits, 8 = in credits, 9 = load game
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.GameStructure.LoadingScreen" class="abs"></a>LoadingScreen
 </td><td class="def-right">
  
@@ -5222,12 +5228,6 @@ Id
 <a id="structs.GameStructure.CurrentTileBin" class="abs"></a><a href="#structs.CurrentTileBin">CurrentTileBin</a>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.GameStructure.MainMenuCode" class="abs"></a>MainMenuCode
-</td><td class="def-right">
- -1 = in game, 1 = show new game, 6 = in new game, 3 = load menu, 4 = exit, 2 = show credits, 8 = in credits, 9 = load game
 </td>
 </tr><tr>
 <td class="def-left">
@@ -21459,7 +21459,7 @@ Id
 <td class="def-left">
 <a id="const.ObjectRefKind.Party" class="abs"></a>Party <i class="def-const">= 4</i>
 </td><td class="def-right">
- Index is player index (1-4 or 0 for whole party ???)
+ Index is player index in <a href="#structs.GameParty.PlayersArray">Party.PlayersArray</a>
 </td>
 </tr><tr>
 <td class="def-left">
@@ -21471,7 +21471,7 @@ Id
 <td class="def-left">
 <a id="const.ObjectRefKind.Facet" class="abs"></a>Facet <i class="def-const">= 6</i>
 </td><td class="def-right">
- outdoors Index = ModelId*64 + FaceId
+ Outdoors Index = ModelId*64 + FaceId
 </td>
 </tr><tr>
 <td class="def-left">

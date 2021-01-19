@@ -251,9 +251,9 @@ const.ObjectRefKind = {
 	Door = 1,
 	Object = 2,
 	Monster = 3,
-	Party = 4, -- Index is player index (1-4 or 0 for whole party ???)
+	Party = 4, -- Index is player index in #Party.PlayersArray:structs.GameParty.PlayersArray#
 	Sprite = 5,
-	Facet = 6, -- outdoors Index = ModelId*64 + FaceId
+	Facet = 6, -- Outdoors Index = ModelId*64 + FaceId
 	Light = 7,
 }
 

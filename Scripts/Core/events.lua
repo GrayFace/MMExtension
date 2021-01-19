@@ -1676,16 +1676,56 @@ do
 end
 
 
-local AddFields_damageMonsterFromParty
+local AddFields_damageMonsterFrom
 do
-	local x1, x2 = unpack((mmv({0x430E50, 0x431B0B}, {0x439463, 0x439E16}, {0x436E26, 0x4378CD})))
-	function AddFields_damageMonsterFromParty(d, t)
-		local r = u4[d.esp]
-		if r >= x1 and r < x2 then
-			t.MonsterIndex, t.Monster = GetMonster(d.esi)
-			if mmver ~= 6 or r < 0x431337 or r == 0x4315D9 then
-				t.PlayerIndex, t.Player = GetPlayer(mmver == 6 and d.ebx or mmver == 7 and d.edi or mmver == 8 and u4[d.ebp - 8])
-			end
+	local p = mem.StaticAlloc(8)
+	u4[p] = 0
+	local hooks = HookManager{
+		att = p,      -- attacker ObjRef
+		mon = p + 4,  -- monster index
+		ret = 4,      -- stack arguments*4
+	}
+	local push = [[
+		mov eax, [esp + %ret%]
+		push eax
+	]]
+	local s = push..[[
+		mov [%att%], ecx
+		mov [%mon%], edx
+		call @std
+		mov dword [%att%], 0
+		ret %ret%
+	@std:
+	]]
+	hooks.asmhook(mmv(0x430E50, 0x439463, 0x436E26), s)  -- from party
+	if mmver > 6 then
+		hooks.asmhook(mm78(0x43B07A, 0x438C6E), s)  -- from event
+		hooks.ref.ret = 8
+		hooks.asmhook(mm78(0x43B1D3, 0x438DDE), push..s)  -- from monster
+	end
+
+	function AddFields_damageMonsterFrom(t, needMon)
+		local i = u4[p]
+		if i == 0 then
+			return
+		end
+		local kind = i%8
+		i = (i - kind)/8
+		if kind == 2 then
+			local obj = Map.Objects[i]
+			t.ObjectIndex, t.Object = i, obj
+			i = obj.Owner
+			kind = i%8
+			i = (i - kind)/8
+		end
+		if kind == 4 then
+			t.PlayerIndex, t.Player = i, Party.PlayersArray[i]
+		elseif kind == 3 then
+			t.ByMonsterIndex, t.ByMonster = i, Map.Monsters[i]
+		end
+		if needMon then
+			local i = u4[p + 4]
+			t.MonsterIndex, t.Monster = i, Map.Monsters[i]
 		end
 	end
 end
@@ -1697,9 +1737,11 @@ mem.hookfunction(mmv(0x403050, 0x402D6E, 0x402E78), 1, 0, function(d, def, index
 		def = def and def(index) and nil
 	end
 	local t = {}
-	AddFields_damageMonsterFromParty(d, t)
-	--!(mon:structs.MapMonster, monIndex, defaultHandler, player:structs.Player, playerIndex) 'player' and 'playerIndex' parameters are only passed in some cases
-	events.cocall("MonsterKilled", Map.Monsters[index], index, callDef, t.Player, t.PlayerIndex)
+	AddFields_damageMonsterFrom(t)
+	--!(mon:structs.MapMonster, monIndex, defaultHandler, t) #t.Player:structs.Player# and 't.PlayerIndex' are set if monster is killed by the party.
+	-- #t.ByMonster:structs.MapMonster# and 't.ByMonsterIndex' fields are set if monster is killed by another monster.
+	-- #t.Object:structs.MapObject# and 't.ObjectIndex' are set if monster is killed by a missile.
+	events.cocall("MonsterKilled", Map.Monsters[index], index, callDef, t)
 	callDef()
 end)
 
@@ -1755,11 +1797,12 @@ if mmver > 6 then
 			Item = structs.Item:new(item),
 			Result = def(item, kind, vampiric),
 		}
-		AddFields_damageMonsterFromParty(d, t)
+		AddFields_damageMonsterFrom(t, true)
 		-- :const.Damage
 		t.DamageKind = i4[kind]
 		t.Vampiric = (i4[vampiric] ~= 0)
-		--!k{Monster :structs.MapMonster, Player :structs.Player} [MM7+] 'Monster', 'MonsterIndex', 'Player' and 'PlayerIndex' fields are only set if the function is called by the game itself and not from a script
+		--!k{Monster :structs.MapMonster, Player :structs.Player, Object :structs.MapObject, ObjectIndex} [MM7+] 'Monster', 'MonsterIndex', 'Player' and 'PlayerIndex' fields are only set if the function is called by the game itself and not from a script.
+		-- 'Object' and 'ObjectIndex' are set if monster is hit by a missile.
 		events.cocall("ItemAdditionalDamage", t)
 		i4[kind] = t.DamageKind
 		i4[vampiric] = (t.Vampiric and 1 or 0)
@@ -1789,9 +1832,11 @@ mem.hookfunction(mmv(0x421DC0, 0x427522, 0x425951), 0, 3, function(d, def, mon, 
 		Damage = dmg,
 		Result = def(mon, kind, dmg),
 	}
-	AddFields_damageMonsterFromParty(d, t)
+	AddFields_damageMonsterFrom(t)
 	t.MonsterIndex, t.Monster = GetMonster(mon)
-	--!k{Monster :structs.MapMonster, Player :structs.Player} 'Player' and 'PlayerIndex' fields are only set in some cases. For example, in MM6 they're not set when bonus elemental damage of weapons is applied
+	--!k{Monster :structs.MapMonster, Player :structs.Player, PlayerIndex, ByMonster :structs.MapMonster, ByMonsterIndex, Object :structs.MapObject, ObjectIndex} 'Player' and 'PlayerIndex' fields are only set when monster is hit by the party.
+	-- 'ByMonster' and 'ByMonsterIndex' fields are set if monster is hit by another monster.
+	-- 'Object' and 'ObjectIndex' are set if monster is hit by a missile.
 	events.cocall("CalcDamageToMonster", t)
 	return t.Result
 end)
@@ -1877,7 +1922,7 @@ do
 		-- 0 - attack 1,
 		-- 1 - attack 2,
 		-- 2 - spell 1,
-		-- 3 - spell 2 (MM7+)
+		-- 3 - spell 2 [MM7+]
 		events.cocall("MonsterChooseAction", t)
 		return t.Action or def(ai, mon, monIndex, dist)
 	end)
