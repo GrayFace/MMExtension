@@ -481,7 +481,7 @@ local function MakeCmd(name, num, f, invis)
 
 			local o = offsets
 			local old1, old2, old3, old4 = u4[o.CurrentEvtBuf], u4[o.CurrentEvtLines], u4[o.CurrentEvtLinesCount], i4[o.AbortEvt]
-			local oldEvt, oldLines, oldPlayer, oldCurrentPlayer = EvtBuf, LinesBuf, evt.Player, evt.CurrentPlayer
+			local oldEvt, oldBuf, oldLines, oldPlayer, oldCurrentPlayer = EvtBuf, BufPtr, LinesBuf, evt.Player, evt.CurrentPlayer
 			EvtBuf = BufPtr
 			LineN = 0
 			DeclareCmd[0]()  -- for buggy commands like 0x1A
@@ -516,7 +516,7 @@ local function MakeCmd(name, num, f, invis)
 			if oldGlobalEventInfo then
 				u4[o.GlobalEventInfo] = oldGlobalEventInfo
 			end
-			EvtBuf, LinesBuf, evt.Player, evt.CurrentPlayer = oldEvt, oldLines, oldPlayer, oldCurrentPlayer
+			EvtBuf, BufPtr, LinesBuf, evt.Player, evt.CurrentPlayer = oldEvt, oldBuf, oldLines, oldPlayer, oldCurrentPlayer
 			u4[o.CurrentEvtBuf], u4[o.CurrentEvtLines], u4[o.CurrentEvtLinesCount], i4[o.AbortEvt] = old1, old2, old3, old4
 
 			if abort then -- don't overwrite async command if aborted due to lack of gold
