@@ -494,7 +494,11 @@ local function MakeCmd(name, num, f, invis)
 				u4[offsets.GlobalEventInfo] = oldGlobalEventInfo
 			end
 
-			if ret == 0 then -- async command
+			if i4[offsets.AbortEvt] ~= 0 then -- don't overwrite async command if aborted due to lack of gold
+				if not t.OnDone and not t.NoYield and coroutine.running() then
+					return coroutine.yield()
+				end
+			elseif ret == 0 then -- async command
 				AsyncTrue = jumpTrue
 				AsyncProc = t.OnDone
 				AsyncPlayer, AsyncCurrentPlayer = evt.Player, evt.CurrentPlayer
