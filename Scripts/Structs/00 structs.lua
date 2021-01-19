@@ -71,6 +71,9 @@ function structs.f.GameStructure(define)
 	end)
 	[mmv(0x4BCDD8, 0x4E28D8, 0x4F37D8)].i4  'CurrentScreen'
 	[mmv(0x4D4714, 0x506DC8, 0x5185A8)].i4  'CurrentCharScreen'
+	[mmv(0x5F811C, 0x6A0BC4, 0x6CEB24)].i4  'MainMenuCode'
+	 .Info "-1 = in game, 1 = show new game, 6 = in new game, 3 = load menu, 4 = exit, 2 = show credits, 8 = in credits, 9 = load game"
+	-- 465012(MM8) SetMainMenuCode
 	[mmv(0x52D0E4, 0x576CEC, 0x587914)].b4  'LoadingScreen'
 	--[mmv(0x4D48F8, nil, nil)].array{20, lenA = i4, lenP = mmv(0x4D46BC, nil, nil)}.struct(structs.Dlg)  'DialogsStack'
 	[mmv(0x9DDD8C, 0xF8B01C, 0xFFD408)].i4  'HouseScreen'
@@ -417,11 +420,7 @@ end]=]
 		[0x6F2FC4 + 4].parray{lenA = i4, lenP = 0x6F2FC4}.struct(structs.TileItem)  'Tile2Bin'
 		[0x6F2FBC + 4].parray{lenA = i4, lenP = 0x6F2FBC}.struct(structs.TileItem)  'Tile3Bin'
 		[0x6F2FD4].pstruct(structs.CurrentTileBin)  'CurrentTileBin'
-	end
-	define[mmv(0x5F811C, 0x6A0BC4, 0x6CEB24)].i4  'MainMenuCode'
-	 .Info "-1 = in game, 1 = show new game, 6 = in new game, 3 = load menu, 4 = exit, 2 = show credits, 8 = in credits, 9 = load game"
-	-- 465012(MM8) SetMainMenuCode
-	if mmver == 6 then
+	elseif mmver == 6 then
 		define.goto(0x6199C0)
 	end
 	define.i4  'ExitLevelCode'
@@ -906,8 +905,8 @@ function structs.f.Player(define)
 	.i2  'AgeBonus'
 	[mmv(0x60, 0x108, 0x378)].array(mmv(31, 37, 39))[mmv("u1", "i2", "i2")]  'Skills'
 	 .Info{Sig = "[skill:const.Skills]"}
-	[mmv(0x7F, 0x152, 0x3C6)].array(mmv(100, 104, 104)).abit  'Awards'
-	[mmv(0xBF, 0x192, 0x406)].array(mmv(100, 100, 138)).b1  'Spells'
+	[mmv(0x7F, 0x152, 0x3C6)].array(mmv(0, 1, 1), mmv(99, 104, 104)).abit  'Awards'
+	[mmv(0xBF, 0x192, 0x406)].array(1, mmv(100, 100, 138)).b1  'Spells'
 	.skip(mmv(5, 0, 0))
 	.array(mmv(181, 264, 264), mmv(187, 270, 270)).b4  'UsedBlackPotions'
 	[mmv(0x144, 0x214, 0x4A8)].array(1, 138).struct(structs.Item)  'Items'
@@ -990,7 +989,7 @@ function structs.f.Player(define)
 	.i4  'ItemRing6'
 	[mmv(0x152E, 0x1A4E, 0x1C44)].i1  'SpellBookPage'
 	[mmv(0x152F, 0x1A4F, 0x1C45)].u1  'QuickSpell'
-	[mmv(0x1530, 0x1A50, 0x1C46)].array(512).abit  'PlayerBits'
+	[mmv(0x1530, 0x1A50, 0x1C46)].array(mmv(0, 1, 1), mmv(511, 512, 512)).abit  'PlayerBits'
 	if mmver < 8 then
 		define
 		[mmv(0x1570, 0x1A90)].i1  'MeleeAttackBonus'
