@@ -163,7 +163,7 @@ function dump(t, depth, exact, detectClones, limit)
 		end
 	end
 	
-	if type(t) == "table" and depth ~= 0 then
+	if type(t) == "table" and depth >= 0 then
 		Write("{")
 		tables[t] = bufn
 		local ptr = t["?ptr"]
