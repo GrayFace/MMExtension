@@ -69,7 +69,7 @@ end
 
 local function LastMessage(text, forceGlobal)
 	local t, i
-	if forceGlobal or evt.InGlobal() then
+	if forceGlobal or forceGlobal ~= false and evt.InGlobal() then
 		t = Game.NPCText
 		i = t.high
 	else
@@ -80,10 +80,10 @@ local function LastMessage(text, forceGlobal)
 	return i
 end
 
-function Message(text, KeepSound)
-	evt.SetMessage(LastMessage(text))
-	if Game.CurrentScreen == 0 then
-		evt.SimpleMessage{KeepSound = true}
+function Message(text, KeepSound, global)
+	evt.SetMessage{LastMessage(text, global), Global = global}
+	if Game.CurrentScreen == 0 and not global then
+		evt.SimpleMessage{KeepSound = KeepSound}
 	end
 end
 -- for backward compatibility

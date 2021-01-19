@@ -478,10 +478,11 @@ local function MakeCmd(name, num, f, invis)
 			end
 
 			u4[offsets.CurrentEvtLinesCount] = LineN
+			local IsGlobal = t.Global == true and (GlobalEventInfo ~= 0 and GlobalEventInfo or 1) or t.Global == false and 0 or GlobalEventInfo
 			local oldGlobalEventInfo
-			if GlobalEventInfo or u4[offsets.GlobalEventInfo] == 0 then
+			if IsGlobal or u4[offsets.GlobalEventInfo] == 0 then
 				oldGlobalEventInfo = u4[offsets.GlobalEventInfo]
-				u4[offsets.GlobalEventInfo] = GlobalEventInfo or (Game.CurrentScreen == 4 or Game.CurrentScreen == 13) and 1 or 0
+				u4[offsets.GlobalEventInfo] = IsGlobal or (Game.CurrentScreen == 4 or Game.CurrentScreen == 13) and 1 or 0
 			end
 			u4[offsets.EvtTargetObj] = TargetObj or 0
 			local player = player or evt.Player
