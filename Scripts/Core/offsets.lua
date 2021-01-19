@@ -5,6 +5,8 @@ if internal.MMVersion == 6 then
 		MMVersion = 6,
 		CurrentEvtLines = 0x533EC0,
 		CurrentEvtLinesCount = 0x54D010,
+		CurrentEvtBuf = 0x551D14,
+		EvtLinesBufCount = 3000,
 		GlobalEventInfo = 0x55BC00,
 		EvtTargetObj = 0x552F3C,
 		AbortEvt = 0x552F4C,
@@ -41,6 +43,8 @@ elseif internal.MMVersion == 7 then
 		MMVersion = 7,
 		CurrentEvtLines = 0x5840B8,
 		CurrentEvtLinesCount = 0x590EF8,
+		CurrentEvtBuf = 0x590EFC,
+		EvtLinesBufCount = 4400,
 		GlobalEventInfo = 0x5C32A0,
 		EvtTargetObj = 0x5B57A0,
 		AbortEvt = 0x5B6444,
@@ -77,6 +81,8 @@ else
 		MMVersion = 8,
 		CurrentEvtLines = 0x596908,
 		CurrentEvtLinesCount = 0x5A5368,
+		CurrentEvtBuf = 0x5A536C,
+		EvtLinesBufCount = 5000,
 		GlobalEventInfo = 0x5DB750,
 		EvtTargetObj = 0x5CC030,
 		AbortEvt = 0x5CCCD4,
@@ -106,5 +112,6 @@ else
 		allocatorMM = 0x73F910,
 		SummonMonster = 0x4BA076,
 	}
-
 end
+offsets.EvtLinesBuf = offsets.CurrentEvtLines + 12
+offsets.EvtLinesBufCount = offsets.EvtLinesBufCount - 1

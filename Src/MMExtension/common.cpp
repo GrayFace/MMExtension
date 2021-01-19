@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <stdio.h>
 
-int MMVersion;
+int MMVersion, m6, m7, m8;
 HWND *MainWindow;
 byte *SPStatKinds;
 byte MM6_SPStatKinds[] = {0,0,0, 2,2,2, 1,1,1, 2,2,2, 1,1,1, 3,3,3};
@@ -18,16 +18,19 @@ void FindMMVersion()
 	{
 		case 0xEC:
 			MMVersion = 6;
+			m6 = 1;
 			MainWindow = (HWND*)0x61076C;
 			SPStatKinds = MM6_SPStatKinds;
 			break;
 		case 0x45:
 			MMVersion = 7;
+			m7 = 1;
 			MainWindow = (HWND*)0x6BE174;
 			SPStatKinds = MM7_SPStatKinds;
 			break;
 		case 0x53:
 			MMVersion = 8;
+			m8 = 1;
 			MainWindow = (HWND*)0x6F3934;
 			SPStatKinds = MM8_SPStatKinds;
 			break;

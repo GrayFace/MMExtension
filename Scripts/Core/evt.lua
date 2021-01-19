@@ -380,7 +380,7 @@ local EvtBuf = internal.EvtBuf
 local BufPtr, LineN
 
 local function FillLine()
-	local p = offsets.CurrentEvtLines + LineN*12
+	local p = offsets.EvtLinesBuf + LineN*12
 	u4[p] = 0x7FFF
 	u4[p + 4] = LineN
 	u4[p + 8] = BufPtr - EvtBuf
@@ -464,6 +464,7 @@ local function MakeCmd(name, num, f, invis)
 				t[jump] = 3
 			end
 
+			local old1, old2, old3 = u4[offsets.CurrentEvtBuf], u4[offsets.CurrentEvtLines], i4[offsets.AbortEvt]
 			BufPtr = EvtBuf
 			LineN = 0
 			DeclareCmd[0]()  -- for buggy commands like 0x1A
@@ -489,12 +490,18 @@ local function MakeCmd(name, num, f, invis)
 			if not player or player == evt.Players.Current then
 				player = evt.CurrentPlayer or evt.Players.Current
 			end
-			local ret = mem.call(internal.CallProcessEvent, 0, 0x7FFF, t.KeepSound and 1 or 0, player, MayShow)
+			u4[offsets.CurrentEvtBuf] = EvtBuf  -- tmp
+			u4[offsets.CurrentEvtLines] = offsets.EvtLinesBuf  -- tmp
+
+			local ret = mem.call(internal.CallProcessEvent2, 0, 0x7FFF, t.KeepSound and 1 or 0, player, MayShow)
+			local abort = i4[offsets.AbortEvt] ~= 0
+
 			if oldGlobalEventInfo then
 				u4[offsets.GlobalEventInfo] = oldGlobalEventInfo
 			end
+			u4[offsets.CurrentEvtBuf], u4[offsets.CurrentEvtLines], i4[offsets.AbortEvt] = old1, old2, old3
 
-			if i4[offsets.AbortEvt] ~= 0 then -- don't overwrite async command if aborted due to lack of gold
+			if abort then -- don't overwrite async command if aborted due to lack of gold
 				if not t.OnDone and not t.NoYield and coroutine.running() then
 					return coroutine.yield()
 				end

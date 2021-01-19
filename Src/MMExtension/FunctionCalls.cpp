@@ -5,7 +5,7 @@ char TextBuffer[0x2000];
 
 byte EVTBuf[0x10000];
 // Also need: CurrentEvtLines, CurrentEvtLinesCount, targetObj, GlobalEventInfo
-int __stdcall MM6_CallProcessEvent(int evtId, int seq, int vTargetMember)
+int __stdcall MM6_CallProcessEvent(int evtId, int seq, int vTargetMember, int param)
 {
 	_asm
 	{
@@ -26,8 +26,6 @@ int __stdcall MM6_CallProcessEvent(int evtId, int seq, int vTargetMember)
 		mov     ds:[0x54D03C], eax     // EvtLabelNum
 		mov     eax, vTargetMember
 		mov     [esp+27Ch-25Ch], eax // vTargetMember
-		mov     eax, offset EVTBuf
-		mov     ds:[0x551D14], eax   // CurrentEvtBuf
 		
 		push    0x43C8EA
 		ret
@@ -61,8 +59,6 @@ int __stdcall MM7_CallProcessEvent(int evtId, int seq, int vTargetMember, int pa
 		mov     eax, seq
 		mov     dword ptr [esp+4A8h-498h], eax   // curLabel
 		mov     ds:[0x597D98], eax     // EvtLabelNum
-		mov     eax, offset EVTBuf
-		mov     ds:[0x590EFC], eax   // CurrentEvtBuf
 		
 		push    0x446915
 		ret
@@ -103,8 +99,6 @@ int __stdcall MM8_CallProcessEvent(int evtId, int seq, int vTargetMember, int pa
 		mov     eax, MM8_seq
 		mov     dword ptr [esp+55Ch-548h], eax   // curLabel
 		mov     ds:[0x5AC208], eax     // EvtLabelNum
-		mov     eax, offset EVTBuf
-		mov     ds:[0x5A536C], eax   // CurrentEvtBuf
 		xor     edi, edi
 
 		push    0x44382C
@@ -114,16 +108,28 @@ _exit:
 	}
 }
 
+int (__stdcall *CallProcessEvent)(int evtId, int seq, int vTargetMember, int param);
+
+int __stdcall CallProcessEventOld(int evtId, int seq, int vTargetMember, int param)
+{
+	*(void**)(m6*0x551D14 + m7*0x590EFC + m8*0x5A536C) = EVTBuf;
+	return CallProcessEvent(evtId, seq, vTargetMember, param);
+}
+
+
+
 void RegisterFunctionCalls()
 {
 	LuaInternalConst("EvtBuf", (int)&EVTBuf);
 
 	if (MMVersion == 6)
-		LuaInternalConst("CallProcessEvent", (int)MM6_CallProcessEvent);
+		CallProcessEvent = MM6_CallProcessEvent;
 	if (MMVersion == 7)
-		LuaInternalConst("CallProcessEvent", (int)MM7_CallProcessEvent);
+		CallProcessEvent = MM7_CallProcessEvent;
 	if (MMVersion == 8)
-		LuaInternalConst("CallProcessEvent", (int)MM8_CallProcessEvent);
+		CallProcessEvent = MM8_CallProcessEvent;
+	LuaInternalConst("CallProcessEvent", (int)CallProcessEventOld);  // compatibility with old versions of Lua code just in case
+	LuaInternalConst("CallProcessEvent2", (int)CallProcessEvent);
 
 	LuaInternalConst("TextBuffer", (int)TextBuffer);
 }

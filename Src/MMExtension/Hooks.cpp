@@ -210,7 +210,8 @@ __declspec(naked) void _MM6_ProcessEventStart()
 		push ds:[0x55BC00] // GlobalEventInfo
 		push ds:[0x54D03C] // seq
 		push ecx           // evt
-		// int evtId, int seq, int LinesCount, int vTargetMember
+		// int evtId, int seq, int LinesCount, int vTargetMember, int param
+		push 0             // param
 		push 1               /// vTargetMember
 		push ds:[0x54D03C]   /// seq
 		push ecx             /// evtId
@@ -257,7 +258,7 @@ __declspec(naked) void _MM7_ProcessEventStart()
 		push ds:[0x5C32A0] // GlobalEventInfo
 		push ds:[0x597D98] // seq
 		push ecx           // evt
-		// int evtId, int seq, int LinesCount, int vTargetMember
+		// int evtId, int seq, int LinesCount, int vTargetMember, int param
 		push edx             /// param
 		push 1               /// vTargetMember
 		push ds:[0x597D98]   /// seq
@@ -303,7 +304,7 @@ __declspec(naked) void _MM8_ProcessEventStart()
 		push ds:[0x5DB750] // GlobalEventInfo
 		push ds:[0x5AC208] // seq
 		push ecx           // evt
-		// int evtId, int seq, int LinesCount, int vTargetMember
+		// int evtId, int seq, int LinesCount, int vTargetMember, int param
 		push edx             /// param
 		push 1               /// vTargetMember
 		push ds:[0x5AC208]   /// seq

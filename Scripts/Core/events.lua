@@ -424,6 +424,30 @@ end
 
 -- MM7 Question in house: 0x4B29ED - check esi ~= 0
 
+-- allow Evt calls stacking
+do
+	if mmver == 6 then
+		mem.asmhook2(0x43C8E3, [[
+			mov [edi], esi
+		]])
+		mem.nop(0x43C8E8)
+	else
+		mem.asmpatch(mm78(0x44690D, 0x443822), [[
+			mov eax, [esp]
+			mov edx, [esp + 4]
+			mov [eax], edx
+		]])
+	end
+	
+	HookManager{
+		reg = mmv('eax', 'edx', 'ecx'),
+		lines = offsets.CurrentEvtLines,
+	}.asmhook2(mmv(0x43C905, 0x446945, 0x443864), [[
+		add %reg%, [%lines%]
+		sub %reg%, %lines%
+	]])
+end
+
 -- ShowNPCTopics - called when NPC topics list is about to be shown
 local CurrentNPC
 

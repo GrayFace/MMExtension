@@ -2,7 +2,7 @@
 
 typedef unsigned char byte;
 
-extern int MMVersion;
+extern int MMVersion, m6, m7, m8;
 extern HWND *MainWindow;
 
 extern byte *SPStatKinds;
