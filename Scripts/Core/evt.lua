@@ -179,7 +179,7 @@ end
 
 function internal.AfterLoadMap()
 	internal.ResetEvtPlayer()
-	events.cocall("AfterLoadMap")
+	events.cocall("AfterLoadMap", WasInGame)
 end
 
 ----------- Hint, MazeInfo

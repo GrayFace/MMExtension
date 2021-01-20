@@ -56,6 +56,7 @@ cd "%~dp0\MMExtension"
 mkdir Scripts\Global
 mkdir Scripts\Modules
 mkdir Scripts\Maps
+]]..(path.FindFirst[[c:\Program Files\WinRAR\Rar.exe]] and [[
 "c:\Program Files\WinRAR\Rar.exe" a -m5 -r ..\MMExtension.rar *
 
 cd "%~dp0\MMEditor"
@@ -64,6 +65,7 @@ cd "%~dp0\MMEditor"
 cd "%~dp0"
 rmdir MMExtension /S /Q
 rmdir MMEditor /S /Q
+]] or 'cd "%~dp0"\n')..[[
 del pack.bat
 ]]
 
