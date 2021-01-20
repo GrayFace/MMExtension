@@ -484,7 +484,6 @@ local CurNPCGreet
 local function NPCGreetingHook(eax, p)
 	local t = {Text = mem.pchar[Game.NPCGreet["?ptr"] + eax*4], Seen = (eax % 2 ~= 0)}
 	t.NPC = (p - Game.NPC["?ptr"])/Game.NPC[0]["?size"]
-	--print(p, dump(t))
 	if t.NPC >= 0 and t.NPC < Game.NPC.Length then
 		events.cocalls("DrawNPCGreeting", t)
 	end
@@ -787,11 +786,16 @@ do
 	local tmp = mem.StaticAlloc(4)
 
 	function internal.OnSaveGame()
-		if internal.SaveGameData then  -- if not New Game
+		internal.NewGameAutosave = not internal.SaveGameData
+		if internal.SaveGameData then
 			internal.TimersSaveGame()
 			events.cocalls("BeforeSaveGame")
 			events.cocalls("InternalBeforeSaveGame")
-			internal.MonstersRestore(true)
+			-- internal.MonstersRestore(true)
+		else
+			internal.SaveGameData = {vars = {}}
+			events.cocalls("BeforeNewGameAutosave")
+			events.cocalls("InternalBeforeNewGameAutosave")
 		end
 		local buf, err = internal.persist(internal.SaveGameData) --, permanentsSave)
 		if err then
@@ -804,7 +808,9 @@ do
 	end
 
 	mem.autohook2(mmv(0x44FE3A, 0x4600A7, 0x45DB5F), function()
-		if internal.SaveGameData then  -- if not New Game
+		if internal.NewGameAutosave then
+			events.cocalls("AfterNewGameAutosave")
+		else
 			events.cocalls("AfterSaveGame")
 		end
 	end)
@@ -968,15 +974,6 @@ else
 		mem.IgnoreProtection(true)
 		Party.NeedRender = true
 	end
-	
-	-- fix only for non-flat surfaces:
-	-- mem.asmhook2(0x469B75, [[
-		-- jl absolute 0x469B7C
-		-- xor ecx, ecx
-		-- mov eax, 0x10000
-		-- mov edx, eax
-		-- jmp absolute 0x469BC3
-	-- ]])	
 end
 
 -- fix water in maps without a building with WtrTyl texture, also don't turn textures with water bit into water (fixed in new patch version)
@@ -1287,7 +1284,7 @@ if mmver == 7 then
 	-- 	sar eax, 1
 	-- 	sub [esp], eax	
 	-- ]])
-elseif mmver == 8 then
+-- elseif mmver == 8 then
 	-- also must load and free OK/Cancel...	
 end
 
@@ -1747,18 +1744,6 @@ end)
 
 
 if mmver > 6 then
-	-- IsMonsterOfKind
-	-- mem.hookfunction(mm78(0x438BCE, 0x436542), 2, 0, function(d, def, id, kind)
-	-- 	local t = {
-	-- 		Id = id,
-	-- 		-- :const.MonsterKind
-	-- 		Kind = kind,
-	-- 		Result = def(id, kind),
-	-- 	}
-	-- 	events.cocall("IsMonsterOfKind", t)
-	-- 	return t.Result
-	-- end)
-	
 	-- MonsterKinds
 	local KindPtr = mem.StaticAlloc(8)
 	local f = mm78(0x438BCE, 0x436542)
@@ -1808,17 +1793,6 @@ if mmver > 6 then
 		i4[vampiric] = (t.Vampiric and 1 or 0)
 		return t.Result
 	end)
-	
-	-- GetMonsterAggression
-	-- mem.hookfunction(mm78(0x40104C, 0x401051), 2, 0, function(d, def, mon1, mon2)
-	-- 	local t = {
-	-- 		Result = def(mon1, mon2),
-	-- 	}
-	-- 	t.Monster1Index, t.Monster1 = GetMonster(mon1)
-	-- 	t.Monster2Index, t.Monster2 = GetMonster(mon2)
-	-- 	events.cocall("GetMonsterAggression", t)
-	-- 	return t.Result
-	-- end)
 end
 
 
@@ -1928,18 +1902,5 @@ do
 	end)
 	Conditional(hooks, "MonsterChooseAction")
 end
-
--- Sprite hooks
--- local function GetSprite(p)
--- 	if p == 0 then
--- 		return
--- 	end
--- 	local i = (p - Map.Sprites["?ptr"]) / Map.Sprites[0]["?size"]
--- 	return i, Map.Sprites[i]
--- end
-
--- mem.hookfunction(0x44C320
-
-
 
 mem.IgnoreProtection(false)

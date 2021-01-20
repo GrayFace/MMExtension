@@ -64,7 +64,7 @@ local function OnLeaveMap()
 	evt.global.RemoveFiles(CurMapScripts)
 	internal.TimersLeaveMap(CurMapScripts)
 	CurMapScripts = {}
-	internal.MonstersRestore()
+	-- internal.MonstersRestore()
 	ClearMapStr()
 	internal.MapName = nil
 end
@@ -158,7 +158,7 @@ function internal.OnLoadMap()
 	end
 	ResetMapStr()
 	internal.StartTimers()
-	internal.LoadMonsterIds()
+	-- internal.LoadMonsterIds()
 	CurMapScripts = {}
 	-- Return 'true' to cancel execution of map scripts. Used by the Editor.
 	local NoScripts = events.call("CancelLoadingMapScripts")

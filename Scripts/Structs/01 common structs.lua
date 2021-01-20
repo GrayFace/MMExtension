@@ -766,9 +766,20 @@ function structs.f.Dlg(define)
 	[0x1C].i4  'Param'
 	 .Info "2D Events Id / Chest Id / ..."
 	[0x20].i4  'ItemsCount'
-	[0x48].i4  '' -- Param2
-	[0x4C].i4  'BottomItem'
-	[0x50].i4  'TopItem'
+	-- 24
+	[0x28].i4  'KeyboardItemsCount'
+	[0x2C].i4  'KeyboardItem'
+	[0x30].i4  'KeyboardNavigationTrackMouse'
+	[0x34].i4  'KeyboardLeftRightStep'
+	[0x38].i4  'KeyboardItemsStart'
+	[0x3C].i4  'Index'
+	-- 40
+	[0x44].i4  'UseKeyboadNavigation'
+	--[0x48].i4  '' -- Param2
+	[0x4C].alt.pstruct(structs.Button)  'BottomItem'
+	[0x4C].i4  'BottomItemPtr'
+	[0x50].alt.pstruct(structs.Button)  'TopItem'
+	[0x50].i4  'TopItemPtr'
 	.size = 0x54
 
 	define
@@ -776,7 +787,7 @@ function structs.f.Dlg(define)
 	 .Info{Sig = "X, Y, Width, Height, Unk1, Unk2, ActionType, ActionInfo, Unk3, Hint, Sprites..., 0"}
 end
 
-function structs.f.Button(define)  -- !!! not done MM8
+function structs.f.Button(define)
 	define
 	[0x0].i4  'Top'
 	[0x4].i4  'Left'
@@ -784,8 +795,8 @@ function structs.f.Button(define)  -- !!! not done MM8
 	[0xC].i4  'Height'
 	[0x10].i4  'Right'
 	[0x14].i4  'Bottom'
-	[0x18].i4  ''
-	[0x1C].i4  ''
+	[0x18].i4  'Shape'
+	[0x1C].i4  'HintAction'
 	[0x20].i4  'ActionType'
 	[0x24].i4  'ActionInfo1'
 	local o = 0
@@ -794,10 +805,13 @@ function structs.f.Button(define)  -- !!! not done MM8
 		o = 4
 	end
 	define
-	[0x28+o].i4  'Pressed'
-	[0x2C+o].i4  'LowerItem'
-	[0x30+o].i4  'UpperItem'
-	[0x34+o].i4  'Parent'
+	[0x28+o].b4  'Pressed'
+	[0x2C+o].alt.pstruct(structs.Button)  'LowerItem'
+	[0x2C+o].i4  'LowerItemPtr'
+	[0x30+o].alt.pstruct(structs.Button)  'UpperItem'
+	[0x30+o].i4  'UpperItemPtr'
+	[0x34+o].alt.pstruct(structs.Dlg)  'Parent'
+	[0x34+o].i4  'ParentPtr'
 	[0x38+o].array{5, lenA = i4, lenP = 0x4C+o}.i4  'Sprites'
 	[0x50+o].u1  'ShortCut'
 	[0x51+o].string(103)  'Hint'
@@ -833,11 +847,7 @@ local function CommonMonsterProps(define, montxt)
 		.EditPChar  'Name'  -- 0x0
 		.EditPChar  'Picture'  -- 0x4
 	else
-		define
-		.skip(8)
-		-- define
-		-- .pchar  'StandardName'  -- 0x0
-		-- .pchar  'Picture'  -- 0x4
+		define.skip(8)
 	end
 	if mmver == 6 then
 		define.u1  'Id'  -- 0x8
@@ -981,8 +991,6 @@ end
 function structs.f.MapMonster(define)
 	if mmver == 6 then
 		define[0x0].string(32)  'Name'
-	--else
-	--	define[0x0].skip(32)
 	end
 	define
 	[0x20].i2  'NPC_ID'
@@ -1075,15 +1083,9 @@ function structs.f.MapMonster(define)
 	end
 	function define.m:ChangeLook(id)
 		local old = self.Id
-		self.PicturePtr = Game.MonstersTxt[id].PicturePtr
 		self.Id = id or old
 		self:LoadFramesAndSounds()
 		self.Id = old
-		-- if not temp then
-			-- local mons = internal.SaveGameData.MonsterIds[Map.Name] or {}
-			-- internal.SaveGameData.MonsterIds[Map.Name] = mons
-			-- mons[(self["?ptr"] - Map.Monsters["?ptr"])/structs.MapMonster["?size"]] = id
-		-- end
 	end
 	function define.m:GetPropertiesFromId(id)
 		local old = self.Id
@@ -1108,12 +1110,6 @@ function structs.f.MapMonster(define)
 			self.Id2 = id
 		end
 	end
-	-- function define.m:SetId(id)
-		-- self.Id = id
-		-- local mons = internal.SaveGameData.MonsterIds[Map.Name] or {}
-		-- internal.SaveGameData.MonsterIds[Map.Name] = mons
-		-- mons[(self["?ptr"] - Map.Monsters["?ptr"])/structs.MapMonster["?size"]] = id
-	-- end
 	function define.m:SetCustomFrames(...)
 		local t = {...}
 		for i = 1, 8 do
@@ -1126,69 +1122,6 @@ function structs.f.MapMonster(define)
 	end	
 end
 
--- local mons1 = mmv(120, 114)
--- local mons2 = mmv(145, 187)
--- local mons3 = mmv(171, 231)
-
-function internal.LoadMonsterIds()
-	-- internal.SaveGameData.MonsterIds = internal.SaveGameData.MonsterIds or {}
-	-- if Map.Refilled or internal.SaveGameData.MonsterIdsOld == nil or internal.SaveGameData.MonsterIdsOld[Map.Name] == nil then
-		-- internal.SaveGameData.MonsterIds[Map.Name] = nil
-		-- internal.SaveGameData.MonsterIdsOld = internal.SaveGameData.MonsterIdsOld or {}
-		-- local mo = {}
-		-- internal.SaveGameData.MonsterIdsOld[Map.Name] = mo
-		-- --[[
-		-- for k, v in Map.Monsters do
-			-- if v.Id <= mons1 or v.Id >= mons2 and v.Id <= mons3 then
-				-- mo[k] = v.Id
-				-- local i = math.random(mons1 + mons3 - mons2 + 1)
-				-- if i > mons1 then
-					-- i = i - mons1 + mons2 - 1
-				-- end
-				-- v:SetId(i)
-			-- end
-		-- end
-		-- ]]
-	-- elseif internal.SaveGameData.MonsterIds[Map.Name] then
-		-- for k, id in pairs(internal.SaveGameData.MonsterIds[Map.Name]) do
-			-- Map.Monsters[k]:SetId(id)
-			-- --Map.Monsters[k]:ChangeLook(id, true)
-		-- end
-	-- end
-end
-
-local function MonstersAfterSaveGame()
-	-- RemoveTimer(MonstersAfterSaveGame)
-	-- if internal.SaveGameData.MonsterIds and internal.SaveGameData.MonsterIds[Map.Name] then
-		-- for k, id in pairs(internal.SaveGameData.MonsterIds[Map.Name]) do
-			-- Map.Monsters[k].Id = id
-		-- end
-	-- end
-end
-
-function internal.MonstersRestore(sav)  -- check that the Id of the monster is the one we set up!!
-	-- if internal.SaveGameData.MonsterIdsOld and internal.SaveGameData.MonsterIdsOld[Map.Name] then
-		-- for k, id in pairs(internal.SaveGameData.MonsterIdsOld[Map.Name]) do
-			-- Map.Monsters[k].Id = id
-		-- end
-	-- end
-	-- if sav then
-		-- Timer(MonstersAfterSaveGame, 1)
-	-- else
-		-- RemoveTimer(MonstersAfterSaveGame)
-	-- end
-end
-
--- function internal.LoadMonsterIds()
-	-- internal.SaveGameData.MonsterIds = internal.SaveGameData.MonsterIds or {}
-	-- if Map.Refilled then
-		-- internal.SaveGameData.MonsterIds[Map.Name] = nil
-	-- else
-		-- for k, id in pairs(internal.SaveGameData.MonsterIds[Map.Name]) do
-			-- Map.Monsters[k]:ChangeLook(id, true)
-		-- end
-	-- end
--- end
 
 local MM6TPMapPtr = {0x42E623+4, 0x42E617+4, 0x42E5FF+4, 0x42E5F3+4, 0x42E60B+4, 0x42E62F+4}
 
