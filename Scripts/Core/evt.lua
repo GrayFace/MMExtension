@@ -376,11 +376,12 @@ local VarNumToStr, PlayerToStr = {}, {}
 local Deco = {CmdStructs = {}, CmdNames = {}, CmdInfo = {}, DeclareCmd = DeclareCmd, CmdDef = CmdDef, VarNumToStr = VarNumToStr, PlayerToStr = PlayerToStr}
 internal.EvtInternal = Deco
 
-local EvtBuf, LinesBuf = internal.EvtBuf, offsets.EvtLinesBuf
-local BufPtr, EvtBufEnd, LinesEnd = EvtBuf, EvtBuf + (internal.EvtBufSize or 0x10000), LinesBuf + offsets.EvtLinesBufCount
+local EvtBuf, LinesBuf, LinesEnd = internal.EvtBuf, offsets.EvtLinesBuf + 12*12, offsets.EvtLinesBuf + offsets.EvtLinesBufCount
+local BufPtr, EvtBufEnd = EvtBuf + 256, EvtBuf + (internal.EvtBufSize or 0x10000)
 local LineN
 
--- in case of an overflow error reset evt buffers
+-- reset evt buffers in case of an overflow error
+-- for this situation I'm leaving space for 3 evt calls at the beginning of them normally
 local function EvtAssert(cond, msg)
 	if cond then
 		return

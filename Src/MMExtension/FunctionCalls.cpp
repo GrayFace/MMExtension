@@ -3,7 +3,7 @@
 
 char TextBuffer[0x2000];
 
-byte EVTBuf[0x10000];
+byte EVTBuf[0x8000];
 // Also need: CurrentEvtLines, CurrentEvtLinesCount, targetObj, GlobalEventInfo
 int __stdcall MM6_CallProcessEvent(int evtId, int seq, int vTargetMember, int param)
 {
@@ -121,6 +121,7 @@ int __stdcall CallProcessEventOld(int evtId, int seq, int vTargetMember, int par
 void RegisterFunctionCalls()
 {
 	LuaInternalConst("EvtBuf", (int)&EVTBuf);
+	LuaInternalConst("EvtBufSize", sizeof(EVTBuf));
 
 	if (MMVersion == 6)
 		CallProcessEvent = MM6_CallProcessEvent;
