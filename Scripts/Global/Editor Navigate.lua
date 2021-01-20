@@ -1141,6 +1141,8 @@ end
 function events.CanSaveGame(t)
 	if Editor.State and Editor.StateSync or Editor.LoadBlvTime then
 		t.Result = false
+	elseif Editor.WorkMode then
+		Editor.SetWorkMode(false)
 	end
 end
 
