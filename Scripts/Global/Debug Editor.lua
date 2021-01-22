@@ -646,10 +646,10 @@ function BatchSave(dir, includeBlv)
 	cocall2(DoBatchSave, dir, includeBlv)
 end
 
-function BatchExport(dir)
+function BatchExport(dir, includeBlv)
 	dir = path.addslash(dir or AppPath.."BatchExport")
 	os.mkdir(dir)
-	cocall2(DoBatchSave, dir, true, true)
+	cocall2(DoBatchSave, dir, includeBlv, true)
 end
 
 function DoBatchLoad(mask, odir, preproc, postproc)
