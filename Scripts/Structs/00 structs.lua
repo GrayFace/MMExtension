@@ -107,6 +107,10 @@ function structs.f.GameStructure(define)
 	[mmv(0x55BC04, 0x5C32A8, 0x5DB758)].string(200)  'StatusMessage'
 	.string(200)  'MouseOverStatusMessage'
 	.i4  'StatusDisappearTime'
+	[mmv(0x9DDE04, 0xF8B068, 0xFFD458)].EditPChar  'NPCMessage'
+	 .Info "Current message displayed in a dialog with some NPC"
+	[mmv(0x55276C, 0x5B07B8, 0x5C6848)].string(2000)  'StreetMessage'
+	 .Info "Message displayed by #Message:#, #Question:#, #evt.SimpleMessage:# and #evt.Question:# when not talking to NPC."
 	-- (MM6)
 	-- 54F060 Timers
 	-- 552F50 TimersCount

@@ -3,16 +3,15 @@ local _KNOWNGLOBALS_F
 local LocalFiles = {}
 
 local function LocalFileProc(t)
-	local back
+	local back, p, sz
 	local pc
 	
 	local function restore()
-		local p = t["?ptr"]
-		mem.copy(p, back, t.Size)
+		mem.copy(p, back, sz)
 		mem.free(back)
 		back = nil
 		for k, v in pairs(pc) do
-			structs.EditablePChar(k - p, t, nil, v)
+			mem.EditPChar[k] = v
 		end
 		events.Remove("LeaveMap", restore)
 		events.Remove("LeaveGame", restore)
@@ -20,7 +19,7 @@ local function LocalFileProc(t)
 	
 	local function f()
 		if back == nil then
-			local p, sz = t["?ptr"], t.Size
+			p, sz = t["?ptr"], t.Size
 			back = mem.malloc(sz)
 			mem.copy(back, p, sz)
 			events.LeaveMap = restore

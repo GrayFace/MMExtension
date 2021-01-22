@@ -7,7 +7,7 @@ local function mmv(...)
 	return ret
 end
 
-local _KNOWNGLOBALS_F = SimpleMessage, curry
+local _KNOWNGLOBALS_F = SimpleMessage, HouseMessageVisible
 
 
 function SplitSkill(val)
@@ -95,8 +95,8 @@ function Question(text, qtext)
 	text = (mmver == 8 and qtext and text.."\n\n"..qtext or text)
 	if mmver < 8 then
 		evt.SetMessage(LastMessage(text))
-		evt.str[498] = qtext or ""
-		evt.Question(498, 0, 0)
+		evt.Question(LastMessage(qtext or "", false), 0, 0)
+		Game.NPCMessage = false
 		if mmver == 7 then
 			local r = Game.StatusMessage
 			Game.ShowStatusText("", 0)
@@ -167,15 +167,46 @@ do
 
 	-- Draw simple message in screens where it isn't normally supposed to be
 	function DrawSimpleMessage()
-		local old = mem.u4[0x507A64]
+		local p = mmv(0x4D50E4, 0x507A64, 0x519348)
+		local old, old2 = mem.u4[p], mmver == 8 and Game.CurrentScreen
 		if old == 0 and not DummyDlg then
 			local s = "\0\0\0\0\0\0\0\0\128\2\0\0\224\1\0\0\127\2\0\0\223\1\0\0\19\0\0\0\33\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 			DummyDlg = mem.malloc(#s)
 			mem.copy(DummyDlg, s, #s)
 		end
-		mem.u4[0x507A64] = old ~= 0 and old or DummyDlg
-		mem.call(0x444FE1, 0)
-		mem.u4[0x507A64] = old
+		mem.u4[p] = old ~= 0 and old or DummyDlg
+		if mmver == 8 then
+			local old2, old3 = Game.CurrentScreen, mem.u4[0xFFD45C]
+			Game.CurrentScreen, mem.u4[0xFFD45C] = 19, 0
+			mem.call(0x441EFD, 0)
+			Game.CurrentScreen, mem.u4[0xFFD45C] = old2, old3
+		else
+			mem.call(mmv(0x43A890, 0x444FE1), 0)
+		end
+		mem.u4[p] = old
+	end
+	
+	local function OnAction(t)
+		if not t.Handled and (t.Action == 113 or t.Action == 405 or t.Action == 410) or not HouseMessageVisible then
+			HouseMessageVisible = nil
+			if t.Action == 410 then
+				Game.NPCMessage = false
+			end
+			events.remove('HouseMovieFrame', DrawSimpleMessage)
+			events.remove('Action', OnAction)
+		end
+	end
+
+	-- show a message in houses in screens that don't normally support it
+	function HouseMessage(text)
+		if text then
+			evt.SetMessage(LastMessage(text))
+		end
+		if not HouseMessageVisible then
+			HouseMessageVisible = true
+			events.HouseMovieFrame = DrawSimpleMessage
+			events.Action = OnAction
+		end
 	end
 end
 

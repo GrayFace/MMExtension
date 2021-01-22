@@ -369,20 +369,24 @@ internal.EditablePCharText = EditablePCharText
 
 local function EditPChar_newindex(_, o, val)
 	local p = u4[o]
-	local s = mem_string(p)
-	val = tostring(val)
+	local s = (p ~= 0 and mem_string(p) or nil)
+	val = val and tostring(val) or nil
 	if s == val then
 		return
 	end
-	local o1 = EditablePCharText[p]
-	if not o1 or #s < #val then
-		if o1 then
-			EditablePCharText[p] = nil
-			free(p)
+	local p1, len = EditablePCharText[o], s and #s or -1
+	if not val or p1 ~= p or len < #val then
+		if p1 then
+			free(p1)
+		end
+		if not val then
+			EditablePCharText[o] = nil
+			u4[o] = 0
+			return
 		end
 		p = malloc(#val + 1)
+		EditablePCharText[o] = p
 	end
-	EditablePCharText[p] = o
 	u4[o] = p
 	mem_copy(p, val, #val + 1)
 end
