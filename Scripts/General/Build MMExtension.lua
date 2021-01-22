@@ -50,7 +50,7 @@ end
 -- avoid opening multiple consoles with each command by using a temporary bat file
 local PackBat = [[
 cd "%~dp0"
-xcopy ..\KillAbsolete "MMExtension" /E /I
+xcopy ..\Misc\KillObsolete "MMExtension" /E /I
 
 cd "%~dp0\MMExtension"
 mkdir Scripts\Global
