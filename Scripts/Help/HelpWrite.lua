@@ -186,6 +186,14 @@ local TocMore = [[<h5 class="def-hidden">&#8230;</h5>]]
 		end
 		return '<span class="def-code">'..s..'</span>'
 	end
+	local function ConvertCode(code, div)
+		local s = code:gsub("\n", "<br>")
+		s = s:gsub('\t', '<span class="lua5-tab">&#9;</span>')  -- tabs
+		if div then
+			return '<div class="def-codeblock">'..s..'</div>'
+		end
+		return '<span class="def-code">'..s..'</span>'
+	end
 	local function par(s)
 		return s:gsub('"', "&quot;")  -- escape tag parameter
 	end
@@ -212,6 +220,16 @@ local TocMore = [[<h5 class="def-hidden">&#8230;</h5>]]
 		s = s:gsub('![Ll][Uu][Aa]%[(=*)%[(.-)%]%1%]', function(_, code)
 			local i = #lua + 1
 			lua[i] = ConvertLua(code)
+			return "\001LUA["..i.."]"
+		end)
+		s = s:gsub('\n?![Cc][Oo][Dd][Ee]%[(=*)%[\n(.-)\n?%]%1%]\n?(\001?)', function(_, code, after)
+			local i = #lua + 1
+			lua[i] = ConvertCode(code, true)
+			return "\001LUA["..i.."]"..(after == "" and "\n" or "")
+		end)
+		s = s:gsub('![Cc][Oo][Dd][Ee]%[(=*)%[(.-)%]%1%]', function(_, code)
+			local i = #lua + 1
+			lua[i] = ConvertCode(code)
 			return "\001LUA["..i.."]"
 		end)
 		s = s:gsub('&', '&amp;')

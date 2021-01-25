@@ -11,6 +11,7 @@ local string_sub = string.sub
 local next = next
 local pairs = pairs
 local ipairs = ipairs
+local select = select
 local tonumber = tonumber
 local tostring = tostring
 local rawget = rawget
@@ -136,18 +137,22 @@ local mem_structs = mem.structs
 local IgnoreProtection = mem.IgnoreProtection
 
 if isMM then
-
-	function mem.allocMM(size)
+	-- Calls allocation function that MM uses for most of things. Note that my patch intersects these calls and uses Delphi memory manager to do the allocation.
+	function _G.mem.allocMM(size)
 		return call(offsets.allocMM, 1, offsets.allocatorMM, 0, assertnum(size, 2), 0)
 	end
 	local allocMM = mem.allocMM
 
-	function mem.freeMM(p)
+	-- Free memory allocated by #mem.allocMM:#.
+	function _G.mem.freeMM(p)
 		return call(offsets.freeMM, 1, offsets.allocatorMM, p)
 	end
 	local freeMM = mem.freeMM
 
-	function mem.reallocMM(p, OldSize, NewSize, NoFree)
+	-- Resizes memory, reallocating as necessary, preserving content. Returns new (or the same if no reallocation occured) address.
+	-- If 'NoFree' is 'true', the memory at 'p' isn't freed. This is useful for extending static arrays of the game.
+	-- 'p' can be a sctrucure, in which case its '?ptr' field is modified automatically.
+	function _G.mem.reallocMM(p, OldSize, NewSize, NoFree)
 		local t = type(p) == "table" and p
 		if t then
 			p = t["?ptr"]
@@ -172,7 +177,8 @@ if isMM then
 	end
 	local reallocMM = mem.reallocMM
 	
-	function mem.resizeArrayMM(t, n)
+	-- Resizes an array allocated with #mem.allocMM:# function. 'n' is the new count.
+	function _G.mem.resizeArrayMM(t, n)
 		local old = t.size
 		t.count = n
 		return reallocMM(t, old, t.size)
@@ -247,6 +253,7 @@ local DlgTypes = {
 	confirmsnd = 0x41,
 }
 
+-- 'typ' can be a numeric value that MessageBox WinAPI function accepts or one of predefined strings: "error" (OK), "warning" (OK), "warn" (OK/Cancel), "confirm" (OK/Cancel), "confirmsnd" (OK/Cancel). Returns a number returned by the WinAPI funciton: 1 - OK, 2 - Cancel.
 local function MessageBox(text, caption, typ)
 	caption = tostring(caption or isMM and "MMExtension" or offsets.GameName or "GameExtension")
 	typ = DlgTypes[typ] or typ or 0
@@ -275,22 +282,20 @@ end
 
 --------- debug
 
+-- Shows debug console. Message includes file name and line number, and than each argument is added to the message as a new line of text.
 function _G.debug.Message(...)
 	local dbg = debug_getinfo(2,"Sl")
-	local msg
-	if dbg and dbg.short_src and dbg.currentline then
-		msg = format("(%s)\n{debug.Message. Line %s}", dbg.short_src, dbg.currentline)
-	else
-		msg = "{debug.Message}"
-	end
-	local par = d_debug and {"Debug Message", "", msg, ...} or {msg, ...}
-	for i = 2, #par do
+	dbg = dbg and dbg.short_src and dbg.currentline and dbg.currentline > 0 and dbg
+	local msg = dbg and format(" %s of %s", dbg.currentline, dbg.short_src)
+	local par = d_debug and {"Debug Message"..(msg and ' at line'..msg..':' or ''), ...} or {msg and 'Line'..msg..':' or ':', ...}
+	for i = 2, select('#', ...) + 1 do
 		par[i] = tostring(par[i])
 	end
+	msg = table_concat(par, "\n")
 	if d_debug then
-		d_debug(table_concat(par, "\n"))
+		d_debug(msg)
 	else
-		MessageBox(table_concat(par, "\n"), "Debug Message")
+		MessageBox(msg, "Debug Message")
 	end
 end
 local msg = _G.debug.Message

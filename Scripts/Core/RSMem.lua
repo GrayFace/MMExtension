@@ -202,9 +202,18 @@ general.table_destructor = table_destructor
 -- Actual mem functions
 -----------------------------------------------------
 
+--!++(mem.i1[p],  mem.i2[p],  mem.i4[p],  mem.i8[p])v Read/write signed integer at address 'p'. Can also be called to convert a number to specified format.
+-- For example, for a function that returns a signed byte:
+-- !Lua[[
+-- return mem.i1(mem.call(func, 0))
+-- ]]
+-- This would treat function call result as a signed byte, ignoring 3 higher-order bytes.
+--!++(mem.u1[p],  mem.u2[p],  mem.u4[p],  mem.u8[p])v Read/write unsigned integer at address 'p'. Can also be called to convert a number to specified format.
+--!++(mem.r4[p],  mem.r8[p],  mem.r10[p])v Read/write a floating-point number at address 'p'
+
 local mem_string = internal.Mem_String
 --!++(mem.string)(p, size, ReadNull) !Lua[[mem.string(p)]] - read null-terminated string
--- !Lua[[mem.string(p, size)]] - read null-terminated string not more than 'size' bytes
+-- !Lua[[mem.string(p, size)]] - read null-terminated string no bigger than 'size' bytes
 -- !Lua[[mem.string(p, size, true)]] - read 'size' bytes as string
 _mem.string = mem_string
 _mem.String = mem_string
@@ -243,6 +252,10 @@ local function retconv(v, conv)
 	end
 end
 
+--!(p, cc, ...) 'p' is the function address,
+-- 'cc' is the number of parameters passed through registers: 0 - __stdcall or __cdecl, 1 - __thiscall, 2 - __fastcall, 3 - 3rd parameter in eax (eventhough the game doesn't use it),
+-- '...' are the parameters.
+-- Another way to call: !Lua[[mem.call{p = 0x441EFD, cc = 0, ...}]]
 local function call(t, ...)
 	local ist = type(t) == "table"
 	local p = assertnum(ist and t.p or t, 2)
@@ -268,22 +281,27 @@ end
 local IgnoreCount = 0
 local IgnoreInc = {[true] = 1, [false] = -1}
 
+-- Pass 'true' to be able to modify code with 'mem.i4' and such, pass 'false' after you've finished.
 function _mem.IgnoreProtection(on)
 	IgnoreCount = IgnoreCount + (IgnoreInc[on] or 0)
 	assert(IgnoreCount >= 0)
 	return IgnoreCount > 0
 end
 
+--!++(mem.prot)(on) Same as above.
 
 _mem.topointer = internal.toaddress
 local Mem_GetNum = internal.Mem_GetNum
 local Mem_SetNum = internal.Mem_SetNum
 
+-- Allocate memory with the 'malloc' function of the game. Shouldn't be called before the game starts initializing, it may cause slowness, because the allocator isn't yet initilized. Instead call #mem.allocMM:# or #mem.StaticAlloc:#.
 local function malloc(size)
 	return ucall(internal.malloc, 0, assertnum(size, 2))
 end
 _mem.malloc = malloc
+-- Same as above.
 _mem.alloc = malloc
+
 
 function _mem.free(p)
 	rawcall(internal.free, 0, assertnum(p, 2))
@@ -1997,16 +2015,61 @@ local mem_bytecodepatch = _mem.bytecodepatch
 
 -- asm
 if internal.CompileAsm then
+	--!++(mem.asm)(code) Compiles Asm code and returns resulting binary as string
 	_mem.asm = internal.CompileAsm(1)
 	local toasm = internal.CompileAsm(2, 2 + TailLevel)
 	local toasm2 = internal.CompileAsm(2, 2)
 	
-	-- Like #autohook:mem.autohook#, but takes an Asm code string as parameter
+	-- Like #autohook:mem.autohook#, but takes an Asm code string as parameter.
+	-- !i[[Example (from MM7):]]
+	-- !lua[=[
+	-- mem.asmhook(0x441D4C, [[
+	-- 	cmp dword [0xE31AF0], 0
+	-- 	jnz absolute 0x441D51
+	-- ]])
+	-- ]=]
+	-- Original Asm code:
+	-- !Code[[
+	-- .text:00441D4C    call sub_4C2E6C
+	-- .text:00441D51    mov ecx, offset unk_511768
+	-- ]]
+	-- Resulting Asm code:
+	-- !Code[[
+	-- .text:00441D4C    jmp @p
+	-- .text:00441D51    mov ecx, offset unk_511768
+	--
+	-- @p:
+	--                   cmp dword [0xE31AF0], 0
+	--                   jnz 0x441D51
+	--                   call sub_4C2E6C
+	--                   jmp 0x441D51
+	-- ]]
 	function _mem.asmhook(p, code, size)
 		return mem_bytecodehook(p, toasm(code), size)
 	end
 
 	-- Like #autohook2:mem.autohook2#, but takes an Asm code string as parameter
+	-- !i[[Example (from MM6):]]
+	-- !lua[=[
+	-- local p = mem.asmhook2(0x43C8E3, [[
+	-- 	mov [edi], esi
+	-- ]])
+	-- ]=]
+	-- Original Asm code:
+	-- !Code[[
+	-- .text:0043C8E3    mov edi, offset CurrentEvtLines
+	-- .text:0043C8E8    rep movsd
+	-- ]]
+	-- Resulting Asm code:
+	-- !Code[[
+	-- .text:0043C8E3    jmp @p
+	-- .text:0043C8E8    rep movsd
+	--
+	-- @p:
+	--                   mov edi, offset CurrentEvtLines
+	--                   mov [edi], esi
+	--                   jmp 0x43C8E8
+	-- ]]
 	function _mem.asmhook2(p, code, size)
 		return mem_bytecodehook2(p, toasm(code), size)
 	end
