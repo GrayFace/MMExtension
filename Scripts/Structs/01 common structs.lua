@@ -1250,7 +1250,7 @@ function structs.f.ItemsTxtItem(define)
 		end)
 	end
 	define
-	 .Info {Type = "const.Skill";  "Add 1 to #const.Skill:# value"}
+	 .Info {Type = "const.Skill"}
 	[0x16+o].u1  'Mod1DiceCount'
 	[0x17+o].u1  'Mod1DiceSides'
 	[0x18+o].u1  'Mod2'
@@ -2527,4 +2527,45 @@ function structs.f.NPCProfTxtItem(define)
 		.EditPChar  'JoinText'
 		.EditPChar  'DismissText'
 	end
+end
+
+local function i4_AddOne(o, obj, name, val)
+	o = obj["?ptr"] + o
+	if val == nil then
+		return i4[o] + 1
+	else
+		i4[o] = val - 1
+	end
+end
+
+function structs.f.Arcomage(define)
+	define
+	[mm78(0x4E1860, 0x4F2D34)].i4  'StartingTower'
+	.i4  'StartingWall'
+	.array(3).i4  'StartingIncome'
+	 .Info "#BaseIncome:structs.Arcomage.BaseIncome# is added to this value."
+	.CustomType('CardsCount', 4, i4_AddOne)
+	 .Info "Internally up to 10 cards are supported."
+	.array(3).i4  'BaseIncome'
+	.i4  'TowerToWin'
+	.i4  'ResToWin'
+	[mm78(0x505704, 0x516D5C)].array(3).i4  'StartingRes'
+	[mm78(0x4DF3A4, 0x4F0224)].i4  'AI'  .Info '0 - 2'
+	[mm78(0x505588, 0x516BE0)].array(2).struct(structs.ArcomagePlayer)  'Players'
+	.indexmember  'Players'
+end
+
+function structs.f.ArcomagePlayer(define)
+	define
+	.string(32)  'Name'
+	.b1  'Human'
+	.skip(3)
+	.i4  'Tower'
+	.i4  'Wall'
+	.array(3).i4  'Income'
+	 .Info "#BaseIncome:structs.Arcomage.BaseIncome# is added to this value."
+	.array(3).i4  'Res'
+	.array(10).i4  'Cards'
+	.array(10).array(2).i4  'unk'
+	.size = 47*4
 end

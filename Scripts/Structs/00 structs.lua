@@ -30,6 +30,9 @@ function structs.f.GameStructure(define)
 	define
 	 .Info{Name = "Game"}
 	 .Info{new = true, Name = "Version", "(6 - 8)"}
+	if mmver > 6 then
+		define[0].struct(structs.Arcomage)  'Arcomage'
+	end
 	if mmver == 7 then
 		define[0].struct(structs.GameRaces)  'Races'
 	end
@@ -770,7 +773,6 @@ function structs.f.GameParty(define)
 	.i1  'ArenaWinsSquire'
 	.i1  'ArenaWinsKnight'
 	.i1  'ArenaWinsLord'
-	[mmv(0x908DBE, 0xACD5DD, 0xB2164F)].array(16).b1  'ArcomageWins'
 	define[mmv(0x908DCB, 0xACD5F2, 0xB21664)].array(mmv(400, 500, 500), mmv(429, 567, 567)).b1  'ArtifactsFound'
 	if mmver == 7 then
 		define[0xACD6C0].i4  'Alignment'
@@ -787,6 +789,7 @@ function structs.f.GameParty(define)
 			end
 		end)
 		[mmv(nil, 0xACD364, 0xB213CC)].array(1, 29).i8  'History'
+		[mm78(0xACD5DD, 0xB2164F)].array(mm78(108, 107), mm78(108, 107) + 15).b1  'ArcomageWins'
 	end
 	define[offsets.CurrentPlayer].CustomType('CurrentPlayer', 4, function(o, obj, name, val)
 		if val == nil then
@@ -1362,6 +1365,7 @@ function structs.f.PatchOptions(define)
 	int  'MonSpritesSizeMul'  Info "Default is 0 - disabled. 0x10000 stands for 1.0."
 	bool  'FixMonsterAttackTypes'  Info "[MM7+]"
 	bool  'FixMonsterSpells'
+	bool  'FixSouldrinker'
 	
 	function define.f.Present(name)
 		return not not addr[name]

@@ -752,6 +752,13 @@ if mmver > 6 then
 	end)
 end
 
+-- Arcomage
+if mmver > 6 then
+	mem.autohook2(mm78(0x40A005, 0x40AB7D), function(d)
+		events.cocalls("ArcomageSetup", Game.Arcomage)
+	end)
+end
+
 -- KeysFilter
 if mmver > 6 then
 	mem.hook(mm78(0x42FCD1, 0x42E616), function(d)

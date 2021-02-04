@@ -578,9 +578,6 @@ Award number required to access the guild.
 		t[#t + 1] = q
 		if type(a) ~= 'table' then
 			q.Level = a
-			if name == 'Guild' and mmver < 8 then
-				q[1] = Game.GuildAwards[i]
-			end
 			return
 		end
 		q.Level = a.Level

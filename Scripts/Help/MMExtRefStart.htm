@@ -418,6 +418,42 @@ ru| После этого для для тестирования изменений локализации достаточно будет пере
 <br>
 <br>
 
+<h3>en|More on Data Tables|ru|Ещё о Data\Tables|</h3>
+en|Having the Data\Tables folder is great for development of a mod, but simply distributing it with a big mod may present challenges for subsequent creation of smaller mods for it, because they'd be overwritten by any update of the big mod.|
+ru|Папка Data\Tables - это отличный инструмент при разработке мода, но простое распространение её с большим модом может вызвать сложности при последующем создании меньших модов для него, поскольку любое обновление большого мода их перезапишет.|
+<br>
+en|First, I'd recommend setting up reading tables that don't correspond to *.bin files from LOD archive of your mod if it's a big one. This will allow other mods or power users to override the table more safely. Here's an example (for Scripts\General):|
+ru|Во-первых, я советую настроить чтение таблиц, по которым не генерируются файлы *.bin, из LOD-архива мода, если он большой. Это позволит другим модам их перекрывать более безопасно. Вот пример, как это сделать (для Scripts\General):|
+<lua>
+table.copy({
+	['Chest'] = 'Chest.txt',
+	['Class HP SP'] = 'ClsHPSP.txt',
+	['Class Skills'] = 'ClsSkill.txt',
+	['Class Starting Skills'] = 'ClsSkilB.txt',
+	['Class Starting Stats'] = 'ClsStats.txt',
+	['House Movies'] = 'HouseMov.txt',
+	['Monster Kinds'] = 'MonKind.txt',
+	['Spells2'] = 'Spells2.txt',
+	['Town Portal'] = 'TownPort.txt',
+	['Transport Index'] = 'TripIdx.txt',
+	['Transport Locations'] = 'TripLoc.txt',
+	['Shops'] = 'Shops.txt',
+	-- LazyMode = true,  -- see below for an explanation
+}, DataTables.Files, true)
+</lua>
+en|You can also disable any data table by setting it to an empty string here.|
+ru|Можно таким же образом отключить любую таблицу, присвоив ей здесь пустую строку.|
+<br>
+en|Second, for tables that generate *.bin files there are 2 ways to go:|
+ru|Во-вторых, для таблиц, которые генерируют файлы *.bin, есть 2	пути:|
+<list>
+	<li>en|Distributing Data\Tables folder with them with your mod. Including DataFiles with corresponding *.bin files is also a good practice. This will lead to the discussed problem for smaller mods, but you won't have to make an installer.|
+	ru|Распространять папку Data\Tables с ними вместе с модом. Также хорошей практикой является включение в мод папки DataFiles с соответствующими файлами *.bin. Это приведёт к описанной проблеме с меньшими модами, но Вам не обязательно будет создавать инсталлятор для мода.|</li>
+	<li>en|Placing generated *.bin files into a LOD archive of your mod and setting <lua1>DataTables.LazyMode = true</lua1>, which makes it so that tables can still be overridden with Data\Tables, but they aren't automatically generated (calling <lua1>UpdateDataTables()</lua1> would generate them). You will also need to move or delete preexisting Data\Tables and DataFiles on first installation of the mod, because files there will override those of your mod.|
+	ru|Распространять сгенерированные файлы *.bin в LOD-архиве мода и включить <lua1>DataTables.LazyMode = true</lua1> - она делает так, что таблицы из Data\Tables читаются, если они есть, но не генерируются автоматически (их можно сгенерировать, вызвав <lua1>UpdateDataTables()</lua1>). Вам также надо будет перенести или удалить существующие папки Data\Tables и DataFiles при первой установке мода, поскольку файлы в них будут иметь приоритет над файлами мода.|</li>
+<br>
+<br>
+
 <br>
 <hr>
 <h2>en|Examples|ru|Примеры|</h2>
@@ -491,7 +527,8 @@ end
 <br>
 
 <h3>en|Artifact Bonuses|ru|Бонусы артефактов|</h3>
-Giving Hareck's Leather an 'Of Earth Magic' enhancement. (untested)
+en|Giving Hareck's Leather an 'Of Earth Magic' enhancement. (untested)|
+ru|Дать кожаным доспехам Харека бонус 'Магии Земли'. (не тестированный код)|
 <lua>
 function events.CalcStatBonusByItems(t)
 	if t.Stat ~= const.Stats.EarthMagic or t.Player.Skills[const.Skills.EarthMagic] == 0 then
@@ -506,7 +543,8 @@ function events.CalcStatBonusByItems(t)
 end
 </lua>
 <br>
-Giving Hareck's Leather 'Armsmaster + 8' bonus. (untested)
+en|Giving Hareck's Leather 'Armsmaster + 8' bonus. (untested)|
+ru|Дать кожаным доспехам Харека бонус 'Оружейник + 8'. (не тестированный код)|
 <lua>
 function events.CalcStatBonusByItems(t)
 	if t.Stat ~= const.Stats.Armsmaster or t.Player.Skills[const.Skills.Armsmaster] == 0 then
@@ -521,8 +559,8 @@ function events.CalcStatBonusByItems(t)
 end
 </lua>
 <br>
-Q: Is there a way to change values of enchantments? For example, to make Of the Gods one give say +30 stats instead of +10?<br>
-A: (untested)
+en|Q|ru|Вопрос|: en|Is there a way to change values of enchantments? For example, to make Of the Gods one give say +30 stats instead of +10?|ru|Возможно ли изменить силу усилений предметов? Например, чтобы предметы со свойством 'Богов' давали +30 к статистикам вместо +10?|<br>
+en|A|ru|Ответ|: en|(untested)|ru|(не тестированный код)|
 <lua>
 function events.CalcStatBonusByItems(t)
 	if t.Stat >= const.Stats.Might and t.Stat <= const.Stats.Luck then
@@ -537,7 +575,8 @@ end
 <br>
 
 <h3>en|Spells Damage|ru|Урон заклинания|</h3>
-Change damage of spell 2 - Flame Arrow. You can also make damage depend on <'>t.Mastery</'> and <'>t.HP</'> (monster hit points).
+en|Change damage of spell 2 - Flame Arrow. You can also make damage depend on <'>t.Mastery</'> (skill mastery) and <'>t.HP</'> (monster hit points).|
+ru|Изменить урон заклинания №2 - Стрела пламени. Также можно сделать его зависящим от мастерства <'>t.Mastery</'> в магии и здоровья <'>t.HP</'> монстра.|
 <lua>
 local function Randoms(min, max, count)
 	local r = 0
@@ -558,7 +597,7 @@ end
 <h3>en|Controlling monsters aggression in MM6|ru|Управление агрессией монстров в MM6|</h3>
 en|Put this script into <b>Scripts\Global</b> folder. It would make archers in Free Haven friendly
 and female peasants aggressive. In other places archers would still be aggressive and peasants still friendly.|
-ru|Положите этот скрипт в папку <b>Scripts\Global</b>. Это делает лучников в Free Haven дружественными, а крестьян - агрессивными. В других местах лучники будут по-прежнему агрессивными, а крестьяне - дружелюбными.|
+ru|Положите этот скрипт в папку <b>Scripts\Global</b>. Это делает лучников в Свободной гавани дружественными, а крестьян - агрессивными. В других местах лучники будут по-прежнему агрессивными, а крестьяне - дружелюбными.|
 <lua>
 function events.BeforeLoadMap() 
 	if Game.Map.Name == "outc2.odm" then 
@@ -619,7 +658,7 @@ en|Put this script into <b>Scripts\Global</b> folder to turn trees into barrels.
 local SpriteEvents = 20000
 local TopicBase = 383
 local TextBase = 582
-local Reorder = {[0] = 0, 1, 4, 3, 5, 2, 6, 7}  -- NPC topics order is messed up
+local Reorder = {[0] = 0, 1, 4, 3, 5, 2, 6, 7}  -- NPC topics order for barrels is messed up
 local AutonotesBase = 32
 
 local function Barrel(EvtId)
@@ -673,13 +712,13 @@ end
 events.EvtGlobal.clear()
 </lua>
 <br>
-en|See current house and NPC indeces (run it from console):|ru|Посмотреть номера текущего дома и NPC (вызывайте из консоли):|
+en|See current house (2DEvent) and NPC indeces (run it from console):|ru|Посмотреть номера текущего дома (2DEvent) и NPC (вызывайте из консоли):|
 <lua>
 Game.GetCurrentHouse(), GetCurrentNPC()
 </lua>
 <br>
-Q: How to change the home position after the death of the team on current map?<br>
-A: Pass any coordinates in call to <#>XYZ</#> and set any <#>Direction:Party.Direction</#>:
+en|Q|ru|Вопрос|: en|How to change the home position after the death of the team on current map?|ru|Как изменить место, где воскрешается команда после смерти?|<br>
+en|A|ru|Ответ|: en|Specify desired coordinates in the call to|ru|Впишите нужные координаты в вызов функции| <#>XYZ</#> en|and set desired|ru|и присвойте| <#>Direction:Party.Direction</#>ru| нужное направление|:
 <lua>
 function events.DeathMap(t)
 	t.Name = "out05.odm"
@@ -689,7 +728,8 @@ function events.DeathMap(t)
 end
 </lua>
 <br>
-Changing starting map (similar to previous example):
+en|Changing starting map (similar to previous example):|
+ru|Изменение стартовой карты (аналогично предыдущему примеру):|
 <lua>
 Game.NewGameMap = "out05.odm"
 function events.NewGameMap()
@@ -699,14 +739,14 @@ function events.NewGameMap()
 end
 </lua>
 <br>
-Q: How to run a method when a user presses a specific key?<br>
-Method 1:
+en|Q|ru|Вопрос|: en|How to run a method when a user presses a specific key?|ru|Как исполнить код при нажатии определённой кнопки?|<br>
+en|Method 1:|ru|Способ 1:|
 <lua>
 function Keys.F1(t)
 	Message("F1 pressed")
 end
 </lua>
-Method 2:
+en|Method 2:|ru|Способ 2:|
 <lua>
 function events.KeyDown(t)
 	if t.Key == const.Keys.F1 then
@@ -714,12 +754,14 @@ function events.KeyDown(t)
 	end
 end
 </lua>
-Absolete method provided for backward compatibility: <i>(This is NOT the same as setting Keys.F1)</i>
+en|Obsolete method provided for backward compatibility: <i>(This is NOT the same as setting Keys.F1)</i>|
+ru|Устаревший способ, оставленный для обратной совместимости: <i>(Это НЕ то же самое, что установка Keys.F1)</i>|
 <lua>
 Keys[const.Keys.F1] = function()
 	Message("F1 pressed")
 end
 </lua>
+en|This method may ignore quick key presses.|ru|Этот способ может пропустить быстрое нажатие кнопки.|
 <br>
 <!--
 <lua>
