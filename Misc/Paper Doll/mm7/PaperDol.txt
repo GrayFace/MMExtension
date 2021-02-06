@@ -1,79 +1,86 @@
 Doll	ItemPicture	Image	X	Y	Piece	Mul	Comments
 							Body:
-MBase	PlayerBody	PC%.2dBod	0	0
-MBase	PlayerBody	PC%.2dLad	103	106	arm2		arm when not holding 2-handed weapon
-MBase	PlayerBody	PC%.2dLau	26	107	arm2h		arm when holding 2-handed weapon
-MBase	PlayerBody	PC%.2dRh	30	144	hand1		hand1, always drawn
-MBase	PlayerBody	PC%.2dLh	128	205	hand2		dual-wielding hand
-MBase	PlayerBody	PC%.2dLhu	26	107	hand2h		hand when holding 2-handed weapon
-FBase	PlayerBody	PC%.2dBod	0	0
-FBase	PlayerBody	PC%.2dLad	101	108	arm2
-FBase	PlayerBody	PC%.2dLau	40	109	arm2h
-FBase	PlayerBody	PC%.2dRh	34	158	hand1
-FBase	PlayerBody	PC%.2dLh	131	201	hand2
-FBase	PlayerBody	PC%.2dLhu	40	109	hand2h
-MDwarf	PlayerBody	PC%.2dBod	0	0
-MDwarf	PlayerBody	PC%.2dLad	116	141	arm2
-MDwarf	PlayerBody	PC%.2dLau	25	141	arm2h
-MDwarf	PlayerBody	PC%.2dRh	25	186	hand1
-MDwarf	PlayerBody	PC%.2dLh	131	216	hand2
-MDwarf	PlayerBody	PC%.2dLhu	25	141	hand2h
-FDwarf	PlayerBody	PC%.2dBod	0	0
-FDwarf	PlayerBody	PC%.2dLad	116	147	arm2
-FDwarf	PlayerBody	PC%.2dLau	32	146	arm2h
-FDwarf	PlayerBody	PC%.2dRh	31	184	hand1
-FDwarf	PlayerBody	PC%.2dLh	123	216	hand2
-FDwarf	PlayerBody	PC%.2dLhu	32	146	hand2h
-13	PlayerBody	PC13BRD	52	130	scarf
-14	PlayerBody	PC14BRD	56	136	scarf
+MBase	:Player	PC%.2dBod	0	0
+MBase	:Player	PC%.2dLad	103	106	arm2		arm when not holding 2-handed weapon
+MBase	:Player	PC%.2dLau	26	107	arm2h		arm when holding 2-handed weapon
+MBase	:Player	PC%.2dRh	30	144	hand1a		hand1, always drawn
+MBase	:Player	PC%.2dLh	128	205	hand2		dual-wielding hand
+MBase	:Player	PC%.2dLhu	26	107	hand2h		hand when holding 2-handed weapon
+FBase	:Player	PC%.2dBod	0	0
+FBase	:Player	PC%.2dLad	101	108	arm2
+FBase	:Player	PC%.2dLau	40	109	arm2h
+FBase	:Player	PC%.2dRh	34	158	hand1a
+FBase	:Player	PC%.2dLh	131	201	hand2
+FBase	:Player	PC%.2dLhu	40	109	hand2h
+MDwarf	:Player	PC%.2dBod	0	0
+MDwarf	:Player	PC%.2dLad	116	141	arm2
+MDwarf	:Player	PC%.2dLau	25	141	arm2h
+MDwarf	:Player	PC%.2dRh	25	186	hand1a
+MDwarf	:Player	PC%.2dLh	131	216	hand2
+MDwarf	:Player	PC%.2dLhu	25	141	hand2h
+FDwarf	:Player	PC%.2dBod	0	0
+FDwarf	:Player	PC%.2dLad	116	147	arm2
+FDwarf	:Player	PC%.2dLau	32	146	arm2h
+FDwarf	:Player	PC%.2dRh	31	184	hand1a
+FDwarf	:Player	PC%.2dLh	123	216	hand2
+FDwarf	:Player	PC%.2dLhu	32	146	hand2h
+13	:Player	PC13BRD	52	130	scarf
+14	:Player	PC14BRD	56	136	scarf
 
 							Wetsuit:
 MBase	item299	PC23v1Bod	0	0
 MBase	item299	PC23v1Lad	103	106	arm2
 MBase	item299	PC23v1Lau	26	107	arm2h
-MBase	item299	PC23v1Rh	30	144	hand1
+MBase	item299	PC23v1Rh	30	144	hand1a
 MBase	item299	PC23v1Lh	128	205	hand2
 MBase	item299	PC23v1Lhu	26	107	hand2h
 FBase	item299	PC23v2Bod	0	0
 FBase	item299	PC23v2Lad	101	108	arm2
 FBase	item299	PC23v2Lau	40	109	arm2h
-FBase	item299	PC23v2Rh	34	158	hand1
+FBase	item299	PC23v2Rh	34	158	hand1a
 FBase	item299	PC23v2Lh	131	201	hand2
 FBase	item299	PC23v2Lhu	40	109	hand2h
 MDwarf	item299	PC23v3Bod	0	0
 MDwarf	item299	PC23v3Lad	116	141	arm2
 MDwarf	item299	PC23v3Lau	25	141	arm2h
-MDwarf	item299	PC23v3Rh	25	186	hand1
+MDwarf	item299	PC23v3Rh	25	186	hand1a
 MDwarf	item299	PC23v3Lh	131	216	hand2
 MDwarf	item299	PC23v3Lhu	25	141	hand2h
 FDwarf	item299	PC23v4Bod	0	0
 FDwarf	item299	PC23v4Lad	116	147	arm2
 FDwarf	item299	PC23v4Lau	32	146	arm2h
-FDwarf	item299	PC23v4Rh	31	184	hand1
+FDwarf	item299	PC23v4Rh	31	184	hand1a
 FDwarf	item299	PC23v4Lh	123	216	hand2
 FDwarf	item299	PC23v4Lhu	32	146	hand2h
+	:Player.item299						Don't draw regular paper doll
+	:Player.item299				arm2
+	:Player.item299				arm2h
+	:Player.item299				hand1a
+	:Player.item299				hand2
+	:Player.item299				hand2h
+	:Player.item299				scarf
 
 							Offsets:
 							Shield:
-MBase	ItemExtraHand		128	205	shield	-1
-FBase	ItemExtraHand		131	201	shield	-1
-MDwarf	ItemExtraHand		131	216	shield	-1
-FDwarf	ItemExtraHand		123	216	shield	-1
+MBase	:ExtraHand		128	205	shield	-1
+FBase	:ExtraHand		131	201	shield	-1
+MDwarf	:ExtraHand		131	216	shield	-1
+FDwarf	:ExtraHand		123	216	shield	-1
 							Dual-wielding:
-MBase	ItemExtraHand		128	205	hand2	-1
-FBase	ItemExtraHand		131	201	hand2	-1
-MDwarf	ItemExtraHand		131	216	hand2	-1
-FDwarf	ItemExtraHand		123	216	hand2	-1
+MBase	:ExtraHand		128	205	hand2	-1
+FBase	:ExtraHand		131	201	hand2	-1
+MDwarf	:ExtraHand		131	216	hand2	-1
+FDwarf	:ExtraHand		123	216	hand2	-1
 							Arm1:
-MBase	ItemMainHand		30	144		-1
-FBase	ItemMainHand		38	158		-1
-MDwarf	ItemMainHand		29	186		-1
-FDwarf	ItemMainHand		35	184		-1
+MBase	:MainHand		30	144		-1
+FBase	:MainHand		38	158		-1
+MDwarf	:MainHand		29	186		-1
+FDwarf	:MainHand		35	184		-1
 							Bow:
-MBase	ItemBow		88	85		-1
-FBase	ItemBow		98	87		-1
-MDwarf	ItemBow		88	119		-1
-FDwarf	ItemBow		98	119		-1
+MBase	:Bow		88	85		-1
+FBase	:Bow		98	87		-1
+MDwarf	:Bow		88	119		-1
+FDwarf	:Bow		98	119		-1
 
 							Cloaks:
 MBase	item105	item105v1	17	104

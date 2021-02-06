@@ -21,13 +21,11 @@ end
 --!v Maps category name to a !lua[[function(i)]] that returns 'true' if player face number 'i' belongs to the category. Use #PaperDollAddBodies:# or #PaperDollAddRace:# to populate.
 PaperDollCategories = {}
 PaperDollGraphics = {}
---!v Pieces of the doll that can be hidden or replaced by specifying corresponding piece of an item. Default (hair that can be hidden by helmets):
--- !Lua[[{hair = true, hair2 = true}]]
-PaperDollContitionalPieces = {hair = true, hair2 = true}
 --!v Specifies which pieces inherit item graphics by default. Default:
 -- !Lua[[{ItemExtraHand = {hand2 = true, shield = true}}]]
-PaperDollDirectPieces = {ItemExtraHand = {hand2 = true, shield = true}}
-local PaperDollDirectPiecesStd = {[''] = true}
+-- For slots not specified here piece with empty name is the main one.
+PaperDollMainPieces = {ExtraHand = {hand2 = true, shield = true}}
+local PaperDollMainPiecesStd = {[''] = true}
 --!v
 PaperDollCount = mmv(12, 25, 28)
 local CurDollGraphics
@@ -79,13 +77,13 @@ if mmver == 7 then
 	end
 	--!v [MM7] Races that share the "Base" paper doll. Default:
 	-- !Lua[[{[const.Race.Human] = true, [const.Race.Goblin] = true, [const.Race.Elf] = true}]]
-	-- After altering call this command:
+	-- After altering it, call this command:
 	-- !Lua[[PaperDollAddRace('Base', PaperDollBaseRace)]]
 	PaperDollBaseRace = PaperDollBaseRace or {[0] = true, true, true}
 	-- [MM7]
 	PaperDollAddRace('base', PaperDollBaseRace)
 elseif mmver == 8 then
-	--!v After altering call #PaperDollAddBodies:#. Here are default MM8 values:
+	--!v After altering it, call #PaperDollAddBodies:#. Here are default MM8 values:
 	-- !Lua[[{[20] = 'Minotaur', [21] = 'Minotaur', [22] = 'Troll', [23] = 'Troll', [24] = 'Dragon', [25] = 'Dragon'}]]
 	PaperDollSpecialBodies = PaperDollSpecialBodies or {[20] = 'Minotaur', [21] = 'Minotaur', [22] = 'Troll', [23] = 'Troll', [24] = 'Dragon', [25] = 'Dragon'}
 	PaperDollAddBodies()
@@ -122,8 +120,7 @@ function AddPaperDollGraphics(t)
 		t = ParseNamedColTable(t)
 	end
 	for _, a in ipairs(t) do
-		a.X = tonumber(a.X)
-		a.Y = tonumber(a.Y)
+		local a1 = {X = tonumber(a.X), Y = tonumber(a.Y)}
 		if (a.Mul or '') ~= '' then
 			local t = (a.Mul or ''):split(', *')
 			if not t[2] then
@@ -132,13 +129,11 @@ function AddPaperDollGraphics(t)
 			for i = 1, #t do
 				t[i] = tonumber(t[i])
 			end
-			a.Mul = t
-		else
-			a.Mul = nil
+			a1.Mul = t
 		end
 		for i in pairs(GetCats(a.Doll or '')) do
-			local a1 = table.copy(a)
-			a1.Image = a1.Image and a1.Image:format(i+1)
+			local a1 = table.copy(a1)
+			a1.Image = a.Image and a.Image:format(i+1) or ''
 			tget(tget(PaperDollGraphics, i), a.Piece or '')[(a.ItemPicture or ''):lower()] = a1
 		end
 	end
@@ -148,7 +143,7 @@ end
 function ReloadPaperDollGraphics()
 	PaperDollGraphics = {}
 	AddPaperDollGraphics(Game.LoadTextFileFromLod'PaperDol.txt')
-	-- when corresponding function is called
+	-- When corresponding #ReloadPaperDollGraphics:# function is called
 	events.cocall('ReloadPaperDollGraphics')
 end
 
@@ -158,36 +153,36 @@ else
 	events.GameInitialized2 = ReloadPaperDollGraphics
 end
 
---!v Defaults to #Game.Version:#. If set to '6' prior to including 'PaperDoll' module, #PaperDollDrawOrder:# would be different. If set to '8', spears aren't treated as a 2-handed weapon.
+--!v Defaults to #Game.Version:#. If set to '6' prior to including 'PaperDoll' module, #PaperDollDrawOrder:# would be different. If set to '8', spears aren't treated as 2-handed weapons.
 PaperDollMode = PaperDollMode or mmver
 local mm6 = (PaperDollMode == 6)
 
 --!v Default (depending on #PaperDollMode:#):
--- !Lua[[{'ItemBow', 'ItemCloak',
--- 	'PlayerBody', 'PlayerBody.arm1', 'PlayerBody.arm1f', 'PlayerBody.arm2hb', 'PlayerBody.arm2f', 'PlayerBody.shield', 'ItemHelm.hair2', 'ItemHelm.hair',
--- 	mm6 and 'ItemHelm' or 'ItemHelm.mm6', mm6 and 'ItemBoots' or 'ItemBoots.mm6',
--- 	'ItemArmor', 'ItemArmor.arm1', 'ItemArmor.arm1f',
--- 	mm6 and 'ItemBoots.boots' or 'ItemBoots',
--- 	'ItemBelt',
--- 	'PlayerBody.arm2', 'PlayerBody.arm2h', 'ItemArmor.arm2', 'ItemArmor.arm2h',
--- 	'ItemCloak.scarf', 'PlayerBody.scarf', mm6 and 'ItemHelm.scarf' or 'ItemHelm', 'ItemCloak.scarf2',
--- 	'ItemMainHand',
--- 	'PlayerBody.hand1', 'PlayerBody.hand1x', 'ItemArmor.hand1', 'ItemArmor.hand1x',
--- 	'ItemExtraHand.hand2', 'ItemExtraHand.shield',
--- 	'PlayerBody.hand2', 'PlayerBody.hand2h', 'ItemArmor.hand2', 'ItemArmor.hand2h',
+-- !Lua[[{'Bow', 'Cloak',
+-- 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2hb', 'Player.arm2f', 'Player.shield', 'Player.hair2', 'Player.hair',
+-- 	mm6 and 'Helm' or 'Helm.mm6', mm6 and 'Boots' or 'Boots.mm6',
+-- 	'Armor', 'Armor.arm1', 'Armor.arm1f',
+-- 	mm6 and 'Boots.boots' or 'Boots',
+-- 	'Belt',
+-- 	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h',
+-- 	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
+-- 	'MainHand',
+-- 	'Player.hand1a', 'Player.hand1', 'Armor.hand1a', 'Armor.hand1',
+-- 	'ExtraHand.hand2', 'ExtraHand.shield',
+-- 	'Player.hand2', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2h',
 -- }]]
-PaperDollDrawOrder = {'ItemBow', 'ItemCloak',
-	'PlayerBody', 'PlayerBody.arm1', 'PlayerBody.arm1f', 'PlayerBody.arm2hb', 'PlayerBody.arm2f', 'PlayerBody.shield', 'ItemHelm.hair2', 'ItemHelm.hair',
-	mm6 and 'ItemHelm' or 'ItemHelm.mm6', mm6 and 'ItemBoots' or 'ItemBoots.mm6',
-	'ItemArmor', 'ItemArmor.arm1', 'ItemArmor.arm1f',
-	mm6 and 'ItemBoots.boots' or 'ItemBoots',
-	'ItemBelt',
-	'PlayerBody.arm2', 'PlayerBody.arm2h', 'ItemArmor.arm2', 'ItemArmor.arm2h',
-	'ItemCloak.scarf', 'PlayerBody.scarf', mm6 and 'ItemHelm.scarf' or 'ItemHelm', 'ItemCloak.scarf2',
-	'ItemMainHand',
-	'PlayerBody.hand1', 'PlayerBody.hand1x', 'ItemArmor.hand1', 'ItemArmor.hand1x',
-	'ItemExtraHand.hand2', 'ItemExtraHand.shield',
-	'PlayerBody.hand2', 'PlayerBody.hand2h', 'ItemArmor.hand2', 'ItemArmor.hand2h',
+PaperDollDrawOrder = {'Bow', 'Cloak',
+	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2hb', 'Player.arm2f', 'Player.shield', 'Player.hair2', 'Player.hair',
+	mm6 and 'Helm' or 'Helm.mm6', mm6 and 'Boots' or 'Boots.mm6',
+	'Armor', 'Armor.arm1', 'Armor.arm1f',
+	mm6 and 'Boots.boots' or 'Boots',
+	'Belt',
+	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h',
+	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
+	'MainHand',
+	'Player.hand1a', 'Player.hand1', 'Armor.hand1a', 'Armor.hand1',
+	'ExtraHand.hand2', 'ExtraHand.shield',
+	'Player.hand2', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2h',
 }
 
 local function Is2Handed(it)
@@ -199,9 +194,9 @@ local function IsShield(it)
 	return it:T().EquipStat == 4
 end
 
-local function GetItemGraphics(it)
+local function GetItemGraphics(it, i)
 	local a = it:T()
-	return {Image = a.Picture:lower(), X = a.EquipX, Y = a.EquipY}
+	return {Image = a.Picture:lower(), X = a.EquipX, Y = a.EquipY, Item = it, Index = i}
 end
 
 local DrawCache
@@ -243,6 +238,7 @@ local function draw(a, it, idx, off)
 	end
 end
 
+-- only used in MM7
 local function draw2(x, y, img)
 	draw(tget(CurDollGraphics, '')[img:lower()] or {X = x - 481, Y = y, Image = img})
 end
@@ -251,8 +247,6 @@ local function GetHiddenPieces(pl)
 	local hide = {}
 	-- 2nd arm for 2-handed weapon
 	hide.arm2h = true  -- dual wield off by default
-	-- 1st hand always drawn
-	hide.hand1 = nil
 	if pl.ItemExtraHand == 0 then
 		-- 2nd hand for dual-wielding
 		hide.hand2 = true  -- 2nd hand off
@@ -277,16 +271,37 @@ local function GetHiddenPieces(pl)
 	hide.arm2hb = hide.arm2h
 	-- 1st arm when holding a weapon
 	hide.arm1 = pl.ItemMainHand == 0
-	-- 1st arm when not holding a weapon
+	-- 1st arm without a weapon
 	hide.arm1f = not hide.arm1
 	-- 1st hand when holding a weapon
-	hide.hand1x = hide.arm1
-	local i = pl.ItemArmor
-	-- hidden if wearing Wetsuit
-	hide.PlayerBody = (mmver == 7 and i ~= 0 and pl.Items[i].Number == 604)
-	-- Here I've described pieces that 'PaperDoll' module handles automatically. You can define your own pieces through #PaperDollDrawOrder:# array and hide them conditionally here.
-	events.cocall('PaperDollHiddenPieces', hide)
+	hide.hand1 = hide.arm1
+	local player = pl
+	--!k{hand1a 1st hand (always drawn)} Here I've described pieces that 'PaperDoll' module handles automatically. You can define your own pieces through #PaperDollDrawOrder:# array and hide them conditionally here.
+	events.cocall('PaperDollHiddenPieces', hide, player)
+	hide.Player = nil
 	return hide
+end
+
+local function GetItems(pl)
+	local t = {Player = true}
+	for k, v in pairs(const.ItemSlot) do
+		t[k] = pl.EquippedItems[v]
+	end
+	--!(t, player) Lets you modify weared items, such as add new weared item slots. E.g. setting !Lua[[t.My = 1]] would draw !Lua[[pl.Items[1]]]. Setting !Lua[[t.My = true]] would make ":My" drawn the same way ":Player" is drawn. You'll also need to add "My" to #PaperDollDrawOrder:#.
+	events.cocall('PaperDollGetItems', t, pl)
+	for k, i in pairs(t) do
+		t[k] = (i == true and {} or i ~= 0 and GetItemGraphics(pl.Items[i], i) or nil)
+	end
+	return t
+end
+
+local function Override(pl, t, wear, s, fmt)
+	for k, a in pairs(wear) do
+		a = a.Image and t[s..fmt:format(k:lower())..a.Image]
+		if a then
+			return a
+		end
+	end
 end
 
 local function DrawDoll(pl)
@@ -294,31 +309,24 @@ local function DrawDoll(pl)
 	CurDollGraphics = tget(PaperDollGraphics, pl.Face)
 	EffectItem = nil
 	local hide = GetHiddenPieces(pl)
+	local wear = GetItems(pl)
 	local face = pl.Face
 
 	for _, s in ipairs(PaperDollDrawOrder) do
 		local s, piece = s:match('^([^.]*)%.?([^.]*)$')
-		s1 = s:lower()
-		local t = tget(CurDollGraphics, piece)
-		if hide[piece] then
-			-- skip
-		elseif s == 'PlayerBody' then
-			if not hide[s] then
-				draw(t[s1])
+		local a = wear[s]
+		if a and not hide[piece] then
+			local class, t = ':'..s:lower(), tget(CurDollGraphics, piece)
+			local it, idx = a.Item, a.Index
+			a = Override(pl, t, wear, class, ':%s.') or Override(pl, t, wear, class, '.') or a
+			if not a.Item then       -- :Player or override
+				a = a.Image and a or t[class]
+			elseif t[a.Image] then   -- special item image
+				a = table.copy(t[a.Image], table.copy(a), true)
+			elseif not (PaperDollMainPieces[s] or PaperDollMainPiecesStd)[piece] then
+				a = nil                -- only draw item as the main piece
 			end
-		elseif pl[s] ~= 0 then
-			local it = pl.Items[pl[s]]
-			local a = GetItemGraphics(it)
-			if t[a.Image] then
-				table.copy(t[a.Image], a, true)
-			elseif PaperDollContitionalPieces[piece] then
-				a = t.playerbody
-			elseif not (PaperDollDirectPieces[s] or PaperDollDirectPiecesStd)[piece] then
-				a = nil
-			end
-			draw(a, it, pl[s], not PaperDollContitionalPieces[piece] and t[s1])
-		elseif PaperDollContitionalPieces[piece] then
-			draw(t.playerbody)
+			draw(a, it, idx, it and t[class])
 		end
 	end
 	

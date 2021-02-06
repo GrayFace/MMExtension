@@ -1,44 +1,44 @@
 Doll	ItemPicture	Image	X	Y	Piece	Comments
-1	PlayerBody	mlabod	495	52		main piece, always drawn
-2	PlayerBody	mlbbod	495	53
-3	PlayerBody	mlcbod	495	52
-4	PlayerBody	mldbod	495	52
-5	PlayerBody	mlebod	495	52
-6	PlayerBody	mlfbod	495	52
-7	PlayerBody	mlgbod	494	53
-8	PlayerBody	mlhbod	495	51
-9	PlayerBody	grlabod	497	52
-10	PlayerBody	grlbbod	493	52
-11	PlayerBody	grlcbod	495	52
-12	PlayerBody	grldbod	495	51
-1	PlayerBody	mlaarm1	587	106	arm2	2nd arm drawn without 2-handed weapon
-2	PlayerBody	mlbarm1	579	100	arm2
-3	PlayerBody	mlcarm1	574	107	arm2
-4	PlayerBody	mldarm1	588	102	arm2
-5	PlayerBody	mlearm1	592	102	arm2
-6	PlayerBody	mlfarm1	584	105	arm2
-7	PlayerBody	mlgarm1	582	100	arm2
-8	PlayerBody	mlharm1	585	104	arm2
-9	PlayerBody	grlaarm1	585	104	arm2
-10	PlayerBody	grlbarm1	583	103	arm2
-11	PlayerBody	grlcarm1	586	102	arm2
-12	PlayerBody	grldarm1	584	101	arm2
-1	PlayerBody	mlaarm2	513	104	hand2h	2nd arm drawn with 2-handed weapon
-2	PlayerBody	mlbarm2	513	99	hand2h
-3	PlayerBody	mlcarm2	513	103	hand2h
-4	PlayerBody	mldarm2	513	102	hand2h
-5	PlayerBody	mlearm2	513	100	hand2h
-6	PlayerBody	mlfarm2	513	104	hand2h
-7	PlayerBody	mlgarm2	513	107	hand2h
-8	PlayerBody	mlharm2	513	106	hand2h
-9	PlayerBody	grlaarm2	513	105	hand2h
-10	PlayerBody	grlbarm2	513	104	hand2h
-11	PlayerBody	grlcarm2	513	107	hand2h
-12	PlayerBody	grldarm2	513	101	hand2h	note: numbered PlayerBody takes precedence over simple PlayerBody
-	PlayerBody	RTHAND	606	186	hand2	2nd hand drawn when dual-wielding (can also be used to shift weapon position in 2nd hand)
-	PlayerBody	LEFTHAND	513	160	hand1	main hand, always drawn
-	ItemExtraHand		91	26	hand2	2nd hand weapon offset (such offsets can be followed by player face number)
-						piece 'shield' is used for drawing shield, so ItemExtraHand with piece 4 can set shield offset
+1	:Player	mlabod	495	52		main piece, always drawn
+2	:Player	mlbbod	495	53
+3	:Player	mlcbod	495	52
+4	:Player	mldbod	495	52
+5	:Player	mlebod	495	52
+6	:Player	mlfbod	495	52
+7	:Player	mlgbod	494	53
+8	:Player	mlhbod	495	51
+9	:Player	grlabod	497	52
+10	:Player	grlbbod	493	52
+11	:Player	grlcbod	495	52
+12	:Player	grldbod	495	51
+1	:Player	mlaarm1	587	106	arm2	2nd arm drawn without 2-handed weapon
+2	:Player	mlbarm1	579	100	arm2
+3	:Player	mlcarm1	574	107	arm2
+4	:Player	mldarm1	588	102	arm2
+5	:Player	mlearm1	592	102	arm2
+6	:Player	mlfarm1	584	105	arm2
+7	:Player	mlgarm1	582	100	arm2
+8	:Player	mlharm1	585	104	arm2
+9	:Player	grlaarm1	585	104	arm2
+10	:Player	grlbarm1	583	103	arm2
+11	:Player	grlcarm1	586	102	arm2
+12	:Player	grldarm1	584	101	arm2
+1	:Player	mlaarm2	513	104	hand2h	2nd arm drawn with 2-handed weapon
+2	:Player	mlbarm2	513	99	hand2h
+3	:Player	mlcarm2	513	103	hand2h
+4	:Player	mldarm2	513	102	hand2h
+5	:Player	mlearm2	513	100	hand2h
+6	:Player	mlfarm2	513	104	hand2h
+7	:Player	mlgarm2	513	107	hand2h
+8	:Player	mlharm2	513	106	hand2h
+9	:Player	grlaarm2	513	105	hand2h
+10	:Player	grlbarm2	513	104	hand2h
+11	:Player	grlcarm2	513	107	hand2h
+12	:Player	grldarm2	513	101	hand2h
+	:Player	RTHAND	606	186	hand2	2nd hand drawn when dual-wielding (can also be used to shift weapon position in 2nd hand)
+	:Player	LEFTHAND	513	160	hand1a	main hand, always drawn
+	:ExtraHand		91	26	hand2	2nd hand weapon offset (such offsets can be followed by player face number)
+						piece 'shield' is used for drawing shield, so :ExtraHand with piece 4 can set shield offset
 						piece 'scarf' can be used for cloaks, then it's drawn above the head and helmet
 	
 						Armor:
