@@ -6,6 +6,21 @@ Including the module:
 require'PaperDoll'
 ]]
 
+How it works:
+#PaperDollDrawOrder:# defines the order in which pieces of body and clothing are drawn. #PaperDollHiddenPieces:events.PaperDollHiddenPieces# event can be used to change which pieces would be drawn. PaperDol.txt can specify custom graphics and coordinates for any piece. Lines further in the table take precedence. If 'Doll' includes current player, 'Piece' matches piece being drawn and 'ItemPicture' matches picture of the item being drawn (or ":Player" for a piece of player body), specified 'Image', 'X' and 'Y' values are used.
+A special case is when you specify item slot as 'ItemPicture', e.g. ":Armor". In this case 'X' and 'Y' act as offsets added to whatever coordinates are specified for the item in #Armor:structs.Player.ItemArmor# slot. If you specify 'Mul' for a slot, coordinates of the item are multiplied by it. It can also contain 4 values "a1,a2,a3,a4" that work this way: !Lua[[x = a1*X + a2*Y; y = a3*X + a4*Y]]. Setting 'Mul' to "0,-1,1,0" or similar 90 degree rotation matrices would cause the item to be drawn rotated in MM8.
+
+Special 'ItemPicture' values:
+item1 - override "item1" graphics
+:Player - override piece of the body
+:Player:Armor - override piece of the body if any Armor is equipped
+:Player.item1 - override piece of the body if "item1" is equipped
+:Player:Armor.item1 - override piece of the body if "item1" is equipped as Armor
+:Belt:Armor.item1 - override any belt if "item1" if equipped as Armor
+item2:Belt:Armor - override "item2" equipped as Belt if anything is equipped as Armor
+item2:Belt.item1 - override "item2" equipped as Belt if "item1" is equipped
+item2:Belt:Armor.item1 - override "item2" equipped as Belt if "item1" is equipped as Armor
+
 ]=]
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
 local i4, i2, i1, u4, u2, u1, pchar = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar
@@ -26,7 +41,7 @@ PaperDollGraphics = {}
 -- For slots not specified here piece with empty name is the main one.
 PaperDollMainPieces = {ExtraHand = {hand2 = true, shield = true}}
 local PaperDollMainPiecesStd = {[''] = true}
---!v
+--!v Number of possible player faces. It doesn't have to be exact, just big enough.
 PaperDollCount = mmv(12, 25, 28)
 local CurDollGraphics
 
@@ -218,6 +233,8 @@ local function draw(a, it, idx, off)
 		x = x + i4[p]
 		y = y + i4[p + 4]
 	end
+	x = x + (PaperDollOffsetX or 0)
+	y = y + (PaperDollOffsetY or 0)
 	-- DrawLog[#DrawLog+1] = table.concat({a.Image, x, y}, ", ")
 	local pic = DrawCache[a.Image] or Game.IconsLod:LoadBitmap(a.Image)
 	DrawCache[a.Image] = pic
@@ -295,15 +312,6 @@ local function GetItems(pl)
 	return t
 end
 
-local function Override(pl, t, wear, s, fmt)
-	for k, a in pairs(wear) do
-		a = a.Image and t[s..fmt:format(k:lower())..a.Image]
-		if a then
-			return a
-		end
-	end
-end
-
 local function DrawDoll(pl)
 	-- DrawLog = {P = || table.concat(DrawLog, "\n")}
 	CurDollGraphics = tget(PaperDollGraphics, pl.Face)
@@ -311,6 +319,15 @@ local function DrawDoll(pl)
 	local hide = GetHiddenPieces(pl)
 	local wear = GetItems(pl)
 	local face = pl.Face
+	local function Override(t, s, fmt, fmt2)
+		fmt2 = fmt2 or '%s'
+		for k, a in pairs(wear) do
+			a = a.Image and t[s..fmt:format(k:lower())..fmt2:format(a.Image)]
+			if a then
+				return a
+			end
+		end
+	end
 
 	for _, s in ipairs(PaperDollDrawOrder) do
 		local s, piece = s:match('^([^.]*)%.?([^.]*)$')
@@ -318,7 +335,8 @@ local function DrawDoll(pl)
 		if a and not hide[piece] then
 			local class, t = ':'..s:lower(), tget(CurDollGraphics, piece)
 			local it, idx = a.Item, a.Index
-			a = Override(pl, t, wear, class, ':%s.') or Override(pl, t, wear, class, '.') or a
+			a = it and (Override(t, a.Image..class, ':%s.') or Override(t, a.Image..class, '.') or Override(t, a.Image..class, ':%s', ''))
+					or Override(t, class, ':%s.') or Override(t, class, '.') or Override(t, class, ':%s', '') or a
 			if not a.Item then       -- :Player or override
 				a = a.Image and a or t[class]
 			elseif t[a.Image] then   -- special item image
