@@ -10,7 +10,7 @@ local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
 
-local _KNOWNGLOBALS = Party, Game, Map, VFlipUnfixed, FixVFlip, HookManager, structs, GetCurrentNPC, GameInitialized1, GameInitialized2
+local _KNOWNGLOBALS = Party, Game, Map, VFlipUnfixed, FixVFlip, HookManager, structs, GetCurrentNPC, GameInitialized1, GameInitialized2, WhoHitMonster, WhoHitPlayer
 
 
 do
@@ -130,6 +130,19 @@ local function Conditional(hooks, name)
 	if not EventsT[name] then
 		hooks.Switch(false)
 	end
+end
+
+local function GetPlayer(p)
+	local i = (p - Party.PlayersArray["?ptr"]) / Party.PlayersArray[0]["?size"]
+	return i, Party.PlayersArray[i]
+end
+
+local function GetMonster(p)
+	if p == 0 then
+		return
+	end
+	local i = (p - Map.Monsters["?ptr"]) / Map.Monsters[0]["?size"]
+	return i, Map.Monsters[i]
 end
 
 
@@ -752,9 +765,82 @@ if mmver > 6 then
 	end)
 end
 
+-- GetShopItemTreatment
+local ShopAction = {nil, 'buy', 'sell', 'identify', 'repair'}
+
+mem.hookfunction(mmv(0x485120, 0x490EE6, 0x49000D), 1, 4, function(d, def, pl, item, housetype, house, action)
+	local t = {
+		House = house,
+		HouseType = housetype,
+		Action = ShopAction[action] or action,
+		Item = structs.Item:new(item),
+		Result = def(pl, item, housetype, house, action),
+	}
+	t.PlayerIndex, t.Player = GetPlayer(pl)
+	function t.GetDefault(HouseType, House, Item, Action, Player)
+		return def(Player or pl, Item or item, HouseType or housetype, House or house, Action or action)
+	end
+	-- 'Action': "buy", "sell", "identify", "repair"
+	-- 'Result': 0-based option from merchant.txt
+	-- 'GetDefault'!Params[[(HouseType, House, Item, Action, Player)]] function lets you get item treatment by another shop type (all parameters are optional)
+	events.cocall("GetShopItemTreatment", t)
+	return t.Result
+end)
+
+-- CanShopOperateOnItem
+mem.hookfunction(mmv(0x4A4C30, 0x4BDA12, 0x4BB612), 2, 0, function(d, def, item, house)
+	local t = {
+		House = house,
+		HouseType = Game.Houses[house].Type,
+		Item = structs.Item:new(item),
+		Result = def(item, house) ~= 0,
+	}
+	function t.GetDefault(House, Item)
+		return def(Item or item, House or house)
+	end
+	-- 'GetDefault'!Params[[(House, Item)]] function lets you get item treatment by another shop type (all parameters are optional)
+	events.cocall("CanShopOperateOnItem", t)
+	return t.Result and 1 or 0
+end)
+
+-- ShopItemsGenerated
+mem.hookfunction(mmv(0x49FD40, 0x4B8EF7, 0x4B74B6), 0, 0, function(d, def)
+	def()
+	local house = Game.GetCurrentHouse()
+	local t = {
+		House = house,
+		HouseType = Game.Houses[house].Type,
+	}
+	events.cocall("ShopItemsGenerated", t)
+end)
+
+-- GuildItemsGenerated
+mem.autohook(mmv(0x4A465D, 0x4BD307, 0x4BB2B6), function(d)
+	local house = Game.GetCurrentHouse()
+	local t = {
+		House = house,
+		HouseType = Game.Houses[house].Type,
+	}
+	-- Note that you'll have to update #Game.GuildItemIconPtr:# if you change items in this event.
+	events.cocall("GuildItemsGenerated", t)
+end)
+
+-- HouseMovieFrame
+do
+	local hooks = HookManager()
+	hooks.autohook(mmv(0x4A6113, 0x4BF09B, 0x4BCCCE), function(d)
+		local t = {
+			House = Game.GetCurrentHouse(),
+		}
+		events.cocall("HouseMovieFrame", t)
+	end)
+	Conditional(hooks, "HouseMovieFrame")
+end
+
 -- Arcomage
 if mmver > 6 then
 	mem.autohook2(mm78(0x40A005, 0x40AB7D), function(d)
+		--!(arcomage:structs.Arcomage)
 		events.cocalls("ArcomageSetup", Game.Arcomage)
 	end)
 end
@@ -1296,19 +1382,7 @@ if mmver == 7 then
 end
 
 
--- Player hooks
-local function GetPlayer(p)
-	local i = (p - Party.PlayersArray["?ptr"]) / Party.PlayersArray[0]["?size"]
-	return i, Party.PlayersArray[i]
-end
-
-local function GetMonster(p)
-	if p == 0 then
-		return
-	end
-	local i = (p - Map.Monsters["?ptr"]) / Map.Monsters[0]["?size"]
-	return i, Map.Monsters[i]
-end
+---- Player hooks
 
 -- CalcStatBonusByItems
 local ArtifactBonus = mmver > 6 and mem.StaticAlloc(8)
@@ -1608,144 +1682,16 @@ else
 	end)
 end
 
--- GetShopItemTreatment
-local ShopAction = {nil, 'buy', 'sell', 'identify', 'repair'}
 
-mem.hookfunction(mmv(0x485120, 0x490EE6, 0x49000D), 1, 4, function(d, def, pl, item, housetype, house, action)
-	local t = {
-		House = house,
-		HouseType = housetype,
-		Action = ShopAction[action] or action,
-		Item = structs.Item:new(item),
-		Result = def(pl, item, housetype, house, action),
-	}
-	t.PlayerIndex, t.Player = GetPlayer(pl)
-	function t.GetDefault(HouseType, House, Item, Action, Player)
-		return def(Player or pl, Item or item, HouseType or housetype, House or house, Action or action)
-	end
-	-- 'Action': "buy", "sell", "identify", "repair"
-	-- 'Result': 0-based option from merchant.txt
-	-- 'GetDefault'!Params[[(HouseType, House, Item, Action, Player)]] function lets you get item treatment by another shop type (all parameters are optional)
-	events.cocall("GetShopItemTreatment", t)
-	return t.Result
-end)
-
--- CanShopOperateOnItem
-mem.hookfunction(mmv(0x4A4C30, 0x4BDA12, 0x4BB612), 2, 0, function(d, def, item, house)
-	local t = {
-		House = house,
-		HouseType = Game.Houses[house].Type,
-		Item = structs.Item:new(item),
-		Result = def(item, house) ~= 0,
-	}
-	function t.GetDefault(House, Item)
-		return def(Item or item, House or house)
-	end
-	-- 'GetDefault'!Params[[(House, Item)]] function lets you get item treatment by another shop type (all parameters are optional)
-	events.cocall("CanShopOperateOnItem", t)
-	return t.Result and 1 or 0
-end)
-
--- ShopItemsGenerated
-mem.hookfunction(mmv(0x49FD40, 0x4B8EF7, 0x4B74B6), 0, 0, function(d, def)
-	def()
-	local house = Game.GetCurrentHouse()
-	local t = {
-		House = house,
-		HouseType = Game.Houses[house].Type,
-	}
-	events.cocall("ShopItemsGenerated", t)
-end)
-
--- GuildItemsGenerated
-mem.autohook(mmv(0x4A465D, 0x4BD307, 0x4BB2B6), function(d)
-	local house = Game.GetCurrentHouse()
-	local t = {
-		House = house,
-		HouseType = Game.Houses[house].Type,
-	}
-	-- Note that you'll have to update #Game.GuildItemIconPtr:# if you change items in this event.
-	events.cocall("GuildItemsGenerated", t)
-end)
-
-do
-	local hooks = HookManager()
-	hooks.autohook(mmv(0x4A6113, 0x4BF09B, 0x4BCCCE), function(d)
-		local t = {
-			House = Game.GetCurrentHouse(),
-		}
-		events.cocall("HouseMovieFrame", t)
-	end)
-	Conditional(hooks, "HouseMovieFrame")
-end
-
-
-local AddFields_damageMonsterFrom
-do
-	local p = mem.StaticAlloc(8)
-	u4[p] = 0
-	local hooks = HookManager{
-		att = p,      -- attacker ObjRef
-		mon = p + 4,  -- monster index
-		ret = 4,      -- stack arguments*4
-	}
-	local push = [[
-		mov eax, [esp + %ret%]
-		push eax
-	]]
-	local s = push..[[
-		mov [%att%], ecx
-		mov [%mon%], edx
-		call @std
-		mov dword [%att%], 0
-		ret %ret%
-	@std:
-	]]
-	hooks.asmhook(mmv(0x430E50, 0x439463, 0x436E26), s)  -- from party
-	if mmver > 6 then
-		hooks.asmhook(mm78(0x43B07A, 0x438C6E), s)  -- from event
-		hooks.ref.ret = 8
-		hooks.asmhook(mm78(0x43B1D3, 0x438DDE), push..s)  -- from monster
-	end
-
-	function AddFields_damageMonsterFrom(t, needMon)
-		local i = u4[p]
-		if i == 0 then
-			return
-		end
-		local kind = i%8
-		i = (i - kind)/8
-		if kind == 2 then
-			local obj = Map.Objects[i]
-			t.ObjectIndex, t.Object = i, obj
-			i = obj.Owner
-			kind = i%8
-			i = (i - kind)/8
-		end
-		if kind == 4 then
-			t.PlayerIndex, t.Player = i, Party.PlayersArray[i]
-		elseif kind == 3 then
-			t.ByMonsterIndex, t.ByMonster = i, Map.Monsters[i]
-		end
-		if needMon then
-			local i = u4[p + 4]
-			t.MonsterIndex, t.Monster = i, Map.Monsters[i]
-		end
-	end
-end
-
+---- Monster hooks
 
 -- MonsterKilled
 mem.hookfunction(mmv(0x403050, 0x402D6E, 0x402E78), 1, 0, function(d, def, index)
 	local function callDef()
 		def = def and def(index) and nil
 	end
-	local t = {}
-	AddFields_damageMonsterFrom(t)
-	--!(mon:structs.MapMonster, monIndex, defaultHandler, t) #t.Player:structs.Player# and 't.PlayerIndex' are set if monster is killed by the party.
-	-- #t.ByMonster:structs.MapMonster# and 't.ByMonsterIndex' fields are set if monster is killed by another monster.
-	-- #t.Object:structs.MapObject# and 't.ObjectIndex' are set if monster is killed by a missile.
-	events.cocall("MonsterKilled", Map.Monsters[index], index, callDef, t)
+	--!(mon:structs.MapMonster, monIndex, defaultHandler)
+	events.cocall("MonsterKilled", Map.Monsters[index], index, callDef)
 	callDef()
 end)
 
@@ -1789,12 +1735,10 @@ if mmver > 6 then
 			Item = structs.Item:new(item),
 			Result = def(item, kind, vampiric),
 		}
-		AddFields_damageMonsterFrom(t, true)
 		-- :const.Damage
 		t.DamageKind = i4[kind]
 		t.Vampiric = (i4[vampiric] ~= 0)
-		--!k{Monster :structs.MapMonster, Player :structs.Player, Object :structs.MapObject, ObjectIndex} [MM7+] 'Monster', 'MonsterIndex', 'Player' and 'PlayerIndex' fields are only set if the function is called by the game itself and not from a script.
-		-- 'Object' and 'ObjectIndex' are set if monster is hit by a missile.
+		-- [MM7+]
 		events.cocall("ItemAdditionalDamage", t)
 		i4[kind] = t.DamageKind
 		i4[vampiric] = (t.Vampiric and 1 or 0)
@@ -1802,8 +1746,6 @@ if mmver > 6 then
 	end)
 end
 
-
-local CalcDamageToMonster_PlayerProc = mmv()
 
 -- CalcDamageToMonster
 mem.hookfunction(mmv(0x421DC0, 0x427522, 0x425951), 0, 3, function(d, def, mon, kind, dmg)
@@ -1813,11 +1755,8 @@ mem.hookfunction(mmv(0x421DC0, 0x427522, 0x425951), 0, 3, function(d, def, mon, 
 		Damage = dmg,
 		Result = def(mon, kind, dmg),
 	}
-	AddFields_damageMonsterFrom(t)
 	t.MonsterIndex, t.Monster = GetMonster(mon)
-	--!k{Monster :structs.MapMonster, Player :structs.Player, PlayerIndex, ByMonster :structs.MapMonster, ByMonsterIndex, Object :structs.MapObject, ObjectIndex} 'Player' and 'PlayerIndex' fields are only set when monster is hit by the party.
-	-- 'ByMonster' and 'ByMonsterIndex' fields are set if monster is hit by another monster.
-	-- 'Object' and 'ObjectIndex' are set if monster is hit by a missile.
+	--!k{Monster :structs.MapMonster}
 	events.cocall("CalcDamageToMonster", t)
 	return t.Result
 end)
@@ -1886,6 +1825,7 @@ do
 	local hooks = HookManager()
 	hooks.hookfunction(mmv(0x421C50, 0x427002, 0x4253DF), 1, mmv(1, 2, 3), function(d, def, ai, mon, monIndex, dist)
 		local t = {
+			-- :const.MonsterAction
 			Action = nil,
 			Monster = mon,
 			MonsterIndex = (mmver == 6 and GetMonster(mon) or monIndex),
@@ -1899,15 +1839,106 @@ do
 			return r
 		end
 		--!k{Monster :structs.MapMonster} 'Action' starts uninitialized. Each time you call 'CallDefault', it generates new result, assigns it to 'Action' and returns the value.
-		-- 'Action' values:
-		-- 0 - attack 1,
-		-- 1 - attack 2,
-		-- 2 - spell 1,
-		-- 3 - spell 2 [MM7+]
 		events.cocall("MonsterChooseAction", t)
 		return t.Action or def(ai, mon, monIndex, dist)
 	end)
 	Conditional(hooks, "MonsterChooseAction")
 end
+
+
+do
+	-- WhoHitMonster
+	local p = mem.StaticAlloc(12)
+	u4[p] = 0
+	local hooks = HookManager{
+		att = p,      -- attacker ObjRef
+		mon = p + 4,  -- monster index
+		kind = p + 8, -- mon attack kind
+		ret = 4,      -- stack arguments*4
+	}
+	local push = [[
+		mov eax, [esp + %ret%]
+		push eax
+	]]
+	local s = push..[[
+		mov [%att%], ecx
+		mov [%mon%], edx
+		call @std
+		mov dword [%att%], 0
+		ret %ret%
+	@std:
+	]]
+	local mon = push..[[
+		mov [%kind%], eax
+	]]..s
+	hooks.asmhook(mmv(0x430E50, 0x439463, 0x436E26), s)  -- from party
+	if mmver > 6 then
+		hooks.asmhook(mm78(0x43B07A, 0x438C6E), s)  -- from event
+		hooks.ref.ret = 8
+		hooks.asmhook(mm78(0x43B1D3, 0x438DDE), mon)  -- from monster
+	end
+	
+	local function Who(i)
+		local t, kind = {}, i%8
+		i = (i - kind)/8
+		if kind == 2 then
+			local obj = Map.Objects[i]
+			t.ObjectIndex, t.Object = i, obj
+			i = obj.Owner
+			kind = i%8
+			i = (i - kind)/8
+		end
+		if kind == 4 then
+			t.PlayerIndex, t.Player = i, Party.PlayersArray[i]
+		elseif kind == 3 then
+			t.MonsterIndex, t.Monster, t.MonsterAction = i, Map.Monsters[i], u4[p + 8]
+		end
+		return t
+	end
+	
+	-- If a monster is being attacked, returns 't', #TargetMon:structs.MapMonster#, 'TargetMonIndex'
+	-- #t.Player:structs.Player# and 't.PlayerIndex' are set if monster is attacked by the party.
+	-- #t.Monster:structs.MapMonster#, 't.MonsterIndex' and #t.MonsterAction:const.MonsterAction# fields are set if monster is attacked by another monster.
+	-- #t.Object:structs.MapObject# and 't.ObjectIndex' are set if monster is hit by a missile.
+	function WhoHitMonster()
+		local i = u4[p]
+		if i ~= 0 then
+			local t, i = Who(i), u4[p + 4]
+			return t, Map.Monsters[i], i
+		end
+	end
+	
+	-- WhoHitPlayer
+	local p = mem.StaticAlloc(12)
+	u4[p] = 0
+	local hooks = HookManager{
+		att = p,      -- attacker ObjRef
+		slot = p + 4, -- party slot
+		kind = p + 8, -- mon attack kind
+		ret = 8,      -- stack arguments*4
+	}
+	local s = push..[[
+		mov [%slot%], eax
+	]]..push..[[
+		mov [%att%], ecx
+		mov [%kind%], edx
+		call @std
+		mov dword [%att%], 0
+		ret %ret%
+	@std:
+	]]
+	hooks.asmhook(mmv(0x431BE0, 0x439FEE, 0x437B06), s)
+
+	-- If party is being attacked, returns 't', 'PlayerSlot'
+	-- #t.Monster:structs.MapMonster#, 't.MonsterIndex' and #t.MonsterAction:const.MonsterAction# fields are set if player is attacked by a monster.
+	-- #t.Object:structs.MapObject# and 't.ObjectIndex' are set if player is hit by a missile.
+	function WhoHitPlayer()
+		local i = u4[p]
+		if i ~= 0 then
+			return Who(i), u4[p + 4]
+		end
+	end
+end
+
 
 mem.IgnoreProtection(false)

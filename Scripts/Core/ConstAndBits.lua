@@ -246,6 +246,13 @@ elseif mmver == 8 then
 	}
 end
 
+const.MonsterAction = {
+	Attack1 = 0,
+	Attack2 = 1,
+	Spell1 = 2,
+	Spell2 = mmver > 6 and 3 or nil,
+}
+
 const.ObjectRefKind = {
 	Nothing = 0,
 	Door = 1,
@@ -810,12 +817,12 @@ else
 		Level = 24,
 		MeleeAttack = 25,
 		MeleeDamageBase = 26,
-		MeleeDamageMin = 27,
-		MeleeDamageMax = 28,
+		MeleeDamageMin = 27,  -- For Stats screen. Only used in #CalcStatBonusByItems:events.CalcStatBonusByItems#, other events use MeleeDamageBase
+		MeleeDamageMax = 28,  -- For Stats screen. Only used in #CalcStatBonusByItems:events.CalcStatBonusByItems#, other events use MeleeDamageBase
 		RangedAttack = 29,
 		RangedDamageBase = 30,
-		RangedDamageMin = 31,
-		RangedDamageMax = 32,
+		RangedDamageMin = 31,  -- For Stats screen. Only used in #CalcStatBonusByItems:events.CalcStatBonusByItems#, other events use RangedDamageBase
+		RangedDamageMax = 32,  -- For Stats screen. Only used in #CalcStatBonusByItems:events.CalcStatBonusByItems#, other events use RangedDamageBase
 		SpiritResistance = 33,
 		FireMagic = 34,
 		AirMagic = 35,
@@ -1002,15 +1009,25 @@ const.FaceAnimation = {
 
 	ShopIdentify = 73,
 	ShopRepair = 74,
-	
+	ShopItemBought = 75,	
 	ShopAlreadyIdentified = 76,
 
+	SkillLearned = 78,
 	ShopWrongShop = 79,
 	ShopRude = 80,
 	BankDeposit = 81,
 	SmileBig = 82,
 	TempleDonate = 83,
 	HelloHouse = 84,
+	SkillImproved = 85,
+	
+	LevelUp = 87,
+	
+	StatBonusIncreased = 91,
+	StatBaseIncreased = 92,
+	QuestGot = 93,
+	
+	AwardGot = 96,
 
 	AfraidSilent = 98,
 	
