@@ -447,7 +447,7 @@ end]=]
 		define[0x6BE8D8].struct(structs.Lod)  'EventsLod'
 	end
 	if mmver > 6 then
-		define[mmv(nil, 0xE31AF0, 0xF01A08)].u4  'RendererD3D'
+		define[mmv(nil, 0xE31AF0, 0xF01A08)].pstruct(structs.RendererD3D)  'RendererD3D'
 		.Info{Name = "IsD3D", new = true}
 	end
 	define[0].CustomType('RandSeed', 0, function(o, obj, name, val)

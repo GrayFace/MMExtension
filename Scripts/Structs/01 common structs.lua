@@ -2584,3 +2584,6 @@ function structs.f.ArcomagePlayer(define)
 	 .Info{Sig = "[10][2]"}
 	.size = 47*4
 end
+
+function structs.f.RendererD3D(define)
+end
