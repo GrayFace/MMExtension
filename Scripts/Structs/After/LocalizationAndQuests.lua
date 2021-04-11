@@ -388,8 +388,7 @@ local function RegisterQuest(t)
 			Game.NPC[CurrentNPC].Events[i] = s
 		end
 		BackupNPC = {}
-		internal.SaveGameData.SeenNPC = internal.SaveGameData.SeenNPC or {}
-		internal.SaveGameData.SeenNPC[CurrentNPC] = true
+		tget(internal.SaveGameData, "SeenNPC")[CurrentNPC] = true
 		CurrentNPC = nil
 	end
 	

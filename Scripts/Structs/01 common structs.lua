@@ -2539,7 +2539,7 @@ local function i4_AddOne(o, obj, name, val)
 end
 
 local function ArcIncome(o, obj, name, val)
-	local d = i4[Game.Arcomage.BaseIncome['?ptr'] + o]
+	local d = i4[Game.Arcomage.MinIncome['?ptr'] + o]
 	if val == nil then
 		return i4[obj['?ptr'] + o] + d
 	else
@@ -2552,15 +2552,18 @@ function structs.f.Arcomage(define)
 	[mm78(0x4E1860, 0x4F2D34)].i4  'StartingTower'
 	.i4  'StartingWall'
 	.array(3).CustomType('StartingIncome', 4, ArcIncome)
+	 .Info{Sig = "[3]"}
 	.CustomType('CardsCount', 4, i4_AddOne)
 	 .Info "Internally up to 10 cards are supported."
-	.array(3).i4  'BaseIncome'
-	 .Info "If you change these values, #StartingIncome:structs.Arcomage.StartingIncome# and #player income:structs.ArcomagePlayer.Income# would also change."
+	.array(3).i4  'MinIncome'
+	 .Info{Sig = "[3]", "If you change these values, #StartingIncome:structs.Arcomage.StartingIncome# and #player income:structs.ArcomagePlayer.Income# would also change."}
 	.i4  'TowerToWin'
 	.i4  'ResToWin'
 	[mm78(0x505704, 0x516D5C)].array(3).i4  'StartingRes'
+	 .Info{Sig = "[3]"}
 	[mm78(0x4DF3A4, 0x4F0224)].i4  'AI'  .Info '0 - 2'
 	[mm78(0x505588, 0x516BE0)].array(2).struct(structs.ArcomagePlayer)  'Players'
+	 .Info{Sig = "[2]", "Player 0 is the human, player 1 is AI"}
 	.indexmember  'Players'
 end
 
@@ -2572,8 +2575,12 @@ function structs.f.ArcomagePlayer(define)
 	.i4  'Tower'
 	.i4  'Wall'
 	.array(3).CustomType('Income', 4, ArcIncome)
+	 .Info{Sig = "[3]"}
 	.array(3).i4  'Res'
+	 .Info{Sig = "[3]"}
 	.array(10).i4  'Cards'
+	 .Info{Sig = "[10]"}
 	.array(10).array(2).i4  'unk'
+	 .Info{Sig = "[10][2]"}
 	.size = 47*4
 end

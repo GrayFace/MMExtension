@@ -118,7 +118,6 @@ function internal.BeforeMapLoad()
 	mapvars = tget(sgd, "Maps", MapName)
 	MapVars = mapvars
 	WasInGame, WasLoaded = internal.InGame, internal.GameLoading
-	events.cocall("InternalBeforeLoadMap", WasInGame, WasLoaded)
 	if not WasInGame then
 		internal.InGame, internal.GameLoading = true, nil
 		evt.Global = MakeEventsTable()
@@ -127,6 +126,9 @@ function internal.BeforeMapLoad()
 			--!v([]) [MM7+]  Functions that can return 'true' or 'false' to change topic visibility
 			evt.CanShowTopic = events.new()
 		end
+	end
+	events.cocall("InternalBeforeLoadMap", WasInGame, WasLoaded)
+	if not WasInGame then
 		LoadScripts("Global/*.lua", GlobalScripts)
 	end
 	events.cocall("BeforeLoadMap", WasInGame, WasLoaded)
