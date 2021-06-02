@@ -114,6 +114,7 @@ Doll	ItemPicture	Image	X	Y	Piece	Comments
 	belt4a	BELT4B
 	belt5a	BELT5B
 						Cloaks:
+	:Cloak:Cloak	nwcapeb
 	cape1a	cape1b
 	cape2a	cape2b
 	cape3a	cape3b

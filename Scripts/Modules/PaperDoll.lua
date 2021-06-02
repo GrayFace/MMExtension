@@ -174,10 +174,12 @@ local mm6 = (PaperDollMode == 6)
 
 --!v Default (depending on #PaperDollMode:#):
 -- !Lua[[{'Bow', 'Cloak',
+-- 	'Armor.back', 'Belt.back',
 -- 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2hb', 'Player.arm2f', 'Player.shield', 'Player.hair2', 'Player.hair',
--- 	mm6 and 'Helm' or 'Helm.mm6', mm6 and 'Boots' or 'Boots.mm6',
+-- 	'Armor.back2',
+-- 	mm6 and 'Helm' or 'Helm.back', mm6 and 'Boots' or 'Boots.back',
 -- 	'Armor', 'Armor.arm1', 'Armor.arm1f',
--- 	mm6 and 'Boots.boots' or 'Boots',
+-- 	mm6 and 'Boots.front' or 'Boots',
 -- 	'Belt',
 -- 	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h',
 -- 	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
@@ -187,10 +189,12 @@ local mm6 = (PaperDollMode == 6)
 -- 	'Player.hand2', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2h',
 -- }]]
 PaperDollDrawOrder = {'Bow', 'Cloak',
+	'Armor.back', 'Belt.back',
 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2hb', 'Player.arm2f', 'Player.shield', 'Player.hair2', 'Player.hair',
-	mm6 and 'Helm' or 'Helm.mm6', mm6 and 'Boots' or 'Boots.mm6',
+	'Armor.back2',
+	mm6 and 'Helm' or 'Helm.back', mm6 and 'Boots' or 'Boots.back',
 	'Armor', 'Armor.arm1', 'Armor.arm1f',
-	mm6 and 'Boots.boots' or 'Boots',
+	mm6 and 'Boots.front' or 'Boots',
 	'Belt',
 	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h',
 	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
@@ -335,12 +339,13 @@ local function DrawDoll(pl)
 		if a and not hide[piece] then
 			local class, t = ':'..s:lower(), tget(CurDollGraphics, piece)
 			local it, idx = a.Item, a.Index
-			a = it and (Override(t, a.Image..class, ':%s.') or Override(t, a.Image..class, '.') or Override(t, a.Image..class, ':%s', ''))
-					or Override(t, class, ':%s.') or Override(t, class, '.') or Override(t, class, ':%s', '') or a
+			local over = it and (Override(t, a.Image..class, ':%s.') or Override(t, a.Image..class, '.') or Override(t, a.Image..class, ':%s', '') or Override(t, a.Image, '', ''))
+					or Override(t, class, ':%s.') or Override(t, class, '.') or Override(t, class, ':%s', '')
+			if over then
+				a = table.copy(over, {Image = a.Image, X = a.X, Y = a.Y}, true)
+			end
 			if not a.Item then       -- :Player or override
 				a = a.Image and a or t[class]
-			elseif t[a.Image] then   -- special item image
-				a = table.copy(t[a.Image], table.copy(a), true)
 			elseif not (PaperDollMainPieces[s] or PaperDollMainPiecesStd)[piece] then
 				a = nil                -- only draw item as the main piece
 			end
