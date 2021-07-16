@@ -10,7 +10,7 @@ local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
 
-local _KNOWNGLOBALS = Party, Game, Map, VFlipUnfixed, FixVFlip, HookManager, structs, GetCurrentNPC, GameInitialized1, GameInitialized2, WhoHitMonster, WhoHitPlayer
+local _KNOWNGLOBALS = Party, Game, Map, VFlipUnfixed, FixVFlip, HookManager, structs, GetCurrentNPC, GameInitialized1, GameInitialized2, WhoHitMonster, WhoHitPlayer, CallDefaultWindowProc
 
 
 do
@@ -145,6 +145,17 @@ local function GetMonster(p)
 	return i, Map.Monsters[i]
 end
 
+local function CmpOpcode(p, v, ...)
+	return not v or u1[p] == v and CmpOpcode(p + 1, ...)
+end
+
+local function FindOpcode(p, ...)
+	while not CmpOpcode(p, ...) do
+		p = p + mem.GetInstructionSize(p)
+	end
+	return p
+end
+
 
 mem.IgnoreProtection(true)
 
@@ -238,16 +249,20 @@ function internal.TravelWalk(mapName, x, y, buf, bufsize, result)
 	return res and 1 or 0
 end
 
+local function SetPosDir(x, y, z, direction, lookAngle, speedZ)
+	Party.X = x
+	Party.Y = y
+	Party.Z = z
+	Party.FallStartZ = Party.Z
+	Party.Direction = direction
+	Party.LookAngle = lookAngle
+	Party.SpeedZ = speedZ or 0
+end
+
 function internal.NewGameMap()
 	local t = {AutoFallStart = true, Set = nil}
 	function t.Set(x, y, z, direction, lookAngle, speedZ)
-		Party.X = x
-		Party.Y = y
-		Party.Z = z
-		Party.FallStartZ = Party.Z
-		Party.Direction = direction
-		Party.LookAngle = lookAngle
-		Party.SpeedZ = speedZ
+		SetPosDir(x, y, z, direction, lookAngle, speedZ)
 		local a = Game.MoveToMap
 		a.Defined = true
 		a.X = x == 0 and 1 or x
@@ -255,7 +270,7 @@ function internal.NewGameMap()
 		a.Z = z == 0 and 1 or z
 		a.Direction = direction == 0 and 1 or direction
 		a.LookAngle = lookAngle == 0 and 1 or lookAngle
-		a.SpeedZ = speedZ
+		a.SpeedZ = speedZ or 0
 	end
 	-- 'Set'!Params[[(x, y, z, direction, lookAngle, speedZ)]] function sets both party position (saved in autosave) and map transition (used on start immediately).
 	events.cocalls("NewGameMap", t)
@@ -266,7 +281,7 @@ function internal.NewGameMap()
 end
 
 function internal.DeathMap(p)
-	local t = {Name = mem.string(p)}
+	local t = {Name = mem.string(p), Set = SetPosDir}
 	events.cocalls("DeathMap", t)
 	assert(#t.Name < 0x14)
 	mem.copy(p, t.Name, #t.Name + 1)
@@ -539,6 +554,9 @@ do
 	local ptr = mmv(0x45733A+4, 0x4652BB+3, 0x463542+3)
 	local std = u4[ptr]
 	u4[ptr] = buf
+	function CallDefaultWindowProc(Msg, WParam, LParam)
+		return call(std, 0, u4[offsets.MainWindow], Msg or 0, WParam or 0, LParam or 0)
+	end
 	
 	mem.hook(buf, function(d)
 		d.esp = d.esp + 4
@@ -593,7 +611,7 @@ local function OnAction(InGame, a1, a2, a3)
 		if a3 then
 			i4[a3] = t.Param2
 		end
-		if CurrentNPC and i4[a1] == 113 and screensNPC[Game.CurrentScreen] then
+		if InGame and CurrentNPC and i4[a1] == 113 and screensNPC[Game.CurrentScreen] then
 			local i = CurrentNPC
 			local t = {NPC = i, Allow = true}
 			events.cocalls("CanExitNPC", t)
@@ -773,6 +791,7 @@ mem.hookfunction(mmv(0x485120, 0x490EE6, 0x49000D), 1, 4, function(d, def, pl, i
 		House = house,
 		HouseType = housetype,
 		Action = ShopAction[action] or action,
+		-- :structs.Item
 		Item = structs.Item:new(item),
 		Result = def(pl, item, housetype, house, action),
 	}
@@ -780,6 +799,7 @@ mem.hookfunction(mmv(0x485120, 0x490EE6, 0x49000D), 1, 4, function(d, def, pl, i
 	function t.GetDefault(HouseType, House, Item, Action, Player)
 		return def(Player or pl, Item or item, HouseType or housetype, House or house, Action or action)
 	end
+	--!k{Player :structs.Player}
 	-- 'Action': "buy", "sell", "identify", "repair"
 	-- 'Result': 0-based option from merchant.txt
 	-- 'GetDefault'!Params[[(HouseType, House, Item, Action, Player)]] function lets you get item treatment by another shop type (all parameters are optional)
@@ -1073,7 +1093,7 @@ end
 function events.GameInitialized2()
 	if mmver == 7 and Game.IsD3D and not Game.PatchOptions.Present'TrueColorSprites' then
 		mem.autohook(0x4649B7, function(d)
-			Game.BitmapsLod:LoadBitmap("WtrTyl")
+			i4[0xEF5114] = Game.BitmapsLod:LoadBitmap("WtrTyl")
 		end)
 	end
 end
@@ -1563,6 +1583,7 @@ mem.hookfunction(mmv(0x49DAD0, 0x4B6F5C, 0x4B57BD), 1, 0, function(d, def, this)
 		Result = def(this) ~= 0,
 	}
 	t.PlayerIndex, t.Player = GetPlayer(this)
+	--!k{Player :structs.Player}
 	events.cocall("CanTempleHealPlayer", t)
 	return t.Result and 1 or 0
 end)
@@ -1620,6 +1641,7 @@ do
 			return
 		end
 		-- 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes care of conditions
+		--!k{Player :structs.Player}
 		events.cocall('Regeneration', t)
 		if t.HP ~= 0 then
 			local v = pl.HP
@@ -1846,39 +1868,11 @@ do
 end
 
 
+-- monster/player attacked
 do
-	-- WhoHitMonster
-	local p = mem.StaticAlloc(12)
-	u4[p] = 0
-	local hooks = HookManager{
-		att = p,      -- attacker ObjRef
-		mon = p + 4,  -- monster index
-		kind = p + 8, -- mon attack kind
-		ret = 4,      -- stack arguments*4
-	}
-	local push = [[
-		mov eax, [esp + %ret%]
-		push eax
-	]]
-	local s = push..[[
-		mov [%att%], ecx
-		mov [%mon%], edx
-		call @std
-		mov dword [%att%], 0
-		ret %ret%
-	@std:
-	]]
-	local mon = push..[[
-		mov [%kind%], eax
-	]]..s
-	hooks.asmhook(mmv(0x430E50, 0x439463, 0x436E26), s)  -- from party
-	if mmver > 6 then
-		hooks.asmhook(mm78(0x43B07A, 0x438C6E), s)  -- from event
-		hooks.ref.ret = 8
-		hooks.asmhook(mm78(0x43B1D3, 0x438DDE), mon)  -- from monster
-	end
-	
-	local function Who(i)
+	local Mon_Who, Mon_Idx, Pl_Who, Pl_Slot
+
+	local function Who(i, action)
 		local t, kind = {}, i%8
 		i = (i - kind)/8
 		if kind == 2 then
@@ -1891,53 +1885,105 @@ do
 		if kind == 4 then
 			t.PlayerIndex, t.Player = i, Party.PlayersArray[i]
 		elseif kind == 3 then
-			t.MonsterIndex, t.Monster, t.MonsterAction = i, Map.Monsters[i], u4[p + 8]
+			t.MonsterIndex, t.Monster, t.MonsterAction = i, Map.Monsters[i], action
 		end
 		return t
 	end
-	
-	-- If a monster is being attacked, returns 't', #TargetMon:structs.MapMonster#, 'TargetMonIndex'
+
+	-- If a monster is being attacked, returns 't', 'TargetMonsterIndex'.
 	-- #t.Player:structs.Player# and 't.PlayerIndex' are set if monster is attacked by the party.
 	-- #t.Monster:structs.MapMonster#, 't.MonsterIndex' and #t.MonsterAction:const.MonsterAction# fields are set if monster is attacked by another monster.
 	-- #t.Object:structs.MapObject# and 't.ObjectIndex' are set if monster is hit by a missile.
+	-- Note that 't.Object' can be set at the same time as 't.Monster' or 't.Player'.
 	function WhoHitMonster()
-		local i = u4[p]
-		if i ~= 0 then
-			local t, i = Who(i), u4[p + 4]
-			return t, Map.Monsters[i], i
+		return Mon_Who, Mon_Idx
+	end
+
+	local function HitMon(d, def, attackerID, monIndex, speed, action)
+		local attacker, old, old2 = Who(attackerID, action), Mon_Who, Mon_Idx
+		Mon_Who, Mon_Idx = attacker, monIndex
+		local t = {
+			-- table returned by #WhoHitMonster:#
+			Attacker = attacker,
+			MonsterIndex = monIndex,
+			-- :structs.MapMonster
+			Monster = Map.Monsters[monIndex],
+			Handled = false,
+		}
+		-- function!Params[[()]]
+		-- t.CallDefault = function()
+		-- 	def(attackerID, monIndex, speed, action)
+		-- 	t.Handled = true
+		-- end
+		
+		-- Called when a player or a projectile tries to hit a monster
+		events.cocall("MonsterAttacked", t)
+		if not t.Handled then
+			def(attackerID, monIndex, speed, action)
 		end
+		--!k{Handled carried over from #MonsterAttacked:events.MonsterAttacked# event}
+		events.cocall("AfterMonsterAttacked", t)
+		Mon_Who, Mon_Idx = old, old2
+	end
+
+	mem.hookfunction(mmv(0x430E50, 0x439463, 0x436E26), 2, 1, HitMon)  -- from party
+	if mmver > 6 then
+		mem.hookfunction(mm78(0x43B07A, 0x438C6E), 2, 1, HitMon)  -- from event
+		mem.hookfunction(mm78(0x43B1D3, 0x438DDE), 2, 2, HitMon)  -- from monster
 	end
 	
-	-- WhoHitPlayer
-	local p = mem.StaticAlloc(12)
-	u4[p] = 0
-	local hooks = HookManager{
-		att = p,      -- attacker ObjRef
-		slot = p + 4, -- party slot
-		kind = p + 8, -- mon attack kind
-		ret = 8,      -- stack arguments*4
-	}
-	local s = push..[[
-		mov [%slot%], eax
-	]]..push..[[
-		mov [%att%], ecx
-		mov [%kind%], edx
-		call @std
-		mov dword [%att%], 0
-		ret %ret%
-	@std:
-	]]
-	hooks.asmhook(mmv(0x431BE0, 0x439FEE, 0x437B06), s)
-
-	-- If party is being attacked, returns 't', 'PlayerSlot'
+	-- If a player is being attacked, returns 't', 'PlayerSlot'.
 	-- #t.Monster:structs.MapMonster#, 't.MonsterIndex' and #t.MonsterAction:const.MonsterAction# fields are set if player is attacked by a monster.
 	-- #t.Object:structs.MapObject# and 't.ObjectIndex' are set if player is hit by a missile.
+	-- Note that 't.Object' and 't.Monster' can be set at the same time if the projectile was fired by a monster.
 	function WhoHitPlayer()
-		local i = u4[p]
-		if i ~= 0 then
-			return Who(i), u4[p + 4]
-		end
+		return Pl_Who, Pl_Slot
 	end
+	
+	local function HitPlayer(d, def, attackerID, action, speed, slot)
+		local attacker, old, old2 = Who(attackerID, action), Pl_Who, Pl_Slot
+		-- choose the player slot the same way the function does it
+		if slot == -1 then
+			local m = attacker.Monster
+			if m then
+				slot = m:ChooseTargetPlayer()
+			else
+				local t = {}
+				for i, pl in Party.Players do
+					if pl:IsConscious() then
+						t[#t + 1] = i
+					end
+				end
+				slot = t[Game.Rand() % #t + 1]
+			end
+		end
+		
+		Pl_Who, Pl_Slot = attacker, slot
+		local t = {
+			-- table returned by #WhoHitMonster:#
+			Attacker = attacker,
+			-- :structs.Player
+			Player = Party[slot],
+			PlayerSlot = slot,
+			Handled = false,
+		}
+		-- function!Params[[()]]
+		-- t.CallDefault = function()
+		-- 	def(attackerID, monIndex, speed, action)
+		-- 	t.Handled = true
+		-- end
+		
+		-- Called when a monster or a projectile tries to hit a player
+		events.cocall("PlayerAttacked", t)
+		if not t.Handled then
+			def(attackerID, action, speed, slot)
+		end
+		--!k{Handled carried over from #PlayerAttacked:events.PlayerAttacked# event}
+		events.cocall("AfterPlayerAttacked", t)
+		Pl_Who, Pl_Slot = old, old2
+	end
+	
+	mem.hookfunction(mmv(0x431BE0, 0x439FEE, 0x437B06), 2, 2, HitPlayer)  -- from anything
 end
 
 

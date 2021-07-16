@@ -1074,6 +1074,8 @@ function structs.f.MapMonster(define)
 	define
 	.method{p = mmv(0x44BF50, 0x4595D3, 0x456E90), name = "LoadFrames"; false}
 	 .Info{Sig = "SoundLoaded = false";  "If 'SoundLoaded' = 'false', sound indexes would be loaded for the monster as well."}
+	.method{p = mmv(0x4219B0, 0x426DC7, 0x425203), name = "ChooseTargetPlayer"}
+	 .Info "Returns player slot index"
 
 	function define.m:LoadFramesAndSounds()
 		call(mmv(0x44BF50, 0x4595D3, 0x456E90), 1, self, 0)
@@ -1119,7 +1121,7 @@ function structs.f.MapMonster(define)
 				Game.SFTBin:LoadGroup(id)
 			end
 		end
-	end	
+	end
 end
 
 
