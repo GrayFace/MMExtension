@@ -18,7 +18,7 @@ function dump(t, depth, exact, detectClones, limit)
 	local tables = {}
 	local ptrs = {}
 	local ShowTable
-	depth = depth and depth * 2 or math.huge
+	depth = depth or math.huge
 	limit = limit or DumpLimit
 
 	local function Write(str)

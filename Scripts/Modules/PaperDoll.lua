@@ -324,7 +324,7 @@ local function DrawDoll(pl)
 	local wear = GetItems(pl)
 	local face = pl.Face
 	local function Override(t, s, fmt, fmt2)
-		fmt2 = fmt2 or '%s'
+		fmt, fmt2 = fmt or ':%s', fmt2 or '.%s'
 		for k, a in pairs(wear) do
 			a = a.Image and t[s..fmt:format(k:lower())..fmt2:format(a.Image)]
 			if a then
@@ -339,8 +339,8 @@ local function DrawDoll(pl)
 		if a and not hide[piece] then
 			local class, t = ':'..s:lower(), tget(CurDollGraphics, piece)
 			local it, idx = a.Item, a.Index
-			local over = it and (Override(t, a.Image..class, ':%s.') or Override(t, a.Image..class, '.') or Override(t, a.Image..class, ':%s', '') or Override(t, a.Image, '', ''))
-					or Override(t, class, ':%s.') or Override(t, class, '.') or Override(t, class, ':%s', '')
+			local over = it and (Override(t, a.Image..class) or Override(t, a.Image..class, '') or Override(t, a.Image..class, nil, '') or Override(t, a.Image, '', ''))
+					or Override(t, class) or Override(t, class, '') or Override(t, class, nil, '')
 			if over then
 				a = table.copy(over, {Image = a.Image, X = a.X, Y = a.Y}, true)
 			end
