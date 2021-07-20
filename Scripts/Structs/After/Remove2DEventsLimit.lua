@@ -19,5 +19,5 @@ mem.ExtendGameStructure{'Houses', Size = mmv(0x30, 0x34, 0x34),
 
 mem.autohook(mmv(0x43918F, 0x443862, 0x440681), function(d)
 	local n = DataTables.ComputeRowCountInPChar(d.eax, 6, 6) - 1
-	Game.Houses.Resize(n, false)  -- don't shrink
+	Game.Houses.Resize(n, true)  -- shrink when needed
 end)
