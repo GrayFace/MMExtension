@@ -122,6 +122,104 @@ local function FindPartyLoops(s)
 	return table.concat(t, '\13\10')
 end
 
+local CircusCmd = [[= function%(%)
+	if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+		if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+			if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+				if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+					if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+						if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+							if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+								if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+									if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+										if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+											if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+												if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+													if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+														if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+															if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																	if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																		if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																			if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																				if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																					if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																						if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																							if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																								if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																									if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																										if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																											if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																												if not evt.Cmp%("DayOfYearIs", (%d+)%) then
+																													evt.StatusText([^]]..'\r\n'..[[]+)
+																													return
+																												end
+																											end
+																										end
+																									end
+																								end
+																							end
+																						end
+																					end
+																				end
+																			end
+																		end
+																	end
+																end
+															end
+														end
+													end
+												end
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	evt.EnterHouse([^]]..'\r\n'..[[]+)
+end]]
+
+local CircusCmd1 = [[= function()
+	for i = %s, %s do
+		if evt.Cmp("DayOfYearIs", i) then
+			evt.EnterHouse%s
+			return
+		end
+	end
+	evt.StatusText%s
+end]]
+
+local CircusCmd2 = [[= function()
+	for _, i in ipairs{%s} do
+		if evt.Cmp("DayOfYearIs", i) then
+			evt.EnterHouse%s
+			return
+		end
+	end
+	evt.StatusText%s
+end]]
+
+local function PrettifyCircus(s)
+	return s:gsub(CircusCmd:gsub('\r?\n', '\r\n'), |...| do
+		local t = {...}
+		local house, text = t[#t], t[#t - 1]
+		t[#t], t[#t - 1] = nil
+		local ok = true
+		for i = 2, #t do
+			ok = ok and t[i] - t[i-1] == 1
+		end
+		if ok then
+			return CircusCmd1:gsub('\r?\n', '\r\n'):format(t[1], t[#t], house, text)
+		end
+		return CircusCmd2:gsub('\r?\n', '\r\n'):format(table.concat(t, ', '), house, text)
+	end)
+end
+
 function evt.Decompile(fileName, funcMode, outFile, asTxt)
 
 	local InLua = not asTxt
@@ -1149,7 +1247,7 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 	mem.free(buf)
 	s = table.concat(str):gsub("\r?\n", "\r\n")
 	if InLua then
-		s = PrettifyElseIf(FindPartyLoops(s))
+		s = PrettifyCircus(PrettifyElseIf(FindPartyLoops(s)))
 	end
 	if outFile then
 		io.save(outFile, s)
