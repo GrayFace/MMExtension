@@ -10,7 +10,7 @@ local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
 
-local _KNOWNGLOBALS = Party, Game, Map, VFlipUnfixed, FixVFlip, HookManager, structs, GetCurrentNPC, GameInitialized1, GameInitialized2, WhoHitMonster, WhoHitPlayer, CallDefaultWindowProc
+local _KNOWNGLOBALS_F = Party, Game, Map, VFlipUnfixed, structs, GameInitialized1, GameInitialized2
 
 
 do
@@ -39,31 +39,40 @@ do
 
 	function HookManager(ref)
 		local t = {}
-		function t.AddEx(RetMem, memf, addr, hookf, size, ...)
-			local size1 = size and size >= 5 and size or mem.GetHookSize(addr)
-			local std = mem.string(addr, size1, true)
-			local delmem = memf(addr, hookf, size or size1, ...)
-			local delhook = mem.hooks[addr]
+		function t.AddEx(RetMem, memf, p, hookf, size, ...)
+			local size1 = size and size >= 5 and size or mem.GetHookSize(p)
+			local std = mem.string(p, size1, true)
+			local delmem = memf(p, hookf, size or size1, ...)
+			local delhook = mem.hooks[p]
 			size = (RetMem and not delmem) and size or size1
-			local mine = mem.string(addr, size, true)
+			local mine = mem.string(p, size, true)
 			t[#t + 1] = function(on)
 				if on == "off" then
 					if RetMem and delmem then
 						mem.hookfree(delmem)
 					end
 					if delhook then
-						mem.hooks[addr] = nil
+						mem.hooks[p] = nil
 					end
 					on = false
 				end
 				mem.IgnoreProtection(true)
-				mem.copy(addr, on and mine or std, size)
+				mem.copy(p, on and mine or std, size)
 				mem.IgnoreProtection(false)
 			end
 			return delmem
 		end
-		function t.Add(memf, addr, hookf, size, ...)
-			return t.AddEx(true, memf, addr, hookf, size, ...)
+		function t.Add(memf, p, hookf, size, ...)
+			return t.AddEx(true, memf, p, hookf, size, ...)
+		end
+		function t.AddMem(p, size)
+			local std, mine = mem.string(p, size, true), nil
+			t[#t + 1] = function(on)
+				mine = mine or mem.string(p, size, true)
+				mem.IgnoreProtection(true)
+				mem.copy(p, on and on ~= "off" and mine or std, size)
+				mem.IgnoreProtection(false)
+			end
 		end
 		function t.Switch(on)
 			if on == "off" then
@@ -87,6 +96,18 @@ do
 		function t.asm(code)
 			return mem.asm(t.ProcessAsm(code))
 		end
+		function t.asmproc(code)
+			return mem.asmproc(t.ProcessAsm(code))
+		end
+		function t.nop(p, n)
+			n = n or mem.GetInstructionSize(p)
+			t.AddMem(p, n)
+			mem.nop(p, n)
+		end
+		function t.nop2(p, p2)
+			t.AddMem(p, p2 - p)
+			mem.nop2(p, p2)
+		end
 		for proc, RetMem in pairs(procs) do
 			t[proc] = function(...)
 				return t.AddEx(RetMem, mem[proc], ...)
@@ -104,9 +125,6 @@ do
 			t[proc] = function(p, nreg, nstack, f, size)
 				return t.AddEx(RetMem, reorder, p, f, size, nreg, nstack)
 			end
-		end
-		t.asmproc = function(code)
-			return mem.asmproc(t.ProcessAsm(code))
 		end
 		return t
 	end
@@ -713,7 +731,8 @@ end
 local function PopulateDialog(t)
 	local n = 0
 	for i = 1, table.maxn(t) do
-		local k = t[i]
+		local k = const.Skills[t[i]]
+		k = k and k + 36 or const.HouseScreens[t[i]] or t[i]
 		if k then
 			call(mmv(0x498450, 0x4B362F, 0x4B1F3C), 2, i - 1, k)
 			n = n + 1
@@ -737,6 +756,12 @@ end
 
 mem.hookfunction(mmv(0x498490, 0x4B3AA5, 0x4B250A), 1, 0, function(d, def, type)
 	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = nil}
+	--!k{PicType :const.HouseType} Change topics in the main dialog menu in a house, unless isn't an NPC conversation. Unfortunately, the captions displayed won't change as they are hard-coded in various places. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. By default 't.Result' is not populated. Names from #const.HouseScreens:# and #const.Skills:# as text are allowed.
+	--
+	-- Example:!LUA[[
+	-- events.PopulateHouseDialog = |t| if t.PicType == const.HouseType.Training then
+	-- 	t.Result = {"Train"}  -- disable learning skills at training halls
+	-- end]]
 	events.cocalls("PopulateHouseDialog", t)
 	if not t.Result then
 		return def(type)
@@ -764,7 +789,13 @@ if mmver > 6 then
 		for i = 1, i4[pn] do
 			t[i] = i4[p + i*4 - 4] - 36
 		end
-		t = {Result = t, PicType = Game.HousePicType, House = Game.GetCurrentHouse()}
+		local t = {Result = t, PicType = Game.HousePicType, House = Game.GetCurrentHouse()}
+		--!k{PicType :const.HouseType} [MM7+] Change skills in Learn Skills dialog. 'Result' is a pre-populated table containing an array of skill numbers. Skill names from #const.Skills:# are also allowed.
+		--
+		-- Example:!LUA[[
+		-- events.PopulateLearnSkillsDialog = |t| if t.PicType == const.HouseType.Tavern then
+		-- 	t.Result[#t.Result + 1] = "Blaster"  -- devs apperently forgot to make taverns teach you Blaster skill
+		-- end]]
 		events.cocalls("PopulateLearnSkillsDialog", t)
 		t = t.Result
 		if #t > mm78(3, 5) then
@@ -774,7 +805,7 @@ if mmver > 6 then
 		local n = min(#t, bufLim)
 		i4[pn] = n
 		for i = 1, n do
-			i4[p + i*4 - 4] = t[i] + 36
+			i4[p + i*4 - 4] = (const.Skills[t[i]] or t[i]) + 36
 		end
 		if n == 0 then
 			d:push(mm78(0x4B39AF, 0x4B23B6))
@@ -783,12 +814,41 @@ if mmver > 6 then
 	end)
 end
 
+-- arcomage
+
+if mmver == 7 then
+	local hooks
+	-- [MM7] Pass 'false' to remove the deck requirement.
+	function ArcomageRequireDeck(on)
+		if hooks then
+			hooks.Switch(not on)
+		elseif not on then
+			hooks = HookManager()
+			hooks.nop(0x4B3A06)  -- no arcomage deck requirement
+			hooks.nop(0x4B8A31)  -- no arcomage deck requirement
+		end
+	end
+	-- mem.hookfunction(mm78(0x4B39D5, 0x4B2450), 1, 0, function(d, def, type)
+	-- 	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = nil}
+	-- 	--!k{PicType :const.HouseType} [MM7+] Change topics in the archomage dialog menu. The captions displayed won't change. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. By default 't.Result' is not populated. Names from #const.HouseScreens:# and #const.Skills:# as text are allowed.
+	-- 	--
+	-- 	-- Example:!LUA[[
+	-- 	-- events.PopulateArcomageDialog = |t| t.Result = {"ArcomageRules", "ArcomageConditions", "ArcomagePlay"}  -- allow Arcomage regardless of the Deck item]]
+	-- 	events.cocalls("PopulateArcomageDialog", t)
+	-- 	if not t.Result then
+	-- 		return def(type)
+	-- 	end
+	-- 	return PopulateDialog(t.Result)
+	-- end)
+end
+
 -- GetShopItemTreatment
 local ShopAction = {nil, 'buy', 'sell', 'identify', 'repair'}
 
 mem.hookfunction(mmv(0x485120, 0x490EE6, 0x49000D), 1, 4, function(d, def, pl, item, housetype, house, action)
 	local t = {
 		House = house,
+		-- :const.HouseType
 		HouseType = housetype,
 		Action = ShopAction[action] or action,
 		-- :structs.Item
@@ -811,13 +871,17 @@ end)
 mem.hookfunction(mmv(0x4A4C30, 0x4BDA12, 0x4BB612), 2, 0, function(d, def, item, house)
 	local t = {
 		House = house,
+		-- :const.HouseType
 		HouseType = Game.Houses[house].Type,
+		Action = ShopAction[Game.HouseScreen],
+		-- :structs.Item
 		Item = structs.Item:new(item),
 		Result = def(item, house) ~= 0,
 	}
 	function t.GetDefault(House, Item)
-		return def(Item or item, House or house)
+		return def(Item or item, House or house) ~= 0
 	end
+	-- 'Action': "buy", "sell", "identify", "repair"
 	-- 'GetDefault'!Params[[(House, Item)]] function lets you get item treatment by another shop type (all parameters are optional)
 	events.cocall("CanShopOperateOnItem", t)
 	return t.Result and 1 or 0
@@ -829,6 +893,7 @@ mem.hookfunction(mmv(0x49FD40, 0x4B8EF7, 0x4B74B6), 0, 0, function(d, def)
 	local house = Game.GetCurrentHouse()
 	local t = {
 		House = house,
+		-- :const.HouseType
 		HouseType = Game.Houses[house].Type,
 	}
 	events.cocall("ShopItemsGenerated", t)
@@ -839,6 +904,7 @@ mem.autohook(mmv(0x4A465D, 0x4BD307, 0x4BB2B6), function(d)
 	local house = Game.GetCurrentHouse()
 	local t = {
 		House = house,
+		-- :const.HouseType
 		HouseType = Game.Houses[house].Type,
 	}
 	-- Note that you'll have to update #Game.GuildItemIconPtr:# if you change items in this event.

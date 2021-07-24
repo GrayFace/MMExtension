@@ -144,7 +144,7 @@ function SuppressSound(on)
 end
 
 -- Rebuilds house dialog, e.g. after you've moved an NPC to or from this house
--- Can seemlessly transition between different houses
+-- Can seemlessly transition between different houses if 'id' is specified.
 function ReloadHouse(id)
 	id = id or Game.GetCurrentHouse()
 	SuppressSound(true)
