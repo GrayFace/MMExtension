@@ -510,6 +510,22 @@ function FindEvent(v)
 	return n
 end
 
+function FindNoTexture()
+	local n, pen = 0, Game.BitmapsLod:LoadBitmap("pending")
+	Editor.ClearSelection()
+	Editor.SelectionKind = skFacet
+	for f, id in pairs(Editor.FacetIds) do
+		if not f.IsPortal and not f.Invisible and Map.GetFacet(id).BitmapId == pen then
+			n = n + 1
+			Editor.SelectSingleFacet(id)
+			XYZ(Party, XYZ(f.Vertexes[1]))
+		end
+	end
+	Editor.SelectionChanged = true
+	Editor.UpdateSelectionState()
+	return n
+end
+
 function SelId(v)
 	return SelectFacetWith("Id", v, true)
 end
@@ -715,7 +731,7 @@ function BatchLoad(...)
 end
 
 -----------------------------------------------------
--- Unrelated to editor
+-- Unrelated to editor itself
 -----------------------------------------------------
 
 function blv(name)
