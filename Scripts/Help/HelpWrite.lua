@@ -245,6 +245,7 @@ local TocMore = [[<h5 class="def-hidden">&#8230;</h5>]]
 		s = s:gsub("'([%w_%.]+)'", '<b class="def-param">%1</b>')
 		s = s:gsub("!'%[(=*)%[(.-)%]%1%]", '<b class="def-param">%2</b>')
 		s = s:gsub("'/(.-)/'", '&nbsp;<i class="def-ib">%1</i>')
+		s = s:gsub("!Example:", '<span class="def-vspace">Example:</span>')
 		s = s:gsub("#(%a[%w_%.%* ]*):([^#]*)#", |s1, s2| Link(s2 ~= "" and s2 or s1, s1))
 		s = s:gsub("(%a[%w_]*):(const%.%a[%w_%.]*)", |s1, s2| Link(s2, s1))
 		s = s:gsub("(%a[%w_]*):(const)([^%.%w_])", |s1, s2, s3| Link(s2, s1)..s3)
@@ -524,6 +525,7 @@ P.DefStyle = [[
 .def-rargs { margin-left: 0.25em; }
 .def-largs-i { margin: 0 0.2em 0 0.16em; }
 .def-rargs-i { margin-left: 0.2em; }
+.def-vspace { display: inline-block; margin-top: 0.7em; margin-bottom: 0.1em; }
 .lua5-operator { font-weight: bold; color: #333; }
 .lua5-note { font-weight: bold; color: #00D; }
 .lua5-ctrl { font-weight: bold; color: Black; }

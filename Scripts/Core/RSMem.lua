@@ -221,7 +221,6 @@ _mem.String = mem_string
 -- mem.call and mem.func return conversions
 
 local retconv_nums = {
-	["nil"] = "nil",
 	i1 = -0x100,
 	i2 = -0x10000,
 	u1 = 0x100,
@@ -240,6 +239,8 @@ local function retconv(v, conv)
 		end
 		v = v % (-iconv)
 		return v*2 < -iconv and v or v + iconv
+	elseif conv == "nil" then
+		return
 	end
 	
 	local t = type(conv)

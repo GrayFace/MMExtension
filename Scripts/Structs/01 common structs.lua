@@ -1076,6 +1076,16 @@ function structs.f.MapMonster(define)
 	 .Info{Sig = "SoundLoaded = false";  "If 'SoundLoaded' = 'false', sound indexes would be loaded for the monster as well."}
 	.method{p = mmv(0x4219B0, 0x426DC7, 0x425203), name = "ChooseTargetPlayer"}
 	 .Info "Returns player slot index"
+	.method{p = mmv(0x421DC0, 0x427522, 0x425951), name = "CalcTakenDamage", must = 2, ret = true}
+	 .Info{Sig = "DamageKind, Damage";  "Returns the amount of damage the monster has to actually receive"}
+	.method{p = mmv(0x421E90, 0x427619, 0x425A4F), name = "CalcHitByEffect", must = 1, ret = true}
+	 .Info{Sig = "DamageKind";  "Returns 'true' if the monster couldn't dodge the effect"}
+	.method{p = mmv(0x44C140, 0x4597A6, 0x457060), name = "UpdateGraphicState", ret = 'nil'}
+	 .Info "Updates #GraphicState:structs.MapMonster.GraphicState# in accordance with #AIState:structs.MapMonster.AIState#"
+	if mmver > 6 then
+		define.method{p = mm78(0x4A7E19, 0x4A63FA), name = "ShowSpellEffect", cc = 0, ret = 'nil'; 0}
+		 .Info{Sig = "Color24 = 0";  "Shows effect from a spell (as a cylinder of colored dots around the monster)"}
+	end
 
 	function define.m:LoadFramesAndSounds()
 		call(mmv(0x44BF50, 0x4595D3, 0x456E90), 1, self, 0)

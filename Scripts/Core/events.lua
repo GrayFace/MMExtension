@@ -496,6 +496,24 @@ do
 	]])
 end
 
+-- speak with guards
+if mmver > 6 then
+	local function SpeakWithMonster(d)
+		local t = {Result = nil}
+		t.MonsterIndex, t.Monster = GetMonster(d.esi)
+		--!k{Monster :structs.MapMonster, MonsterIndex} [MM7+] Called when you speak with a guard or any other monster with a generic message from NPCGroup.txt. Assign 'Result' a string to override default monster group message. Assign an empty string to show no message. Initially 'Result' is 'nil'.
+		events.cocalls("SpeakWithMonster", t)
+		if t.Result == "" then
+			d.eax = 0
+		elseif t.Result then
+			Game.TextBuffer = t.Result
+			d.eax = structs.o.GameStructure.TextBuffer
+		end
+	end
+	mem.autohook2(mm78(0x46A586, 0x4688F8), SpeakWithMonster)
+	mem.autohook2(mm78(0x422509, 0x4216EE), SpeakWithMonster)
+end
+
 -- ShowNPCTopics - called when NPC topics list is about to be shown
 local CurrentNPC
 
@@ -505,10 +523,8 @@ local function NPCTopicsHook(p)
 		local start = not CurrentNPC
 		CurrentNPC = i
 		if start then
-			-- Known issue: You shouldn't call any evt.* commands from inside a handler of this event
 			events.cocalls("EnterNPC", i)
 		end
-		-- Known issue: You shouldn't call any evt.* commands from inside a handler of this event
 		events.cocalls("ShowNPCTopics", i)
 	end
 end
@@ -757,9 +773,8 @@ end
 mem.hookfunction(mmv(0x498490, 0x4B3AA5, 0x4B250A), 1, 0, function(d, def, type)
 	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = nil}
 	--!k{PicType :const.HouseType} Change topics in the main dialog menu in a house, unless isn't an NPC conversation. Unfortunately, the captions displayed won't change as they are hard-coded in various places. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. By default 't.Result' is not populated. Names from #const.HouseScreens:# and #const.Skills:# as text are allowed.
-	--
-	-- Example:!LUA[[
-	-- events.PopulateHouseDialog = |t| if t.PicType == const.HouseType.Training then
+	-- !Example:
+	-- !LUA[[events.PopulateHouseDialog = |t| if t.PicType == const.HouseType.Training then
 	-- 	t.Result = {"Train"}  -- disable learning skills at training halls
 	-- end]]
 	events.cocalls("PopulateHouseDialog", t)
@@ -791,9 +806,8 @@ if mmver > 6 then
 		end
 		local t = {Result = t, PicType = Game.HousePicType, House = Game.GetCurrentHouse()}
 		--!k{PicType :const.HouseType} [MM7+] Change skills in Learn Skills dialog. 'Result' is a pre-populated table containing an array of skill numbers. Skill names from #const.Skills:# are also allowed.
-		--
-		-- Example:!LUA[[
-		-- events.PopulateLearnSkillsDialog = |t| if t.PicType == const.HouseType.Tavern then
+		-- !Example:
+		-- !LUA[[events.PopulateLearnSkillsDialog = |t| if t.PicType == const.HouseType.Tavern then
 		-- 	t.Result[#t.Result + 1] = "Blaster"  -- devs apperently forgot to make taverns teach you Blaster skill
 		-- end]]
 		events.cocalls("PopulateLearnSkillsDialog", t)
@@ -828,18 +842,6 @@ if mmver == 7 then
 			hooks.nop(0x4B8A31)  -- no arcomage deck requirement
 		end
 	end
-	-- mem.hookfunction(mm78(0x4B39D5, 0x4B2450), 1, 0, function(d, def, type)
-	-- 	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = nil}
-	-- 	--!k{PicType :const.HouseType} [MM7+] Change topics in the archomage dialog menu. The captions displayed won't change. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. By default 't.Result' is not populated. Names from #const.HouseScreens:# and #const.Skills:# as text are allowed.
-	-- 	--
-	-- 	-- Example:!LUA[[
-	-- 	-- events.PopulateArcomageDialog = |t| t.Result = {"ArcomageRules", "ArcomageConditions", "ArcomagePlay"}  -- allow Arcomage regardless of the Deck item]]
-	-- 	events.cocalls("PopulateArcomageDialog", t)
-	-- 	if not t.Result then
-	-- 		return def(type)
-	-- 	end
-	-- 	return PopulateDialog(t.Result)
-	-- end)
 end
 
 -- GetShopItemTreatment
@@ -907,7 +909,7 @@ mem.autohook(mmv(0x4A465D, 0x4BD307, 0x4BB2B6), function(d)
 		-- :const.HouseType
 		HouseType = Game.Houses[house].Type,
 	}
-	-- Note that you'll have to update #Game.GuildItemIconPtr:# if you change items in this event.
+	-- Note that you'll have to update #Game.GuildItemIconPtr:# if you change items in this event (see an example there).
 	events.cocall("GuildItemsGenerated", t)
 end)
 
@@ -1467,6 +1469,17 @@ if mmver == 7 then
 	-- also must load and free OK/Cancel...	
 end
 
+-- animate monsters casting
+if mmver > 6 then
+	-- [MM7+] Makes monsters play their regular attack animation rather then idle animation when casting damage spells if 'on' is 'true'.
+	function EnableMonstersCastingAnimation(on)
+		mem.prot(true)
+		local v = on and 13 or 9
+		i2[mm78(0x403A44, 0x403C8C) - 2] = v
+		i2[mm78(0x403C50, 0x403EA1) - 2] = v
+		mem.prot(false)
+	end
+end
 
 ---- Player hooks
 

@@ -144,6 +144,18 @@ function structs.f.GameStructure(define)
 	define
 	[mmv(0x4C3B74, 0x4EFEC8, 0x5004E8)].array(mmv(68, 78, 78)).i2  'MapDoorSound'
 	[mmv(0x4C1F18, 0x4EC9B8, 0x4FC9EC)].array(16).struct(structs.FogChances)  'MapFogChances'
+	if mmver < 8 then
+		define[mmv(0x465243, 0x473C64)].CustomType('FlyCeiling', 4, function(o, obj, _, val)
+			if val == nil then
+				return i4[o]
+			else
+				mem.IgnoreProtection(true)
+				i4[o] = val
+				mem.IgnoreProtection(false)
+			end
+		end)
+		 .Info "3000 in MM6, 4000 in MM7+, in MM8 it's configured per map (!Lua[[Map.OutdoorExtra.Ceiling]])"
+	end
 	
 	define.union 'MoveToMap'
 		[mmv(0x551D20, 0x5B6428, 0x5CCCB8)].array(3).i4  'Pos'
@@ -261,7 +273,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x4C3E94, 0x4F07B0, 0x500D78)].array(mmv(119, 139, 139), mmv(152, 170, 170)).i4  'GuildAwards'
 	[mmv(0x9DDDA4, 0xF8AFE8, 0xFFD3D4)].array(12).i4  'GuildItemIconPtr'
 	 .Info{Sig = "[slot]"; [[Loaded icons for current guild's items.
-Example:
+!Example:
 !Lua[=[function events.GuildItemsGenerated(t)
 	local a = Game.GuildItems[t.House][0]   -- items array for this guild (for MM6 and MM7)
 	a[0]:Randomize(5, const.ItemType.Book)  -- put random powerful book into first slot
@@ -345,6 +357,14 @@ end]=]
 	define
 	[mmv(0x4BDD6E, 0x4E3C46, 0x4F486E)].array(0, mmv(99, 99, 132)).struct(structs.SpellInfo)  'Spells'
 	[mmv(0x56ABD0, 0x5CBEB0, 0x5E8278)].array(0, mmv(99, 99, 132)).struct(structs.SpellsTxtItem)  'SpellsTxt'
+	[mmv(0x4C28E2, 0x4EDF32, 0x4FE12A)].array(1, mmv(99, 99, 132)).i2  'SpellSounds'
+	[mmv(0x4BDBD8, 0x4E3AB0, 0x4F4648)].array(1, mmv(99, 99, 132)).CustomType('SpellObjId', 4, function(o, obj, name, val)
+		if val ~= nil then
+			i2[obj["?ptr"] + o] = val
+		else
+			return i2[obj["?ptr"] + o]
+		end
+	end)
 	if mmver > 6 then
 		define
 		[mm78(0x44FA9D, 0x44D1FB)].EditConstPChar  'SummonElementalA'
@@ -1057,7 +1077,7 @@ function structs.f.Player(define)
 	 .Info{Sig = "Amount"}
 	.method{p = mmv(0x47FEE0, 0x48DC04, 0x48D078), name = "DoDamage", must = 1;  0, const.Damage.Phys}
 	 .Info{Sig = "Damage, DamageKind:const.Damage = const.Damage.Phys"}
-	.method{p = mmv(0x480010, 0x48DCDC, 0x48D166), name = "DoBadThing", must = 1}
+	.method{p = mmv(0x480010, 0x48DCDC, 0x48D166), name = "DoBadThing", must = mmv(1, 2, 2)}
 	 .Info{Sig = "Thing:const.MonsterBonus"}
 	.method{p = mmv(0x481A80, 0x48E19B, 0x48D62A), name = "GetAttackDelay"; false}
 	 .Info{Sig = "Shoot = false"}
