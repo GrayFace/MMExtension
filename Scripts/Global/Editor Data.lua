@@ -45,7 +45,8 @@ local DeanimateFacets
 
 local AllocSize = 0x1000000  -- 16 MB
 Editor.DataBuf = Editor.DataBuf or mem.StaticAlloc(AllocSize + 0x10000)
-local allocBuf = Editor.DataBuf
+Editor.DummyItem = structs.Item:new(Editor.DataBuf)
+local allocBuf = Editor.DataBuf + Editor.DummyItem['?size']
 local allocStart = allocBuf
 local allocPtr = allocBuf + AllocSize
 
@@ -1497,7 +1498,16 @@ local ObjectProps = {
 	-- Visible = true,
 }
 
-local function WriteObject(a, t)
+function Editor.ItemInitSpecial(a, num)
+	a.Number = num
+	if a.InitSpecial then
+		a:InitSpecial()
+	elseif mmver > 6 then
+		mem.call(mmv(nil, 0x456D51, 0x4545E8), 1, Game.ItemsTxt["?ptr"] - 4, a)
+	end
+end
+
+function Editor.WriteObject(a, t)
 	rawset(a, "?ptr", nil)
 	a["?ptr"] = a["?ptr"]  -- speed up
 	mem.fill(a)
@@ -1505,6 +1515,7 @@ local function WriteObject(a, t)
 		a[k] = t[k]
 	end
 	a.Room = Map.RoomFromPoint(a)
+	Editor.ItemInitSpecial(a.Item, t.Item.Number)
 	table.copy(t.Item, a.Item, true)
 	Editor.UpdateObjectLook(a)
 	a["?ptr"] = nil
@@ -1530,7 +1541,7 @@ local function WriteObjects()
 	FinalizeList(Editor.Objects, Editor.ObjectIds)
 	Map.Objects.Count = #Editor.Objects
 	for i, t in ipairs(Editor.Objects) do
-		WriteObject(Map.Objects[i - 1], t)
+		Editor.WriteObject(Map.Objects[i - 1], t)
 	end
 	if Editor.SelectionKind == skObject then
 		RemapSelection(OldObjects, Editor.ObjectIds)
@@ -1543,7 +1554,7 @@ function Editor.UpdateObjectLook(a)
 end
 
 function Editor.CreateObject(t)
-	WriteObject(InsertEntity(t, "Object", 1000), t)
+	Editor.WriteObject(InsertEntity(t, "Object", 1000), t)
 	Editor.State.Objects[t] = true
 	return Editor.ObjectIds[t]
 end

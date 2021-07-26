@@ -484,6 +484,12 @@ function structs.f.Item(define)
 		return Game.ItemsTxt[self.Number]
 	end
 	define.Info "Returns ItemsTxt entry."
+	function define.m:InitSpecial()
+		if mmver > 6 then
+			call(mm78(0x456D51, 0x4545E8), 1, Game.ItemsTxt["?ptr"] - 4, self)
+		end
+	end
+	define.Info '[MM7+] Sets up enchantments if the item is "Special" as marked by "material" column of items.txt'
 end
 
 function structs.f.MouseStruct(define)

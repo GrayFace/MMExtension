@@ -727,8 +727,11 @@ local ItemProps = {
 
 local function ReadChestItem(a, t)
 	a["?ptr"] = a["?ptr"]  -- speed up
+	mem.fill(Editor.DummyItem)
+	Editor.ItemInitSpecial(Editor.DummyItem, a.Number)
+	Editor.DummyItem.Number = 0
 	for k in pairs(ItemProps) do
-		if a[k] and a[k] ~= 0 then
+		if a[k] and a[k] ~= Editor.DummyItem[k] then
 			t[k] = a[k]
 		end
 	end

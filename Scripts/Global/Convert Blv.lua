@@ -29,6 +29,16 @@ local function CleanupStruct(a, t)
 	end
 end
 
+local function initItem(a, num)
+	mem.fill(a)
+	a.Number = num
+	if a.InitSpecial then
+		a:InitSpecial()
+	elseif mmver > 6 then
+		mem.call(mmv(nil, 0x456D51, 0x4545E8), 1, Game.ItemsTxt["?ptr"] - 4, a)
+	end
+end
+
 local SkipFields = {
 	MapSprite = {Bits = true, DecName = true},
 	MapMonster = {Bits = true, PrefClass = true},
@@ -45,6 +55,13 @@ local PostRead = {
 			t.NPC_ID = nil
 		end
 	end,
+	MapObject = |a, t| do
+		a, t = a.Item, t.Item
+		local s = mem.string(a['?ptr'], a['?size'], true)
+		initItem(a, t.Number)
+		CleanupStruct(a, t)
+		mem.copy(a, s)
+	end,
 	MapFacet = |a, t| if mmver == 6 and t.Untouchable and not t.Invisible and (t.NormalZ or 0) ~= 0 then
 		t.UntouchableMM6 = true
 		t.Untouchable = nil
@@ -58,6 +75,9 @@ local PreWrite = {
 		local b = SummonMonster(t.Id, 0, 0, 0, true)
 		b.GuardRadius = 0
 		mem.copy(a['?ptr'], b['?ptr'], a['?size'])
+	end,
+	MapObject = |a, t| do
+		initItem(a.Item, t.Item.Number)
 	end,
 	MapLight = |a, t| if mmver ~= 6 then
 		a.Type = 5

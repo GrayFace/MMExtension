@@ -1065,6 +1065,12 @@ local IsObjectSelfProp = {
 	-- Visible = true,
 }
 
+local IsObjectBonus = {
+	Bonus = true,
+	BonusStrength = true,
+	Bonus2 = true,
+}
+
 local ObjectProps = MakeProps{
 	"Number",
 	"X",
@@ -1090,7 +1096,7 @@ local ObjectProps = MakeProps{
 		if not IsObjectSelfProp[prop] then
 			a = a.Item
 		end
-		local ret, comment = a[prop] or not ObjectBits[prop] and 0, nil
+		local ret, comment = a[prop] or IsObjectBonus[prop] and Map.Objects[id].Item[prop] or not ObjectBits[prop] and 0, nil
 		if prop == "Bonus" and ret > 0 then
 			comment = ReadLodTextTable("stditems.txt", ret + 4, 1)
 		elseif prop == "Bonus2" and ret > 0 then
@@ -1113,8 +1119,8 @@ local ObjectProps = MakeProps{
 			t.Item[prop] = val
 			a.Item[prop] = val
 		end
-		if prop == "Number" then
-			Editor.UpdateObjectLook(a)
+		if prop == "Number" or val == nil and IsObjectBonus[prop] then
+			Editor.WriteObject(a, t)
 		end
 	end,
 	

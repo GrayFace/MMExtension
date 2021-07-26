@@ -1481,6 +1481,24 @@ if mmver > 6 then
 	end
 end
 
+-- fix Special items not getting their bonus in some cases
+if mmver > 6 then
+	local hooks = HookManager{
+		ItemsTxtCount = mm78(0x45064E, 0x44DD98) - 4,
+		SetupSpecial = mm78(0x456D51, 0x4545E8),
+	}
+	local code = [[
+		mov eax, [esp]
+		push ecx
+		push eax
+		mov ecx, [%ItemsTxtCount%]
+		call absolute %SetupSpecial%
+		pop ecx
+	]]
+	hooks.asmhook(mm78(0x44B366, 0x4488F8), code)  -- evt.Add("Inventory", ...)
+	hooks.asmhook(mm78(0x44A94A, 0x447F47), code)  -- evt.Set("Inventory", ...)
+end
+
 ---- Player hooks
 
 -- CalcStatBonusByItems
