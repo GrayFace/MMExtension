@@ -245,7 +245,11 @@ static int Mem_SetNum(lua_State *L)
 
 static int Mem_String(lua_State *L)
 {
-	char* p = (char*)ToInteger(L, 1);
+	int ptr;
+	if (!ToParam(L, 1, ptr))
+		luaL_error(L, "invalid address passed to mem.string");
+
+	char* p = (char*)ptr;
 	if (p == 0 && lua_gettop(L) == 1)
 	{
 		lua_pushstring(L, "");
