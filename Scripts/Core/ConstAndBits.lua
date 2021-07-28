@@ -560,11 +560,11 @@ const.Condition = {
 	Dead           = 14,
 	Stoned         = 15,
 	Eradicated     = 16,
+	Good           = mmver > 6 and 18 or 17,
 }
 if mmver > 6 then
 	const.Condition.Zombie = 17
 end
-
 
 const.ItemType = {
 	Any        = 0,

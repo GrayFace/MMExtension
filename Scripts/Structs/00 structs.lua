@@ -1131,7 +1131,7 @@ function structs.f.Player(define)
 	.method{p = mmv(0x482C80, 0x48E962, 0x48DFF8), name = "SetRecoveryDelayRaw", must = 1}
 	 .Info{Sig = "Delay"}
 	.method{p = mmv(0x482D30, 0x48E9EC, 0x48E127), name = "GetMainCondition"}
-	 .Info{Type = "const.Condition"}
+	 .Info{Type = "const.Condition";  "Returns the condition that affects character stats. Also see #GetDisplayedCondition:structs.Player.GetDisplayedCondition#."}
 	-- 482E6E (MM6) Character_CalcSpecialBonusByItems
 	.method{p = mmv(0x482E80, 0x48EAA6, 0x48E213), name = "CalcStatBonusByItems", must = 1;  0, false}
 	 .Info{Sig = "Stat:const.Stats, IgnoreExtraHand [MM7+] = false"}
@@ -1205,6 +1205,11 @@ function structs.f.Player(define)
 		end
 	end
 	define.Info{Sig = "Delay"}
+	function define.m:GetDisplayedCondition()
+		local p = mmv(0x4145C0, 0x418A04, 0x4181A3)
+		return call(i4[p + 1] + p + 5, 1, self)
+	end
+	define.Info{Type = "const.Condition";  "Returns the condition displayed on character face and in character properties. Since pacth 2.5 it can differ from #GetMainCondition:structs.Player.GetMainCondition#."}
 end
 
 local DrawStyles = {
