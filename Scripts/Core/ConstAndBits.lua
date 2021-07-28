@@ -1259,6 +1259,17 @@ const.GameActions = {
 	Exit = 113,
 }
 
+const.ExitAction = {
+	None = 0,
+	Exit = 1,  -- used in main menu
+	LoadMap = 2,  -- when you exit a map and enter another one
+	LoadGame = 3,
+	NewGame = 4,
+	MainMenu = 7,
+	Death = 8,
+	WinScreen = 9,  -- draw the Win message
+}
+
 const.HouseTypeInv = {
 	"Weapon Shop",
 	"Armor Shop",

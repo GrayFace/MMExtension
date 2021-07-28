@@ -684,6 +684,31 @@ else
 	end)
 end
 
+-- exit action
+do
+	local reg = mmv('ecx', 'eax', 'eax')
+	local p = HookManager{reg = reg}.asmhook2(mmv(0x453B90, 0x46349E, 0x46147F), [[
+		test %reg%, %reg%
+		jz @f
+		nop
+		nop
+		nop
+		nop
+		nop
+	@@:
+	]])
+	p = FindOpcode(p, 0x90,0x90,0x90,0x90,0x90)
+	mem.hook(p, |d| do
+		local t = {
+			-- :const.ExitAction
+			Action = d[reg],
+		}
+		events.cocall('ExitAction', t)
+		Game.ExitAction = t.Action
+		d[reg] = t.Action or Game.ExitAction
+	end)
+end
+
 -- exit house screen
 mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), 0, 0, function()
 	local i = Game.HouseScreen
@@ -1497,6 +1522,15 @@ if mmver > 6 then
 	]]
 	hooks.asmhook(mm78(0x44B366, 0x4488F8), code)  -- evt.Add("Inventory", ...)
 	hooks.asmhook(mm78(0x44A94A, 0x447F47), code)  -- evt.Set("Inventory", ...)
+end
+
+-- customized summon elemental - no gold/items
+if mmver > 6 then
+	mem.asmhook2(mm78(0x44FB79, 0x44D2C7), [[
+		xor eax, eax
+		mov [esi + 9], al
+		mov [esi + 0xA], eax
+	]])
 end
 
 ---- Player hooks

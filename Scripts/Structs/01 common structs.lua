@@ -2438,6 +2438,21 @@ function structs.f.LodBitmap(define)
 	end
 end
 
+function structs.f.LodPcx(define)
+	define
+	.skip(16)
+	.i4  'BufSize'
+	.i2  'Width'
+	.i2  'Height'
+	.i2  'WidthLn2'
+	.i2  'HeightLn2'
+	.i2  'WidthMinus1'
+	.i2  'HeightMinus1'
+	.u4  'Bits'
+	.i4  'Image'
+	.size = 0x28
+end
+
 function structs.f.LodSprite(define)
 	define
 	[0x0].string(12)  'Name'
@@ -2604,4 +2619,18 @@ function structs.f.ArcomagePlayer(define)
 end
 
 function structs.f.RendererD3D(define)
+end
+
+function structs.f.ProgressBar(define)
+	define
+	[0xA].u1  'Max'
+	.u1  'Current'
+	.i4  'Kind'
+	-- .array(8).b1  'ShownScreens'
+	-- ...
+	.method{p = mmv(0x438C30, 0x4434A7, 0x440288), name = "Show"}
+	.method{p = mmv(0x438D40, 0x443605, 0x4403DA), name = "Hide"}
+	.method{p = mmv(0x438E20, 0x443693, 0x44047E), name = "Draw"}
+	.method{p = mmv(0x438D20, 0x4435F0, 0x4403C5), name = "Increment"}
+	.method{p = mmv(0x438D00, 0x4435DE, 0x4403B3), name = "SetMax", must = 1}
 end

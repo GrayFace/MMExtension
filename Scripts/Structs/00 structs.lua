@@ -106,6 +106,8 @@ function structs.f.GameStructure(define)
 		define[mm78(0x50C86C, 0x51E14C)].array{40, lenA = i4, lenP = mm78(0x50C868, 0x51E148)}.struct(structs.ActionItem)  'ActionsNext'
 	end
 	define.func{name = "ProcessActions", p = mmv(0x42ADA0, 0x4304D6, 0x42EDD8)}
+	[mmv(0x6199C0, 0x6A0BC8, 0x6CEB28)].i4  'ExitAction'
+	 .Info ":const.ExitAction"
 	[mmv(0x52D29C, 0x576EAC, 0x587ADC)].b4  'NeedRedraw'
 	[mmv(0x55BC04, 0x5C32A8, 0x5DB758)].string(200)  'StatusMessage'
 	.string(200)  'MouseOverStatusMessage'
@@ -168,6 +170,7 @@ function structs.f.GameStructure(define)
 		.i4  'SpeedZ'
 		.b4  'Defined'
 	.union()
+	[mmv(0x52D0A8, 0x576CB0, 0x5878D8)].struct(structs.ProgressBar)  'ProgressBar'
 	[mmv(0x55BDB4, 0x5C346C, 0x5DB91C)].i4  'Lucida_fnt'
 	[mmv(0x55BDB8, 0x5C3488, 0x5DB938)].i4  'Smallnum_fnt'
 	[mmv(0x55BDC4, 0x5C3468, 0x5DB918)].i4  'Arrus_fnt'
