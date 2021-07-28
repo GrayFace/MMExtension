@@ -513,14 +513,20 @@ local function NewQuestNumber(t)
 		QuestLog = {}
 	end
 	
-	-- update automatic quest log entries when quest log is opened
-	function events.Action(t)
-		if t.Action == 200 then
-			for i, n in ipairs(QuestNumbers) do
-				Party.QBits[n] = QuestLog[i] and QuestLog[i]:IsGiven() or false
-			end
+	local function UpdateQBits(on)
+		for i, n in ipairs(QuestNumbers) do
+			Party.QBits[n] = on and QuestLog[i] and QuestLog[i]:IsGiven() or false
 		end
 	end
+	
+	-- update automatic quest log entries when quest log is opened
+	events.Action = |t| if t.Action == 200 then
+		UpdateQBits(true)
+	end
+
+	-- don't save QBits of automatic quests
+	events.BeforeSaveGame = || UpdateQBits(false)
+	events.AfterSaveGame = || UpdateQBits(true)
 	
 	function NewQuestNumber(t)
 		QuestNumberIndex = QuestNumberIndex + 1
