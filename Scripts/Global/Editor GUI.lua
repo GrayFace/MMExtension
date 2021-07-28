@@ -616,8 +616,14 @@ local function SelectByProp(prop)
 		end
 	else
 		local models = {}
-		for id in pairs(Editor.Selection) do
-			models[Editor.Models[id:div(64) + 1].PartOf] = true
+		if Keys.IsPressed('CTRL') then
+			for m in pairs(Editor.State.Models) do
+				models[m.PartOf] = true
+			end
+		else
+			for id in pairs(Editor.Selection) do
+				models[Editor.Models[id:div(64) + 1].PartOf] = true
+			end
 		end
 		for f, id in pairs(Editor.FacetIds) do
 			if models[Editor.Models[id:div(64) + 1].PartOf] then

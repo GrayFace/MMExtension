@@ -11,7 +11,7 @@ Ctrl+S      	Save
 Ctrl+O      	Open
 Ctrl+Z      	Undo (note that whole map .obj import can't be undone)
 Ctrl+Shift+Z	Redo (also Ctrl+Y)
-WASD        	Movement
+WASD        	Movement (hold Shift to move twice as fast, Double Speed mode of the patch also works)
 Mouse Wheel 	Move up/down
 M           	Map
 X           	Unselect
@@ -27,15 +27,16 @@ P           	Move object to party position (and set its direction to direction o
 L           	Land object on the ground
 Arrows      	Move object (hold Alt to do it in smaller steps or Ctrl for larger steps)
 Page Up/Down	Move object up/down
+Ctrl        	If you hold Ctrl while clicking Select Same Texture or Select Same Object outdoors, facets of all models would be selected rather than just the current one. Ctrl and Shift affect selecting things with the mouse in standard way.
 
 Import:
 Import As Objects - every object or group in .obj is marked as a separate object. Only done for Select Object button.
 Import As Rooms - each object or group in .obj becomes a room. Rooms are connected via portals which can be created automatically or manually. Automatic mode is used for rooms which have no manual portals connecting them with other rooms.
-When using automatic mode: Make sure your dungeon doesn't have furniture etc. as separate objects it it. Create a plane separating a future room from the rest of the dungeon, split the dungeon with the plane (to get 2 objects), then delete the plane. Continue the process...
-Here's how you can create portals manually in case you need to: Connected rooms must be connected through a single portal. Portal is a facet with texure "_Portal_", present in only one of the 2 rooms. Note that you cannot use triangulation in export setup of your 3D software.
+When using automatic mode: Make sure your dungeon doesn't have furniture etc. as separate objects in it. Create a plane separating a future room from the rest of the dungeon, split the dungeon with the plane (to get 2 objects), then delete the plane. Continue the process...
+Here's how you can create portals manually in case you need to: Connected rooms preferably should be connected through a single portal. A portal is a facet with texture "_Portal_", present in only one of the 2 rooms. Note that you cannot use triangulation in export setup of your 3D software.
 You can also assign "_Invisible_" texture to facets that should become invisible when imported.
 Rooms improve performance significantly, but more importantly the minimap is opened room-by-room. My advise is to postpone breaking the dungeon into rooms until it's pretty much done.
-Import can't be undone with Undo button. However, when importing models to an outdoor map you can choose to delete models not present in the .obj, you can then undo the deletion.
+Import can't be undone with Undo button. However, when importing models to an outdoor map and choosing to delete models not present in the .obj, you can then undo the deletion.
 
 
 Spawns:
@@ -49,4 +50,4 @@ Info example:
 1/2/3/4/5/6 A7 C8 - means 1 level 1 item, ..., 6 level 6 items, 7 artifacts, 8 custom items. See the note about location level in MapStats.txt in Spawns section.
 
 Map Setup:
-OutlineFlatSkip - from 0 to 1 (defult is 0.9, game default is 1). Set lower value to ignore more outlines between almost flat facets.
+OutlineFlatSkip - from 0 to 1 (default is 0.9, game default is 1). Set lower value to ignore more outlines between almost flat facets.
