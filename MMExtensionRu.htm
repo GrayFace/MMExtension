@@ -396,12 +396,12 @@
 
 <br>
 <a id="General-Information"></a><h2>Общая информация</h2>
-Для моддинга Вам понадобится <a href="https://sites.google.com/site/sergroj/mm/MMArchive.rar?attredirects=0">MMArchive</a>. Также могут пригодиться <a href="http://sourceforge.net/projects/mm8leveleditor/files/MM8LevelEditor/">mm8leveleditor</a> и <a href="http://sites.google.com/site/angelddeath/#TOC-Might-Magic-6-8-Map-Viewer">MM Map Viewer</a>.
+Для моддинга Вам понадобится <a href="https://grayface.github.io/mm/#MMArchive">MMArchive</a>. Также могут пригодиться <a href="http://sourceforge.net/projects/mm8leveleditor/files/MM8LevelEditor/">mm8leveleditor</a> и <a href="http://sites.google.com/site/angelddeath/#TOC-Might-Magic-6-8-Map-Viewer">MM Map Viewer</a>.
 <br>
 
 Извлеките все файлы <b class="def-param">*.txt</b> из соответствующих архивов LOD: <b class="def-param">icons.lod</b> в MM6, <b class="def-param">events.lod</b> в MM7, <b class="def-param">EnglishT.lod</b> в MM8. Вам они понадобятся.
 <br>
-Проще всего начать с редактирования текстовых таблиц с помощью <a href="https://sites.google.com/site/sergroj/wog/TxtEdit.rar?attredirects=0">TxtEdit</a>.
+Проще всего начать с редактирования текстовых таблиц с помощью <a href="https://grayface.github.io/mm/#Txt-Edit">TxtEdit</a>.
 
 В добавок к файлам <b class="def-param">*.txt</b>, которые Вы извлекли из LOD-архива MMExtension создаст некоторые таблицы в папке <b>Data\Tables</b> при первом запуске. Вы можете менять в них любые значения и добавлять новые строки ко многим из них.
 <br>
@@ -658,7 +658,7 @@ MMExtension вносит одно дополнение в синтаксис Lua &ndash; cокращённый синтаксис
 	<tr><td>Scripts.txt</td><td>Строки, переданные в функцию <a href="#Localize">Localize</a>.</td></tr>
 </tbody>
 </table>
- Для редактирования этих файлов используйте <a href="https://sites.google.com/site/sergroj/wog/TxtEdit.rar">Txt Tables Editor</a>.<br>
+ Для редактирования этих файлов используйте <a href="https://grayface.github.io/mm/#Txt-Edit">Txt Tables Editor</a>.<br>
 
  Или же можно запустить команду <b>GenerateLocalization(true)</b>, чтобы сгенерировать файлы локализации <b class="def-param">*.lua</b>. Выбирайте тот формат, который Вам удобнее.<br>
 
@@ -8195,6 +8195,12 @@ Id
 </td><td class="def-right">
  Returns ItemsTxt entry.
 </td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Item.InitSpecial" class="abs"></a>InitSpecial<b class="def-largs">(</b><b class="def-rargs">)</b>
+</td><td class="def-right">
+ <span class="def-ver">[MM7+]</span> Sets up enchantments if the item is "Special" as marked by "material" column of items.txt
+</td>
 </tr></tbody>
 </table>
 <br>
@@ -14173,6 +14179,12 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.Player.Good" class="abs"></a>Good
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.Player.Poison3" class="abs"></a>Poison3
 </td><td class="def-right">
  
@@ -15134,7 +15146,7 @@ Id
 <td class="def-left">
 <a id="structs.Player.GetMainCondition" class="abs"></a><a href="#const.Condition">GetMainCondition</a><b class="def-largs">(</b><b class="def-rargs">)</b>
 </td><td class="def-right">
- 
+ Returns the condition that affects character stats. Also see <a href="#structs.Player.GetDisplayedCondition">GetDisplayedCondition</a>.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -15243,6 +15255,12 @@ Id
 <a id="structs.Player.SetRecoveryDelay" class="abs"></a>SetRecoveryDelay<b class="def-largs">(</b>Delay<b class="def-rargs">)</b>
 </td><td class="def-right">
  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.GetDisplayedCondition" class="abs"></a><a href="#const.Condition">GetDisplayedCondition</a><b class="def-largs">(</b><b class="def-rargs">)</b>
+</td><td class="def-right">
+ Returns the condition displayed on character face and in character properties. Since pacth 2.5 it can differ from <a href="#structs.Player.GetMainCondition">GetMainCondition</a>.
 </td>
 </tr></tbody>
 </table>
@@ -17579,6 +17597,12 @@ Id
 <a id="const.Condition.Zombie" class="abs"></a>Zombie <i class="def-const">= 17</i>
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="const.Condition.Good" class="abs"></a>Good
+</td><td class="def-right">
+ 
 </td>
 </tr></tbody>
 </table>

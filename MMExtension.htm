@@ -396,13 +396,13 @@
 
 <br>
 <a id="General-Information"></a><h2>General Information</h2>
-You will need <a href="https://sites.google.com/site/sergroj/mm/MMArchive.rar?attredirects=0">MMArchive</a>. <a href="http://sourceforge.net/projects/mm8leveleditor/files/MM8LevelEditor/">mm8leveleditor</a> and <a href="http://sites.google.com/site/angelddeath/#TOC-Might-Magic-6-8-Map-Viewer">MM Map Viewer</a> may also come in handy.
+You will need <a href="https://grayface.github.io/mm/#MMArchive">MMArchive</a>. <a href="http://sourceforge.net/projects/mm8leveleditor/files/MM8LevelEditor/">mm8leveleditor</a> and <a href="http://sites.google.com/site/angelddeath/#TOC-Might-Magic-6-8-Map-Viewer">MM Map Viewer</a> may also come in handy.
 <br>
 Extract all <b class="def-param">*.txt</b> files from appropriate LOD archive:
 <b class="def-param">icons.lod</b> in MM6, <b class="def-param">events.lod</b> in MM7, <b class="def-param">EnglishT.lod</b> in MM8. You will need them.
 
 <br>
-Easiest thing to start with is editing text tables with <a href="https://sites.google.com/site/sergroj/wog/TxtEdit.rar?attredirects=0">TxtEdit</a>.
+Easiest thing to start with is editing text tables with <a href="https://grayface.github.io/mm/#Txt-Edit">TxtEdit</a>.
 In addition to <b class="def-param">*.txt</b> files that you've extracted from LOD archives MMExtension will create some tables in <b>Data\Tables</b> folder on first launch. You can change any values in them and add new lines to many of them.
 
 <br>
@@ -662,7 +662,7 @@ To generate localization files for all scripts, load any game, press Ctrl+F1, wr
 	<tr><td>Scripts.txt</td><td>Strings passed to <a href="#Localize">Localize</a> function.</td></tr>
 </tbody>
 </table>
- These files should be edited with <a href="https://sites.google.com/site/sergroj/wog/TxtEdit.rar">Txt Tables Editor</a>.<br>
+ These files should be edited with <a href="https://grayface.github.io/mm/#Txt-Edit">Txt Tables Editor</a>.<br>
  Alternatively, you can run <b>GenerateLocalization(true)</b> to generate <b class="def-param">*.lua</b> localization files. Choose whichever format you prefer.
 <br>
  To generate localization only for quests you can use <a href="#GenerateQuestsLocalization">GenerateQuestsLocalization()</a> command.<br>
@@ -8200,6 +8200,12 @@ Id
 </td><td class="def-right">
  Returns ItemsTxt entry.
 </td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Item.InitSpecial" class="abs"></a>InitSpecial<b class="def-largs">(</b><b class="def-rargs">)</b>
+</td><td class="def-right">
+ <span class="def-ver">[MM7+]</span> Sets up enchantments if the item is "Special" as marked by "material" column of items.txt
+</td>
 </tr></tbody>
 </table>
 <br>
@@ -14178,6 +14184,12 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.Player.Good" class="abs"></a>Good
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.Player.Poison3" class="abs"></a>Poison3
 </td><td class="def-right">
  
@@ -15139,7 +15151,7 @@ Id
 <td class="def-left">
 <a id="structs.Player.GetMainCondition" class="abs"></a><a href="#const.Condition">GetMainCondition</a><b class="def-largs">(</b><b class="def-rargs">)</b>
 </td><td class="def-right">
- 
+ Returns the condition that affects character stats. Also see <a href="#structs.Player.GetDisplayedCondition">GetDisplayedCondition</a>.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -15248,6 +15260,12 @@ Id
 <a id="structs.Player.SetRecoveryDelay" class="abs"></a>SetRecoveryDelay<b class="def-largs">(</b>Delay<b class="def-rargs">)</b>
 </td><td class="def-right">
  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.GetDisplayedCondition" class="abs"></a><a href="#const.Condition">GetDisplayedCondition</a><b class="def-largs">(</b><b class="def-rargs">)</b>
+</td><td class="def-right">
+ Returns the condition displayed on character face and in character properties. Since pacth 2.5 it can differ from <a href="#structs.Player.GetMainCondition">GetMainCondition</a>.
 </td>
 </tr></tbody>
 </table>
@@ -17584,6 +17602,12 @@ Id
 <a id="const.Condition.Zombie" class="abs"></a>Zombie <i class="def-const">= 17</i>
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="const.Condition.Good" class="abs"></a>Good
+</td><td class="def-right">
+ 
 </td>
 </tr></tbody>
 </table>
