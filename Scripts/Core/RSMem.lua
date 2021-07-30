@@ -2022,7 +2022,7 @@ if internal.CompileAsm then
 	local toasm2 = internal.CompileAsm(2, 2)
 	
 	-- Like #autohook:mem.autohook#, but takes an Asm code string as parameter.
-	-- !i[[Example (from MM7):]]
+	-- !i[[!\ Example (from MM7):]]
 	-- !lua[=[
 	-- mem.asmhook(0x441D4C, [[
 	-- 	cmp dword [0xE31AF0], 0
@@ -2050,7 +2050,7 @@ if internal.CompileAsm then
 	end
 
 	-- Like #autohook2:mem.autohook2#, but takes an Asm code string as parameter
-	-- !i[[Example (from MM6):]]
+	-- !i[[!\ Example (from MM6):]]
 	-- !lua[=[
 	-- local p = mem.asmhook2(0x43C8E3, [[
 	-- 	mov [edi], esi

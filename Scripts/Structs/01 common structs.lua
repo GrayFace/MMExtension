@@ -447,9 +447,10 @@ function structs.f.Item(define)
 	define
 	[0x0].i4  'Number'
 	[0x4].i4  'Bonus'
+	 .Info "From STDITEMS.TXT. You can use #const.Stats:#, just add 1 to a supported value from it."
 	[0x8].i4  'BonusStrength'
 	[0xC].i4  'Bonus2'
-	 .Info "Value in case of gold"
+	 .Info "From SPCITEMS.TXT. Value in case of gold."
 	[0x10].i4  'Charges'
 	[0x14].bit('Identified', 1)
 	[0x14].bit('Broken', 2)
@@ -479,7 +480,7 @@ function structs.f.Item(define)
 		mem.fill(self["?ptr"], self["?size"])
 		return call(mmv(0x448790, 0x45664C, 0x453ECC), 1, Game.ItemsTxt["?ptr"] - 4, assertnum(strength, 2), assertnum(type, 2), self)
 	end
-	define.Info{Sig = "Strenght, Type:const.ItemType"}
+	define.Info{Sig = "Strength, Type:const.ItemType"}
 	function define.m:T()
 		return Game.ItemsTxt[self.Number]
 	end
@@ -566,7 +567,7 @@ function structs.f.ObjectRefAny(define, long)
 	end
 	define
 	[0].u2  'Value'
-	 .Info "raw value, in inventory screen this is item index"
+	 .Info "Raw value. In inventory screen this is item index, in other screens it equals !Lua[[Kind + Index*8]]."
 	[0].CustomType('Kind', 0, function(o, obj, _, val)
 		local p = obj["?ptr"] + o
 		if val == nil then
@@ -1044,6 +1045,8 @@ function structs.f.MapMonster(define)
 	[0xb0+o].i2  'FramesAttack'  -- FRAME_TABLE_NEAR_ATTACK
 	[0xb2+o].i2  'FramesShoot'  -- FRAME_TABLE_FAR_ATTACK
 	[0xb4+o].i2  'FramesStun'  -- FRAME_TABLE_STUN
+	[0xb4+o].i2  'FramesGotHit'  -- FRAME_TABLE_STUN
+	 .Info {Type = "Same as FramesStun"}
 	[0xb6+o].i2  'FramesDie'  -- FRAME_TABLE_DYING
 	[0xb8+o].i2  'FramesDead'  -- FRAME_TABLE_DEAD
 	[0xba+o].i2  'FramesFidget'  -- FRAME_TABLE_FIDGETING
@@ -1051,6 +1054,8 @@ function structs.f.MapMonster(define)
 	[0xbc+o].i2  'SoundAttack'  -- SOUND_EFFECT_1
 	[0xbe+o].i2  'SoundDie'  -- SOUND_EFFECT_2
 	[0xc0+o].i2  'SoundGetHit'  -- SOUND_EFFECT_3
+	[0xc0+o].i2  'SoundGotHit'  -- SOUND_EFFECT_3
+	 .Info {Type = "Same as SoundGetHit"}
 	[0xc2+o].i2  'SoundFidget'  -- SOUND_EFFECT_4
 	[0xc4+o].array(mmv(14, 22, 30)).struct(structs.SpellBuff)  'SpellBuffs'
 	 .Info{Sig = "[buff:const.MonsterBuff]"}
@@ -1086,6 +1091,8 @@ function structs.f.MapMonster(define)
 	 .Info{Sig = "DamageKind, Damage";  "Returns the amount of damage the monster has to actually receive"}
 	.method{p = mmv(0x421E90, 0x427619, 0x425A4F), name = "CalcHitByEffect", must = 1, ret = true}
 	 .Info{Sig = "DamageKind";  "Returns 'true' if the monster couldn't dodge the effect"}
+	.method{p = mmv(0x421D50, 0x427464, 0x425893), name = "CalcHitOrMiss", cc = 0, must = 1, ret = true}
+	 .Info{Sig = "Player:structs.Player"}
 	.method{p = mmv(0x44C140, 0x4597A6, 0x457060), name = "UpdateGraphicState", ret = 'nil'}
 	 .Info "Updates #GraphicState:structs.MapMonster.GraphicState# in accordance with #AIState:structs.MapMonster.AIState#"
 	if mmver > 6 then
@@ -1093,6 +1100,17 @@ function structs.f.MapMonster(define)
 		 .Info{Sig = "Color24 = 0";  "Shows effect from a spell (as a cylinder of colored dots around the monster)"}
 	end
 
+	function define.m:GotHit(By, ResetAnimation)
+		call(mmv(0x403730, 0x4030AD, 0x4032DD), 2, self:GetIndex(), By or 4, ResetAnimation or false)
+	end
+	define.Info{Sig = "By = 4, ResetAnimation = false";  "Shows monster's getting hit animation, produces sound and boosts aggression level. 'By' is the attacker #object reference value:structs.ObjectRef.Value#."}
+	if mmver > 6 then
+		local sounds = {Attack = 0, Die = 1, GotHit = 2, Fidget = 3}
+		function define.m:PlaySound(i)
+			call(mm78(0x402CED, 0x402DF6), 2, self:GetIndex(), assert(sounds[i] or i))
+		end
+		define.Info{Sig = "SoundIndex";  [['SoundIndex' is from 0 to 3 or any of these corresponding strings: "Attack", "Die", "GotHit", "Fidget"]]}
+	end
 	function define.m:LoadFramesAndSounds()
 		call(mmv(0x44BF50, 0x4595D3, 0x456E90), 1, self, 0)
 		for i = 0, 3 do
@@ -1105,9 +1123,10 @@ function structs.f.MapMonster(define)
 		self:LoadFramesAndSounds()
 		self.Id = old
 	end
+	define.Info{Sig = "id";  "Takes on the look of another monster kind"}
 	function define.m:GetPropertiesFromId(id)
 		local old = self.Id
-		local hp = self.HP/self.FullHP
+		local hp = self.HP/max(self.FullHP, 1)
 		mem.copy(self["?ptr"] + structs.o.MapMonster.StandardName,
 		         Game.MonstersTxt[id]["?ptr"] + structs.o.MonstersTxtItem.Name, structs.MonstersTxtItem["?size"])
 		self.Id = old
@@ -1122,12 +1141,14 @@ function structs.f.MapMonster(define)
 			self.Name = self.StandardName
 		end
 	end
+	define.Info{Sig = "id";  "Takes all properties, except appearance and sounds from another monster kind"}
 	function define.m:SetId(id)
 		self.Id = id
 		if self.Id2 ~= 0 then
 			self.Id2 = id
 		end
 	end
+	define.Info{Sig = "id";  "Changes 'Id' and, if it's not 0, 'Id2'"}
 	function define.m:SetCustomFrames(...)
 		local t = {...}
 		for i = 1, 8 do
@@ -1136,6 +1157,13 @@ function structs.f.MapMonster(define)
 				self.Frames[i - 1] = id
 				Game.SFTBin:LoadGroup(id)
 			end
+		end
+	end
+	define.Info{Sig = "Stand, Walk, Attack, Shoot, Stun, GotHit, Die, Dead, Fidget";  "Any argument can be 'nil'. Also loads the frames."}
+	function define.m:GetIndex()
+		local i = (self["?ptr"] - Map.Monsters["?ptr"])/self["?size"]
+		if i % 1 == 0 and i >= 0 and i < Map.Monsters.Count then
+			return i
 		end
 	end
 end
@@ -1255,7 +1283,7 @@ function structs.f.ItemsTxtItem(define)
 	end
 	define
 	[0x14+o].u1  'EquipStat'
-	 .Info {Type = "const.ItemType";  "Subtract 1 from #const.ItemType:# value"}
+	 .Info "Subtract 1 from #const.ItemType:# value"
 	if mmver > 6 then
 		define.u1  'Skill'
 	else

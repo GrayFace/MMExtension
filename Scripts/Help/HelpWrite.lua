@@ -245,7 +245,7 @@ local TocMore = [[<h5 class="def-hidden">&#8230;</h5>]]
 		s = s:gsub("'([%w_%.]+)'", '<b class="def-param">%1</b>')
 		s = s:gsub("!'%[(=*)%[(.-)%]%1%]", '<b class="def-param">%2</b>')
 		s = s:gsub("'/(.-)/'", '&nbsp;<i class="def-ib">%1</i>')
-		s = s:gsub("!Example:", '<span class="def-vspace">Example:</span>')
+		s = s:gsub("!\\ (%a+)", '<span class="def-vspace">%1</span>')
 		s = s:gsub("#(%a[%w_%.%* ]*):([^#]*)#", |s1, s2| Link(s2 ~= "" and s2 or s1, s1))
 		s = s:gsub("(%a[%w_]*):(const%.%a[%w_%.]*)", |s1, s2| Link(s2, s1))
 		s = s:gsub("(%a[%w_]*):(const)([^%.%w_])", |s1, s2, s3| Link(s2, s1)..s3)

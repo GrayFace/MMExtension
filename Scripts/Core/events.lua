@@ -37,6 +37,33 @@ do
 		hookcall = false,
 	}
 
+	-- Allows switching all hooks installed by it on/off. 'ref' table is used for substitutions in Asm code: "%key%" is replaced with !Lua[=[ref[key]]=], "%%" is replaced with "%". All hook functions are supported, but memory-editing arrays are supported through 'set' function.
+	-- !\ Example 1 - substitution:!Lua[=[
+	-- local ArtifactBonus = mem.StaticAlloc(8)
+	-- HookManager{
+	-- 	buf = ArtifactBonus,
+	-- }.asmhook2(0x48F60A, [[
+	-- 	mov [%buf%], eax
+	-- 	mov [%buf%+4], ecx
+	-- ]])]=]
+	-- !\ Example 2 - on/off:!Lua[=[
+	-- local hooks
+	-- function ArcomageRequireDeck(on)
+	-- 	if hooks then
+	-- 		hooks.Switch(not on)
+	-- 	elseif not on then
+	-- 		hooks = HookManager()
+	-- 		hooks.nop(0x4B3A06)  -- no arcomage deck requirement
+	-- 		hooks.nop(0x4B8A31)  -- no arcomage deck requirement
+	-- 	end
+	-- end]=]
+	-- !\ Example 3 - editing memory:!Lua[=[
+	-- local hooks = HookManager()
+	-- hooks.set('i4', 0x469BBE+1, 0x10000)  -- instead of mem.prot(true);  mem.i4[0x469BBE+1] = 0x10000;  mem.prot(false)
+	-- hooks.set('u2', 0x472FB7, 0x9090)  -- instead of mem.prot(true);  mem.u2[0x472FB7] = 0x9090;  mem.prot(false)
+	-- hooks.asmpatch(0x472F5E, "add eax, ecx", 2)
+	-- DisableVFlipFix = |on| hooks.Switch(not on)]=]
+	-- !\ P.S. Don't try to run the code of these examples, they are for illustration.
 	function HookManager(ref)
 		local t = {}
 		function t.AddEx(RetMem, memf, p, hookf, size, ...)
@@ -108,6 +135,19 @@ do
 			t.AddMem(p, p2 - p)
 			mem.nop2(p, p2)
 		end
+		function t.set(a, p, v)
+			t.AddMem(p, a:sub(2, -1) + 0)
+			mem.prot(true)
+			mem[a][p] = v
+			mem.prot(false)
+		end
+		function t.hookalloc(size)
+			local p = mem.hookalloc(size)
+			t[#t + 1] = |on| if on == "off" then
+				mem.hookfree(p)
+			end
+			return p
+		end
 		for proc, RetMem in pairs(procs) do
 			t[proc] = function(...)
 				return t.AddEx(RetMem, mem[proc], ...)
@@ -151,7 +191,7 @@ local function Conditional(hooks, name)
 end
 
 local function GetPlayer(p)
-	local i = (p - Party.PlayersArray["?ptr"]) / Party.PlayersArray[0]["?size"]
+	local i = (p - Party.PlayersArray["?ptr"]) / structs.Player["?size"]
 	return i, Party.PlayersArray[i]
 end
 
@@ -159,7 +199,7 @@ local function GetMonster(p)
 	if p == 0 then
 		return
 	end
-	local i = (p - Map.Monsters["?ptr"]) / Map.Monsters[0]["?size"]
+	local i = (p - Map.Monsters["?ptr"]) / structs.MapMonster["?size"]
 	return i, Map.Monsters[i]
 end
 
@@ -798,8 +838,8 @@ end
 mem.hookfunction(mmv(0x498490, 0x4B3AA5, 0x4B250A), 1, 0, function(d, def, type)
 	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = nil}
 	--!k{PicType :const.HouseType} Change topics in the main dialog menu in a house, unless isn't an NPC conversation. Unfortunately, the captions displayed won't change as they are hard-coded in various places. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. By default 't.Result' is not populated. Names from #const.HouseScreens:# and #const.Skills:# as text are allowed.
-	-- !Example:
-	-- !LUA[[events.PopulateHouseDialog = |t| if t.PicType == const.HouseType.Training then
+	-- !\ Example:!LUA[[
+	-- events.PopulateHouseDialog = |t| if t.PicType == const.HouseType.Training then
 	-- 	t.Result = {"Train"}  -- disable learning skills at training halls
 	-- end]]
 	events.cocalls("PopulateHouseDialog", t)
@@ -831,8 +871,8 @@ if mmver > 6 then
 		end
 		local t = {Result = t, PicType = Game.HousePicType, House = Game.GetCurrentHouse()}
 		--!k{PicType :const.HouseType} [MM7+] Change skills in Learn Skills dialog. 'Result' is a pre-populated table containing an array of skill numbers. Skill names from #const.Skills:# are also allowed.
-		-- !Example:
-		-- !LUA[[events.PopulateLearnSkillsDialog = |t| if t.PicType == const.HouseType.Tavern then
+		-- !\ Example:!LUA[[
+		-- events.PopulateLearnSkillsDialog = |t| if t.PicType == const.HouseType.Tavern then
 		-- 	t.Result[#t.Result + 1] = "Blaster"  -- devs apperently forgot to make taverns teach you Blaster skill
 		-- end]]
 		events.cocalls("PopulateLearnSkillsDialog", t)
@@ -2047,7 +2087,7 @@ do
 		-- 	t.Handled = true
 		-- end
 		
-		-- Called when a player or a projectile tries to hit a monster
+		-- Called when a player or a projectile tries to hit a monster. Can be used to completely replace what happens.
 		events.cocall("MonsterAttacked", t)
 		if not t.Handled then
 			def(attackerID, monIndex, speed, action)
@@ -2091,7 +2131,7 @@ do
 		
 		Pl_Who, Pl_Slot = attacker, slot
 		local t = {
-			-- table returned by #WhoHitMonster:#
+			-- table returned by #WhoHitPlayer:#
 			Attacker = attacker,
 			-- :structs.Player
 			Player = Party[slot],
@@ -2104,7 +2144,7 @@ do
 		-- 	t.Handled = true
 		-- end
 		
-		-- Called when a monster or a projectile tries to hit a player
+		-- Called when a monster or a projectile tries to hit a player. Can be used to completely replace what happens.
 		events.cocall("PlayerAttacked", t)
 		if not t.Handled then
 			def(attackerID, action, speed, slot)

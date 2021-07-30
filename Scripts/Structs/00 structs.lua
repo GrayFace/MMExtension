@@ -276,8 +276,8 @@ function structs.f.GameStructure(define)
 	[mmv(0x4C3E94, 0x4F07B0, 0x500D78)].array(mmv(119, 139, 139), mmv(152, 170, 170)).i4  'GuildAwards'
 	[mmv(0x9DDDA4, 0xF8AFE8, 0xFFD3D4)].array(12).i4  'GuildItemIconPtr'
 	 .Info{Sig = "[slot]"; [[Loaded icons for current guild's items.
-!Example:
-!Lua[=[function events.GuildItemsGenerated(t)
+!\ Example:!Lua[=[
+function events.GuildItemsGenerated(t)
 	local a = Game.GuildItems[t.House][0]   -- items array for this guild (for MM6 and MM7)
 	a[0]:Randomize(5, const.ItemType.Book)  -- put random powerful book into first slot
 	a[0].Identified = true
@@ -690,10 +690,10 @@ local function PrepareCountItems(items)
 	local t = {}
 	if type(items) == "table" then
 		for _, v in ipairs(items) do
-			t[v] = true
+			t[v] = 1
 		end
 	else
-		t[items] = true
+		t[items] = 1
 	end
 	return t
 end
@@ -701,16 +701,11 @@ end
 local function DoCountPlayerItems(t, pl)
 	local n = 0
 	for _, i in pl.Inventory do
-		if i > 0 and t[pl.Items[i].Number] then
-			n = n + 1
-		end
+		n = n + (i > 0 and t[pl.Items[i].Number] or 0)
 	end
 	for _, i in pl.EquippedItems do
-		if i > 0 and t[pl.Items[i].Number] then
-			n = n + 1
-		end
+		n = n + (i > 0 and t[pl.Items[i].Number] or 0)
 	end
-	-- Note: evt.CheckItemsCount is buggy (doesn't contain i > 0 check), but the bug has never been spotted! Strange...
 	return n
 end
 
@@ -862,7 +857,7 @@ function structs.f.GameParty(define)
 	end
 	function define.f.CountItems(items)
 		local t = PrepareCountItems(items)
-		local n = (t[Mouse.Item.Number] and 1 or 0)
+		local n = t[Mouse.Item.Number] or 0
 		for _, pl in Party.Players do
 			n = n + DoCountPlayerItems(t, pl)
 		end
@@ -936,8 +931,9 @@ function structs.f.Player(define)
 	[mmv(0x60, 0x108, 0x378)].array(mmv(31, 37, 39))[mmv("u1", "i2", "i2")]  'Skills'
 	 .Info{Sig = "[skill:const.Skills]"}
 	[mmv(0x7F, 0x152, 0x3C6)].array(mmv(0, 1, 1), mmv(99, 104, 104)).abit  'Awards'
-	[mmv(0xBF, 0x192, 0x406)].array(1, mmv(100, 100, 138)).b1  'Spells'
-	.skip(mmv(5, 0, 0))
+	[mmv(0xBF, 0x192, 0x406)].array(1, mmv(100, 100, 132)).b1  'Spells'
+	 .Info{Sig = "[spell:const.Spells]"}
+	.skip(mmv(5, 2, 2))
 	.array(mmv(181, 264, 264), mmv(187, 270, 270)).b4  'UsedBlackPotions'
 	[mmv(0x144, 0x214, 0x4A8)].array(1, 138).struct(structs.Item)  'Items'
 	[mmv(0x105C, 0x157C, 0x1810)].array(126).i4  'Inventory'
@@ -1073,6 +1069,9 @@ function structs.f.Player(define)
 	.method{p = mmv(0x47E810, 0x48D09F, 0x48C9FE), name = "GetRangedAttack"}
 	.method{p = mmv(0x47EAD0, 0x48D1E4, 0x48CB07), name = "CalcRangedDamage";  -1}
 	 .Info{Sig = "MonsterId = -1"}
+	.method{p = mmv(0x421CB0, 0x4272AC, 0x4256DB), name = "CalcHitOrMiss", cc = 0, must = 1, ret = true;  0, 0, 0}
+	 .Info{Sig = "Monster:structs.MapMonster, Range = 0, Bonus = 0"; "'AttackType': 0 - melee, 1 - less than 1024, 2 - less then 2560, 3 - 2560 or more. See the Mechanics page on my site for more info on the formula."}
+	 
 	.method{p = mmv(0x47EB80, 0x48D2D0, 0x48CBFB), name = "GetMeleeDamageRangeText", ret = ""}
 	.method{p = mmv(0x47EEB0, 0x48D37C, 0x48CC98), name = "GetRangedDamageRangeText", ret = ""}
 	.method{p = mmv(0x47F010, 0x48D440, 0x48CD4D), name = "CanTrain"}
@@ -1095,9 +1094,10 @@ function structs.f.Player(define)
 		.method{p = mmv(nil, 0x48CD76, 0x48C717), name = "GetMeleeDamageMax"}
 		.method{p = mmv(nil, 0x48D10A, 0x48CA37), name = "GetRangedDamageMin"}
 		.method{p = mmv(nil, 0x48D177, 0x48CA9F), name = "GetRangedDamageMax"}
-		.method{p = mmv(nil, 0x48D6B6, 0x48CF8A), name = "HasItemBonus"}
+		.method{p = mmv(nil, 0x48D6B6, 0x48CF8A), name = "HasItemBonus", must = 1}
+		 .Info{Sig = "Bonus2";  "Checks whether the player is wearing an item with specified Bonus2:structs.Item.Bonus2. of items See SPCITEMS.TXT for "}
 		.method{p = mmv(nil, 0x48D6EF, 0x48CFC3), name = "WearsItem", must = 1, ret = true; 0, 16}
-		 .Info{Sig = "ItemNum, Slot = 16"; "If 'Slot' isn't specified, searches all slots for the item"}
+		 .Info{Sig = "ItemNum, Slot:const.ItemSlot = 16"; "If 'Slot' isn't specified, searches all slots for the item"}
 		.method{p = mmv(nil, 0x48E737, 0x48DBA2), name = "GetBaseResistance", must = 1}
 		.method{p = mmv(nil, 0x48E7C8, 0x48DD6B), name = "GetResistance", must = 1}
 	else
@@ -1125,16 +1125,22 @@ function structs.f.Player(define)
 			return false
 		end
 	end
+	if mmver == 6 then
+		define.method{p = 0x4852D0, name = "GetDiplomacyTotalSkill"}
+		-- 486CF0 Character_CanTakeItemInPos
+		-- 486DF0 Character_PutItemInPos
+	elseif mmver == 7 then
+		define.method{p = 0x490101, name = "GetRace"}
+	end
 	define
 	.method{p = mmv(0x482570, 0x48E64E, 0x48DAB9), name = "GetBaseArmorClass"}
 	.method{p = mmv(0x482700, 0x48E687, 0x48DAF2), name = "GetArmorClass"}
 	.method{p = mmv(0x4828A0, 0x48E6D4, 0x48DB3F), name = "GetBaseAge"}
 	.method{p = mmv(0x482920, 0x48E724, 0x48DB8F), name = "GetAge"}
-	.method{p = mmv(0x482BB0, 0x48E8ED, 0x48DF81), name = "Recover"}
+	.method{p = mmv(0x482BB0, 0x48E8ED, 0x48DF81), name = "Recover", must = 1}
+	 .Info{Sig = "ByAmount"}
 	.method{p = mmv(0x482C80, 0x48E962, 0x48DFF8), name = "SetRecoveryDelayRaw", must = 1}
 	 .Info{Sig = "Delay"}
-	.method{p = mmv(0x482D30, 0x48E9EC, 0x48E127), name = "GetMainCondition"}
-	 .Info{Type = "const.Condition";  "Returns the condition that affects character stats. Also see #GetDisplayedCondition:structs.Player.GetDisplayedCondition#."}
 	-- 482E6E (MM6) Character_CalcSpecialBonusByItems
 	.method{p = mmv(0x482E80, 0x48EAA6, 0x48E213), name = "CalcStatBonusByItems", must = 1;  0, false}
 	 .Info{Sig = "Stat:const.Stats, IgnoreExtraHand [MM7+] = false"}
@@ -1147,24 +1153,25 @@ function structs.f.Player(define)
 	.method{p = mmv(0x488F50, 0x494A1D, 0x492D6A), name = "ShowFaceExpression", must = 1;  0, 0}
 	 .Info{Sig = "Expression, Time = 0"}
 	.method{p = mmv(0x4876E0, 0x492C03, 0x491514), name = "IsConscious", ret = true}
-	if mmver == 6 then
-		define.method{p = 0x4852D0, name = "GetDiplomacyTotalSkill"}
-	-- 486CF0 Character_CanTakeItemInPos
-	-- 486DD0 Character_ItemsCount
-	-- 486DF0 Character_PutItemInPos
-	else
+	if mmver > 6 then
 		define
 		.method{p = mmv(nil, 0x48F87A, 0x48EF4F), name = "GetSkill", must = 1}
+		 .Info{Sig = "Skill:const.Skills"}
 		.method{p = mmv(nil, 0x4948A9, 0x492BCD), name = "ShowFaceAnimation", must = 1;  0, 0}
-		 .Info{Sig = "Animation"}
+		 .Info{Sig = "Animation:const.FaceAnimation"}
 		.method{p = mmv(nil, 0x491252, 0x4902DF), name = "GetPerceptionTotalSkill"}
 		.method{p = mmv(nil, 0x49130F, 0x49036E), name = "GetLearningTotalSkill"}
 		.method{p = mmv(nil, 0x492D5D, 0x49165D), name = "AddCondition", must = 1; 0, false}
-	end
-	if mmver == 7 then
-		define.method{p = 0x490101, name = "GetRace"}
+		 .Info{Sig = "Condition:const.Condition, CanResist = false";  "Passing 'const.Condition.Good' isn't supported.\n'CanResist' only affects application of Protection from Magic spell. If it's 'true' and the spell protects the player, spell strength is decreased instead of condition being applied."}
+		.method{p = mmv(0x482D30, 0x48E9EC, 0x48E127), name = "GetMainCondition"}
+		 .Info{Type = "const.Condition";  "Returns the condition that affects character stats. Also see #GetDisplayedCondition:structs.Player.GetDisplayedCondition#."}
 	end
 	
+	function define.m:GetDisplayedCondition()
+		local p = mmv(0x4145C0, 0x418A04, 0x4181A3)
+		return call(i4[p + 1] + p + 5, 1, self)
+	end
+	define.Info{Type = "const.Condition";  "Returns the condition displayed on character face and in character properties. Since pacth 2.5 it can differ from #GetMainCondition:structs.Player.GetMainCondition#."}
 	function define.m:EnumActiveItems(includeBroken)
 		local i = -1
 		return function()
@@ -1178,6 +1185,7 @@ function structs.f.Player(define)
 			end
 		end
 	end
+	define.Info{Sig = "includeBroken"}
 	function define.m:GetActiveItem(slot, includeBroken)
 		slot = self.EquippedItems[slot]
 		local item = (slot ~= 0 and self.Items[slot])
@@ -1185,6 +1193,7 @@ function structs.f.Player(define)
 			return item
 		end
 	end
+	define.Info{Sig = "slot, includeBroken"}
 	function define.m:CountItems(items)
 		return DoCountPlayerItems(PrepareCountItems(items), self)
 	end
@@ -1208,11 +1217,6 @@ function structs.f.Player(define)
 		end
 	end
 	define.Info{Sig = "Delay"}
-	function define.m:GetDisplayedCondition()
-		local p = mmv(0x4145C0, 0x418A04, 0x4181A3)
-		return call(i4[p + 1] + p + 5, 1, self)
-	end
-	define.Info{Type = "const.Condition";  "Returns the condition displayed on character face and in character properties. Since pacth 2.5 it can differ from #GetMainCondition:structs.Player.GetMainCondition#."}
 end
 
 local DrawStyles = {
@@ -1260,13 +1264,13 @@ function structs.f.GameScreen(define)
 	end
 	define.Info{Sig = "x, y, pic, style, rotate, EnglishD"}
 
-	function define.f:DrawItemEffect(x, y, shapePic, efPic, palShift, palFrom, palTo, rotate, EnglishD)
+	function define.f:DrawItemEffect(x, y, shapePic, efPic, palShift, palFrom, palTo, rotate, EnglishD, efEnglishD)
 		assert(mmver > 6)
 		shapePic = Game.IconsLod.Bitmaps[type(shapePic) == "number" and shapePic or Game.IconsLod:LoadBitmap(shapePic, EnglishD)]
-		efPic = Game.IconsLod.Bitmaps[type(efPic) == "number" and efPic or Game.IconsLod:LoadBitmap(efPic, EnglishD)]
+		efPic = Game.IconsLod.Bitmaps[type(efPic) == "number" and efPic or Game.IconsLod:LoadBitmap(efPic, efEnglishD)]
 		mem.call(mm78(0x4A6376, 0x4A4424), 1, self['?ptr'], x, y, shapePic, efPic, palShift or timeGetTime()/10, palFrom or 0, palTo or 255, rotate or 0)
 	end
-	define.Info{Sig = "x, y, shapePic, effectPic, palShift, palAnimateFrom, palAnimateTo, rotate, EnglishD"}
+	define.Info{Sig = "x, y, shapePic, effectPic, palShift, palAnimateFrom, palAnimateTo, rotate, EnglishD, effectEnglishD"}
 	
 	function define.f:DrawToObjectByPixel(x, y, pic, index, rotate, EnglishD)
 		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
