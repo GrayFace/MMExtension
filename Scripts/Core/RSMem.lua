@@ -1302,8 +1302,9 @@ do -- mem.struct
 			if val then
 				roError(name)
 			end
+			val = {}
 			
-			local function CheckOffset(t, o, lev)
+			val["?CheckOffset"] = function(t, o, lev)
 				local n = beyondLen and count or (GetLen(obj) + (beyondLen or 0))
 				if o < 0 or o >= n*size then
 					error(format(sOutOfBounds, o/size + low, low, low + n - 1), (lev or 1) + 1)
@@ -1330,7 +1331,7 @@ do -- mem.struct
 							if v == nil then
 								return low + GetLen(obj) - 1
 							else
-								return (SetLen(obj, v - low + 1, lenP and obj["?ptr"] + lenP, lenA))
+								return (SetLen(obj, v - low + 1, lenP and obj["?ptr"] + lenP, lenA, size, o))
 							end
 						elseif a == "length" or a == "Length" or a == "count" or a == "Count" then
 							if v == nil then
@@ -1349,6 +1350,10 @@ do -- mem.struct
 								return count*size
 							elseif a == "ItemSize" then
 								return size
+							elseif a == "lenP" then
+								return lenP
+							elseif a == "pptr" then
+								return ptr and GetPtr(obj, o) or nil
 							end
 						end
 					end
@@ -1384,7 +1389,7 @@ do -- mem.struct
 			end
 			
 			local meta = {__index = indexes, __newindex = indexes, __call = _call, __persist = nullpersist}
-			val = setmetatable({["?CheckOffset"] = CheckOffset}, meta)
+			val = setmetatable(val, meta)
 			val = array_callback(val)
 			rawset(obj, name, val)
 			return val
