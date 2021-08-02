@@ -14,7 +14,7 @@ local _KNOWNGLOBALS_F = Party, Game, Map, VFlipUnfixed, structs, GameInitialized
 
 
 do
-	-- HookManager (only these functions so far)
+	-- HookManager
 	
 	local procs = {
 		hook = false,
@@ -189,6 +189,7 @@ local function Conditional(hooks, name)
 		hooks.Switch(false)
 	end
 end
+internal.Conditional = Conditional
 
 local function GetPlayer(p)
 	local i = (p - Party.PlayersArray["?ptr"]) / structs.Player["?size"]
@@ -202,6 +203,8 @@ local function GetMonster(p)
 	local i = (p - Map.Monsters["?ptr"]) / structs.MapMonster["?size"]
 	return i, Map.Monsters[i]
 end
+
+internal.GetPlayer, internal.GetMonster = GetPlayer, GetMonster
 
 local function CmpOpcode(p, v, ...)
 	return not v or u1[p] == v and CmpOpcode(p + 1, ...)
@@ -255,7 +258,7 @@ function internal.CalcSpellDamage(dmg, spell, skill, mastery, HP)
 		-- :const
 		Mastery = mastery,
 		HP = HP, HitPoints = HP}
-	events.cocall("CalcSpellDamage", t)
+	events.cocall("CalcSpellDamage", t, spell)
 	return t.Result
 end
 
@@ -1513,7 +1516,10 @@ mem.hookfunction(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, 8, function(d, def, this,
 			t.Allow = false
 		end
 	end
-	events.cocall("PlaySound", t)
+	events.cocall("InternalPlaySound", t)
+	if t.Allow then
+		events.cocall("PlaySound", t)
+	end
 	t.CallDefault()
 end)
 
@@ -1996,17 +2002,16 @@ end
 if mmver > 6 then
 	local hooks = HookManager()
 	delayed(|| do
-		local p1 = hooks.hookfunction(mm78(0x4270B9, 0x4254BA), 1, mm78(2, 3), function(d, def, ai, mon, monIndex, spell, dist)
+		local p1 = hooks.hookfunction(mm78(0x4270B9, 0x4254BA), 1, mm78(2, 3), function(d, def, ai, mon, spell, dist)
 			local t = {
 				Spell = spell,
-				Monster = mon,
-				MonsterIndex = monIndex,
 				-- [MM8]
 				Distance = dist,
-				Allow = def(ai, mon, monIndex, spell, dist),
+				Allow = def(ai, mon, spell, dist),
 			}
+			t.MonsterIndex, t.Monster = GetMonster(mon)
 			--!k{Monster :structs.MapMonster} [MM7+]
-			events.cocall("CanMonsterCastSpell", t)
+			events.cocall("CanMonsterCastSpell", t, spell)
 			return t.Allow
 		end)
 		Conditional(hooks, "CanMonsterCastSpell")
@@ -2020,18 +2025,22 @@ do
 		local t = {
 			-- :const.MonsterAction
 			Action = nil,
-			Monster = mon,
-			MonsterIndex = (mmver == 6 and GetMonster(mon) or monIndex),
+			-- :structs.MapMonster
+			Monster = mmver > 6 and Map.Monsters[monIndex],
+			MonsterIndex = monIndex,
 			-- [MM8]
 			Distance = dist,
 		}
+		if mmver == 6 then
+			t.MonsterIndex, t.Monster = GetMonster(mon)
+		end
 		-- function!Params[[()]]
 		t.CallDefault = function()
 			local r = def(ai, mon, monIndex, dist)
 			t.Action = r
 			return r
 		end
-		--!k{Monster :structs.MapMonster} 'Action' starts uninitialized. Each time you call 'CallDefault', it generates new result, assigns it to 'Action' and returns the value.
+		-- 'Action' starts uninitialized. Each time you call 'CallDefault', it generates new result, assigns it to 'Action' and returns the value.
 		events.cocall("MonsterChooseAction", t)
 		return t.Action or def(ai, mon, monIndex, dist)
 	end)

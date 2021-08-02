@@ -134,9 +134,9 @@ local SuppressCount, OnSuppress = 0, |t| t.Allow = false
 function SuppressSound(on)
 	SuppressCount = SuppressCount + (on and 1 or -1)
 	if on and SuppressCount == 1 then
-		events.PlaySound = OnSuppress
+		events.InternalPlaySound = OnSuppress
 	elseif SuppressCount == 0 then
-		events.remove('PlaySound', OnSuppress)
+		events.remove('InternalPlaySound', OnSuppress)
 	elseif SuppressCount < 0 then
 		SuppressCount = 0
 	end
