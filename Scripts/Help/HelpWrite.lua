@@ -76,6 +76,8 @@ end
 function P.PrintFinish()
 end
 
+P.Spoiler = |s| s
+
 -----------------------------------------------------
 -- generate HTML
 -----------------------------------------------------
@@ -208,6 +210,18 @@ local TocMore = [[<h5 class="def-hidden">&#8230;</h5>]]
 	local function LinkEx(link, s)
 		return NameLink:format(link, s)
 	end	
+	
+	local spoilerN = 0
+	function P.Spoiler(s, class)
+		spoilerN = spoilerN + 1
+		return '<div class="spoiler">'..
+			'<input class="spoiler-checkbox" type="checkbox" id="spoiler'..spoilerN..'"/>'..
+			'<div class="spoiler-scroll">'..
+				'<div class="spoiler-space"></div>'..
+				'<div class="'..class..'">'..s..'</div></div>'..
+			'<label class="spoiler-label" for="spoiler'..spoilerN..'"></label>'..
+			'<span class="spoiler-fade"></span></div>'
+	end
 
 	local function esc(s)
 		s = s:gsub('\r', '')
@@ -230,6 +244,13 @@ local TocMore = [[<h5 class="def-hidden">&#8230;</h5>]]
 		s = s:gsub('![Cc][Oo][Dd][Ee]%[(=*)%[(.-)%]%1%]', function(_, code)
 			local i = #lua + 1
 			lua[i] = ConvertCode(code)
+			return "\001LUA["..i.."]"
+		end)
+		s = s:gsub('![Ss][Pp][Oo][Ii][Ll][Ee][Rr]%[(=*)%[(.-)%]%1%]', function(_, code)
+			local i = #lua + 1
+			lua[i] = P.Spoiler(code:gsub("\001LUA%[(.-)%]", function(i)
+				return lua[tonumber(i)]
+			end), 'spoiler-body')
 			return "\001LUA["..i.."]"
 		end)
 		s = s:gsub('&', '&amp;')
@@ -534,6 +555,10 @@ P.DefStyle = [[
 .lua5-str { color: #90A; }
 .lua5-comment { color: #009000; }
 .lua5-tab { display: inline-block; width: 2ch; }
+.spoiler { margin:7px -1px; overflow-x: auto; border:1px solid #a5a5a5; }
+.spoiler-checkbox { display: none; }
+.spoiler-label { display: none; }
+.spoiler-fade { display: none; }
 ]]
 
 P.new = debug.getinfo(1, "f").func

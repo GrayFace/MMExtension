@@ -57,17 +57,7 @@ local s = io.load(BasePath..'MMExtRefStart.htm'):gsub("\r\n", "\n")
 s = s:gsub(" %- ()", |n| s:find("<(/?)lua1?>", n) ~= "/" and " &ndash; ")
 s = s:gsub("<lua>\n?(.-)\n?</lua>", |s| '<div class="pre-outer"><div class="pre">'..ConvertLua(s)..'</div></div>')
 s = s:gsub("<lua1>\n?(.-)\n?</lua1>", |s| '<span class="def-code">'..ConvertLua(s)..'</span>')
-local spoilerN = 0
-s = s:gsub("<luaf>(.-)</luaf>", |s| do
-	spoilerN = spoilerN + 1
-	return '<div class="spoiler">'..
-		'<input class="spoiler-checkbox" type="checkbox" id="spoiler'..spoilerN..'"/>'..
-		'<div class="spoiler-scroll">'..
-			'<div class="spoiler-space"></div>'..
-			'<div class="pre-spoiler">'..ConvertLua(io.load(convPath(s)))..'</div></div>'..
-		'<label class="spoiler-label" for="spoiler'..spoilerN..'"></label>'..
-		'<span class="spoiler-fade"></span></div>'
-end)
+s = s:gsub("<luaf>(.-)</luaf>", |s| P.Spoiler(ConvertLua(io.load(convPath(s))), 'pre-spoiler'))
 s = s:gsub("<pre>(.-)</pre>", '<div class="pre-outer"><div class="pre">%1</div></div>')
 s = s:gsub("<'>(.-)</'>", '<b class="def-param">%1</b>')
 s = s:gsub("<#>([^<:]*):?([^<:]*)</#>", |s1, s2| '<a href="#'..P.ExpandRef(s2 ~= "" and s2 or s1)..'">'..s1..'</a>')
@@ -79,12 +69,8 @@ s = P.PrintFinish(s)
 local DefStyle = P.DefStyle..[[
 .pre-outer { margin:7px -1px; overflow-x: auto; }
 .pre { margin:0;border:1px solid #a5a5a5;padding:5px 5px 5px; white-space:pre-wrap; font-family: monospace,monospace; font-size: 85%; display:inline-block; }
-.spoiler { margin:7px -1px; overflow-x: auto; border:1px solid #a5a5a5; }
 .pre-spoiler { margin:0;padding:5px 5px 5px; white-space:pre-wrap; font-family: monospace,monospace; font-size: 85%; }
 .abs { position:absolute;top:0; }
-.spoiler-checkbox { display: none; }
-.spoiler-label { display: none; }
-.spoiler-fade { display: none; }
 .table { margin:6px 0; border: 1px solid #888; border-collapse:collapse; }
 .width-500 { min-width:70%;width:500px; }
 ]]

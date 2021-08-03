@@ -179,9 +179,14 @@ if isMM then
 	
 	-- Resizes an array allocated with #mem.allocMM:# function. 'n' is the new count.
 	function _G.mem.resizeArrayMM(t, n)
-		local old = t.size
+		local old, oldP = t.size, t["?ptr"]
 		t.count = n
-		return reallocMM(t, old, t.size)
+		local sz, p = t.size, t["?ptr"]
+		if sz ~= old and p == oldP then  -- support automatically resized arrays
+			p = reallocMM(p, old, sz)
+			t["?ptr"] = p
+		end
+		return p
 	end
 	
 elseif offsets.MainWindow then

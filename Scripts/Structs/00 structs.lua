@@ -26,6 +26,15 @@ end
 
 local _KNOWNGLOBALS, DecListBuf
 
+local function SetLenRealloc(obj, v, ps, lenA, size, o)
+	local old = lenA[ps]
+	if v ~= old then
+		local p = obj['?ptr'] + o
+		u4[p] = mem.reallocMM(u4[p], old*size, v*size)
+		lenA[ps] = v
+	end
+end
+
 function structs.f.GameStructure(define)
 	define
 	 .Info{Name = "Game"}
@@ -368,6 +377,9 @@ end]=]
 			return i2[obj["?ptr"] + o]
 		end
 	end)
+	local pmis = mem.StaticAlloc(8)
+	mem.fill(pmis, 8)
+	define[pmis].parray{lenA = i4, lenP = pmis + 4, lenSet = SetLenRealloc}.struct(structs.MissileSetup)  'MissileSetup'
 	if mmver > 6 then
 		define
 		[mm78(0x44FA9D, 0x44D1FB)].EditConstPChar  'SummonElementalA'
@@ -510,7 +522,7 @@ end]=]
 	.func{name = "SummonMonster", p = mmv(0x4A35F0, 0x4BBEC4, 0x4BA076), cc = 2, must = 4}
 	 .Info{Sig = "Id, X, Y, Z"}
 	if mmver > 6 then
-		define[internal.MonsterKindPtr].parray{lenA = i4, lenP = internal.MonsterKindPtr + 4}.struct(structs.MonsterKind)  'MonsterKinds'
+		define[internal.MonsterKindPtr].parray{lenA = i4, lenP = internal.MonsterKindPtr + 4, lenSet = SetLenRealloc}.struct(structs.MonsterKind)  'MonsterKinds'
 		.func{name = "IsMonsterOfKind", p = mmv(nil, 0x438BCE, 0x436542), cc = 2, must = 2}
 		 .Info{Sig = "Id, Kind:const.MonsterKind"}
 		.func{name = "IsMoviePlaying", p = mm78(0x4BF35F, 0x4BCFA0), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
@@ -739,22 +751,27 @@ function structs.f.GameParty(define)
 	if mmver < 8 then
 		define
 		[mmv(0x908F34, 0xACD804)].array(4).struct(structs.Player)  'PlayersArray'
-		[mmv(0x944C68, 0xA74F48)].array(4).pstruct(structs.Player)  'Players'
+		[mmv(0x944C68, 0xA74F48)].array(4).CustomType('Players', 4, function(o, obj, _, val)
+			if val then
+				i4[obj["?ptr"] + o] = val["?ptr"]  -- to be used at your own risk!
+			else
+				local a = Party.PlayersArray
+				return a[(i4[obj["?ptr"] + o] - a["?ptr"])/structs.Player["?size"]]
+			end
+		end)
 		[mmv(0x90E7A4, 0xAD44F4)].array(1, 2).struct(structs.NPC)  'HiredNPC'
 	else
 		define
 		[0xB20E90 + 2540].array(50).struct(structs.Player)  'PlayersArray'
 		[0xB20E90 + 375740].array(5).i4  'PlayersIndexes'
-		[0xB20E90 + 375740].array{5, lenA = i4, lenP = 0xB7CA60}.CustomType('Players', 4, function(o, obj, name, val)
+		[0xB20E90 + 375740].array{5, lenA = i4, lenP = 0xB7CA60}.CustomType('Players', 4, function(o, obj, _, val)
+			local a = Party.PlayersArray
 			if val then
-				local i = (val["?ptr"] - Party.PlayersArray["?ptr"])/structs.Player["?size"]
-				Party.PlayersIndexes[name] = Party.PlayersArray[i] and val
+				local i = (val["?ptr"] - a["?ptr"])/structs.Player["?size"]
+				i4[obj["?ptr"] + o] = a[i] and val
 			else
-				local i = Party.PlayersIndexes[name]
-				if i < 0 or i >= 50 then
-					i = 0
-				end
-				return Party.PlayersArray[i]
+				local i = i4[obj["?ptr"] + o]
+				return a[i < 0 and 0 or i]
 			end
 		end)
 	end
@@ -1079,8 +1096,8 @@ function structs.f.Player(define)
 	 .Info{Sig = "Amount"}
 	.method{p = mmv(0x47FEE0, 0x48DC04, 0x48D078), name = "DoDamage", must = 1;  0, const.Damage.Phys}
 	 .Info{Sig = "Damage, DamageKind:const.Damage = const.Damage.Phys"}
-	.method{p = mmv(0x480010, 0x48DCDC, 0x48D166), name = "DoBadThing", must = mmv(1, 2, 2)}
-	 .Info{Sig = "Thing:const.MonsterBonus"}
+	.method{p = mmv(0x480010, 0x48DCDC, 0x48D166), name = "DoBadThing", must = 1; 0, 0}
+	 .Info{Sig = "Thing:const.MonsterBonus, Monster:structs.MapMonster[MM7+]";  "'Monster' must be specified for stealing in MM7+"}
 	.method{p = mmv(0x481A80, 0x48E19B, 0x48D62A), name = "GetAttackDelay"; false}
 	 .Info{Sig = "Shoot = false"}
 	.method{p = mmv(0x481EA0, 0x48E4F0, 0x48D9B4), name = "GetFullHP"}
@@ -1099,7 +1116,9 @@ function structs.f.Player(define)
 		.method{p = mmv(nil, 0x48D6EF, 0x48CFC3), name = "WearsItem", must = 1, ret = true; 0, 16}
 		 .Info{Sig = "ItemNum, Slot:const.ItemSlot = 16"; "If 'Slot' isn't specified, searches all slots for the item"}
 		.method{p = mmv(nil, 0x48E737, 0x48DBA2), name = "GetBaseResistance", must = 1}
+		 .Info{Sig = "Res:const.Damage"}
 		.method{p = mmv(nil, 0x48E7C8, 0x48DD6B), name = "GetResistance", must = 1}
+		 .Info{Sig = "Res:const.Damage"}
 	else
 		define
 		.method{p = 0x4829A0, name = "GetBaseFireResistance"}

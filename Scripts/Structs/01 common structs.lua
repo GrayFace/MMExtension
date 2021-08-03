@@ -1522,9 +1522,13 @@ function structs.f.MapObject(define)
 	[0x22].i2  'LightMultiplier'
 	[0x24].struct(structs.Item)  'Item'
 	-- Here are properties of chest traps and spells:
-	.i4  'SpellType'
+	.alt.i4  'SpellType'
+	.i4  'Spell'
+	 .Info "same as 'SpellType'"
 	.i4  'SpellSkill'
-	.i4  'SpellLevel'
+	.alt.i4  'SpellLevel'
+	.i4  'SpellMastery'
+	 .Info "same as 'SpellLevel'"
 	if mmver > 6 then
 		define.pstruct(structs.SpellEffect)  'SpellEffect'
 	end
@@ -2661,4 +2665,27 @@ function structs.f.ProgressBar(define)
 	.method{p = mmv(0x438E20, 0x443693, 0x44047E), name = "Draw"}
 	.method{p = mmv(0x438D20, 0x4435F0, 0x4403C5), name = "Increment"}
 	.method{p = mmv(0x438D00, 0x4435DE, 0x4403B3), name = "SetMax", must = 1}
+end
+
+function structs.f.MissileDirection(define)
+	define
+	.alt.array(3).i4  'DirectionVector'
+	.i4  'DirectionX'
+	.i4  'DirectionY'
+	.i4  'DirectionZ'
+	.i4  'Distance'
+	.i4  'DistanceXY'
+	.i4  'Direction'
+	.i4  'LookAngle'
+end
+
+function structs.f.MissileSetup(define)
+	define
+	.bit  'AlwaysShowSprite'
+	 .Info "When there's a special way to display the object, still show the sprite as well"
+	.bit  'HideSpecialDisplay'
+	 .Info "Don't display the object in a special way"
+	.bit  'AutoCollision'
+	 .Info "When the object hits anything, show an explosion, play explosion sound of the spell and call #MonsterAttacked:events.MonsterAttacked# or #PlayerAttacked:events.PlayerAttacked# appropriately"
+	.size = 1
 end
