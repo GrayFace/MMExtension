@@ -35,11 +35,37 @@ local function FindInMapStats(name, ErrorLevel)
 	end
 end
 
+local FindInObjListProc
+local FindInObjListCode = [[
+	push    esi
+	mov     esi, [ecx]
+	xor     eax, eax
+	test    esi, esi
+	jle     @loc_42EB3F
+	mov     ecx, [ecx+4]
+	add     ecx, %offset%
+
+@loc_42EB2D:
+	cmp     dx, [ecx]
+	jz      @loc_42EB42
+	inc     eax
+	add     ecx, %size%
+	cmp     eax, esi
+	jl      @loc_42EB2D
+
+@loc_42EB3F:
+	mov     eax, -1
+
+@loc_42EB42:
+	pop     esi
+	ret
+]]
+
 local function FindInObjList(id)
-	for i, a in Game.ObjListBin do
-		if a.Id == id then
-			return i, a
-		end
+	local a = Game.ObjListBin
+	local i = call(FindInObjListProc, 2, a.lenP, id)
+	if i >= 0 then
+		return i, a[i]
 	end
 end
 
@@ -58,6 +84,12 @@ local function AddAction(name)
 end
 
 function events.StructsLoaded()
+	FindInObjListProc = HookManager{
+		size = structs.ObjListItem['?size'],
+		offset = structs.o.ObjListItem.Id,
+	}.asmproc(FindInObjListCode)
+	internal.FindInObjListProc = FindInObjListProc
+
 	rawset(Game.MapEvtLines, "RemoveEvent", internal.EventLines_RemoveEvent)
 	rawset(Game.GlobalEvtLines, "RemoveEvent", internal.EventLines_RemoveEvent)
 	if mmver ~= 8 then
