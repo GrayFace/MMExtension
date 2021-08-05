@@ -233,19 +233,18 @@ end)
 local hooks = HookManager{
 	p = Game.MissileSetup.pptr,
 	sz = Game.MissileSetup.lenP,
-	pre = mmv('', 'movsx eax, cx', ''),
-	jmp = mmv(0x45CD5D, 0x46C420, 0x46AC28),
 }
 
 -- collide
 hooks.asmhook(mmv(0x45C7A7, 0x46C0C2, 0x46A702), [[
-	%pre%
+	mmdef go1, 0x45CD5D, 0x46C420, 0x46AC28
+	mm7cmd movsx eax, cx
 	cmp eax, [%sz%]
 	jnb @std
 	mov ecx, [%p%]
 	test byte [ecx + eax], 4
 	mov ecx, eax
-	jnz absolute %jmp%
+	jnz absolute go1
 @std:
 ]])
 

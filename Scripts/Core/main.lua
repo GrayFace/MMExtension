@@ -189,6 +189,30 @@ if isMM then
 		return p
 	end
 	
+	mem_internal.AsmProlog = mem_internal.AsmProlog..([[
+		mmver equ %v%
+		mm%v% equ 1
+		mm%v1% equ 0
+		mm%v2% equ 0
+		macro mmdef name,m6,m7,m8
+		{
+			name = m%v%
+		}
+		macro mm%v%cmd [cmd]
+		{
+		common
+			cmd
+		}
+		macro mm%v1%cmd [cmd]
+		{
+		}
+		macro mm%v2%cmd [cmd]
+		{
+		}
+	]]):gsub('%%v(%d?)%%', function(i)
+		return (isMM + ('0'..i))%3 + 6
+	end)
+	
 elseif offsets.MainWindow then
 	u4[internal.MainWindowPtrPtr] = offsets.MainWindow
 else

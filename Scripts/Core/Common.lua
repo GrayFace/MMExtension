@@ -258,19 +258,22 @@ do
 	mem.AsmProlog = [[
 		use32
 		ptr equ
-		macro pushstr string
+		macro pushstr [string]
 		{
+		common
 			local ..after
 			call ..after
-			db string,0
+			if ~(string eq)
+				db string
+			end if
+			db 0
 		..after:
 		}
 		_loadreg_ equ
 		_loadreg_end_ equ
 		macro savereg a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20
 		{
-			if a1 eq
-			else
+			if ~(a1 eq)
 				push a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20
 			end if
 			_loadreg_ equ pop a20 a19 a18 a17 a16 a15 a14 a13 a12 a11 a10 a9 a8 a7 a6 a5 a4 a3 a2 a1
@@ -278,8 +281,7 @@ do
 		}
 		macro loadreg
 		{
-			if _loadreg_ eq pop
-			else
+			if ~(_loadreg_ eq pop)
 				_loadreg_
 			end if
 			_loadreg_end_ equ
@@ -287,8 +289,7 @@ do
 	]]
 	mem.AsmEpilog = [[
 	
-		if _loadreg_end_ eq pop
-		else
+		if ~(_loadreg_end_ eq pop)
 			_loadreg_end_
 		end if]]
 	

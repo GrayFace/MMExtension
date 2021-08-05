@@ -747,7 +747,7 @@ do
 			Action = d[reg],
 		}
 		events.cocall('ExitAction', t)
-		Game.ExitAction = t.Action
+		Game.ExitAction = t.NextAction or t.Action  -- just in case someone actually needs a trick like this
 		d[reg] = t.Action or Game.ExitAction
 	end)
 end
@@ -1359,7 +1359,6 @@ else
 		MapName = mm78(0x6BE1C4, 0x6F3984),
 		MapStats_Find = mm78(0x4547CF, 0x451F39),
 		TownPortalInfo = mm78(0x4ECA60, 0x4FCA88),
-		ver = mm78(7, 8),
 	}
 	-- lloyd games index -> mapstats index
 	hooks.asmhook(mm78(0x410DA5, 0x4121B6), [[
@@ -1393,7 +1392,7 @@ else
 		test eax, eax
 		jz @f
 		neg eax
-	if %ver% eq 7
+	if mm7
 		mov ecx, [esp + 0x5F8 - 0x5DC]
 		mov [ecx+0x1A], ax
 	else
@@ -1999,24 +1998,22 @@ if mmver > 6 then
 end
 
 -- CanMonsterCastSpell
-if mmver > 6 then
+delayed(|| if mmver > 6 then
 	local hooks = HookManager()
-	delayed(|| do
-		local p1 = hooks.hookfunction(mm78(0x4270B9, 0x4254BA), 1, mm78(2, 3), function(d, def, ai, mon, spell, dist)
-			local t = {
-				Spell = spell,
-				-- [MM8]
-				Distance = dist,
-				Allow = def(ai, mon, spell, dist),
-			}
-			t.MonsterIndex, t.Monster = GetMonster(mon)
-			--!k{Monster :structs.MapMonster} [MM7+]
-			events.cocall("CanMonsterCastSpell", t, spell)
-			return t.Allow
-		end)
-		Conditional(hooks, "CanMonsterCastSpell")
+	local p1 = hooks.hookfunction(mm78(0x4270B9, 0x4254BA), 1, mm78(2, 3), function(d, def, ai, mon, spell, dist)
+		local t = {
+			Spell = spell,
+			-- [MM8]
+			Distance = dist,
+			Allow = def(ai, mon, spell, dist),
+		}
+		t.MonsterIndex, t.Monster = GetMonster(mon)
+		--!k{Monster :structs.MapMonster} [MM7+]
+		events.cocall("CanMonsterCastSpell", t, spell)
+		return t.Allow
 	end)
-end
+	Conditional(hooks, "CanMonsterCastSpell")
+end)
 
 -- MonsterChooseAction
 do
