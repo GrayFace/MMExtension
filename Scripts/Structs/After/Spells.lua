@@ -103,7 +103,7 @@ end
 -- MonsterCastSpell
 local spellDir
 
-mem.hookfunction(mmv(0x405130, 0x404AC7, 0x404D67), 2, 3, function(d, def, monIdx, pdir, spell, action, skill)
+mem.hookfunction(mmv(0x405130, 0x404AC7, 0x404D67), 2, mmv(2, 3, 3), function(d, def, monIdx, pdir, spell, action, skill)
 	if spellDir then
 		spellDir['?ptr'] = pdir
 	else
@@ -118,6 +118,7 @@ mem.hookfunction(mmv(0x405130, 0x404AC7, 0x404D67), 2, 3, function(d, def, monId
 		-- :structs.MissileDirection
 		Direction = spellDir,
 		Spell = spell,
+		-- [MM7+]
 		Skill = skill,
 		Action = action,
 		ObjectType = nil,
