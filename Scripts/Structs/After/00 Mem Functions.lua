@@ -46,11 +46,28 @@ local function Extend(t)
 			ptr = mem.reallocMM(old, limit*size + esize, count*size + esize, not ptr)
 			if endSize ~= 0 then
 				mem.copy(ptr + start + count*size, ptr + start + limit*size, endSize)
-			end			
+			end
 			if t.Fill then
 				for i = limit, count - 1 do
 					mem.copy(ptr + start + i*size, ptr + start + t.Fill*size, size)
 				end
+			end
+			-- move EditablePChar to new location
+			if ptr ~= old then
+				local p2 = old + limit*size + esize
+				local pc = internal.EditablePCharText
+				local new = {}
+				for k, v in pairs(pc) do
+					if k >= old and k < p2 then
+						if not ptr and v == u4[k] then
+							u4[k] = 0
+						end
+						local k1 = k + (ptr - old) + (k >= p2 - endSize and (count - limit)*size or 0)
+						new[k1] = v
+						pc[k] = nil
+					end
+				end
+				table.copy(new, pc, true)
 			end
 			limit, dp = count, ptr - old
 			BatchAdd(t.Refs or {}, dp)
