@@ -49,16 +49,25 @@ local CurDollGraphics
 
 local sex = {[false] = 'm', [true] = 'f', ''}
 
+local function GetSexRace(i)
+	local pl = Party.PlayersArray[0]
+	local GetSex, GetRace = pl.GetSex, pl.GetRace
+	if not GetSex then
+		return i > 7
+	end
+	local old1, old2 = pl.Face, pl.Voice
+	pl.Face, pl.Voice = i, i
+	local s, r = GetSex(pl) ~= 0, GetRace and GetRace(pl)
+	pl.Face, pl.Voice = old1, old2
+	return s, r
+end
+
 function PaperDollAddRace(name, races)
 	name = name:lower()
 	for sex, ssex in pairs(sex) do
 		PaperDollCategories[ssex..name] = function(i)
-			local pl = Party.PlayersArray[0]
-			local old1, old2 = pl.Face, pl.Voice
-			pl.Face, pl.Voice = i, i
-			local r = (sex == 1 or (pl:GetSex() ~= 0) == sex) and (not races or races[pl:GetRace()])
-			pl.Face, pl.Voice = old1, old2
-			return r
+			local s, r = GetSexRace(i)
+			return (sex == 1 or (s == sex)) and (not races or races[r])
 		end
 	end
 end
@@ -73,14 +82,7 @@ function PaperDollAddBodies(bodies)
 	end
 	for sex, ssex in pairs(sex) do
 		for s in pairs(t) do
-			PaperDollCategories[ssex..s] = function(i)
-				local pl = Party.PlayersArray[0]
-				local old1, old2 = pl.Face, pl.Voice
-				pl.Face, pl.Voice = i, i
-				local r = (bodies[i] or 'base'):lower() == s and (sex == 1 or (pl:GetSex() ~= 0) == sex)
-				pl.Face, pl.Voice = old1, old2
-				return r
-			end
+			PaperDollCategories[ssex..s] = |i| (bodies[i] or 'base'):lower() == s and (sex == 1 or GetSexRace(i) == sex)
 		end
 	end
 end
