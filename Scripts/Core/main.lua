@@ -196,7 +196,7 @@ if isMM then
 		mm%v2% equ 0
 		macro mmdef name,m6,m7,m8
 		{
-			name = m%v%
+			name equ m%v%
 		}
 		macro mm%v%cmd [cmd]
 		{

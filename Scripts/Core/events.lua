@@ -183,11 +183,33 @@ local EventsT = internal.EventsSetup{
 	end,
 }
 
-local function Conditional(hooks, name)
-	OnEventUsed[name] = hooks.Switch
+local function DoConditional(f, name)
+	OnEventUsed[name] = f
 	if not EventsT[name] then
-		hooks.Switch(false)
+		f(false)
 	end
+end
+
+local function ConditionalEx(f, t)
+	local function check(on)
+		if on then
+			return f(true)
+		end
+		for _, name in ipairs(t) do
+			if EventsT[name] then
+				return
+			end
+		end
+		return f(false)
+	end
+	for _, name in ipairs(t) do
+		OnEventUsed[name] = check
+	end
+	check(false)
+end
+
+local function Conditional(hooks, name)
+	return (type(name) == 'table' and ConditionalEx or DoConditional)(hooks.Switch, name)
 end
 internal.Conditional = Conditional
 
@@ -1496,31 +1518,111 @@ mem.hookfunction(mmv(0x4A59A0, 0x4BE671, 0x4BC1F1), 2, mmv(1, 2, 2), function(d,
 end)
 
 -- PlaySound
-mem.hookfunction(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, 8, function(d, def, this, snd, obj, loops, x, y, unk, vol, rate)
-	local t = {
-		Sound = snd,
-		ObjRef = obj,
-		Loops = loops,
-		X = x,
-		Y = y,
-		UnkParam = unk,
-		Volume = vol,
-		Speed = rate,
-		Allow = true,
-	}
-	-- function!Params[[()]]
-	t.CallDefault = function()
-		if t.Allow then
-			def(this, t.Sound, t.ObjRef, t.Loops, t.X, t.Y, t.UnkParam, t.Volume, t.Speed)
-			t.Allow = false
+do
+	local hooks = HookManager{}
+	hooks.hookfunction(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, 8, function(d, def, this, snd, obj, loops, x, y, unk, vol, rate)
+		local t = {
+			Sound = snd,
+			ObjRef = obj,
+			Loops = loops,
+			X = x,
+			Y = y,
+			UnkParam = unk,
+			Volume = vol,
+			Speed = rate,
+			Allow = true,
+		}
+		-- function!Params[[()]]
+		t.CallDefault = function()
+			if t.Allow then
+				def(this, t.Sound, t.ObjRef, t.Loops, t.X, t.Y, t.UnkParam, t.Volume, t.Speed)
+				t.Allow = false
+			end
 		end
-	end
-	events.cocall("InternalPlaySound", t)
-	if t.Allow then
-		events.cocall("PlaySound", t)
-	end
-	t.CallDefault()
-end)
+		events.cocall("InternalPlaySound", t)
+		if t.Allow then
+			events.cocall("PlaySound", t)
+		end
+		t.CallDefault()
+	end)
+	Conditional(hooks, {"PlaySound", "InternalPlaySound"})
+end
+
+-- FaceAnimation
+do
+	local p = mem.StaticAlloc(12)
+	local hooks = HookManager{
+		snd = p,
+		face = p + 4,
+		scount = p + 8,
+		code = [[
+			mmdef a, esp+0x28-0x14, ebp-0x1C, ebp-0x1C
+			cmp dword [p], esi
+			jl @std
+			mov ecx, [p]
+			cmp ecx, 0
+			jz @f
+			inc esi
+			mov [a], ecx
+		@@:
+			jmp absolute jmp1
+		@std:
+		]],
+	}
+	hooks.hookfunction(mmv(0x488CA0, 0x4948A9, 0x492BCD), 1, 2, function(d, def, this, anim, unused)
+		local t = {
+			Animation = anim,
+			Face = nil,
+			Sound = nil,
+			SoundCount = nil,
+			ForceSound = nil,
+			Allow = true,
+		}
+		t.PlayerIndex, t.Player = GetPlayer(this)
+		-- function!Params[[()]]
+		t.CallDefault = function()
+			if t.Allow then
+				local snd = t.Sound
+				if snd and (anim == 24 and mmver == 8 and not t.ForceSound and Game.Rand()%100 > 10 or mmver == 6 and t.SoundCount == 0) then
+					snd = 0
+				end
+				i4[p] = snd or -1
+				i4[p + 4] = t.Face or -1
+				i4[p + 8] = t.SoundCount or -1
+				def(t.Player, t.Animation)
+				t.Allow = false
+			end
+		end
+		--!k{Player :structs.Player}
+		events.cocall("InternalFaceAnimation", t)
+		if t.Allow then
+			events.cocall("FaceAnimation", t)
+		end
+		t.CallDefault()
+	end)
+	-- sound
+	hooks.asmhook2(mmv(0x488D0C, 0x4948E9, 0x492C1A), [[
+		mmdef jmp1, 0x488D2E, 0x494906, 0x492C4C
+		p = %snd%
+		%code%
+	]])
+	-- face
+	hooks.asmhook2(mmv(0x488DAC, 0x49498C, 0x492CD3), [[
+		mmdef jmp1, 0x488DCC, 0x4949A8, 0x492CEF
+		p = %face%
+		%code%
+	]])
+	-- sound count
+	hooks.asmhook2(mmv(0x488D4D, 0x494921, 0x492C67), [[
+		mmdef reg, cl, edi, edi
+		cmp dword [%scount%], 0
+		jl @f
+		mov reg, [%scount%]
+	@@:
+	]])
+	-- on/off
+	Conditional(hooks, {"FaceAnimation", "InternalFaceAnimation"})
+end
 
 -- dungeon enter from house (draw properly)
 if mmver == 7 then
