@@ -938,8 +938,8 @@ const.FaceAnimation = {
 	KillBigEnemy = 2,
 	StoreClosed = 3,
 	DisarmTrap = 4,
-	TrapWillBlow = 5,  -- it's gonna blow!
-	AvoidTrapDamage = 6,  -- sit down
+	TrapExploaded = 5,  -- sorry about that
+	AvoidDamage = 6,  -- sits down. Avoids either trap damage with Perception or attack damage with Dodging
 	IdentifyUseless = 7,
 	IdentifyGreat = 8,
 	IdentifyFail = 9,
@@ -947,16 +947,16 @@ const.FaceAnimation = {
 	RepairFail = 11,
 	SetQuickSpell = 12,
 	CantRestHere = 13,
-	SmileRandom = 14,
+	SkillIncreased = 14,  -- in Skills screen
 	CantCarry = 15,
 	MixPotion = 16,
 	PotionExplode = 17,
 	DoorLocked = 18,
-	Strain = 19,  -- like pulling sword out of stone in MM6
+	WontBudge = 19,  -- like pulling sword out of stone in MM6
 	CantLearnSpell = 20,
 	LearnSpell = 21,
 	Hello = 22,
-	HelloNight = 23,
+	HelloNight = 23,  -- 10PM <= time < 5AM
 	Damaged = 24,
 	Weak = 25,
 	Afraid = 26,
@@ -969,7 +969,7 @@ const.FaceAnimation = {
 	Death = 33,
 	Stoned = 34,
 	Eradicated = 35,
-	Smile = 36,
+	DinkPotion = 36,  -- or eat reagent
 	ReadScoll = 37,
 	NotEnoughGold = 38,
 	CantEquip = 39,
@@ -977,7 +977,7 @@ const.FaceAnimation = {
 	SPDrained = 41,
 	Aged = 42,
 	SpellFailed = 43,
-	DamagedParty = 44,
+	DamagedParty = 44,  -- with explosive impact
 	Tired = 45,
 	EnterDungeon = 46,  -- come on let's go in
 	LeaveDungeon = 47,  -- let's get out of here
@@ -988,49 +988,48 @@ const.FaceAnimation = {
 	AttackMiss = 52,
 	Beg = 53,
 	BegFail = 54,
-
+	Threat = 55,
 	ThreatFail = 56,
-	
-	SmileHuge = 57,
-	
+	Bribe = 57,
 	BribeFail = 58,
 	NPCDontTalk = 59,
-	SmileRandom2 = 60,
+	FoundItem = 60,
+	HireNPC = 61,
 
 	LookUp = 63,
 	LookDown = 64,
 	Yell = 65,
 	Falling = 66,
-	ShakeHeadNo = 67,  -- shakes head
-
+	TavernPacksFull = 67,  -- shakes head
+	TavernDrink = 68,
 	TavernGotDrunk = 69,
 	TavernTip = 70,
-	ShakeHeadYes = 71,
-
+	TravelHorse = 71,
+	TravelBoat = 72,
 	ShopIdentify = 73,
 	ShopRepair = 74,
 	ShopItemBought = 75,	
 	ShopAlreadyIdentified = 76,
-
+	ShopItemSold = 77,
 	SkillLearned = 78,
 	ShopWrongShop = 79,
 	ShopRude = 80,
-	BankDeposit = 81,
-	SmileBig = 82,
+	BankDeposit = 81,  -- or paying a fine
+	TempleHeal = 82,
 	TempleDonate = 83,
 	HelloHouse = 84,
-	SkillImproved = 85,
-	
+	SkillMasteryIcreased = 85,  -- by a teacher
+	JoinedGuild = 86,
 	LevelUp = 87,
 	
 	StatBonusIncreased = 91,
 	StatBaseIncreased = 92,
 	QuestGot = 93,
 	
-	AwardGot = 96,
+	AwardGot = 96,  -- or autonote added, or QBits removed, or used Genie Lamp
 
 	AfraidSilent = 98,
-	
+	CheatedDeath = 99,  -- "okay!". After death of party / after zombification
 	InPrison = 100,
 	
 	ChooseMe = 102,
@@ -1039,7 +1038,7 @@ const.FaceAnimation = {
 	IdMonsterBig = 105,
 	IdMonsterFail = 106,
 	LastManStanding = 107,
-	Hungry = 108,
+	NotEnoughFood = 108,
 }
 
 const.Season = {
