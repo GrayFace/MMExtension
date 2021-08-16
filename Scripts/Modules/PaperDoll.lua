@@ -371,17 +371,6 @@ local function DrawDoll(pl)
 	end
 end
 
-local function ReplaceCalls(p, p2, old, new)
-	mem.prot(true)
-	while p < p2 do
-		if u1[p] == 0xE8 and i4[p + 1] == old - p - 5 then
-			i4[p + 1] = new - p - 5
-		end
-		p = p + mem.GetInstructionSize(p)
-	end
-	mem.prot(false)
-end
-
 if mmver == 6 then
 	mem.hook(0x4123A6, |d| do
 		DrawDoll(Party[i4[d.esp + 0x28 - 4] - 1])
@@ -421,11 +410,6 @@ elseif mmver == 7 then
 	mem.nop2(0x43C0C6, 0x43C938)  -- rest of graphics
 
 	mem.hook(0x43C0C6, || DrawCache = {})
-	-- mem.autohook2(0x43C0C1, || DrawCache = {})
-	-- ReplaceCalls(0x43C301, 0x43C908, 0x40FB2C, mem.asmproc[[
-	-- 	xor eax, eax
-	-- 	ret 8
-	-- ]])
 else
 	local function DrawDollMem(p, x, y, menu)
 		InMenu = menu
@@ -433,7 +417,7 @@ else
 		DrawDoll(Party.PlayersArray[(p - Party.PlayersArray['?ptr']):div(0x1D28)])
 	end
 	
-	mem.asmpatch(0x43A499, 'add esp, 0xC')
+	mem.asmpatch(0x43A499, 'add esp, 0xC')  -- don't draw backdoll
 	mem.hook(0x43A4D9, |d| do
 		DrawDollMem(d.eax, 0, 0)
 		u4[d.esp] = 0x43BAD8
@@ -441,14 +425,9 @@ else
 	
 	-- don't load old graphics
 	mem.asmpatch(0x439966, 'xor eax, eax')  -- load 1st backdoll
-	-- mem.nop2(0x43999D, 0x439AB0)
 	mem.nop2(0x43999D, 0x43A073)
-	
+
 	mem.hook(0x43999D, || DrawCache = {})
-	-- ReplaceCalls(0x439C5F, 0x43A044, 0x410D70, mem.asmproc[[
-	-- 	xor eax, eax
-	-- 	ret 0x10
-	-- ]])
 	
 	-- new game menu
 	mem.nop2(0x4C4EE1, 0x4C50CB)
