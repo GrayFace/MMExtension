@@ -1039,6 +1039,7 @@ const.FaceAnimation = {
 	IdMonsterFail = 106,
 	LastManStanding = 107,
 	NotEnoughFood = 108,
+	DeathBlow = 109,
 }
 
 const.Season = {
@@ -1258,7 +1259,7 @@ const.GameActions = {
 	Exit = 113,
 }
 
-const.ExitAction = {
+const.ExitMapAction = {
 	None = 0,
 	Exit = 1,  -- used in main menu
 	LoadMap = 2,  -- when you exit a map and enter another one

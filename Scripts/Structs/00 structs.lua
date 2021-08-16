@@ -115,8 +115,8 @@ function structs.f.GameStructure(define)
 		define[mm78(0x50C86C, 0x51E14C)].array{40, lenA = i4, lenP = mm78(0x50C868, 0x51E148)}.struct(structs.ActionItem)  'ActionsNext'
 	end
 	define.func{name = "ProcessActions", p = mmv(0x42ADA0, 0x4304D6, 0x42EDD8)}
-	[mmv(0x6199C0, 0x6A0BC8, 0x6CEB28)].i4  'ExitAction'
-	 .Info ":const.ExitAction"
+	[mmv(0x6199C0, 0x6A0BC8, 0x6CEB28)].i4  'ExitMapAction'
+	 .Info ":const.ExitMapAction"
 	[mmv(0x52D29C, 0x576EAC, 0x587ADC)].b4  'NeedRedraw'
 	[mmv(0x55BC04, 0x5C32A8, 0x5DB758)].string(200)  'StatusMessage'
 	.string(200)  'MouseOverStatusMessage'
@@ -125,6 +125,11 @@ function structs.f.GameStructure(define)
 	 .Info "Current message displayed in a dialog with some NPC"
 	[mmv(0x55276C, 0x5B07B8, 0x5C6848)].string(2000)  'StreetMessage'
 	 .Info "Message displayed by #Message:#, #Question:#, #evt.SimpleMessage:# and #evt.Question:# when not talking to NPC."
+	[mmv(0x970BE0, 0xA74F58, 0xAB3000)].union 'DelayedFaceAnimation'
+		.i8  'Delay'
+		.i2  'Animation'
+		.i2  'PlayerIndex'
+	.union()
 	-- (MM6)
 	-- 54F060 Timers
 	-- 552F50 TimersCount
@@ -468,7 +473,9 @@ end]=]
 	define.i4  'ExitLevelCode'
 	 .Info "0 = in game, 2 = load other map, 8 = death"
 	[mmv(0x6107E3, 0x6BE1EF, 0x6F39AF)].i4  'SoundVolume'
-	[mmv(0x4C22F0, 0x4ED280, 0x4FD660)].array(mmv(103, 110, 110)).struct(structs.PlayerAnimationInfo)  'PlayerAnimations'
+	[mmv(0x4C2010, 0x4ECAD8, 0x4FCB78)].array(mmv(12, 25, 30)).EditConstPChar  'PlayerFaces'
+	[mmv(0x4C22F0, 0x4ED280, 0x4FD660)].array(mmv(103, 110, 110)).struct(structs.FaceAnimationInfo)  'StandardFaceAnimations'
+	[mmv(0x4C20DC, 0x4ECDB0, 0x4FD0A0)].array(1, mmv(44, 49, 49)).array(mmv(12, 25, 30)).u1  'StandardPlayerSoundsCount'
 	
 	-- stditems, spcitems, rnditems
 
@@ -871,6 +878,8 @@ function structs.f.GameParty(define)
 	 .Info{Sig = "Experience";  "'Experience' is shared among conscious players and effected by Learning skill"}
 	if mmver < 8 then
 		define.func{name = "HasNPCProfession", p = mmv(0x467F30, 0x476399, nil), cc = 1, must = 1, ret = true}
+	else
+		define.method{p = 0x4903C0, name = "ResetStartingPlayer", false, false}
 	end
 	function define.f.CountItems(items)
 		local t = PrepareCountItems(items)
@@ -1150,6 +1159,8 @@ function structs.f.Player(define)
 		-- 486DF0 Character_PutItemInPos
 	elseif mmver == 7 then
 		define.method{p = 0x490101, name = "GetRace"}
+	elseif mmver == 8 then
+		define.method{p = 0x48F552, name = "GetStartingClass"}
 	end
 	define
 	.method{p = mmv(0x482570, 0x48E64E, 0x48DAB9), name = "GetBaseArmorClass"}
@@ -1171,19 +1182,22 @@ function structs.f.Player(define)
 	.method{p = mmv(0x4853E0, 0x4912A8, 0x49031C), name = "GetDisarmTrapTotalSkill"}
 	.method{p = mmv(0x488F50, 0x494A1D, 0x492D6A), name = "ShowFaceExpression", must = 1;  0, 0}
 	 .Info{Sig = "Expression, Time = 0"}
+	.method{p = mmv(0x488CA0, 0x4948A9, 0x492BCD), name = "ShowFaceAnimation", must = 1;  0, 0}
+	 .Info{Sig = "Animation:const.FaceAnimation"}
 	.method{p = mmv(0x4876E0, 0x492C03, 0x491514), name = "IsConscious", ret = true}
 	if mmver > 6 then
 		define
 		.method{p = mmv(nil, 0x48F87A, 0x48EF4F), name = "GetSkill", must = 1}
 		 .Info{Sig = "Skill:const.Skills"}
-		.method{p = mmv(nil, 0x4948A9, 0x492BCD), name = "ShowFaceAnimation", must = 1;  0, 0}
-		 .Info{Sig = "Animation:const.FaceAnimation"}
 		.method{p = mmv(nil, 0x491252, 0x4902DF), name = "GetPerceptionTotalSkill"}
 		.method{p = mmv(nil, 0x49130F, 0x49036E), name = "GetLearningTotalSkill"}
 		.method{p = mmv(nil, 0x492D5D, 0x49165D), name = "AddCondition", must = 1; 0, false}
 		 .Info{Sig = "Condition:const.Condition, CanResist = false";  "Passing 'const.Condition.Good' isn't supported.\n'CanResist' only affects application of Protection from Magic spell. If it's 'true' and the spell protects the player, spell strength is decreased instead of condition being applied."}
 		.method{p = mmv(0x482D30, 0x48E9EC, 0x48E127), name = "GetMainCondition"}
 		 .Info{Type = "const.Condition";  "Returns the condition that affects character stats. Also see #GetDisplayedCondition:structs.Player.GetDisplayedCondition#."}
+	end
+	if mmver < 8 then
+		define.method{p = mmv(0x483D90, 0x490242), name = "ResetToClass", must = 1}
 	end
 	
 	function define.m:GetDisplayedCondition()

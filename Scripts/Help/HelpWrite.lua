@@ -226,33 +226,37 @@ local TocMore = [[<h5 class="def-hidden">&#8230;</h5>]]
 	local function esc(s)
 		s = s:gsub('\r', '')
 		local lua = {}
-		s = s:gsub('\n?![Ll][Uu][Aa]%[(=*)%[\n(.-)\n?%]%1%]\n?(\001?)', function(_, code, after)
+		local function Store(s, code)
 			local i = #lua + 1
-			lua[i] = ConvertLua(code, true)
-			return "\001LUA["..i.."]"..(after == "" and "\n" or "")
+			lua[i] = s
+			return (code and "\001LUA[" or "\002SPC[")..i.."]"
+		end
+		local StoreLua = |s| Store(s, true)
+		s = s:gsub('\n?![Ll][Uu][Aa]%[(=*)%[\n(.-)\n?%]%1%]\n?(\001?)', function(_, code, after)
+			return StoreLua(ConvertLua(code, true))..(after == "" and "\n" or "")
 		end)
 		s = s:gsub('![Ll][Uu][Aa]%[(=*)%[(.-)%]%1%]', function(_, code)
-			local i = #lua + 1
-			lua[i] = ConvertLua(code)
-			return "\001LUA["..i.."]"
+			return StoreLua(ConvertLua(code))
 		end)
 		s = s:gsub('\n?![Cc][Oo][Dd][Ee]%[(=*)%[\n(.-)\n?%]%1%]\n?(\001?)', function(_, code, after)
-			local i = #lua + 1
-			lua[i] = ConvertCode(code, true)
-			return "\001LUA["..i.."]"..(after == "" and "\n" or "")
+			return StoreLua(ConvertCode(code, true))..(after == "" and "\n" or "")
 		end)
 		s = s:gsub('![Cc][Oo][Dd][Ee]%[(=*)%[(.-)%]%1%]', function(_, code)
-			local i = #lua + 1
-			lua[i] = ConvertCode(code)
-			return "\001LUA["..i.."]"
+			return StoreLua(ConvertCode(code))
 		end)
 		s = s:gsub('![Ss][Pp][Oo][Ii][Ll][Ee][Rr]%[(=*)%[(.-)%]%1%]', function(_, code)
-			local i = #lua + 1
-			lua[i] = P.Spoiler(code:gsub("\001LUA%[(.-)%]", function(i)
+			return StoreLua(P.Spoiler(code:gsub("\001LUA%[(.-)%]", function(i)
 				return lua[tonumber(i)]
-			end), 'spoiler-body')
-			return "\001LUA["..i.."]"
+			end), 'spoiler-body'))
 		end)
+		s = s:gsub("#(%a[%w_%.%* ]*):([^#]*)#", |s1, s2| Store(Link(s2 ~= "" and s2 or s1, s1)))
+		s = s:gsub("(%a[%w_]*):(const%.%a[%w_%.]*)", |s1, s2| Store(Link(s2, s1)))
+		s = s:gsub("(%a[%w_]*):(const)([^%.%w_])", |s1, s2, s3| Store(Link(s2, s1))..s3)
+		s = s:gsub("(%a[%w_]*):(const)$", |s1, s2| Store(Link(s2, s1)))
+		s = s:gsub("(%a[%w_]*):(structs%.%a[%w_%.]*)", |s1, s2| Store(Link(s2, s1)))
+		s = s:gsub("#%[(=*)%[(.-)%]%1%]([^#]*)#", |_, s1, s2| Store(LinkEx(s1, s2 ~= "" and s2 or s1)))
+		-- s = s:gsub('package.loaded.(%a[%w_]*)%.(%a[%w%._]*)', |s, s2| Store('<!TOC>package.loaded.'..s..'.'..s2..'</!TOC><span class="lua5-std">require</span><span class="lua5-str">"'..s..'"</span><span class="def-pad-dot">.</span>')..s2)
+		s = s:gsub('package.loaded.(%a[%w_]*)%.(%a[%w%._]*)', |s, s2| Store('<!TOC>package.loaded.'..s..'.'..s2..'</!TOC>P<span class="def-pad-dot">.</span>')..s2)
 		s = s:gsub('&', '&amp;')
 		s = s:gsub('<', '&lt;')
 		s = s:gsub('>', '&gt;')
@@ -266,19 +270,12 @@ local TocMore = [[<h5 class="def-hidden">&#8230;</h5>]]
 		s = s:gsub("'([%w_%.]+)'", '<b class="def-param">%1</b>')
 		s = s:gsub("!'%[(=*)%[(.-)%]%1%]", '<b class="def-param">%2</b>')
 		s = s:gsub("'/(.-)/'", '&nbsp;<i class="def-ib">%1</i>')
-		s = s:gsub("!\\ (%a+)", '<span class="def-vspace">%1</span>')
-		s = s:gsub("#(%a[%w_%.%* ]*):([^#]*)#", |s1, s2| Link(s2 ~= "" and s2 or s1, s1))
-		s = s:gsub("(%a[%w_]*):(const%.%a[%w_%.]*)", |s1, s2| Link(s2, s1))
-		s = s:gsub("(%a[%w_]*):(const)([^%.%w_])", |s1, s2, s3| Link(s2, s1)..s3)
-		s = s:gsub("(%a[%w_]*):(const)$", |s1, s2| Link(s2, s1))
-		s = s:gsub("(%a[%w_]*):(structs%.%a[%w_%.]*)", |s1, s2| Link(s2, s1))
-		s = s:gsub("#%[(=*)%[(.-)%]%1%]([^#]*)#", |_, s1, s2| LinkEx(s1, s2 ~= "" and s2 or s1))
+		s = s:gsub("!\\ ([%w_]+)", '<span class="def-vspace">%1</span>')
 		for k, v in pairs(vers) do
 			s = s:replace(v, VerFmt:format(v))
 		end
-		s = s:gsub("\001LUA%[(.-)%]", function(i)
-			return lua[tonumber(i)]
-		end)
+		s = s:gsub("\002SPC%[(.-)%]", |i| lua[tonumber(i)])
+		s = s:gsub("\001LUA%[(.-)%]", |i| lua[tonumber(i)])
 		s = s:gsub("\001", "")  -- marker of no \r after !Lua[[...]] at the end
   	return s  -- escape text
 	end
@@ -547,6 +544,7 @@ P.DefStyle = [[
 .def-largs-i { margin: 0 0.2em 0 0.16em; }
 .def-rargs-i { margin-left: 0.2em; }
 .def-vspace { display: inline-block; margin-top: 0.7em; margin-bottom: 0.1em; }
+.def-pad-dot { padding: 0 0.14em 0 0.02em; }
 .lua5-operator { font-weight: bold; color: #333; }
 .lua5-note { font-weight: bold; color: #00D; }
 .lua5-ctrl { font-weight: bold; color: Black; }

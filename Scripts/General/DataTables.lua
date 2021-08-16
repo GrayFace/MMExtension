@@ -70,10 +70,10 @@ local function DataTable(name, f, checkBin, VeryLazy)
 				mem.dll.user32.ClipCursor(0)
 			end
 			f(io.load(nameTxt))
-			errorinfo('')
 			if checkBin then
 				TimesTable[#TimesTable + 1] = {nameBin, time1, time2}
 			end
+			errorinfo(old)
 			return true
 		end
 	end
@@ -147,6 +147,9 @@ local function update()
 	end
 	-- DataTable('Player Animations', DataTables.PlayerAnimations)
 	DataTable('Shops', DataTables.Shops)
+	for s, f in pairs(DataTables.Handlers) do
+		DataTable(s, f)
+	end
 	events.DataTablesUpdate1(DataTable)
 	FixFileTimes()  -- just to be sure
 end
@@ -156,6 +159,9 @@ local function update2()
 	DataTable('Spells2', DataTables.Spells2)
 	DataTable('Transport Index', DataTables.TransportIndex)
 	DataTable('Transport Locations', DataTables.TransportLocations)
+	for s, f in pairs(DataTables.Handlers2) do
+		DataTable(s, f)
+	end
 	events.DataTablesUpdate2(DataTable)
 	FixFileTimes()  -- just to be sure
 	events.DataTablesLoaded()

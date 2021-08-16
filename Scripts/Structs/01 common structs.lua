@@ -2574,7 +2574,7 @@ function structs.f.FogChances(define)
 	.size = mmv(3, 4, 4)
 end
 
-function structs.f.PlayerAnimationInfo(define)
+function structs.f.FaceAnimationInfo(define)
 	define
 	.alt.array(1, 2).u1  'Sounds'
 	.u1  'Sound1'

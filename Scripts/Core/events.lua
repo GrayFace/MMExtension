@@ -65,7 +65,8 @@ do
 	-- DisableVFlipFix = |on| hooks.Switch(not on)]=]
 	-- !\ P.S. Don't try to run the code of these examples, they are for illustration.
 	function HookManager(ref)
-		local t = {}
+		local t = {ref = ref or {}}
+		t.ref[""] = "%"
 		function t.AddEx(RetMem, memf, p, hookf, size, ...)
 			local size1 = size and size >= 5 and size or mem.GetHookSize(p)
 			local std = mem.string(p, size1, true)
@@ -115,8 +116,6 @@ do
 				t[i] = nil
 			end
 		end
-		t.ref = ref or {}
-		t.ref[""] = "%"
 		function t.ProcessAsm(code)
 			return code:gsub("%%([%w_]*)%%", t.ref)
 		end
@@ -342,6 +341,14 @@ local function SetPosDir(x, y, z, direction, lookAngle, speedZ)
 	Party.SpeedZ = speedZ or 0
 end
 
+function internal.DeathMap(p)
+	local t = {Name = mem.string(p), Set = SetPosDir}
+	events.cocalls("DeathMap", t)
+	assert(#t.Name < 0x14)
+	mem.copy(p, t.Name, #t.Name + 1)
+	Party.FallStartZ = Party.Z
+end
+
 function internal.NewGameMap()
 	local t = {AutoFallStart = true, Set = nil}
 	function t.Set(x, y, z, direction, lookAngle, speedZ)
@@ -363,12 +370,26 @@ function internal.NewGameMap()
 	mem.copy(mmv(0x908CAC, 0xACD500, 0xB21568), mmv(0x908C98, 0xACD4EC, 0xB21554), 0x14)
 end
 
-function internal.DeathMap(p)
-	local t = {Name = mem.string(p), Set = SetPosDir}
-	events.cocalls("DeathMap", t)
-	assert(#t.Name < 0x14)
-	mem.copy(p, t.Name, #t.Name + 1)
-	Party.FallStartZ = Party.Z
+-- new game party
+if mmver < 8 then
+	
+	mem.hookfunction(mmv(0x485540, 0x491375), 1, mmv(0, 1), function(d, def, party, items)
+		def(party, items)
+		events.cocalls("NewGameDefaultParty")
+	end)
+	
+	mem.hookfunction(mmv(0x485F40, 0x4917C6), 1, 0, function(d, def, party)
+		def(party)
+		events.cocalls("NewGameClearParty")
+	end)
+	
+else
+	mem.hookfunction(0x4903C0, 1, 2, function(d, def, party, clearClass, fill)
+		def(party, clearClass, fill)
+		if clearClass ~= 0 then
+			events.cocalls(fill ~= 0 and "NewGameDefaultParty" or "NewGameClearParty")
+		end
+	end)
 end
 
 -- always invoke LeaveMap event (death and walking fixed by my patches)
@@ -385,10 +406,6 @@ elseif mmver == 7 then
 else
 	u1[0x45CB47] = 1
 	u1[0x45CBB6] = 1	
-end
-
-function internal.SetFogRange()
-	events.cocalls("FogRange")
 end
 
 local delayedDefs = {}
@@ -486,6 +503,11 @@ if mmver == 7 then
 		d.edx = 1
 		events.cocalls("SetMapNoNPC")
 	end)
+end
+
+-- FogRange
+function internal.SetFogRange()
+	events.cocalls("FogRange")
 end
 
 -- Don't show error message if .evt or .str doesn't exist
@@ -749,31 +771,6 @@ else
 	end)
 end
 
--- exit action
-do
-	local reg = mmv('ecx', 'eax', 'eax')
-	local p = HookManager{reg = reg}.asmhook2(mmv(0x453B90, 0x46349E, 0x46147F), [[
-		test %reg%, %reg%
-		jz @f
-		nop
-		nop
-		nop
-		nop
-		nop
-	@@:
-	]])
-	p = FindOpcode(p, 0x90,0x90,0x90,0x90,0x90)
-	mem.hook(p, |d| do
-		local t = {
-			-- :const.ExitAction
-			Action = d[reg],
-		}
-		events.cocall('ExitAction', t)
-		Game.ExitAction = t.NextAction or t.Action  -- just in case someone actually needs a trick like this
-		d[reg] = t.Action or Game.ExitAction
-	end)
-end
-
 -- exit house screen
 mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), 0, 0, function()
 	local i = Game.HouseScreen
@@ -802,6 +799,31 @@ end)
 
 function GetCurrentNPC()
 	return CurrentNPC
+end
+
+-- exit map action
+do
+	local reg = mmv('ecx', 'eax', 'eax')
+	local p = HookManager{reg = reg}.asmhook2(mmv(0x453B90, 0x46349E, 0x46147F), [[
+		test %reg%, %reg%
+		jz @f
+		nop
+		nop
+		nop
+		nop
+		nop
+	@@:
+	]])
+	p = FindOpcode(p, 0x90,0x90,0x90,0x90,0x90)
+	mem.hook(p, |d| do
+		local t = {
+			-- :const.ExitMapAction
+			Action = d[reg],
+		}
+		events.cocall('ExitMapAction', t)
+		Game.ExitMapAction = t.NextAction or t.Action  -- just in case someone actually needs a trick like this
+		d[reg] = t.Action or Game.ExitMapAction
+	end)
 end
 
 -- skill teacher

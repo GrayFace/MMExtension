@@ -30,7 +30,9 @@ local function ToLink(s)
 end
 
 local function Rep(pre, place, name, post)
-	return not places[place] and ToLink(name)..pre..ToName(name)..post
+	local name0, name1, name2 = name:match('^(.-)<!TOC>(.-)</!TOC>(.+)')
+	name2 = name2 and name0..name2 or name
+	return not places[place] and ToLink(name1 or name)..pre..ToName(name2)..post
 end
 
 local H = '<h[1-6][^>]*>)()(.-)(</h[1-6]>)'

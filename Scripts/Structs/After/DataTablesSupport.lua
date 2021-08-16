@@ -6,7 +6,7 @@ local function mmv(...)
 	return (select(mmver - 5, ...))
 end
 
-DataTables = {Files = {}, LazyMode = false}
+DataTables = {Files = {}, Handlers = {}, Handlers2 = {}, LazyMode = false}
 
 local _KNOWNGLOBALS_F = ParseBasicTextTable, ParseNamedColTable, WriteNamedColTable
 

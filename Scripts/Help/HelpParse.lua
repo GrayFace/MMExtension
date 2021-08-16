@@ -11,7 +11,7 @@ Make help for a variable:
 --!v
 
 Make a new help entity not related to particular code (may be followed by more ++ commands):
---++(NewName)
+--!++(NewName)
 
 Treat a local as local from parent's scope (to add fields to a table in parent scope):
 --!ParentLocal(LocHere=ParentLoc)

@@ -1,9 +1,9 @@
 --[=[!File
-To use, first place the PaperDol.txt file #[[https://github.com/GrayFace/MMExtension/tree/master/Misc/Paper%20Doll]]from here# corresponding to your game of choice into DataFiles folder (create it right next to Data folder of the game if it doesn't exist). Modifiy it as needed. You'll later distribute this file inside your mod's LOD achive.
+To use, first place the PaperDol.txt file #[[https://github.com/GrayFace/MMExtension/tree/master/Misc/Paper%20Doll]]from here# corresponding to your game of choice into DataFiles folder (create it right next to Data folder of the game if it doesn't exist). Modify it as needed. You'll later distribute this file inside a LOD achive of your mod.
 
 Including the module:
 !LUA[[
-require'PaperDoll'
+require"PaperDoll"
 ]]
 
 How it works:
@@ -33,7 +33,7 @@ local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
 
---!v Maps category name to a !lua[[function(i)]] that returns 'true' if player face number 'i' belongs to the category. Use #PaperDollAddBodies:# or #PaperDollAddRace:# to populate.
+--!v Maps category name to a !lua[[function(i)]] that returns 'true' if player face number 'i' belongs to the category. Use #PaperDollAddBodies:# or #PaperDollAddRace:# to populate in a custom way.
 PaperDollCategories = {}
 PaperDollGraphics = {}
 --!v Specifies which pieces inherit item graphics by default. Default:
@@ -41,13 +41,11 @@ PaperDollGraphics = {}
 -- For slots not specified here piece with empty name is the main one.
 PaperDollMainPieces = {ExtraHand = {hand2 = true, shield = true}}
 local PaperDollMainPiecesStd = {[''] = true}
---!v Number of possible player faces. It doesn't have to be exact, just big enough.
-PaperDollCount = mmv(12, 25, 28)
 local CurDollGraphics
 
 -- populate categories:
 
-local sex = {[false] = 'm', [true] = 'f', ''}
+local sex = {[0] = 'm', 'f', [false] = ''}
 
 local function GetSexRace(i)
 	local pl = Party.PlayersArray[0]
@@ -57,7 +55,7 @@ local function GetSexRace(i)
 	end
 	local old1, old2 = pl.Face, pl.Voice
 	pl.Face, pl.Voice = i, i
-	local s, r = GetSex(pl) ~= 0, GetRace and GetRace(pl)
+	local s, r = GetSex(pl), GetRace and GetRace(pl)
 	pl.Face, pl.Voice = old1, old2
 	return s, r
 end
@@ -67,7 +65,7 @@ function PaperDollAddRace(name, races)
 	for sex, ssex in pairs(sex) do
 		PaperDollCategories[ssex..name] = function(i)
 			local s, r = GetSexRace(i)
-			return (sex == 1 or (s == sex)) and (not races or races[r])
+			return (not sex or (s == sex)) and (not races or races[r])
 		end
 	end
 end
@@ -82,7 +80,7 @@ function PaperDollAddBodies(bodies)
 	end
 	for sex, ssex in pairs(sex) do
 		for s in pairs(t) do
-			PaperDollCategories[ssex..s] = |i| (bodies[i] or 'base'):lower() == s and (sex == 1 or GetSexRace(i) == sex)
+			PaperDollCategories[ssex..s] = |i| (bodies[i] or 'base'):lower() == s and (not sex or GetSexRace(i) == sex)
 		end
 	end
 end
@@ -119,7 +117,7 @@ local function GetCats(s)
 			q[i] = PaperDollCategories[s]
 		end
 	end
-	for i = 0, PaperDollCount - 1 do
+	for i = 0, Game.PlayerFaces.high do
 		for _, f in pairs(q) do
 			if f(i) then
 				t[i] = true
@@ -170,12 +168,13 @@ else
 	events.GameInitialized2 = ReloadPaperDollGraphics
 end
 
---!v Defaults to #Game.Version:#. If set to '6' prior to including 'PaperDoll' module, #PaperDollDrawOrder:# would be different. If set to '8', spears aren't treated as 2-handed weapons.
+--!v Defaults to #Game.Version:#. If set to '8', spears aren't treated as 2-handed weapons. If set to '6' prior to including 'PaperDoll' module, #PaperDollDrawOrder:# would be different.
 PaperDollMode = PaperDollMode or mmver
 local mm6 = (PaperDollMode == 6)
 
 --!v Default (depending on #PaperDollMode:#):
--- !Lua[[{'Bow', 'Cloak',
+-- !Lua[[{'BackDoll', 'BackDoll.menu', 'BackDoll.game',
+-- 	'Bow', 'Cloak',
 -- 	'Armor.back', 'Belt.back',
 -- 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2hb', 'Player.arm2f', 'Player.shield', 'Player.hair2', 'Player.hair',
 -- 	'Armor.back2',
@@ -190,7 +189,8 @@ local mm6 = (PaperDollMode == 6)
 -- 	'ExtraHand.hand2', 'ExtraHand.shield',
 -- 	'Player.hand2', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2h',
 -- }]]
-PaperDollDrawOrder = {'Bow', 'Cloak',
+PaperDollDrawOrder = {'BackDoll', 'BackDoll.menu', 'BackDoll.game',
+	'Bow', 'Cloak',
 	'Armor.back', 'Belt.back',
 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2hb', 'Player.arm2f', 'Player.shield', 'Player.hair2', 'Player.hair',
 	'Armor.back2',
@@ -224,8 +224,10 @@ local DrawCache
 local DrawStyles = {[0] = 'green', false, 'red', 'red'}  -- unid, norm, brk, brk
 local RingsShown = mmv(0x4D50F0, 0x511760, 0x523040)
 local EffectItem
+local InMenu
+local DrawOffsetX, DrawOffsetY = 0, 0
 
-local function draw(a, it, idx, off)
+local function draw(a, it, idx, off, style)
 	if not a or a.Image == '' then
 		return
 	end
@@ -236,8 +238,8 @@ local function draw(a, it, idx, off)
 	local rot = m[3] or 0
 	if mmver > 6 then
 		local p = mm78(0x4E4BF8, 0x4F5890)
-		x = x + i4[p]
-		y = y + i4[p + 4]
+		x = x + i4[p] + DrawOffsetX
+		y = y + i4[p + 4] + DrawOffsetY
 	end
 	x = x + (PaperDollOffsetX or 0)
 	y = y + (PaperDollOffsetY or 0)
@@ -254,7 +256,7 @@ local function draw(a, it, idx, off)
 		Screen:DrawItemEffect(x, y, pic, s, nil, nil, nil, rot)
 		EffectItem = it
 	else
-		Screen:Draw(x, y, pic, DrawStyles[cond:And(3)], rot)
+		Screen:Draw(x, y, pic, style or DrawStyles[cond:And(3)], rot)
 	end
 	if idx and i4[RingsShown] == 0 then
 		Screen:DrawToObjectByPixel(x, y, pic, idx, rot)
@@ -288,6 +290,7 @@ local function GetHiddenPieces(pl)
 		hide.hand2 = IsShield(pl.Items[pl.ItemExtraHand])  -- 2nd hand
 		hide.shield = not hide.hand2  -- hand under shield
 	end
+	hide[InMenu and 'game' or 'menu'] = true
 	-- 2nd hand for 2-handed weapon
 	hide.hand2h = hide.arm2h
 	-- 2nd arm for 2-handed weapon, drawn behind armor
@@ -299,21 +302,21 @@ local function GetHiddenPieces(pl)
 	-- 1st hand when holding a weapon
 	hide.hand1 = hide.arm1
 	local player = pl
-	--!k{hand1a 1st hand (always drawn)} Here I've described pieces that 'PaperDoll' module handles automatically. You can define your own pieces through #PaperDollDrawOrder:# array and hide them conditionally here.
+	--!k{hand1a 1st hand (always drawn), menu in new game menu (for BackDoll in MM8), game in game (for BackDoll in MM8)} Here I've described pieces that 'PaperDoll' module handles automatically. You can define your own pieces through #PaperDollDrawOrder:# array and hide them conditionally here.
 	events.cocall('PaperDollHiddenPieces', hide, player)
 	hide.Player = nil
 	return hide
 end
 
 local function GetItems(pl)
-	local t = {Player = true}
+	local t = {BackDoll = 'solid', Player = true}
 	for k, v in pairs(const.ItemSlot) do
 		t[k] = pl.EquippedItems[v]
 	end
-	--!(t, player) Lets you modify weared items, such as add new weared item slots. E.g. setting !Lua[[t.My = 1]] would draw !Lua[[pl.Items[1]]]. Setting !Lua[[t.My = true]] would make ":My" drawn the same way ":Player" is drawn. You'll also need to add "My" to #PaperDollDrawOrder:#.
+	--!(t, player) Lets you modify weared items, such as add new weared item slots. E.g. setting !Lua[[t.My = 1]] would draw !Lua[[pl.Items[1]]]. Setting !Lua[[t.My = true]] would make ":My" drawn the same way ":Player" is drawn. You'll also need to add "My" to #PaperDollDrawOrder:#. If you set !Lua[[t.My = "solid"]], ":My" would be drawn without transparency, just like ":BackDoll".
 	events.cocall('PaperDollGetItems', t, pl)
 	for k, i in pairs(t) do
-		t[k] = (i == true and {} or i ~= 0 and GetItemGraphics(pl.Items[i], i) or nil)
+		t[k] = (i == true and {} or i == 'solid' and {DrawStyle = true} or i ~= 0 and GetItemGraphics(pl.Items[i], i) or nil)
 	end
 	return t
 end
@@ -339,6 +342,7 @@ local function DrawDoll(pl)
 		local s, piece = s:match('^([^.]*)%.?([^.]*)$')
 		local a = wear[s]
 		if a and not hide[piece] then
+			local style = a.DrawStyle
 			local class, t = ':'..s:lower(), tget(CurDollGraphics, piece)
 			local it, idx = a.Item, a.Index
 			local over = it and (Override(t, a.Image..class) or Override(t, a.Image..class, '') or Override(t, a.Image..class, nil, '') or Override(t, a.Image, '', ''))
@@ -351,7 +355,7 @@ local function DrawDoll(pl)
 			elseif not (PaperDollMainPieces[s] or PaperDollMainPiecesStd)[piece] then
 				a = nil                -- only draw item as the main piece
 			end
-			draw(a, it, idx, it and t[class])
+			draw(a, it, idx, it and t[class], style)
 		end
 	end
 	
@@ -367,6 +371,17 @@ local function DrawDoll(pl)
 	end
 end
 
+local function ReplaceCalls(p, p2, old, new)
+	mem.prot(true)
+	while p < p2 do
+		if u1[p] == 0xE8 and i4[p + 1] == old - p - 5 then
+			i4[p + 1] = new - p - 5
+		end
+		p = p + mem.GetInstructionSize(p)
+	end
+	mem.prot(false)
+end
+
 if mmver == 6 then
 	mem.hook(0x4123A6, |d| do
 		DrawDoll(Party[i4[d.esp + 0x28 - 4] - 1])
@@ -375,9 +390,10 @@ if mmver == 6 then
 	end)
 	
 	-- don't load old graphics
-	local oldIconsCount
-	mem.autohook2(0x411ED8, (|| oldIconsCount, Game.IconsLod.Count, DrawCache = Game.IconsLod.Count, 0, {}))
-	mem.autohook(0x41235C, || Game.IconsLod.Count = oldIconsCount)
+	mem.autohook2(0x411ED8, || DrawCache = {})
+	mem.nop2(0x411EDD, 0x411F50)
+	mem.nop2(0x411FAF, 0x4120E7)
+	mem.nop2(0x4121BE, 0x41235C)
 elseif mmver == 7 then
 	mem.hook(0x43CD55, |d| do
 		DrawDoll(Party[d.eax - 1])
@@ -402,22 +418,42 @@ elseif mmver == 7 then
 	-- don't load old graphics
 	mem.nop2(0x43BD56, 0x43BE9D)  -- wetsuit
 	mem.nop2(0x43BEA9, 0x43C009)  -- no wetsuit
+	mem.nop2(0x43C0C6, 0x43C938)  -- rest of graphics
 
-	local oldIconsCount
-	mem.autohook2(0x43C0C1, (|| oldIconsCount, Game.IconsLod.Count, DrawCache = Game.IconsLod.Count, 0, {}))
-	mem.autohook(0x43C938, || Game.IconsLod.Count = oldIconsCount)
+	mem.hook(0x43C0C6, || DrawCache = {})
+	-- mem.autohook2(0x43C0C1, || DrawCache = {})
+	-- ReplaceCalls(0x43C301, 0x43C908, 0x40FB2C, mem.asmproc[[
+	-- 	xor eax, eax
+	-- 	ret 8
+	-- ]])
 else
+	local function DrawDollMem(p, x, y, menu)
+		InMenu = menu
+		DrawOffsetX, DrawOffsetY = x, y
+		DrawDoll(Party.PlayersArray[(p - Party.PlayersArray['?ptr']):div(0x1D28)])
+	end
+	
+	mem.asmpatch(0x43A499, 'add esp, 0xC')
 	mem.hook(0x43A4D9, |d| do
-		DrawDoll(Party.PlayersArray[(d.eax - Party.PlayersArray['?ptr']):div(0x1D28)])
+		DrawDollMem(d.eax, 0, 0)
 		u4[d.esp] = 0x43BAD8
 	end)
 	
 	-- don't load old graphics
-	mem.nop2(0x43999D, 0x439AB0)
+	mem.asmpatch(0x439966, 'xor eax, eax')  -- load 1st backdoll
+	-- mem.nop2(0x43999D, 0x439AB0)
+	mem.nop2(0x43999D, 0x43A073)
 	
-	local oldIconsCount
-	mem.hook(0x43999D, (|| oldIconsCount, Game.IconsLod.Count, DrawCache = Game.IconsLod.Count, 0, {}))
-	mem.autohook(0x43A073, || if oldIconsCount then
-		Game.IconsLod.Count, oldIconsCount = oldIconsCount, nil
+	mem.hook(0x43999D, || DrawCache = {})
+	-- ReplaceCalls(0x439C5F, 0x43A044, 0x410D70, mem.asmproc[[
+	-- 	xor eax, eax
+	-- 	ret 0x10
+	-- ]])
+	
+	-- new game menu
+	mem.nop2(0x4C4EE1, 0x4C50CB)
+	mem.hook(0x4C4EE1, |d| do
+		DrawCache = {}
+		DrawDollMem(d.eax, -13, 31, true)
 	end)
 end

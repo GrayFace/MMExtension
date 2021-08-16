@@ -1,4 +1,11 @@
 Doll	ItemPicture	Image	X	Y	Piece	Mul	Comments
+							Background:
+	:BackDoll	backdoll	0	0			:BackDoll is drawn without transparency
+M	:BackDoll	backdolm	0	0
+Minotaur	:BackDoll	backdol3	0	0
+Troll	:BackDoll	backdol4	0	0
+25	:BackDoll	pc25bod	0	0
+26	:BackDoll	pc26bod	0	0
 							Body:
 1	:Player	pc01bod	30	33
 2	:Player	pc02bod	60	47
@@ -24,8 +31,6 @@ Doll	ItemPicture	Image	X	Y	Piece	Mul	Comments
 22	:Player	pc22bod	48	54
 23	:Player	pc23bod	43	43
 24	:Player	pc24bod	41	51
-25	:Player	pc25bod	0	0
-26	:Player	pc26bod	0	0
 27	:Player	pc27bod	29	33
 28	:Player	pc28bod	61	45
 MBase	:Player	pc%.2dLHu	138	150	hand2		dual-wielding hand
