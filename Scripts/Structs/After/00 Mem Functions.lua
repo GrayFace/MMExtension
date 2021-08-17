@@ -32,7 +32,8 @@ mem.ChangeGameArray = ChangeGameArray
 local ItemSize = |t| t[t.low]['?size']
 
 local function Extend(t)
-	local name, size, endSize, start = t[1], t.Size or ItemSize(Game[t[1]]), t.EndSize or 0, t.StartSize or 0
+	local name, size, endSize, start, before = t[1], t.Size or ItemSize(Game[t[1]]), t.EndSize or 0, t.StartSize or 0, t.StartBefore or 0
+	start = start + before
 	local esize = endSize + start
 	local ptr, count, limit
 	if not size then
@@ -45,7 +46,7 @@ local function Extend(t)
 			return
 		end
 		count, limit = newCount, limit or a.limit
-		local dp, dlim, dnum, old = 0, 0, count - OldCount, ptr or a['?ptr']
+		local dp, dlim, dnum, old = 0, 0, count - OldCount, ptr or a['?ptr'] - before
 		if count > limit then
 			dlim = count - limit
 			ptr = mem.reallocMM(old, limit*size + esize, count*size + esize, not ptr)
@@ -98,7 +99,7 @@ local function Extend(t)
 			else
 				lenP = nil
 			end
-			ChangeGameArray(s, ptr, n, lenP)
+			ChangeGameArray(s, structs.o.GameStructure[s] + dp, n, lenP)
 		end
 		for _, f in ipairs(t.Custom or {}) do
 			f(count, OldCount, dp, ptr or old, size, t, dlim)
@@ -168,31 +169,31 @@ local function NeedBitHooks()
 	NeedBitHooks = ||
 end
 
-local function GetPtr2(obj, off)
-	local check = rawget(obj, "?CheckOffset")
-	if check then
-		check(obj, off, 3)
+local function SetBitArrayProc(a, p, lim)
+	local f, sz = internal.GetArrayUpval(a, 'f'), lim/8
+	local function newF(o, ...)
+		if o >= sz then
+			o = o - sz + ptrs[p] - p
+		end
+		return f(o, ...)
 	end
-	local p = obj["?ptr"]
-	local sz = sizes[p]/8
-	if off < sz then
-		return p + off
-	end
-	return ptrs[p] + off - sz
+	internal.SetArrayUpval(a, 'f', newF, true)
 end
 
 local function NeedSaveBits(a, p)
 	local list = {}
 	internal.SaveBitsList = list
+	
 	function events.InternalBeforeSaveGame()
 		local sgd = internal.SaveGameData
 		local t = sgd.ExtraBitArrays or {}
 		for a, p in pairs(list) do
 			local p2, n = ptrs[p], lims[p]
-			t[p] = p2 and mem.string(p2, n and (n - sizes[p])/8 or 0, true) or ''
+			t[p] = p2 and mem.string(p2, n and (n - sizes[p])/8 or 0, true)
 		end
-		sgd.ExtraBitArrays = t
+		sgd.ExtraBitArrays = next(t) and t
 	end
+	
 	events.InternalBeforeLoadMap = |was, loaded| if not was then
 		local t = loaded and internal.SaveGameData.ExtraBitArrays or {}
 		for a, p in pairs(list) do
@@ -205,13 +206,13 @@ local function NeedSaveBits(a, p)
 				a:Resize(n, true)
 			end
 			local p2 = ptrs[p]
-			-- !!! ...
-			mem.copy(p2, s, min(#s, sz))
-			if #s < sz then
+			if p2 then
+				mem.copy(p2, s, #s)
 				mem.fill(p2 + #s, sz - #s)
 			end
 		end
 	end
+	
 	function NeedSaveBits(a, p)
 		list[a] = p
 	end
@@ -220,13 +221,14 @@ end
 
 function mem.ExtendBitsArray(t)
 	local resize, limit = {}, (t[1].limit + 7):AndNot(7)
-	local count, limit
+	local count
 	
 	local function Resize(newCount, canShrink)
-		local OldCount = count or a.count
-		if count == OldCount or count < OldCount and not canShrink then
+		local OldCount = count or t[1].count
+		if newCount == OldCount or newCount < OldCount and not canShrink then
 			return
 		end
+		count = newCount
 		local dlim, newLim = 0, count > limit
 		if newLim then
 			newLim = (count + 7):AndNot(7)
@@ -234,11 +236,12 @@ function mem.ExtendBitsArray(t)
 			for _, a in ipairs(t) do
 				local p = a['?ptr']
 				local ptr = ptrs[p]
+				local base = ptr and sizes[p] or limit
 				ptrs[p] = mem.reallocMM(ptr or 0, (limit - base)*8, (newLim - base)*8, not ptr)
 				lims[p] = newLim
 				if not ptr then
 					sizes[p] = limit
-					internal.SetArrayUpval(a, 'GetPtr', GetPtr2)
+					SetBitArrayProc(a, p, limit)
 				end
 			end
 			dlim = newLim - limit
@@ -268,7 +271,7 @@ function mem.ExtendBitsArray(t)
 		rawset(a, 'Resize', Resize)
 		rawset(a, 'SetHigh', SetHigh)
 		if not t.NoSave then
-			NeedSaveBits(a, p)
+			NeedSaveBits(a, a['?ptr'])
 		end
 	end
 	

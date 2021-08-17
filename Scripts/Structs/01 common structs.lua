@@ -2721,3 +2721,37 @@ function structs.f.MissileSetup(define)
 	 .Info "When the object hits anything, show an explosion, play explosion sound of the spell and call #MonsterAttacked:events.MonsterAttacked# or #PlayerAttacked:events.PlayerAttacked# appropriately"
 	.size = 1
 end
+
+function structs.f.DialogLogic(define)
+	if mmver > 6 then
+		define
+		[mm78(0x5C3490, 0x5DB940)].array{1000, lenA = i4, lenP = mm78(0x5063A4, 0x517AF4)}.i4  'List'
+		 .Info "List of indexes to be displayed. In MM6 it's stored in #Game.TextBuffer2:#."
+		[mm78(0x50639C, 0x517AEC)].i4  'ScrollPage'
+		.i4  'CountOnScreen'
+		.i4  'ListCount'
+		.i4  'ScrollPos'
+		.skip(8)
+		.b4  'MapMoveRightClicked'
+		.b4  'MapMoveLeftClicked'
+		.b4  'MapMoveDownClicked'
+		.b4  'MapMoveUpClicked'
+		.b4  'ScrollDownClicked'
+		.b4  'ScrollUpClicked'
+		.i4  'SpellBookSelectedSpell'
+		.b1  'SpellBookSelectedNewSpell'
+	else
+		define
+		[0x55D5B0].array{2000, lenA = i4, lenP = 0x4CB1E0}.u1  'List'
+		[0x4CAEB8].i4  'ScrollPage'
+		[0x4CB1D8].i4  'CountOnScreen'
+		[0x4CB1E0].i4  'ListCount'
+		[0x4CAEC8].i4  'ScrollPos'
+		[0x4CB1F4].i4  'MapMoveRightClicked'
+		[0x4CB1A8].i4  'MapMoveLeftClicked'
+		[0x4CAEC0].i4  'MapMoveDownClicked'
+		[0x4CB1B0].i4  'MapMoveUpClicked'
+		[0x4CB1F0].b4  'ScrollDownClicked'
+		[0x4CB128].b4  'ScrollUpClicked'
+	end
+end

@@ -185,6 +185,7 @@ function structs.f.GameStructure(define)
 		.b4  'Defined'
 	.union()
 	[mmv(0x52D0A8, 0x576CB0, 0x5878D8)].struct(structs.ProgressBar)  'ProgressBar'
+	[0].struct(structs.DialogLogic)  'DialogLogic'
 	[mmv(0x55BDB4, 0x5C346C, 0x5DB91C)].i4  'Lucida_fnt'
 	[mmv(0x55BDB8, 0x5C3488, 0x5DB938)].i4  'Smallnum_fnt'
 	[mmv(0x55BDC4, 0x5C3468, 0x5DB918)].i4  'Arrus_fnt'
@@ -198,8 +199,8 @@ function structs.f.GameStructure(define)
 	define
 	[mmv(0x55BDD0, 0x5C3460, 0x5DB910)].i4  'Autonote_fnt'
 	[mmv(0x55BDC0, 0x5C3464, 0x5DB914)].i4  'Spell_fnt'  -- Autonote_fnt2
-	[mmv(0x55CDE0, 0x5C5C30, 0x5DF0E0)].string(500)  'TextBuffer'
-	[mmv(0x55D5B0, 0x5C6400, 0x5E1020)].string(500)  'TextBuffer2'
+	[mmv(0x55CDE0, 0x5C5C30, 0x5DF0E0)].string(2000)  'TextBuffer'
+	[mmv(0x55D5B0, 0x5C6400, 0x5E1020)].string(2000)  'TextBuffer2'
 	[mmv(0x5F6E0C, 0x69AC8C, 0x6C8BC4)].array(mmv(12, 30, 30)).i4  'KeyCodes'
 	[mmv(0x5F6E3C, 0x69AD04, 0x6C8C3C)].array(mmv(12, 30, 30)).i4  'KeyTypes'
 	[mmv(0x908D08, 0xACCE64, 0xB20EBC)].i8  'Time'
@@ -394,23 +395,18 @@ end]=]
 	define
 	[mmv(0x6A8808, 0x722D94, 0x760394)].array(1, 512).EditPChar  'QuestsTxt'
 	if mmver == 6 then
-		define[0x6A900C].array{1, 87}.EditPChar  'AwardsTxt'
+		define[0x6A9008].array{88}.EditPChar  'AwardsTxt'
 	else
 		define
-		[mmv(nil, 0x723D08, 0x761650)].array{1, 104, ItemSize = 8}.EditPChar  'AwardsTxt'
-		[mmv(nil, 0x723D0C, 0x761654)].array{1, 104, ItemSize = 8}.i4  'AwardsSort'
+		[mm78(0x723D00, 0x761648)].array{0, 104, ItemSize = 8}.EditPChar  'AwardsTxt'
+		[mm78(0x723D04, 0x76164C)].array{0, 104, ItemSize = 8}.i4  'AwardsSort'
 	end
 	if mmver == 6 then
 		define[0x6BA628].array{0, 128}.EditPChar  'AutonoteTxt'
-	elseif mmver == 7 then
-		define
-		[0x723598].array{0, 195, ItemSize = 8}.EditPChar  'AutonoteTxt'
-		[0x72359C].array{0, 195, ItemSize = 8}.i4  'AutonoteCategory'
-		 .Info "0 = potion\n1 = stat\n2 = obelisk\n3 = seer\n4 = misc\n5 = teacher"
 	else
 		define
-		[0x760B98].array{0, 300, ItemSize = 8}.EditPChar  'AutonoteTxt'
-		[0x760B9C].array{0, 300, ItemSize = 8}.i4  'AutonoteCategory'
+		[mm78(0x723598, 0x760B98)].array{0, mm78(195, 300), ItemSize = 8}.EditPChar  'AutonoteTxt'
+		[mm78(0x72359C, 0x760B9C)].array{0, mm78(195, 300), ItemSize = 8}.i4  'AutonoteCategory'
 		 .Info "0 = potion\n1 = stat\n2 = obelisk\n3 = seer\n4 = misc\n5 = teacher"
 	end
 	define

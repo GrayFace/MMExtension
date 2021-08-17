@@ -24,6 +24,7 @@ local os_time = os.time
 local debug_getinfo = debug.getinfo
 local d_setupvalue = debug.setupvalue
 local d_getupvalue = debug.getupvalue
+local d_upvaluejoin = debug.upvaluejoin
 local table_insert = table.insert
 local table_remove = table.remove
 local table_concat = table.concat
@@ -459,9 +460,15 @@ function mem_structs.types.EditConstPChar(name)
 	end)
 end
 
-function internal.SetArrayUpval(t, name, val)
+function internal.SetArrayUpval(t, name, val, unique)
 	local f = getmetatable(t).__newindex
-	d_setupvalue(f, d_findupvalue(f, name), val)
+	local k = d_findupvalue(f, name)
+	if unique then
+		local f2 = function() return val end
+		d_upvaluejoin(f, k, f2, d_findupvalue(f2, 'val'))
+	else
+		d_setupvalue(f, k, val)
+	end
 end
 
 function internal.GetArrayUpval(t, name)
