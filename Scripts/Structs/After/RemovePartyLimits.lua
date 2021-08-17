@@ -2,17 +2,15 @@ local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.
 local i4, i2, i1, u4, u2, u1, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar, mem.call
 local mmver = offsets.MMVersion
 
-local function mmv(...)
-	return (select(mmver - 5, ...))
-end
+local mmv = |...| (select(mmver - 5, ...))
 
 -- extend Game.PlayerFaces
 
-local Resize
-local function HookLoaded()
+local ResizeFaces
+local function HookLoadedFaces()
 	local p = mem.StaticAlloc(4)
 	i4[p] = mmv(12, 25-1, 30)*4
-	Resize = mem.ExtendGameStructure{
+	ResizeFaces = mem.ExtendGameStructure{
 		Struct = {['?ptr'] = mmv(0x4D479C, 0x50758C, 0x518E40), limit = mmv(12, 25, 30)},
 		Size = 4,
 		Refs = mmv(
@@ -36,6 +34,6 @@ mem.ExtendGameStructure{'PlayerFaces',
 		{0x491CE3, 0x491DF4, 0x496AAC},
 		{0x4908F4, 0x4909C6, 0x4C5565}
 	),
-	CustomOnce = {HookLoaded},
-	Custom = {|n| Resize(n, true)},
+	CustomOnce = {HookLoadedFaces},
+	Custom = {|n| ResizeFaces(n, true)},
 }
