@@ -1337,7 +1337,7 @@ do -- mem.struct
 							if v == nil then
 								return GetLen(obj)
 							else
-								return (SetLen(obj, v, lenP and obj["?ptr"] + lenP, lenA))
+								return (SetLen(obj, v, lenP and obj["?ptr"] + lenP, lenA, size, o))
 							end
 						elseif v == nil then
 							if a == "low" or a == "Low" then
