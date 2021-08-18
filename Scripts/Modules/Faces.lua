@@ -62,7 +62,7 @@ end
 
 local function GetSexRace(i)
 	if is6 then
-		return i > 7
+		return i > 7 and 1 or 0
 	end
 	local pl = Party.PlayersArray[0]
 	local old1, old2 = pl.Face, pl.Voice
@@ -189,9 +189,6 @@ function P.FaceAnimationsHandler(text)
 	HookFaceAnimations()
 	return text
 end
-
-DataTables.Handlers['Faces'] = P.FacesHandler
-DataTables.Handlers['Face Animations'] = P.FaceAnimationsHandler
 
 
 -- Update
@@ -388,5 +385,10 @@ P.Update = || if P.Faces[0] then
 	-- Triggered when "Faces.txt" is read or when #Update:package.loaded.Faces.Update# is called.
 	events.cocall("UpdateFaces")
 end
+
+
+DataTables.Handlers['Faces'] = P.FacesHandler
+DataTables.Handlers['Face Animations'] = P.FaceAnimationsHandler
+
 
 return P
