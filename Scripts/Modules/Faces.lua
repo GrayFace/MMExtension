@@ -38,6 +38,7 @@ local is78 = mmver > 6 or nil
 
 local P = {ExtraFields = {}}
 local Hooked
+local Update
 
 -- animations event
 
@@ -127,7 +128,7 @@ function P.FacesHandler(text)
 			q[s] = f(t[s] or '')
 		end
 		for s, f in pairs(P.ExtraFields) do
-			q[s] = f(t[s] or '', q, t)
+			q[s] = f(t[s] or '', q, t, i - 1, s)
 		end
 		if q.AllowVoice == nil then
 			q.AllowVoice = q.Allow
@@ -138,7 +139,7 @@ function P.FacesHandler(text)
 		all[i - 1] = q
 	end
 	P.Faces = all
-	P.Update()
+	Update(true)
 	return text
 end
 
@@ -380,11 +381,15 @@ local function UpdateHooks()
 	end
 end
 
-P.Update = || if P.Faces[0] then
-	UpdateHooks()
+Update = |JustRead| if P.Faces[0] then
 	-- Triggered when "Faces.txt" is read or when #Update:package.loaded.Faces.Update# is called.
-	events.cocall("UpdateFaces")
+	events.cocall("BeforeUpdateFaces", JustRead)
+	UpdateHooks()
+	-- Triggered after the changes to Faces were applied.
+	events.cocall("AfterUpdateFaces", JustRead)
 end
+
+P.Update = || Update()
 
 
 DataTables.Handlers['Faces'] = P.FacesHandler
