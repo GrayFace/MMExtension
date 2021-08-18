@@ -1,4 +1,5 @@
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
+local i4, i2, i1, u4, u2, u1, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar, mem.call
 local mmver = Game.Version
 
 local function mmv(...)
@@ -498,44 +499,121 @@ local function RegisterQuest(t)
 	return RegisterQuest(t)
 end
 
-local function NewQuestNumber(t)
-	local QuestNumbers = {}
-	local QuestLog = {}
-	local QuestNumberIndex = 0
-	for i, s in Game.QuestsTxt do
-		if s == "0" then
-			QuestNumbers[#QuestNumbers + 1] = i
-		end
-	end
-	
+local function AutoIndex(array, ev, f)
+	local idx, n, Q = {}, 0, {}
 	function events.LeaveGame()
-		QuestNumberIndex = 0
-		QuestLog = {}
+		n = 0
+		Q = {}
 	end
-	
-	local function UpdateQBits(on)
-		for i, n in ipairs(QuestNumbers) do
-			Party.QBits[n] = on and QuestLog[i] and QuestLog[i]:IsGiven() or false
+	events[ev] = |...| do
+		local a = Game.DialogLogic.List
+		for _, q in ipairs(Q) do
+			local v = f(q, ...)
+			if v then
+				local i = a.high + 1
+				a.high = i
+				a[i] = v
+			end
 		end
 	end
-	
-	-- update automatic quest log entries when quest log is opened
-	events.Action = |t| if t.Action == 200 then
-		UpdateQBits(true)
+	local function new_idx()
+		local i = array.high + 1
+		array.SetHigh(i)
+		idx[n] = i
+		return i
 	end
+	return function(t)
+		n = n + 1
+		Q[n] = t
+		return idx[n] or new_idx()
+	end
+end
 
-	-- don't save QBits of automatic quests
-	events.BeforeSaveGame = || UpdateQBits(false)
-	events.AfterSaveGame = || UpdateQBits(true)
-	
-	function NewQuestNumber(t)
-		QuestNumberIndex = QuestNumberIndex + 1
-		local i = QuestNumbers[QuestNumberIndex]
-		t.Quest = assert(i, 'no free quest indexes left. Free indeces are those with "0" set as Quest Note Text in quests.txt')
-		QuestLog[QuestNumberIndex] = t
+local AutoQuests, AutoAwards
+
+function AddAutoQuest(t)
+	if type(t) == 'function' then
+		t = {IsGiven = t}
 	end
-	
-	return NewQuestNumber(t)
+	AutoQuests = AutoQuests or AutoIndex(Game.QuestsTxt, 'PopulateQuestLog', |q| q:IsGiven() and q.QuestIndex)
+	t.QuestIndex = AutoQuests(t)
+	return t.QuestIndex
+end
+
+local function MyAutoQuest(t)
+	-- remove QBits of old version of automatic quests
+	if not internal.SaveGameData.NewQuests then
+		internal.SaveGameData.NewQuests = 1
+		for i, s in Game.QuestsTxt do
+			if s == "0" then
+				Party.QBits[i] = false
+			end
+		end
+	end
+	return AddAutoQuest(t)
+end
+
+function AddAutoAward(t)
+	if type(t) == 'function' then
+		t = {IsAwarded = t}
+	end
+	AutoAwards = AutoAwards or AutoIndex(Game.AwardsTxt, 'PopulateAwardsList', |q, t| q:IsAwarded(t) and q.AwardIndex)
+	t.AwardIndex = AutoAwards(t)
+	Game.AwardsSort[t.AwardIndex] = 3
+	return t.AwardIndex
+end
+
+-- Plays sound and shows visual effect on current character's face
+function ShowQuestEffect(flash_book, operation)
+	local id = 499
+	local p = Game.QuestsTxt['?ptr'] + (id - Game.QuestsTxt.low)*4
+	local old, olds, oldb = Party.QBits[id], u4[p], mmver == 7 and not flash_book and not Game.FlashQuestBook
+	Party.QBits[id], u4[p] = false, mmv(0x4C1728, 0x4EB6E8, 0x4FB700)  -- need a named quest for the effect
+	evt[operation or TakeQuestOperation]("QBits", id)
+	Party.QBits[id], u4[p] = old, olds
+	if oldb then
+		Game.FlashQuestBook = false
+	end
+end
+
+-- Plays sound and shows visual effect on all characters' faces
+function ShowAwardEffect(operation)
+	local id = 1
+	local p = Game.AwardsTxt['?ptr'] + (id - Game.AwardsTxt.low)*mmv(4, 8, 8)
+	local t = {}
+	for _, a in Party do
+		t[a] = a.Awards[id]
+		a.Awards[id] = false
+	end
+	local olds = u4[p]
+	u4[p] = mmv(0x4C1728, 0x4EB6E8, 0x4FB700)  -- need a named award for the effect
+	evt.All[operation or 'Add']("Awards", id)
+	u4[p] = olds
+	for _, a in Party do
+		a.Awards[id] = t[a]
+	end
+end
+
+local function AddQuestBit(t)
+	if tonumber(t.Quest) and t.TakeQuestOperation then
+		evt[t.TakeQuestOperation]("QBits", t.Quest)
+	elseif t.QuestIndex and t.TakeQuestOperation then
+		ShowQuestEffect(true, t.TakeQuestOperation)
+	end
+end
+
+local function AddQuestAward(t)
+	if tonumber(t.Award) then
+		evt.All.Add("Awards", t.Award)
+	elseif t.AwardIndex then
+		ShowAwardEffect()
+		if t.StoreAwards then
+			local aw = tget(tget(vars, 'QuestAwards'), t.BaseName)
+			for _, pl in Party do
+				aw[pl:GetIndex()] = true
+			end
+		end
+	end
 end
 
 local SlotLiterals = {A = 0, B = 1, C = 2, D = 3, E = 4, F = 5}
@@ -556,10 +634,14 @@ function Quest(t)
 			t.Name = t.Name.." +"
 		end
 	end
+	t.Award = t.Award or t.Awards  -- backward compatibility
 	Quests[t.Name] = t
 	--!v([name])
 	-- Quest states: nil, "Given", "Done" or a custom state.
-	vars.Quests = vars.Quests or {}
+	if not vars.Quests then
+		vars.Quests = {}
+		internal.SaveGameData.NewQuests = 1
+	end
 	t.BaseName = t.BaseName or t.Name
 	t.GivenState = t.GivenState or "Given"
 	t.DoneState = t.DoneState or "Done"
@@ -567,25 +649,50 @@ function Quest(t)
 	t.IsGiven = t.IsGiven or function(t)
 		return vars.Quests[t.BaseName] == t.GivenState
 	end
-	
+
+	t.QuestIndex = t.Quest or nil
 	if t.Quest == true then
-		NewQuestNumber(t)
+		MyAutoQuest(t)
 	end
+	
+	t.AwardIndex = t.Award or nil
 
 	t.SetTexts = t.SetTexts or function(t1, texts)
 		t.Texts = LocalizeAll.Quests[t.Name](texts or t1)
-		if t.Texts.Quest then
-			if not t.Quest then
-				NewQuestNumber(t)
+		if t.Texts.Quest and t.Quest ~= false then
+			if not t.QuestIndex then
+				t.Quest = true  -- backward compatibility
+				MyAutoQuest(t)
 			end
-			Game.QuestsTxt[t.Quest] = t.Texts.Quest
+			Game.QuestsTxt[t.QuestIndex] = t.Texts.Quest
+		end
+		if t.Texts.Award and t.Award ~= false then
+			if not t.AwardIndex then
+				AddAutoAward(t)
+			end
+			Game.AwardsTxt[t.AwardIndex] = t.Texts.Award
 		end
 		return t
 	end
 	LocalizeAll.Quests[t.Name]({}, "update")
 	t:SetTexts(t.Texts or {})
+	if t.StoreAwards == nil then
+		t.StoreAwards = mmver == 8 or t.NeverDone
+	end
+	if t.AwardSort and t.AwardIndex then
+		Game.AwardsSort[t.AwardIndex] = t.AwardSort
+	end
+
+	t.IsAwarded = t.IsAwarded or function(t, ev)
+		if not t.StoreAwards then
+			return vars.Quests[t.BaseName] == t.DoneState  -- no need to keep track of players that reeceived it
+		end
+		local a = vars.QuestAwards
+		a = a and a[t.BaseName]
+		return a and a[ev.PlayerIndex]
+	end
 	
-	t.TakeQuestOperation = t.TakeQuestOperation or TakeQuestOperation or "Add"
+	t.TakeQuestOperation = t.TakeQuestOperation ~= false and (t.TakeQuestOperation or TakeQuestOperation or "Add")
 
 	t.GetGreeting = t.GetGreeting or function(t, seen)
 		if not seen then
@@ -623,10 +730,8 @@ function Quest(t)
 		local state = vars.Quests[t.BaseName]
 		local ev
 		if state == nil and not t.NeverGiven then
-			if (t.CheckGive == nil and (t.Give or t.Texts.Give or t.Quest)) or t.CheckGive and t.CheckGive(t) then
-				if t.Quest and t.TakeQuestOperation then
-					evt[t.TakeQuestOperation]("QBits", t.Quest)
-				end
+			if (t.CheckGive == nil and (t.Give or t.Texts.Give or t.QuestIndex)) or t.CheckGive and t.CheckGive(t) then
+				AddQuestBit(t)
 				vars.Quests[t.BaseName] = t.GivenState
 				if t.GivenItem then
 					evt.Add("Inventory", t.GivenItem)
@@ -640,7 +745,7 @@ function Quest(t)
 					Party.Gold >= (t.QuestGold or 0) and
 					(t.QuestItem == nil or TakeItemFromParty(t.QuestItem, t.KeepQuestItem)) then
 				if not t.NeverDone then
-					if t.Quest then
+					if tonumber(t.Quest) then
 						evt.Sub("QBits", t.Quest)
 					end
 					vars.Quests[t.BaseName] = t.DoneState
@@ -649,9 +754,8 @@ function Quest(t)
 				if t.RewardItem then
 					evt.Current.Add("Inventory", t.RewardItem)
 				end
-				if t.Awards then
-					evt.All.Add("Awards", t.Awards)
-				end
+					
+				AddQuestAward(t)
 				ev = "Done"
 			else
 				ev = "Undone"
@@ -780,7 +884,7 @@ function KillMonstersQuest(t)
 			Sleep(SleepDelay)
 		end
 		Game.ShowStatusText(msg)
-		ShowQuestEffect()
+		ShowQuestEffect(false, 'Add')
 	end
 	
 	local function UpdateTasksState()

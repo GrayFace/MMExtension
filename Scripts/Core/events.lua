@@ -583,24 +583,6 @@ do
 	]])
 end
 
--- speak with guards
-if mmver > 6 then
-	local function SpeakWithMonster(d)
-		local t = {Result = nil}
-		t.MonsterIndex, t.Monster = GetMonster(d.esi)
-		--!k{Monster :structs.MapMonster, MonsterIndex} [MM7+] Called when you speak with a guard or any other monster with a generic message from NPCGroup.txt. Assign 'Result' a string to override default monster group message. Assign an empty string to show no message. Initially 'Result' is 'nil'.
-		events.cocalls("SpeakWithMonster", t)
-		if t.Result == "" then
-			d.eax = 0
-		elseif t.Result then
-			Game.TextBuffer = t.Result
-			d.eax = structs.o.GameStructure.TextBuffer
-		end
-	end
-	mem.autohook2(mm78(0x46A586, 0x4688F8), SpeakWithMonster)
-	mem.autohook2(mm78(0x422509, 0x4216EE), SpeakWithMonster)
-end
-
 -- ShowNPCTopics - called when NPC topics list is about to be shown
 local CurrentNPC
 
@@ -634,7 +616,7 @@ local function NPCGreetingHook(eax, p)
 	local t = {Text = mem.pchar[Game.NPCGreet["?ptr"] + eax*4], Seen = (eax % 2 ~= 0)}
 	t.NPC = (p - Game.NPC["?ptr"])/Game.NPC[0]["?size"]
 	if t.NPC >= 0 and t.NPC < Game.NPC.Length then
-		events.cocalls("DrawNPCGreeting", t)
+		events.cocall("DrawNPCGreeting", t)
 	end
 	CurNPCGreet = tostring(t.Text)
 	return CurNPCGreet ~= "" and mem.topointer(CurNPCGreet) or 0
@@ -668,6 +650,48 @@ elseif mmver == 8 then
 		end
 	end, 7)
 end
+
+-- speak with guards
+if mmver > 6 then
+	local function SpeakWithMonster(d)
+		local t = {Result = nil}
+		t.MonsterIndex, t.Monster = GetMonster(d.esi)
+		--!k{Monster :structs.MapMonster, MonsterIndex} [MM7+] Called when you speak with a guard or any other monster with a generic message from NPCGroup.txt. Assign 'Result' a string to override default monster group message. Assign an empty string to show no message. Initially 'Result' is 'nil'.
+		events.cocalls("SpeakWithMonster", t)
+		if t.Result == "" then
+			d.eax = 0
+		elseif t.Result then
+			Game.TextBuffer = t.Result
+			d.eax = structs.o.GameStructure.TextBuffer
+		end
+	end
+	mem.autohook2(mm78(0x46A586, 0x4688F8), SpeakWithMonster)
+	mem.autohook2(mm78(0x422509, 0x4216EE), SpeakWithMonster)
+end
+
+-- populate quest log
+mem.autohook2(mmv(0x40D40F, 0x4126A8, 0x4CC481), function(d)
+	if mmver ~= 7 or i4[d.ebp + 0x1C] == 200 then
+		-- Use this event to add quest indexes to #Game.DialogLogic.List:# or rearrange them
+		events.cocall("PopulateQuestLog")
+	end
+end)
+
+-- populate awards list
+mem.autohook(mmv(0x4151D0, 0x419144, 0x418A3A), function(d)
+	local a = Game.DialogLogic
+	a.ListCount = d.eax
+	local pidx = mmver == 8 and i4[i4[d.ebp - 4] + 0x128]
+	local pl = pidx and Party.PlayersArray[pidx] or Party:GetCurrentPlayer()
+	local t = {
+		-- :structs.Player
+		Player = pl,
+		PlayerIndex = pidx or pl:GetIndex(),
+	}
+	-- Use this event to add award indexes to #Game.DialogLogic.List:# or rearrange them. Awards would later be sorted according to their color.
+	events.cocall("PopulateAwardsList", t)
+	d.eax = a.ListCount
+end)
 
 -- WindowProc
 do

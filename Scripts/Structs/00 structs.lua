@@ -117,6 +117,13 @@ function structs.f.GameStructure(define)
 	define.func{name = "ProcessActions", p = mmv(0x42ADA0, 0x4304D6, 0x42EDD8)}
 	[mmv(0x6199C0, 0x6A0BC8, 0x6CEB28)].i4  'ExitMapAction'
 	 .Info ":const.ExitMapAction"
+	if mmver == 7 then
+		define[0x5077C8]
+		.b1  'FlashHistoryBook'
+		.b1  'FlashAutonotesBook'
+		.b1  'FlashQuestBook'
+	end
+	define
 	[mmv(0x52D29C, 0x576EAC, 0x587ADC)].b4  'NeedRedraw'
 	[mmv(0x55BC04, 0x5C32A8, 0x5DB758)].string(200)  'StatusMessage'
 	.string(200)  'MouseOverStatusMessage'
@@ -393,13 +400,13 @@ end]=]
 		[mm78(0x44FA8A, 0x44D1DD)].EditConstPChar  'SummonElementalC'
 	end
 	define
-	[mmv(0x6A8808, 0x722D94, 0x760394)].array(1, 512).EditPChar  'QuestsTxt'
+	[mmv(0x6A8804, 0x722D94, 0x760394)].array(mmv(0, 1, 1), 512).EditPChar  'QuestsTxt'
 	if mmver == 6 then
 		define[0x6A9008].array{88}.EditPChar  'AwardsTxt'
 	else
 		define
-		[mm78(0x723D00, 0x761648)].array{0, 104, ItemSize = 8}.EditPChar  'AwardsTxt'
-		[mm78(0x723D04, 0x76164C)].array{0, 104, ItemSize = 8}.i4  'AwardsSort'
+		[mm78(0x723D08, 0x761650)].array{1, 104, ItemSize = 8}.EditPChar  'AwardsTxt'
+		[mm78(0x723D0C, 0x761654)].array{1, 104, ItemSize = 8}.i4  'AwardsSort'
 	end
 	if mmver == 6 then
 		define[0x6BA628].array{0, 128}.EditPChar  'AutonoteTxt'
@@ -886,6 +893,9 @@ function structs.f.GameParty(define)
 		return n
 	end
 	define.Info{Sig = "{item1, item2, ...}"}
+	function define.f.GetCurrentPlayer()
+		return Party[max(0, u4[offsets.CurrentPlayer] - 1)]
+	end
 end
 
 -- Character_GetInventoryItemIndex
@@ -1246,6 +1256,13 @@ function structs.f.Player(define)
 		end
 	end
 	define.Info{Sig = "Delay"}
+	function define.m:GetIndex()
+		local a = Party.PlayersArray
+		local i = (self["?ptr"] - a["?ptr"])/self["?size"]
+		if i % 1 == 0 and i >= 0 and i < a.Count then
+			return i
+		end
+	end
 end
 
 local DrawStyles = {

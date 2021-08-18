@@ -219,15 +219,6 @@ function AddGoldExp(gold, exp)
 	end
 end
 
--- Plays sound and shows visual effect on current character's face
-function ShowQuestEffect()
-	local id = 499
-	local old = Party.QBits[id]
-	evt.Add("QBits", id)
-	evt.Sub("QBits", id)
-	Party.QBits[id] = old
-end
-
 -- 'id' can also be a table or a table of tables. See !'[[Quest Alchemy.lua]] from #quest examples:Quests#
 function TakeItemFromParty(id, keep)
 	if type(id) ~= "table" then  -- take 1 item

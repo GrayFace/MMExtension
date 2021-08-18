@@ -1193,8 +1193,9 @@ function structs.f.MapMonster(define)
 	end
 	define.Info{Sig = "Stand, Walk, Attack, Shoot, Stun, GotHit, Die, Dead, Fidget";  "Any argument can be 'nil'. Also loads the frames."}
 	function define.m:GetIndex()
-		local i = (self["?ptr"] - Map.Monsters["?ptr"])/self["?size"]
-		if i % 1 == 0 and i >= 0 and i < Map.Monsters.Count then
+		local a = Map.Monsters
+		local i = (self["?ptr"] - a["?ptr"])/self["?size"]
+		if i % 1 == 0 and i >= 0 and i < a.Count then
 			return i
 		end
 	end

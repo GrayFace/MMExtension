@@ -9,11 +9,9 @@ local is7 = mmver == 7 or nil
 local is8 = mmver == 8 or nil
 local is78 = mmver > 6 or nil
 
--- if mmver ~= 81 then  return  end
-
 -- extend Game.AwardsTxt
 
-mem.ExtendGameStructure{'AwardsTxt', is78 and 'AwardsSort', Size = mmv(4, 8, 8),
+mem.ExtendGameStructure{'AwardsTxt', is78 and 'AwardsSort', Size = mmv(4, 8, 8), StartBefore = mmv(0, 8, 8),
 	Refs = mmv(
 		{0x415194, 0x416434, 0x41FDEC, 0x420284, 0x467FCB, 0x48A04B;  0x46803F},  -- 0x46803F is the read limit
 		{0x41910B, 0x41919D, 0x4191A4, 0x41A14A, 0x41A1F7, 0x44A887, 0x44B222, 0x47642E, 0x4956EC},

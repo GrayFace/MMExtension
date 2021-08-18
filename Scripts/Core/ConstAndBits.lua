@@ -938,7 +938,7 @@ const.FaceAnimation = {
 	KillBigEnemy = 2,
 	StoreClosed = 3,
 	DisarmTrap = 4,
-	TrapExploaded = 5,  -- sorry about that
+	TrapExploaded = 5,  -- sorry about that / it's gonna blow!
 	AvoidDamage = 6,  -- sits down. Avoids either trap damage with Perception or attack damage with Dodging
 	IdentifyUseless = 7,
 	IdentifyGreat = 8,
@@ -1041,6 +1041,20 @@ const.FaceAnimation = {
 	NotEnoughFood = 108,
 	DeathBlow = 109,
 }
+
+-- backward compatibility
+setmetatable(const.FaceAnimation, {__index = {
+	TrapWillBlow = 5,
+	AvoidTrapDamage = 6,
+	SmileRandom = 14,
+	Strain = 19,  -- like pulling sword out of stone in MM6
+	Smile = 36,
+	SmileHuge = 57,
+	ShakeHeadNo = 67,  -- shakes head
+	ShakeHeadYes = 71,
+	SmileBig = 82,
+	Hungry = 108,
+}})
 
 const.Season = {
 	Automn = 0,
