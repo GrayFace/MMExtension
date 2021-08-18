@@ -202,7 +202,7 @@ local function NeedSaveBits(a, p)
 			if sz < #s then
 				sz = #s
 				local n = a.limit
-				a:Resize(#s*8)
+				a:Resize(#s*8 - 7)
 				a:Resize(n, true)
 			end
 			local p2 = ptrs[p]
