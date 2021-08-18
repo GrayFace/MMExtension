@@ -6,7 +6,7 @@ local mmv = |...| (select(mmver - 5, ...))
 
 -- extend Game.PlayerFaces
 
-local ResizeFaces
+local ResizeFaces = ||;
 local function HookLoadedFaces()
 	local p = mem.StaticAlloc(4)
 	i4[p] = mmv(12, 25-1, 30)*4

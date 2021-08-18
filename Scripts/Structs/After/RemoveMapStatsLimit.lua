@@ -111,10 +111,7 @@ mem.ExtendGameStructure{'MapStats', Size = mmv(0x38, 0x44, 0x44),
 	LimSizeRefs = mmv({0x446719, 0x446BD7, 0x446C02, 0x446B5E}, {0x453FEC, 0x454752, 0x4547D9, 0x4547FE}, {0x451756, 0x451EBD, 0x451F43, 0x451F68}),
 	EndSize = 4,
 	Custom = {
-		|| if patch then
-			patch()
-			patch = nil
-		end,
+		|| patch = patch and patch(),
 		NPCDistResize and |n| NPCDistResize(n)
 	}
 }

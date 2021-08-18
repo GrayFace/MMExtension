@@ -25,48 +25,49 @@ if mmver == 6 then
 	return  -- not for MM6 for now
 end
 
+-- patch places that work with bits directly instead of calling CheckBit
+local HookAwardsOnce = is7 and function()
+	local hooks = HookManager{check = 0x449B7A, off = 0x152}
+	local patch2 = |p, p2, code| hooks.asmpatch(p, code, p2 - p)
+	-- cmp
+	patch2(0x449D87, 0x449DA5, [[
+		mov edx, eax
+		lea ecx, [esi + %off%]
+		call absolute %check%
+		mov cl, 0xff
+	]])
+	-- set
+	patch2(0x44A876, 0x44A87F, [[
+		mov edx, [ebp + 0xC]
+		lea ecx, [eax + %off%]
+		call absolute %check%
+		test al, al
+	]])
+	-- add
+	patch2(0x44B205, 0x44B21A, [[
+		movsx edx, word [ebp + 0xC]
+		add ecx, %off%
+		call absolute %check%
+		test al, al
+	]])
+end
+
 local PAwardsCount
-local function HookAwards()
+local function HookAwardsCount()
 	PAwardsCount = mem.StaticAlloc(4)
 	local hooks = HookManager{p = PAwardsCount}
 	hooks.asmpatch(mm78(0x419138, 0x418A2E), [[
 		cmp ebx, [%p%]
 		jl absolute mm7*0x419108 + mm8*0x4189FE
 	]])
-	
-	if is7 then
-		-- patch places that work with bits directly instead of calling CheckBit
-		local hooks = HookManager{check = 0x449B7A, off = 0x152}
-		local patch2 = |p, p2, code| hooks.asmpatch(p, code, p2 - p)
-		-- cmp
-		patch2(0x449D87, 0x449DA5, [[
-			mov edx, eax
-			lea ecx, [esi + %off%]
-			call absolute %check%
-			mov cl, 0xff
-		]])
-		-- set
-		patch2(0x44A876, 0x44A87F, [[
-			mov edx, [ebp + 0xC]
-			lea ecx, [eax + %off%]
-			call absolute %check%
-			test al, al
-		]])
-		-- add
-		patch2(0x44B205, 0x44B21A, [[
-			movsx edx, word [ebp + 0xC]
-			add ecx, %off%
-			call absolute %check%
-			test al, al
-		]])
-	end
 end
 
 local t = {
-	CustomOnce = {HookAwards},
+	CustomOnce = {HookAwardsOnce},
 	Custom = {|n| do
 		Game.AwardsTxt.SetHigh(n)
-		i4[PAwardsCount] = min(n, 500)  -- limited by Game.DialogLogic.List, 500 should be enough for everything
+		-- limited by Game.DialogLogic.List for now, 500 should be enough for everything
+		i4[PAwardsCount or HookAwardsCount() and PAwardsCount] = min(n, 500)
 		assert(n <= 500, 'attempt to use over 500 awards')
 	end},
 }
