@@ -67,7 +67,7 @@ local t = {
 	Custom = {|n| do
 		Game.AwardsTxt.SetHigh(n)
 		-- limited by Game.DialogLogic.List for now, 500 should be enough for everything
-		i4[PAwardsCount or HookAwardsCount() and PAwardsCount] = min(n, 500)
+		i4[PAwardsCount or HookAwardsCount() or PAwardsCount] = min(n, 500)
 		assert(n <= 500, 'attempt to use over 500 awards')
 	end},
 }
