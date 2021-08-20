@@ -62,6 +62,24 @@ s = s:gsub("<pre>(.-)</pre>", '<div class="pre-outer"><div class="pre">%1</div><
 s = s:gsub("<'>(.-)</'>", '<b class="def-param">%1</b>')
 s = s:gsub("<#>([^<:]*):?([^<:]*)</#>", |s1, s2| '<a href="#'..P.ExpandRef(s2 ~= "" and s2 or s1)..'">'..s1..'</a>')
 
+local function AutoTable(str)
+	local t = {}
+	str = str:gsub('<tr>.-</tr>', |s| s:gsub('[\r\n]', ' '))
+	for s in str:gmatch('[^\r\n]+') do
+		if s:match('<tr>') then
+			t[#t+1] = s..'\n'
+		else
+			t[#t+1] = '<tr>'
+			for td in (s..'\t'):gmatch('([^\t]*)\t') do
+				t[#t+1] = '<td>'..td..'</td>'
+			end
+			t[#t+1] = '</tr>\n'
+		end
+	end
+	return table.concat(t)
+end
+s = s:gsub("<AutoTable([^>]*)>(.-)</AutoTable>", |s1, s2| '<tbody'..s1..'>\n'..AutoTable(s2)..'</tbody>')
+
 s = P.PrintFinish(s)
 -- io.SaveString([[c:\_Delphi\MMExtHelp\MMExtensionReference.htm]], s)
 -- os.execute[[c:\_Delphi\MMExtHelp\ProcessHelp.exe c:\_Delphi\MMExtHelp\MMExtensionReference.htm]]

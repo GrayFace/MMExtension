@@ -418,6 +418,51 @@ ru| После этого для для тестирования изменений локализации достаточно будет пере
 <br>
 <br>
 
+<h3>en|Special Codes in Texts|ru|Особые коды в сообщениях|</h3>
+en|In any text you can use special codes inserted with <#>StrLeft</#>, <#>StrRight</#> and <#>StrColor</#> functions.|ru|В любом тексте можно использовать особые коды, создаваемые функциями <#>StrLeft</#>, <#>StrRight</#> и <#>StrColor</#>.|<br>
+en|In various NPC messages and History.txt file you can also use these codes:|ru|В сообщениях NPC и в файле History.txt также используется следующий набор особых кодов:|
+<table class="table">
+<AutoTable>
+<tr><th><i>en|Code|ru|Строка|</i></th><th><i>en|Meaning|ru|Значение|</i></th></tr>
+%01 	NPC name
+%02 	Current player name
+%03 	"his"/"her" (depending on NPC sex)
+%04 	Bribe cost
+%05 	"day"/"evening"/"morning"
+%06 	"lady"/"sir" (depending on sex of current player)
+%07 	"Lady"/"Sir" (depending on sex of current player)
+%08 	Random achieved award from a hardcoded list
+%09 	Same as %03
+%10 	"Lady"/"Lord" (depending on sex of current player)
+%11 	Reputation category of the party
+%12 	Reputation category required by the NPC
+%13 	Any name starting with the same letter as that of current player
+%14 	"sister"/"brother" (depending on NPC sex)
+%15 	"daughter"
+%16 	Same as %14
+%17 	Gold percentage an NPC takes
+%23 	Map name
+%24 	Item name (in yellow color)
+%25 	Standard buy/sell/repair cost
+%27 	Actual buy/sell/repair cost with regards to Merchant skill
+%28 	Shop owner title
+%29 	Identification price
+<tr><th colspan="2"><i>MM7, MM8:</i></th></tr>
+%30 	History entry date
+%31 	Player 1 name
+%51 - %70 	<#>Special date:structs.GameParty.SpecialDates</#>
+<tr><th colspan="2"><i>MM7:</i></th></tr>
+%32 	Player 2 name
+%33 	Player 3 name
+%34 	Player 4 name
+<tr><th colspan="2"><i>MM8:</i></th></tr>
+%32 	"his"/"her" (depending on player 1 sex)
+%33 	"he"/"she" (depending on player 1 sex)
+%34 	"him"/"her" (depending on player 1 sex)
+</AutoTable>
+</table>
+<br>
+
 <h3>en|More on Data Tables|ru|Ещё о Data\Tables|</h3>
 en|Having the Data\Tables folder is great for development of a mod, but simply distributing it with a big mod may present challenges for subsequent creation of smaller mods for it, because they'd be overwritten by any update of the big mod.|
 ru|Папка Data\Tables - это отличный инструмент при разработке мода, но простое распространение её с большим модом может вызвать сложности при последующем создании меньших модов для него, поскольку любое обновление большого мода их перезапишет.|
@@ -438,8 +483,10 @@ table.copy({
 	['Transport Index'] = 'TripIdx.txt',
 	['Transport Locations'] = 'TripLoc.txt',
 	['Shops'] = 'Shops.txt',
-	-- LazyMode = true,  -- see below for an explanation
+	['Faces'] = 'Faces.txt',
+	['Face Animations'] = 'FaceAnim.txt',
 }, DataTables.Files, true)
+-- DataTables.LazyMode = true  -- see below for an explanation
 </lua>
 en|You can also disable any data table by setting it to an empty string here.|
 ru|Можно таким же образом отключить любую таблицу, присвоив ей здесь пустую строку.|
@@ -451,6 +498,7 @@ ru|Во-вторых, для таблиц, которые генерируют файлы *.bin, есть 2	пути:|
 	ru|Распространять папку Data\Tables с ними вместе с модом. Также хорошей практикой является включение в мод папки DataFiles с соответствующими файлами *.bin. Это приведёт к описанной проблеме с меньшими модами, но Вам не обязательно будет создавать инсталлятор для мода.|</li>
 	<li>en|Placing generated *.bin files into a LOD archive of your mod and setting <lua1>DataTables.LazyMode = true</lua1>, which makes it so that tables can still be overridden with Data\Tables, but they aren't automatically generated (calling <lua1>UpdateDataTables()</lua1> would generate them). You will also need to move or delete preexisting Data\Tables and DataFiles on first installation of the mod, because files there will override those of your mod.|
 	ru|Распространять сгенерированные файлы *.bin в LOD-архиве мода и включить <lua1>DataTables.LazyMode = true</lua1> - она делает так, что таблицы из Data\Tables читаются, если они есть, но не генерируются автоматически (их можно сгенерировать, вызвав <lua1>UpdateDataTables()</lua1>). Вам также надо будет перенести или удалить существующие папки Data\Tables и DataFiles при первой установке мода, поскольку файлы в них будут иметь приоритет над файлами мода.|</li>
+</list>
 <br>
 <br>
 
