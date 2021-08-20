@@ -41,12 +41,12 @@ local function Extend(t)
 	end
 	local function Resize(newCount, canShrink)
 		local a = name and Game[name] or t.Struct
-		local OldCount = count or t.UseDynCount and a.count or a.limit
+		local OldCount = count or t.UseDynCount and a.count or t.Limit or a.limit
 		if newCount == OldCount or newCount < OldCount and not canShrink then
 			return
 		end
-		count, limit = newCount, limit or a.limit
-		local dp, dlim, dnum, old = 0, 0, count - OldCount, ptr or a['?ptr'] - before
+		count, limit = newCount, limit or t.Limit or a.limit
+		local dp, dlim, dnum, old = 0, 0, count - OldCount, ptr or (t.Ptr or a['?ptr']) - before
 		if count > limit then
 			dlim = count - limit
 			ptr = mem.reallocMM(old, limit*size + esize, count*size + esize, not ptr)
@@ -202,8 +202,8 @@ local function NeedSaveBits(a, p)
 			if sz < #s then
 				sz = #s
 				local n = a.limit
-				a:Resize(#s*8 - 7)
-				a:Resize(n, true)
+				a.Resize(#s*8 - 7)
+				a.Resize(n, true)
 			end
 			local p2 = ptrs[p]
 			if p2 then
@@ -220,7 +220,7 @@ local function NeedSaveBits(a, p)
 end
 
 function mem.ExtendBitsArray(t)
-	local resize, limit = {}, (t[1].limit + 7):AndNot(7)
+	local resize, limit = {}, t.Limit or (t[1].limit + 7):AndNot(7)
 	local count
 	
 	local function Resize(newCount, canShrink)
