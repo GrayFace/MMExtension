@@ -130,6 +130,7 @@ function internal.BeforeMapLoad()
 	events.cocall("InternalBeforeLoadMap", WasInGame, WasLoaded)
 	if not WasInGame then
 		LoadScripts("Global/*.lua", GlobalScripts)
+		LoadScripts("Maps/*.global.lua", GlobalScripts)
 	end
 	events.cocall("BeforeLoadMap", WasInGame, WasLoaded)
 end
@@ -1643,9 +1644,11 @@ do
 		add("Counter8")                -- FC
 		add("Counter9")                -- FD
 		add("Counter10")               -- FE/100
-		for i = 0x101, 0x114 do
-			add(nil)                     -- FF-112/101-114 : set something to current time and play sound (not used by CMP)
-			                             -- (no metter what value you use) (the value set is never used)
+		evt.VarNum.SpecialDates = {}   -- FF/101
+		for i = 1, 20 do
+			evt.VarNum.SpecialDates[i] = p
+			add('SpecialDate'..i)        -- FF-112/101-114 : set a special date to current time and play sound (not used by CMP)
+			                             -- (no metter what value you use) (the value set can be used in messages as "%51"-"%70")
 		end
 		add("Reputation")              -- 113/115
 		evt.VarNum.History = {}        -- 114/116

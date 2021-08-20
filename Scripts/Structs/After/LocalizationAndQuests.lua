@@ -7,6 +7,10 @@ local function mmv(...)
 	assert(ret ~= nil)
 	return ret
 end
+local is6 = mmver == 6 or nil
+local is7 = mmver == 7 or nil
+local is8 = mmver == 8 or nil
+local is78 = mmver > 6 or nil
 
 local TXT = {}
 TXT.Quests = TXT.Quests or {}
@@ -169,9 +173,10 @@ local function RunLocalizationInFile(fname)
 	end
 	env.Localize = HasLocS and function(t, over, lev)
 		Inside, HasLocS = true, false
-		lev = lev or 2
 		if type(lev) == "number" then
 			lev = lev + 1
+		else
+			lev = lev or 2
 		end
 		local t = Localize(t, over, lev)
 		Inside = nil
@@ -184,7 +189,9 @@ end
 
 local function RunLocalizationInFiles()
 	for f in path.find(AppPath.."Scripts/Maps/*.lua") do
-		RunLocalizationInFile(f)
+		if not f:match("%.[Gg][Ll][Oo][Bb][Aa][Ll]%.[^%.\\/:]*$") then
+			RunLocalizationInFile(f)
+		end
 	end
 	for f in path.find(AppPath.."Scripts/Modules/*.lua") do
 		if not package.loaded[path.setext(path.name(f), '')] then
@@ -265,6 +272,234 @@ local function SanitizeLoc(loc)
 		end
 	end
 	return t
+end
+
+-----------------------------------------------------
+-- Quests/Awards/Autonotes effect
+-----------------------------------------------------
+
+local DummyText = mmv(0x4C1728, 0x4EB6E8, 0x4FB700)
+
+local function ShowEffect(a, vn, p, id, f, book, got)
+	local old, olds, oldb = a[id], u4[p], book and mmver == 7 and not Game[book]
+	a[id], u4[p] = got, DummyText  -- need a named quest for the effect
+	f(vn, id)
+	a[id], u4[p] = old, olds
+	if oldb then
+		Game[book] = false
+	end
+end
+
+-- Plays sound and shows visual effect on current character's face.
+-- If 'flash_book' is 'true', the quest book will start flashing.
+function ShowQuestEffect(flash_book, operation)
+	local a, id = Game.QuestsTxt, 499
+	local p = a['?ptr'] + (id - a.low)*4
+	ShowEffect(Party.QBits, "QBits", p, id, evt[operation or TakeQuestOperation or 'Add'], not flash_book and 'FlashQuestBook')
+end
+
+-- Plays sound and shows visual effect on all characters' faces.
+-- 'exclude' can be a !Lua[[function(player, slot)]] that returns 'true' is the character should be excluded from the effect.
+function ShowAwardEffect(exclude, operation)
+	local a, id = Game.AwardsTxt, 1
+	local p = a['?ptr'] + (id - a.low)*mmv(4, 8, 8)
+	for i, pl in Party do
+		if not exclude or not exclude(pl, i) then
+			ShowEffect(pl.Awards, "Awards", p, id, evt[i][operation or 'Add'])
+		end
+	end
+end
+
+-- Plays sound and shows visual effect on current character's face
+function ShowAutonoteEffect(category, just_sound, operation)
+	local a, id = Game.AutonoteTxt, 1
+	local p = a['?ptr'] + (id - a.low)*mmv(4, 8, 8)
+	local logic = Game.DialogLogic
+	local cat = category or logic.AutonotesCategory
+	ShowEffect(Party.AutonotesBits, "AutonotesBits", p, id, evt[operation or 'Add'], not category and 'FlashAutonotesBook', just_sound)
+	logic.AutonotesCategory = cat
+end
+
+-----------------------------------------------------
+-- Auto Quests/Awards/Autonotes entries
+-----------------------------------------------------
+
+local AutoQuests, AutoAwards, AutoAutonotes
+
+local function AutoIndex(array, ev, f)
+	local idx, n, Q = {}, 0, {}
+	function events.LeaveGame()
+		n = 0
+		Q = {}
+	end
+	events[ev] = |...| do
+		local a = Game.DialogLogic.List
+		for _, q in ipairs(Q) do
+			local v = f(q, ...)
+			if v then
+				local i = a.high + 1
+				a.high = i
+				a[i] = v
+			end
+		end
+	end
+	local function new_idx()
+		local i = array.high + 1
+		array.SetHigh(i)
+		idx[n] = i
+		return i
+	end
+	return function(t)
+		n = n + 1
+		Q[n] = t
+		return idx[n] or new_idx()
+	end
+end
+
+local AutoQuestEffect = |t| if not t:IsGiven() then
+	ShowQuestEffect(true, t.TakeQuestOperation)
+end
+
+function AutoQuest(t, text)
+	AutoQuests = AutoQuests or AutoIndex(Game.QuestsTxt, 'PopulateQuestLog', |q| q:IsGiven() and q.QuestIndex)
+	if type(t) == 'function' then
+		t = {IsGiven = t}
+	end
+	local i = AutoQuests(t)
+	t.QuestIndex = i
+	t.ShowQuestEffect = t.ShowQuestEffect or AutoQuestEffect
+	if text then
+		Game.QuestsTxt[i] = text
+	end
+	return t, i
+end
+
+local function AutoAwardEffect(t)
+	ShowAwardEffect(|pl| t:IsAwarded(pl:GetIndex(), pl), t.TakeAwardOperation)
+end
+
+function AutoAward(t, text, sort)
+	AutoAwards = AutoAwards or AutoIndex(Game.AwardsTxt, 'PopulateAwardsList', |q, t| q:IsAwarded(t.PlayerIndex, t.Player) and q.AwardIndex)
+	if type(t) == 'function' then
+		t = {IsAwarded = t}
+	end
+	local i = AutoAwards(t)
+	t.AwardIndex = i
+	t.ShowAwardEffect = t.ShowAwardEffect or AutoAwardEffect
+	if mmver > 6 then
+		Game.AwardsSort[i] = sort or t.AwardSort or 3
+	end
+	if text then
+		Game.AwardsTxt[i] = text
+	end
+	return t, i
+end
+
+local GetAutonoteCat = |t| is6 and (t.Category or 1) or Game.AutonoteCategory[t.AutonoteIndex]
+local function AutoAutonoteEffect(t)
+	local cat = GetAutonoteCat(t)
+	ShowAutonoteEffect(cat, t:IsAutonoteVisible(), t.TakeAutonoteOperation)
+end
+
+function AutoAutonote(t, text, category)
+	AutoAutonotes = AutoAutonotes or AutoIndex(Game.AutonoteTxt, 'PopulateAutonotesList', 
+		|q, t| t.Category == GetAutonoteCat(q) and q:IsAutonoteVisible() and q.AutonoteIndex
+	)
+	if type(t) == 'function' then
+		t = {IsAutonoteVisible = t}
+	end
+	local i = AutoAutonotes(t)
+	t.AutonoteIndex = i
+	t.ShowAutonoteEffect = t.ShowAutonoteEffect or AutoAutonoteEffect
+	if is6 then
+		t.Category = category or t.Category or 1
+	else
+		Game.AutonoteCategory[i] = category or t.Category or 1
+	end
+	if text then
+		Game.AutonoteTxt[i] = text
+	end
+	return t, i
+end
+
+-----------------------------------------------------
+-- Autonote
+-----------------------------------------------------
+
+local RegNotes = {}
+
+local function RegisterAutonote(t)
+	local name = t.Name
+	assert(not RegNotes[name], 'autonote with tihs name already exists')
+	RegNotes[name] = t
+	t.Text = LocalizeAll.Autonotes{[name] = t.Text}[name]
+end
+
+function FindAutonote(name, must)
+	return RegNotes[name] or must and error('autonote "'..name..'" not found') or nil
+end
+
+local AutonoteProto = {
+	IsAutonoteVisible = |t| vars.Autonotes[t.Name],
+	AddAutonote = function(t, force)
+		t:ShowAutonoteEffect()
+		vars.Autonotes[t.Name] = true
+	end,
+}
+
+local function AutonoteTable(t, cat, text)
+	if type(t) ~= "table" then
+		t = {
+			Name = t,
+			Category = cat,
+			Text = text,
+		}
+	else
+		t.Name = t.Name or t[1]
+		t.Category = t.Category or t[2]
+		t.Text = t.Text or t[3]
+	end
+	assert(t.Name, 'autonote must have a name')
+	return t
+end
+
+function Autonote(name, cat, text)
+	local t = AutonoteTable(name, cat, text)
+	vars.Autonotes = vars.Autonotes or {}
+	table.copy(AutonoteProto, t)
+	RegisterAutonote(t)
+	AutoAutonote(t, t.Text)
+	return t
+end
+
+function AddAutonote(name, force)
+	local t = FindAutonote(name, true)
+	if force or not t:IsAutonoteVisible() then
+		t:AddAutonote()
+	end
+end
+
+local function GetLocalPrefix(lev)
+	local s = path.GetRelativePath(AppPath.."Scripts", debug.FunctionFile(lev + 1)):lower()
+	s = path.setext(s, '')
+	if path.ext(s) == '.global' then
+		s = path.setext(s, '')
+	end
+	return s..':'
+end
+
+function LocalAutonote(name, cat, text)
+	local t = AutonoteTable(name, cat, text)
+	t.Name = GetLocalPrefix(2)..t.Name
+	return Autonote(t)
+end
+
+function AddLocalAutonote(name, force)
+	AddAutonote(GetLocalPrefix(2)..name, force)
+end
+
+function CheckLocalAutonote(name)
+	return FindAutonote(GetLocalPrefix(2)..name, true):IsAutonoteVisible()
 end
 
 -----------------------------------------------------
@@ -414,10 +649,16 @@ local function RegisterQuest(t)
 	end
 	
 	-- Exits current branch opened with #QuestBranchScreen:#. If no branch screens are left open, simulates Esc press to exit the dialog.
-	function ExitQuestBranch()
-		if BranchStack[1] then
+	function ExitQuestBranch(all)
+		if all then
+			CurrentBranch = BranchStack[1]
+			for i = 1, #BranchStack do
+				BranchStack[i] = nil
+			end
+		elseif BranchStack[1] then
 			CurrentBranch = BranchStack[#BranchStack]
 			BranchStack[#BranchStack] = nil
+			return #BranchStack
 		else
 			Game.Actions.Add(113)
 		end
@@ -499,47 +740,6 @@ local function RegisterQuest(t)
 	return RegisterQuest(t)
 end
 
-local function AutoIndex(array, ev, f)
-	local idx, n, Q = {}, 0, {}
-	function events.LeaveGame()
-		n = 0
-		Q = {}
-	end
-	events[ev] = |...| do
-		local a = Game.DialogLogic.List
-		for _, q in ipairs(Q) do
-			local v = f(q, ...)
-			if v then
-				local i = a.high + 1
-				a.high = i
-				a[i] = v
-			end
-		end
-	end
-	local function new_idx()
-		local i = array.high + 1
-		array.SetHigh(i)
-		idx[n] = i
-		return i
-	end
-	return function(t)
-		n = n + 1
-		Q[n] = t
-		return idx[n] or new_idx()
-	end
-end
-
-local AutoQuests, AutoAwards
-
-function AddAutoQuest(t)
-	if type(t) == 'function' then
-		t = {IsGiven = t}
-	end
-	AutoQuests = AutoQuests or AutoIndex(Game.QuestsTxt, 'PopulateQuestLog', |q| q:IsGiven() and q.QuestIndex)
-	t.QuestIndex = AutoQuests(t)
-	return t.QuestIndex
-end
-
 local function MyAutoQuest(t)
 	-- remove QBits of old version of automatic quests
 	if not internal.SaveGameData.NewQuests then
@@ -550,76 +750,76 @@ local function MyAutoQuest(t)
 			end
 		end
 	end
-	return AddAutoQuest(t)
-end
-
-function AddAutoAward(t)
-	if type(t) == 'function' then
-		t = {IsAwarded = t}
-	end
-	AutoAwards = AutoAwards or AutoIndex(Game.AwardsTxt, 'PopulateAwardsList', |q, t| q:IsAwarded(t) and q.AwardIndex)
-	t.AwardIndex = AutoAwards(t)
-	Game.AwardsSort[t.AwardIndex] = 3
-	return t.AwardIndex
-end
-
--- Plays sound and shows visual effect on current character's face
-function ShowQuestEffect(flash_book, operation)
-	local id = 499
-	local p = Game.QuestsTxt['?ptr'] + (id - Game.QuestsTxt.low)*4
-	local old, olds, oldb = Party.QBits[id], u4[p], mmver == 7 and not flash_book and not Game.FlashQuestBook
-	Party.QBits[id], u4[p] = false, mmv(0x4C1728, 0x4EB6E8, 0x4FB700)  -- need a named quest for the effect
-	evt[operation or TakeQuestOperation]("QBits", id)
-	Party.QBits[id], u4[p] = old, olds
-	if oldb then
-		Game.FlashQuestBook = false
-	end
-end
-
--- Plays sound and shows visual effect on all characters' faces
-function ShowAwardEffect(operation)
-	local id = 1
-	local p = Game.AwardsTxt['?ptr'] + (id - Game.AwardsTxt.low)*mmv(4, 8, 8)
-	local t = {}
-	for _, a in Party do
-		t[a] = a.Awards[id]
-		a.Awards[id] = false
-	end
-	local olds = u4[p]
-	u4[p] = mmv(0x4C1728, 0x4EB6E8, 0x4FB700)  -- need a named award for the effect
-	evt.All[operation or 'Add']("Awards", id)
-	u4[p] = olds
-	for _, a in Party do
-		a.Awards[id] = t[a]
-	end
-end
-
-local function AddQuestBit(t)
-	if tonumber(t.Quest) and t.TakeQuestOperation then
-		evt[t.TakeQuestOperation]("QBits", t.Quest)
-	elseif t.QuestIndex and t.TakeQuestOperation then
-		ShowQuestEffect(true, t.TakeQuestOperation)
-	end
-end
-
-local function AddQuestAward(t)
-	if tonumber(t.Award) then
-		evt.All.Add("Awards", t.Award)
-	elseif t.AwardIndex then
-		ShowAwardEffect()
-		if t.StoreAwards then
-			local aw = tget(tget(vars, 'QuestAwards'), t.BaseName)
-			for _, pl in Party do
-				aw[pl:GetIndex()] = true
-			end
-		end
-	end
+	return AutoQuest(t)
 end
 
 local SlotLiterals = {A = 0, B = 1, C = 2, D = 3, E = 4, F = 5}
 
---!a{name}k{Give,Ungive,Done,Undone,After,StdTopicGiven,StdTopicDone} See #quest examples:Quests#
+local QuestProto = {
+	IsGiven = |t| vars.Quests[t.BaseName] == t.GivenState,
+	
+	IsAwarded = function(t, idx, pl)
+		if not t.StoreAwards then
+			return vars.Quests[t.BaseName] == t.DoneState  -- no need to keep track of players that reeceived it
+		end
+		local a = vars.QuestAwards
+		a = a and a[t.BaseName]
+		return a and a[idx]
+	end,
+	
+	IsAutonoteVisible = function(t)
+		return vars.QuestAutonotes[t.BaseName]
+	end,
+	
+	GetGreeting = function(t, seen)
+		if not seen then
+			return t.Texts.FirstGreet
+		end
+		local topic = t.Texts["Greet"..(vars.Quests[t.BaseName] or "")]
+		if topic then
+			return topic
+		elseif topic == nil then
+			return t.Texts.Greet
+		end
+	end,
+	
+	AddQuestBit = function(t)
+		if tonumber(t.Quest) and t.TakeQuestOperation then
+			evt[t.TakeQuestOperation]("QBits", t.Quest)
+		elseif t.QuestIndex and t.TakeQuestOperation then
+			t:ShowQuestEffect()
+		end
+	end,
+	
+	AddAward = function(t)
+		if tonumber(t.Award) then
+			evt.All.Add("Awards", t.Award)
+		elseif t.AwardIndex then
+			t:ShowAwardEffect()
+			if t.StoreAwards then
+				local aw = tget(vars.QuestAwards, t.BaseName)
+				for _, pl in Party do
+					aw[pl:GetIndex()] = true
+				end
+			end
+		end
+	end,
+
+	AddAutonote = function(t, force)
+		if tonumber(t.Autonote) then
+			if force or not evt.Cmp("AutonotesBits", t.Autonote) then
+				evt.Add("AutonotesBits", t.Autonote)
+			end
+		elseif t.AutonoteIndex and (force or not vars.QuestAutonotes[t.BaseName]) then
+			t:ShowAutonoteEffect()
+			vars.QuestAutonotes[t.BaseName] = true
+		end
+	end,
+}
+
+--!a{name}k{Give,Ungive,Done,Undone,After,StdTopicGiven,StdTopicDone,IsGiven,IsAwarded,GetGreeting} See #quest examples:Quests#
 function Quest(t)
+	table.copy(QuestProto, t)
 	t.Name = t.Name or t[1]
 	if Quests[t.Name] then
 		error(("Quest called %q already exists"):format(t.Name), 2)
@@ -642,13 +842,11 @@ function Quest(t)
 		vars.Quests = {}
 		internal.SaveGameData.NewQuests = 1
 	end
+	vars.QuestAwards = vars.QuestAwards or {}
+	vars.QuestAutonotes = vars.QuestAutonotes or {}
 	t.BaseName = t.BaseName or t.Name
 	t.GivenState = t.GivenState or "Given"
 	t.DoneState = t.DoneState or "Done"
-
-	t.IsGiven = t.IsGiven or function(t)
-		return vars.Quests[t.BaseName] == t.GivenState
-	end
 
 	t.QuestIndex = t.Quest or nil
 	if t.Quest == true then
@@ -668,7 +866,7 @@ function Quest(t)
 		end
 		if t.Texts.Award and t.Award ~= false then
 			if not t.AwardIndex then
-				AddAutoAward(t)
+				AutoAward(t)
 			end
 			Game.AwardsTxt[t.AwardIndex] = t.Texts.Award
 		end
@@ -679,33 +877,9 @@ function Quest(t)
 	if t.StoreAwards == nil then
 		t.StoreAwards = mmver == 8 or t.NeverDone
 	end
-	if t.AwardSort and t.AwardIndex then
-		Game.AwardsSort[t.AwardIndex] = t.AwardSort
-	end
 
-	t.IsAwarded = t.IsAwarded or function(t, ev)
-		if not t.StoreAwards then
-			return vars.Quests[t.BaseName] == t.DoneState  -- no need to keep track of players that reeceived it
-		end
-		local a = vars.QuestAwards
-		a = a and a[t.BaseName]
-		return a and a[ev.PlayerIndex]
-	end
-	
-	t.TakeQuestOperation = t.TakeQuestOperation ~= false and (t.TakeQuestOperation or TakeQuestOperation or "Add")
+	t.TakeQuestOperation = t.TakeQuestOperation or TakeQuestOperation or "Add"
 
-	t.GetGreeting = t.GetGreeting or function(t, seen)
-		if not seen then
-			return t.Texts.FirstGreet
-		end
-		local topic = t.Texts["Greet"..(vars.Quests[t.BaseName] or "")]
-		if topic then
-			return topic
-		elseif topic == nil then
-			return t.Texts.Greet
-		end
-	end
-	
 	if t.Slot < 0 then
 		return
 	end
@@ -731,7 +905,7 @@ function Quest(t)
 		local ev
 		if state == nil and not t.NeverGiven then
 			if (t.CheckGive == nil and (t.Give or t.Texts.Give or t.QuestIndex)) or t.CheckGive and t.CheckGive(t) then
-				AddQuestBit(t)
+				t:AddQuestBit(t)
 				vars.Quests[t.BaseName] = t.GivenState
 				if t.GivenItem then
 					evt.Add("Inventory", t.GivenItem)
@@ -744,18 +918,17 @@ function Quest(t)
 			if ((t.CheckDone == nil) or t.CheckDone and t.CheckDone(t)) and
 					Party.Gold >= (t.QuestGold or 0) and
 					(t.QuestItem == nil or TakeItemFromParty(t.QuestItem, t.KeepQuestItem)) then
+				AddGoldExp((t.Gold or 0) - (t.QuestGold or 0), t.Experience or t.Exp)
+				t:AddAward(t)
+				if t.RewardItem then
+					evt.Current.Add("Inventory", t.RewardItem)
+				end
 				if not t.NeverDone then
 					if tonumber(t.Quest) then
 						evt.Sub("QBits", t.Quest)
 					end
 					vars.Quests[t.BaseName] = t.DoneState
 				end
-				AddGoldExp((t.Gold or 0) - (t.QuestGold or 0), t.Experience or t.Exp)
-				if t.RewardItem then
-					evt.Current.Add("Inventory", t.RewardItem)
-				end
-					
-				AddQuestAward(t)
 				ev = "Done"
 			else
 				ev = "Undone"
@@ -764,6 +937,9 @@ function Quest(t)
 			ev = "After"
 		else
 			ev = state
+		end
+		if not t.CanAddAutonote or t:CanAddAutonote() then
+			t:AddAutonote()
 		end
 		if t.Texts[ev] then
 			SimpleMessage(t.Texts[ev])
