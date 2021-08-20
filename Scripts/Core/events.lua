@@ -241,6 +241,8 @@ end
 
 mem.IgnoreProtection(true)
 
+-- remove unneeded checks in allocMM
+mem.nop2(mmv(0x4213AA, 0x426719, 0x424B65), mmv(0x4213C2, 0x42672E, 0x424B77))
 
 -- internal.OnWaitMessage
 local function HookWaitMessage(p)
@@ -425,6 +427,12 @@ end
 
 function internal.GameInitialized2()
 	GameInitialized2 = true
+	-- fix water in maps without a building with WtrTyl texture, also don't turn textures with water bit into water (fixed in new patch version)
+	if mmver == 7 and Game.IsD3D and not Game.PatchOptions.Present'TrueColorSprites' then
+		mem.autohook(0x4649B7, function(d)
+			i4[0xEF5114] = Game.BitmapsLod:LoadBitmap("WtrTyl")
+		end)
+	end
 	-- loaded .txt data
 	events.cocalls("GameInitialized2")
 end
@@ -669,16 +677,75 @@ if mmver > 6 then
 	mem.autohook2(mm78(0x422509, 0x4216EE), SpeakWithMonster)
 end
 
--- populate quest log
-mem.autohook2(mmv(0x40D40F, 0x4126A8, 0x4CC481), function(d)
-	if mmver ~= 7 or i4[d.ebp + 0x1C] == 200 then
-		-- Use this event to add quest indexes to #Game.DialogLogic.List:# or rearrange them
-		events.cocall("PopulateQuestLog")
+-- allow indexes over 256 in MM6
+local CopyDialogIndexes, CopyDialogIndexesBack = function() end, nil
+
+if mmver == 6 then
+	function CopyDialogIndexes()
+		local p, n = Game.DialogLogic.List['?ptr'], Game.DialogLogic.List.limit
+		for i = 0, n - 1 do
+			i4[p + i*4] = u1[0x55D5B0 + i]
+		end
 	end
+	local p = mem.StaticAlloc(4)
+	internal.DialogIndexListPtr = p
+	u4[p] = mem.allocMM(2000*4)
+	local hooks = HookManager{
+		p = p,
+		code = [[
+			macro Code p, reg, idx
+			{
+				mov reg, [p]
+				mov reg, [reg + idx*4]
+			}
+			Code ]],
+	}
+	hooks.asmpatch(0x40E2F7, '%code% %p%, edx, edi')  -- quests
+	hooks.asmpatch(0x40E842, '%code% %p%, edx, edi')  -- autonotes
+	hooks.asmpatch(0x416426, '%code% %p%, ecx, eax')  -- awards
+end
+
+
+if mmver ~= 7 then
+	-- populate quest log
+	mem.autohook2(mmv(0x40D40F, nil, 0x4CC481), function(d)
+		CopyDialogIndexes()
+		-- Use this event to add quest indexes to #Game.DialogLogic.List:structs.DialogLogic.List# or rearrange them
+		events.cocall("PopulateQuestLog")
+	end)
+	
+	-- populate autonotes list
+	mem.autohook2(mmv(0x40D7E9, nil, 0x4CCAB0), function(d)
+		CopyDialogIndexes()
+		local t = {Category = Game.DialogLogic.AutonotesCategory}
+		-- Use this event to add autonote indexes to #Game.DialogLogic.List:structs.DialogLogic.List# or rearrange them
+		events.cocall("PopulateAutonotesList", t)
+	end)
+else
+	local p = mem.StaticAlloc(4)
+	HookManager{p = p}.asmhook(0x411C71, 'mov [%p%], eax')
+	-- populate all
+	mem.autohook2(0x4126A8, function(d)
+		local k = i4[p]
+		if k == 200 then
+			events.cocall("PopulateQuestLog")
+		elseif k == 201 then
+			local t = {Category = Game.DialogLogic.AutonotesCategory}
+			events.cocall("PopulateAutonotesList", t)
+		end
+	end)
+end
+
+-- switch autonotes page
+mem.autohook2(mmv(0x40E73E, 0x413832, 0x4CCDB6), function(d)
+	CopyDialogIndexes()
+	local t = {Category = Game.DialogLogic.AutonotesCategory}
+	events.cocall("PopulateAutonotesList", t)
 end)
 
 -- populate awards list
-mem.autohook(mmv(0x4151D0, 0x419144, 0x418A3A), function(d)
+local function PopulateAwards(d)
+	CopyDialogIndexes()
 	local a = Game.DialogLogic
 	a.ListCount = d.eax
 	local pidx = mmver == 8 and i4[i4[d.ebp - 4] + 0x128]
@@ -687,11 +754,29 @@ mem.autohook(mmv(0x4151D0, 0x419144, 0x418A3A), function(d)
 		-- :structs.Player
 		Player = pl,
 		PlayerIndex = pidx or pl:GetIndex(),
+		NoShuffle = nil,
 	}
-	-- Use this event to add award indexes to #Game.DialogLogic.List:# or rearrange them. Awards would later be sorted according to their color.
+	-- Use this event to add award indexes to #Game.DialogLogic.List:structs.DialogLogic.List# or rearrange them. Awards would later be arranged into groups of different colors. If 'NoShuffle' is set to 'true', their order within groups would be preserved, otherwise default game code will sort them in an unpredictable manner.
 	events.cocall("PopulateAwardsList", t)
 	d.eax = a.ListCount
-end)
+	if mmver > 6 and t.NoShuffle then
+		local t, a, sort = {}, Game.DialogLogic.List, Game.AwardsSort
+		local n = sort.Count
+		for i, v in a do
+			t[sort[v]*n + v] = v
+		end
+		local i = 0
+		for _, v in sortpairs(t) do
+			a[i], i = v, i + 1
+		end
+	end
+end
+
+mem.autohook(mmv(0x4151D0, 0x419144, 0x418A3A), PopulateAwards)
+if mmver == 6 then
+	mem.autohook(0x41FE30, PopulateAwards)
+	mem.autohook(0x4202C0, PopulateAwards)
+end
 
 -- WindowProc
 do
@@ -1293,15 +1378,6 @@ else
 	end
 end
 
--- fix water in maps without a building with WtrTyl texture, also don't turn textures with water bit into water (fixed in new patch version)
-function events.GameInitialized2()
-	if mmver == 7 and Game.IsD3D and not Game.PatchOptions.Present'TrueColorSprites' then
-		mem.autohook(0x4649B7, function(d)
-			i4[0xEF5114] = Game.BitmapsLod:LoadBitmap("WtrTyl")
-		end)
-	end
-end
-
 -- Special effects of spells (can't do as Lua hook, they slow things down)
 -- if mmver > 6 then
 -- 	mem.hookfunction(mm78(0x4A815A, 0x4A673D), 1, 1, function(d, def, this, obj)
@@ -1528,9 +1604,6 @@ end
 mem.autohook(mmv(0x4554B5, 0x450AD6, 0x44E339), function(d)
 	internal.MapRefilled = 1
 end)
-
--- remove unneeded checks in allocMM
-mem.nop2(mmv(0x4213AA, 0x426719, 0x424B65), mmv(0x4213AA, 0x42672E, 0x424B77))
 
 -- allow trainers for unused skills in MM8
 if mmver == 8 then

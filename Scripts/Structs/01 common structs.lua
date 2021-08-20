@@ -1609,8 +1609,9 @@ function structs.f.MapSprite(define)
 			else
 				obj.DecListId = Game.LoadDecSprite(val)
 			end
-		elseif obj.DecListId > 0 then
-			return mem.string(u4[mmv(0x5E2188, 0x69AC54, 0x6C8B5C) + 4] + mmv(80, 84, 84)*obj.DecListId)
+		else
+			local id = obj.DecListId
+			return id > 0 and mem.string(u4[mmv(0x5E2188, 0x69AC54, 0x6C8B5C) + 4] + mmv(80, 84, 84)*id) or nil
 		end
 	end)
 	define
@@ -2727,32 +2728,47 @@ function structs.f.DialogLogic(define)
 	if mmver > 6 then
 		define
 		[mm78(0x5C3490, 0x5DB940)].array{1000, lenA = i4, lenP = mm78(0x5063A4, 0x517AF4)}.i4  'List'
-		 .Info "List of indexes to be displayed. In MM6 it's stored in #Game.TextBuffer2:#."
+		 .Info "List of indexes to be displayed"
 		[mm78(0x50639C, 0x517AEC)].i4  'ScrollPage'
 		.i4  'CountOnScreen'
 		.i4  'ListCount'
 		.i4  'ScrollPos'
-		.skip(8)
-		.b4  'MapMoveRightClicked'
-		.b4  'MapMoveLeftClicked'
-		.b4  'MapMoveDownClicked'
-		.b4  'MapMoveUpClicked'
+		.b4  'AutonoteTab6Clicked'
+		.b4  'AutonoteTab5Clicked'
+		.alt.b4  'MapMoveRightClicked'
+		.b4  'AutonoteTab4Clicked'
+		.alt.b4  'MapMoveLeftClicked'
+		.b4  'AutonoteTab3Clicked'
+		.alt.b4  'MapMoveDownClicked'
+		.b4  'AutonoteTab2Clicked'
+		.alt.b4  'MapMoveUpClicked'
+		.b4  'AutonoteTab1Clicked'
 		.b4  'ScrollDownClicked'
 		.b4  'ScrollUpClicked'
-		.i4  'SpellBookSelectedSpell'
+		.i4  'SpellBookSelection'
+		 .Info 'Selected spell index within current page (1..11)'
 		.b1  'SpellBookSelectedNewSpell'
+		.skip(3 + 5*4)
+		.i4  'AutonotesCategory'
 	else
 		define
-		[0x55D5B0].array{2000, lenA = i4, lenP = 0x4CB1E0}.u1  'List'
+		[internal.DialogIndexListPtr or 0].parray{2000, lenA = i4, lenP = 0x4CB1E0}.i4  'List'
 		[0x4CAEB8].i4  'ScrollPage'
 		[0x4CB1D8].i4  'CountOnScreen'
 		[0x4CB1E0].i4  'ListCount'
 		[0x4CAEC8].i4  'ScrollPos'
-		[0x4CB1F4].i4  'MapMoveRightClicked'
-		[0x4CB1A8].i4  'MapMoveLeftClicked'
-		[0x4CAEC0].i4  'MapMoveDownClicked'
-		[0x4CB1B0].i4  'MapMoveUpClicked'
+		[0x4CB11C].b4  'AutonoteTab5Clicked'
+		[0x4CB1F4].alt.i4  'MapMoveRightClicked'
+		.b4  'AutonoteTab4Clicked'
+		[0x4CB1A8].alt.i4  'MapMoveLeftClicked'
+		.b4  'AutonoteTab3Clicked'
+		[0x4CAEC0].alt.i4  'MapMoveDownClicked'
+		.b4  'AutonoteTab2Clicked'
+		[0x4CB1B0].alt.i4  'MapMoveUpClicked'
+		.b4  'AutonoteTab1Clicked'
 		[0x4CB1F0].b4  'ScrollDownClicked'
 		[0x4CB128].b4  'ScrollUpClicked'
+		[0x4CB214].i4  'SpellBookSelection'
+		[0x4CB1FC].i4  'AutonotesCategory'
 	end
 end
