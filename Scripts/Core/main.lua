@@ -572,13 +572,10 @@ end
 RunFiles("Structs/After/*.lua")
 
 function _G.ReloadLocalization()
-	for f in path_find(AppPath.."Localization/*.txt") do
+	RunFiles("Localization/*.txt", function(f)
 		_G.LoadTextTable(f, _G.LocalizeAll{})
-		-- _G.LocalizeAll(_G.LoadTextTable(f), true)
-	end
-	for f in path_find(GamePath.."Localization/*.lua") do
-		dofile(f)
-	end
+	end)
+	RunFiles("Localization/*.lua")
 end
 _G.ReloadLocalization()
 
