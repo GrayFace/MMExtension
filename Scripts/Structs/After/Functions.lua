@@ -346,8 +346,8 @@ end
 function StrRight(v)
 	return ('\r%.3d'):format(v)
 end
-function StrColor(r, g, b)
-	return ('\f%.5d'):format(b and RGB(r, g, b) or r)
+function StrColor(r, g, b, s)
+	return ('\f%.5d'):format(b and RGB(r, g, b) or r)..((s or not b and g) and (s or g)..StrColor(0) or '')
 end
 
 -----------------------------------------------------
