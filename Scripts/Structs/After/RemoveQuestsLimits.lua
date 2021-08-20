@@ -7,7 +7,7 @@ local mm78 = |...| mmv(nil, ...)
 
 -- extend Game.QuestsTxt
 
-mem.ExtendGameStructure{'QuestsTxt', Size = 4, StartBefore = mmv(0, 4, 4),
+mem.ExtendGameStructure{'QuestsTxt', Size = 4, StartBefore = 4*Game.QuestsTxt.low,
 	Refs = mmv(
 		{0x40D3C9, 0x40E300, 0x46858B;  0x4685FF},
 		{0x412805, 0x41333E, 0x44A8EC, 0x44B2B7, 0x4768F5;  0x47696E},

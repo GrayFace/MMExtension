@@ -400,16 +400,18 @@ end]=]
 		[mm78(0x44FA8A, 0x44D1DD)].EditConstPChar  'SummonElementalC'
 	end
 	define
-	[mmv(0x6A8804, 0x722D94, 0x760394)].array(mmv(0, 1, 1), 512).EditPChar  'QuestsTxt'
+	[mmv(0x6A8804, 0x722D90, 0x760390)].array(0, 512).EditPChar  'QuestsTxt'
 	if mmver == 6 then
-		define[0x6A9008].array{88}.EditPChar  'AwardsTxt'
+		define[0x6A9008].array{0, 87}.EditPChar  'AwardsTxt'
 	else
 		define
-		[mm78(0x723D08, 0x761650)].array{1, 104, ItemSize = 8}.EditPChar  'AwardsTxt'
-		[mm78(0x723D0C, 0x761654)].array{1, 104, ItemSize = 8}.i4  'AwardsSort'
+		[mm78(0x723D00, 0x761648)].array{0, 104, ItemSize = 8}.EditPChar  'AwardsTxt'
+		[mm78(0x723D04, 0x76164C)].array{0, 104, ItemSize = 8}.i4  'AwardsSort'
 	end
 	if mmver == 6 then
-		define[0x6BA628].array{0, 128}.EditPChar  'AutonoteTxt'
+		define
+		[0x6BA628].array{0, 128}.EditPChar  'AutonoteTxt'
+		[0x4BC1F8].array(5).array(48).i2  'AutonotesByCategory'
 	else
 		define
 		[mm78(0x723598, 0x760B98)].array{0, mm78(195, 300), ItemSize = 8}.EditPChar  'AutonoteTxt'
@@ -812,7 +814,7 @@ function structs.f.GameParty(define)
 	end
 	define
 	[mmv(0x908D6D, 0xACD59D, 0xB2160F)].array(mmv(0, 1, 1), mmv(511, 512, 512)).abit  'QBits'
-	[mmv(0x908DAD, 0xACD636, 0xB216A8)].array(1, mmv(128, 255, 300)).abit  'AutonotesBits'
+	[mmv(0x908DAD, 0xACD636, 0xB216A8)].array(1, mmv(128, 195, 300)).abit  'AutonotesBits'
 	[mmv(0x908DBD, 0xACD5ED, 0xB2165F)].i1  'InArenaQuest'
 	.i1  'ArenaWinsPage'
 	.i1  'ArenaWinsSquire'
@@ -834,6 +836,8 @@ function structs.f.GameParty(define)
 			end
 		end)
 		[mmv(nil, 0xACD364, 0xB213CC)].array(1, 29).i8  'History'
+		.array(1, 20).i8  'SpecialDates'
+		 .Info 'E.g. set date 1:!Lua[[\nevt.Add("SpecialDate1", 0)]]\nUse date 1: "%51" in any NPC message'
 		[mm78(0xACD5DD, 0xB2164F)].array(mm78(108, 107), mm78(108, 107) + 15).b1  'ArcomageWins'
 	end
 	define[offsets.CurrentPlayer].CustomType('CurrentPlayer', 4, function(o, obj, name, val)
@@ -962,7 +966,7 @@ function structs.f.Player(define)
 	.i2  'AgeBonus'
 	[mmv(0x60, 0x108, 0x378)].array(mmv(31, 37, 39))[mmv("u1", "i2", "i2")]  'Skills'
 	 .Info{Sig = "[skill:const.Skills]"}
-	[mmv(0x7F, 0x152, 0x3C6)].array(mmv(0, 1, 1), mmv(99, 104, 104)).abit  'Awards'
+	[mmv(0x7F, 0x152, 0x3C6)].array(mmv(0, 1, 1), mmv(87, 104, 104)).abit  'Awards'
 	[mmv(0xBF, 0x192, 0x406)].array(1, mmv(100, 100, 132)).b1  'Spells'
 	 .Info{Sig = "[spell:const.Spells]"}
 	.skip(mmv(5, 2, 2))

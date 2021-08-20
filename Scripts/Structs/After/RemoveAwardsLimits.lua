@@ -11,9 +11,9 @@ local is78 = mmver > 6 or nil
 
 -- extend Game.AwardsTxt
 
-mem.ExtendGameStructure{'AwardsTxt', is78 and 'AwardsSort', Size = mmv(4, 8, 8), StartBefore = mmv(0, 8, 8),
+mem.ExtendGameStructure{'AwardsTxt', is78 and 'AwardsSort', Size = mmv(4, 8, 8), StartBefore = mmv(4, 8, 8)*Game.AwardsTxt.low,
 	Refs = mmv(
-		{0x415194, 0x416434, 0x41FDEC, 0x420284, 0x467FCB, 0x48A04B;  0x46803F},  -- 0x46803F is the read limit
+		{0x415194, 0x416434, 0x41FDEC, 0x420284, 0x467FCB, 0x48A04B;  0x46803F},
 		{0x41910B, 0x41919D, 0x4191A4, 0x41A14A, 0x41A1F7, 0x44A887, 0x44B222, 0x47642E, 0x4956EC},
 		{0x418A01, 0x418A93, 0x418A9A, 0x41A132, 0x41A1B3, 0x447E9C, 0x4487CB, 0x475514, 0x4939F0}
 	),

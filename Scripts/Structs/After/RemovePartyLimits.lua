@@ -11,7 +11,8 @@ local function HookLoadedFaces()
 	local p = mem.StaticAlloc(4)
 	i4[p] = mmv(12, 25-1, 30)*4
 	ResizeFaces = mem.ExtendGameStructure{
-		Struct = {['?ptr'] = mmv(0x4D479C, 0x50758C, 0x518E40), limit = mmv(12, 25, 30)},
+		Ptr = mmv(0x4D479C, 0x50758C, 0x518E40),
+		Limit = mmv(12, 25, 30),
 		Size = 4,
 		Refs = mmv(
 			{0x450F76, 0x450F8D, 0x450FAA, 0x450FC7, 0x451EBD},
