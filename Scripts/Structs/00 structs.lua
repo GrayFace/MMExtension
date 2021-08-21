@@ -187,17 +187,8 @@ function structs.f.GameStructure(define)
 		 .Info "3000 in MM6, 4000 in MM7+, in MM8 it's configured per map (!Lua[[Map.OutdoorExtra.Ceiling]])"
 	end
 	
-	define.union 'MoveToMap'
-		[mmv(0x551D20, 0x5B6428, 0x5CCCB8)].array(3).i4  'Pos'
-		[mmv(0x551D20, 0x5B6428, 0x5CCCB8)].i4  'X'
-		.i4  'Y'
-		.i4  'Z'
-		.i4  'Direction'
-		 .Info "0 - 2047. 0 is East."
-		.i4  'LookAngle'
-		.i4  'SpeedZ'
-		.b4  'Defined'
-	.union()
+	define
+	[mmv(0x551D20, 0x5B6428, 0x5CCCB8)].struct(structs.MoveToMap) 'MoveToMap'
 	[mmv(0x52D0A8, 0x576CB0, 0x5878D8)].struct(structs.ProgressBar)  'ProgressBar'
 	[0].struct(structs.DialogLogic)  'DialogLogic'
 	[mmv(0x55BDB4, 0x5C346C, 0x5DB91C)].i4  'Lucida_fnt'

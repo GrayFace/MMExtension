@@ -2773,3 +2773,25 @@ function structs.f.DialogLogic(define)
 		[0x4CB1FC].i4  'AutonotesCategory'
 	end
 end
+
+function structs.f.MoveToMap(define)
+	define
+	.alt.array(3).i4  'Pos'
+	.i4  'X'
+	.i4  'Y'
+	.i4  'Z'
+	.i4  'Direction'
+	 .Info "0 - 2047. 0 is East."
+	.i4  'LookAngle'
+	.i4  'SpeedZ'
+	.b4  'Defined'
+	function define.m.Set(a, x, y, z, direction, lookAngle, speedZ)
+		a.Defined = true
+		a.X = x == 0 and 1 or x
+		a.Y = y == 0 and 1 or y
+		a.Z = z == 0 and 1 or z
+		a.Direction = direction == 0 and 1 or direction
+		a.LookAngle = lookAngle == 0 and 1 or lookAngle
+		a.SpeedZ = speedZ or 0
+	end
+end

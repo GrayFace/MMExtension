@@ -359,14 +359,7 @@ function internal.NewGameMap()
 	local t = {AutoFallStart = true, Set = nil}
 	function t.Set(x, y, z, direction, lookAngle, speedZ)
 		SetPosDir(x, y, z, direction, lookAngle, speedZ)
-		local a = Game.MoveToMap
-		a.Defined = true
-		a.X = x == 0 and 1 or x
-		a.Y = y == 0 and 1 or y
-		a.Z = z == 0 and 1 or z
-		a.Direction = direction == 0 and 1 or direction
-		a.LookAngle = lookAngle == 0 and 1 or lookAngle
-		a.SpeedZ = speedZ or 0
+		Game.MoveToMap:Set(x, y, z, direction, lookAngle, speedZ)
 	end
 	-- 'Set'!Params[[(x, y, z, direction, lookAngle, speedZ)]] function sets both party position (saved in autosave) and map transition (used on start immediately).
 	events.cocalls("NewGameMap", t)
