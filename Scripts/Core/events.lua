@@ -227,16 +227,6 @@ end
 
 internal.GetPlayer, internal.GetMonster = GetPlayer, GetMonster
 
-local function CmpOpcode(p, v, ...)
-	return not v or u1[p] == v and CmpOpcode(p + 1, ...)
-end
-
-local function FindOpcode(p, ...)
-	while not CmpOpcode(p, ...) do
-		p = p + mem.GetInstructionSize(p)
-	end
-	return p
-end
 
 
 mem.IgnoreProtection(true)
@@ -986,15 +976,10 @@ do
 	local p = HookManager{reg = reg}.asmhook2(mmv(0x453B90, 0x46349E, 0x46147F), [[
 		test %reg%, %reg%
 		jz @f
-		nop
-		nop
-		nop
-		nop
-		nop
+		call absolute 0
 	@@:
 	]])
-	p = FindOpcode(p, 0x90,0x90,0x90,0x90,0x90)
-	mem.hook(p, |d| do
+	mem.hook(mem.findcall(p, 0), |d| do
 		local t = {
 			-- :const.ExitMapAction
 			Action = d[reg],

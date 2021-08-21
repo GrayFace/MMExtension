@@ -1522,7 +1522,6 @@ if GetInstructionSize then
 		end
 		return GetInstructionSize(p)
 	end
-	
 end
 
 local GetInstructionSize = GetInstructionSize and function(p)
@@ -1530,6 +1529,38 @@ local GetInstructionSize = GetInstructionSize and function(p)
 		code_error(p, 3)
 	end
 	return GetInstructionSize(p)
+end
+
+if GetInstructionSize then
+	local function CmpOpcode(p, v, ...)
+		return not v or u1[p] == v and CmpOpcode(p + 1, ...)
+	end
+
+	-- Takes an array of byte values to search for. Only checks for a match at the start of a new instruction.
+	function _mem.findcode(p, ...)
+		while not CmpOpcode(p, ...) do
+			p = p + GetInstructionSize(p)
+		end
+		return p
+	end
+	
+	-- Finds a call to 'fpts' starting at 'p' and stopping at 'p2' (optional). If 'fptr' isn't specified, searches for any call instruction.
+	local function findcall(p, fptr, p2)
+		while not p2 or p < p2 do
+			if u1[p] == 0xE8 and (not fptr or i4[p + 1] == fptr - p - 5) then
+				return p
+			end
+			p = p + GetInstructionSize(p)
+		end
+	end
+	_mem.findcall = findcall
+	
+	-- Enumerates all calls to 'fptr'. If 'fptr' isn't specified, enumerates all function calls.
+	function _mem.enumcalls(p1, p2, fptr)
+		return function(fptr, p)
+			return findcall(p and p + GetInstructionSize(p) or p1, fptr, p2)
+		end, fptr
+	end
 end
 
 -- Primitive call hook: 5-byte call instruction that calls into Lua code
