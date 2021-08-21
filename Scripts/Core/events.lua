@@ -241,6 +241,10 @@ end
 
 mem.IgnoreProtection(true)
 
+-- for dialogs
+local NoHint = mmv(0x4CB230, 0x5063F0, 0x517B40)
+local CurrentHouseDialog = mmv(0x4D50C0, 0x507A3C, 0x519324)
+
 -- remove unneeded checks in allocMM
 mem.nop2(mmv(0x4213AA, 0x426719, 0x424B65), mmv(0x4213C2, 0x42672E, 0x424B77))
 
@@ -591,30 +595,87 @@ do
 	]])
 end
 
--- ShowNPCTopics - called when NPC topics list is about to be shown
-local CurrentNPC
+-- NPC dialogs
+local function ToHouseScreen(v)
+	return const.HouseScreens[v] or v
+end
 
-local function NPCTopicsHook(p)
-	local i = (p - Game.NPC["?ptr"])/Game.NPC[0]["?size"]
-	if i >= 0 and i < Game.NPC.Length then
-		local start = not CurrentNPC
+local function PopulateNPCDialog(dlg, t, h)
+	local street = h
+	dlg = dlg or i4[CurrentHouseDialog]
+	h = h or 30
+	local n = 0
+	for i = 1, table.maxn(t) do
+		local k = ToHouseScreen(t[i])
+		if k then
+			call(mmv(0x41A170, 0x41D0D8, 0x41C513), 0, dlg, 480, (street and 130 or 160) + h*n, 140, h, 1, 0, street and 136 or 135, k, 0, NoHint, 0)
+			n = n + 1
+		end
+	end
+	call(mmv(0x41A0E0, 0x41D038, 0x41C473), 1, dlg, n, 1, 0, street and 1 or 2)
+end
+
+-- ShowNPCTopics - called when NPC topics list is about to be shown
+local CurrentNPC, CurrentAnyNPC, FirstEnterNPC
+
+local function EnterAnyNPC(p, npc, i, kind)
+	local start = not CurrentAnyNPC
+	CurrentAnyNPC = p
+	local npc, i, kind = Game.GetNPCFromPtr(p)
+	if start then
+		FirstEnterNPC = true
+		CurrentNPC = kind == 'NPC' and i or nil
+		local t = {NPC = npc, Index = i, Kind = kind}
+		-- happens before #events.EnterNPC# and #GetCurrentNPC:# 
+		events.cocalls("EnterAnyNPC", t, npc)
+	end
+	return npc, i, kind
+end
+
+local function NPCTopicsHook(d, skip, p, dlg, h)
+	local npc, i, kind = EnterAnyNPC(p)
+	if kind == 'NPC' then
 		CurrentNPC = i
-		if start then
+		if FirstEnterNPC then
 			events.cocalls("EnterNPC", i)
 		end
+		FirstEnterNPC = nil
 		events.cocalls("ShowNPCTopics", i)
+	end
+	local t = {NPC = npc, Index = i, Kind = kind, Result = nil}
+	--!k{NPC :struct.NPC} Change topics in an NPC dialog. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. Names from #const.HouseScreens:# as text are allowed. By default 't.Result' is not populated, but it would consist of [MM6]"ProfNews", "JoinMenu", [MM6]"News", "A", "B", "C", [MM7+]"D", [MM7+]"E", [MM7+]"F", but only the visible ones and no more than 4 in total.
+	events.cocall("PopulateNPCDialog", t, npc)
+	if t.Result then
+		PopulateNPCDialog(dlg, t.Result, h)
+		u4[d.esp] = skip
+	end
+end
+
+local function NPCHireHook(d, skip, p, dlg, h)
+	local npc, i, kind = EnterAnyNPC(p)
+	local t = {NPC = npc, Index = i, Kind = kind, Result = nil}
+	--!k{NPC :struct.NPC} [MM6,MM7] Change topics in a street NPC hire dialog or a dismiss dialog. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. Names from #const.HouseScreens:# as text are allowed. By default 't.Result' is not populated, but it would always consist of "MoreInformation", "HireOrDismiss" (both always visible).
+	events.cocall("PopulateJoinDialog", t, npc)
+	if t.Result then
+		PopulateNPCDialog(dlg, t.Result, h)
+		d:push(skip)
+		return true
 	end
 end
 
 if mmver == 6 then
-	mem.autohook(0x419774, function(d)  NPCTopicsHook(d.ebp)  end)  -- street NPC
-	mem.autohook(0x499B3A, function(d)  NPCTopicsHook(d.ebp)  end)  -- house NPC
+	mem.autohook(0x4195E6, function(d)  EnterAnyNPC(Game.GetCurrentNPCPtr())  end)  -- street NPC enter
+	mem.autohook(0x419774, function(d)  return NPCTopicsHook(d, 0x4198FC, d.ebp, d.esi, d.edi)  end)  -- street NPC
+	mem.autohook(0x419605, function(d)  return NPCHireHook(d, 0x4198FC, Game.GetCurrentNPCPtr(), d.esi, u1[d.eax + 5])  end)  -- street NPC hire
+	mem.autohook(0x499B3A, function(d)  return NPCTopicsHook(d, 0x499CE5, d.ebp, d.ecx)  end)  -- house NPC
 elseif mmver == 7 then
-	mem.autohook(0x41C633, function(d)  NPCTopicsHook(d.ebp)  end)  -- street NPC
-	mem.autohook(0x4B43CD, function(d)  NPCTopicsHook(d.eax)  end)  -- house NPC
+	mem.autohook(0x41C5ED, function(d)  EnterAnyNPC(Game.GetNPCPtrFromIndex(Game.DialogNPC))  end)  -- street NPC enter
+	mem.autohook(0x41C633, function(d)  return NPCTopicsHook(d, 0x41CCDB, d.ebp, d.esi, d.ebx)  end)  -- street NPC
+	mem.autohook(0x41C876, function(d)  return NPCHireHook(d, 0x41CCDB, d.ebp, d.esi, d.ebx)  end)  -- street NPC hire
+	mem.autohook(0x4B43CD, function(d)  return NPCTopicsHook(d, 0x4B45EC, d.eax)  end)  -- house NPC
 else
-	mem.autohook(0x41BD22, function(d)  NPCTopicsHook(d.eax)  end)  -- street NPC
-	mem.autohook(0x4B2E7E, function(d)  NPCTopicsHook(d.eax)  end)  -- house NPC
+	mem.autohook(0x41BD22, function(d)  return NPCTopicsHook(d, 0x41C0F4, d.eax, d.esi, d.ebx)  end)  -- street NPC
+	mem.autohook(0x4B2E7E, function(d)  return NPCTopicsHook(d, 0x4B309F, d.eax)  end)  -- house NPC
 end
 
 -- DrawNPCGreeting - called when NPC greeting is about to be shown
@@ -829,6 +890,8 @@ if mmver > 6 then
 	Conditional(hooks, "PostRender")
 end
 
+local ExitAnyNPC
+
 -- OnAction
 local screensNPC = {[4] = true, [19] = true}  -- SpeakNPC, street NPC, separate processing for house
 local function OnAction(InGame, a1, a2, a3)
@@ -841,18 +904,32 @@ local function OnAction(InGame, a1, a2, a3)
 		if a3 then
 			i4[a3] = t.Param2
 		end
-		if InGame and CurrentNPC and i4[a1] == 113 and screensNPC[Game.CurrentScreen] then
-			local i = CurrentNPC
-			local t = {NPC = i, Allow = true}
-			events.cocalls("CanExitNPC", t)
-			if t.Allow then
-				events.cocalls("ExitNPC", i)
-				CurrentNPC = nil
+		if InGame and CurrentAnyNPC and i4[a1] == 113 and screensNPC[Game.CurrentScreen] then
+			local allow = true
+			if CurrentNPC then
+				local t = {NPC = CurrentNPC, Allow = true, Must = false}
+				-- If 'Must' is 'true', the handler can still set 'Allow' to 'false', but can't fully cancel the exit. After a 100 attempts at calling 'CanExitNPC', the exit will happen.
+				events.cocalls("CanExitNPC", t)
+				allow = t.Allow
+			end
+			if allow then
+				ExitAnyNPC()
 			else
 				i4[a1] = 0
 			end
 		end
 	end
+end
+
+function ExitAnyNPC()
+	if CurrentNPC then
+		events.cocalls("ExitNPC", CurrentNPC)
+	end
+	local npc, i, kind = Game.GetNPCFromPtr(CurrentAnyNPC)
+	local t = {NPC = npc, Index = i, Kind = kind}
+	--!k{NPC :struct.NPC}
+	events.cocalls("ExitAnyNPC", t)
+	CurrentNPC, CurrentAnyNPC = nil, nil
 end
 
 if mmver == 6 then
@@ -885,9 +962,10 @@ mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4
 	local i = Game.HouseScreen
 	if CurrentNPC and (i == 0 or i == 1) then  -- i == 0 happens with "Enter Temple of Light/Dark"
 		local i = CurrentNPC
-		local t = {NPC = i, Allow = true}
+		local t = {NPC = i, Allow = true, Must = (Game.HouseNPCSlot <= 0)}
 		events.cocalls("CanExitNPC", t)
 		if Game.HouseNPCSlot <= 0 then  -- can't talk anymore
+			t.Must = true
 			local _ = 0
 			while not t.Allow and (_ < 100) do
 				events.cocalls("CanExitNPC", t)
@@ -896,8 +974,7 @@ mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4
 			t.Allow = true
 		end
 		if t.Allow then
-			events.cocalls("ExitNPC", i)
-			CurrentNPC = nil
+			ExitAnyNPC()
 		else
 			Game.HouseScreen = -1
 		end
@@ -968,14 +1045,13 @@ end
 local function PopulateDialog(t)
 	local n = 0
 	for i = 1, table.maxn(t) do
-		local k = const.Skills[t[i]]
-		k = k and k + 36 or const.HouseScreens[t[i]] or t[i]
+		local k = ToHouseScreen(t[i])
 		if k then
 			call(mmv(0x498450, 0x4B362F, 0x4B1F3C), 2, i - 1, k)
 			n = n + 1
 		end
 	end
-	local dlg = u4[mmv(0x4D50C0, 0x507A3C, 0x519324)]
+	local dlg = u4[CurrentHouseDialog]
 	call(mmv(0x41A0E0, 0x41D038, 0x41C473), 1, dlg, n, 1, 0, 2)
 	n = i4[dlg + 0x28]
 	i4[mmv(0x9DDDFC, 0xF8B060, 0xFFD450)] = n
@@ -993,7 +1069,7 @@ end
 
 mem.hookfunction(mmv(0x498490, 0x4B3AA5, 0x4B250A), 1, 0, function(d, def, type)
 	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = nil}
-	--!k{PicType :const.HouseType} Change topics in the main dialog menu in a house, unless isn't an NPC conversation. Unfortunately, the captions displayed won't change as they are hard-coded in various places. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. By default 't.Result' is not populated. Names from #const.HouseScreens:# and #const.Skills:# as text are allowed.
+	--!k{PicType :const.HouseType} Change topics in the main dialog menu in a house, unless isn't an NPC conversation. Unfortunately, the captions displayed won't change as they are hard-coded in various places. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. By default 't.Result' is not populated. Names from #const.HouseScreens:# as text are allowed.
 	-- !\ Example:!LUA[[
 	-- events.PopulateHouseDialog = |t| if t.PicType == const.HouseType.Training then
 	-- 	t.Result = {"Train"}  -- disable learning skills at training halls

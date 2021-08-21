@@ -244,7 +244,7 @@ end
 ----------- CanShowTopic
 
 function internal.CanShowTopic(topic, def)
-	local ret = evt.CanShowTopic[topic]()
+	local ret = evt.CanShowTopic[topic](topic)
 	if ret == nil then
 		return def
 	end

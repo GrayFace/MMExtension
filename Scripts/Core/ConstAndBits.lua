@@ -3,6 +3,14 @@ local mmver = offsets.MMVersion
 local function mmv(...)
 	return (select(mmver - 5, ...))
 end
+local is6 = mmver == 6 or nil
+local is7 = mmver == 7 or nil
+local is8 = mmver == 8 or nil
+local is78 = mmver > 6 or nil
+local is67 = mmver < 8 or nil
+local m6 = is6 and 1 or 0
+local m7 = is7 and 1 or 0
+local m8 = is8 and 1 or 0
 
 const = const or {}
 Const = const
@@ -897,40 +905,77 @@ const.HouseScreens = {
 	BuySpecialMM6 = 6,
 	BankDeposit = 7,
 	BankWithdraw = 8,
+	
 	Heal = 10,
 	Donate = 11,
+	ProfNews = 12,  -- NPC command
+	JoinMenu = 13,  -- NPC command
+	News = 14,  -- NPC command
 	TavernSleep = 15,
 	TavernFood = 16,
 	Train = 17,
 	BuySpells = 18,
+	A = 19,  -- NPC command
+	B = 20,  -- NPC command
+	C = 21,  -- NPC command
+	D = is78 and 22,  -- NPC command
+	E = is78 and 23,  -- NPC command
+	F = is78 and 24,  -- NPC command
+	Beg = is6 and 22,  -- NPC command
+	Threat = is6 and 23,  -- NPC command
+	Bribe = is6 and 24,  -- NPC command
 	TavernDrink = 25,
 	TavernTip = 26,
-	DisplayInventory = 94,
-	BuySpecial = 95,
-	LearnSkills = 96,
-	BountyHunt = 99,
-	PayFine = 100,
-	ArcomageMenu = 101,
-	ArcomageRules = 102,
-	ArcomageConditions = 103,
-	ArcomagePlay = 104,
-	Travel1 = 106,
-	Travel2 = 107,
-	Travel3 = 108,
-	Travel4 = 109,
-	BuySpellsFire = 110,  -- [MM8]
-	BuySpellsAir = 111,  -- [MM8]
-	BuySpellsWater = 112,  -- [MM8]
-	BuySpellsEarth = 113,  -- [MM8]
-	BuySpellsSpirit = 114,  -- [MM8]
-	BuySpellsMind = 115,  -- [MM8]
-	BuySpellsBody = 116,  -- [MM8]
-	BuySpellsLight = 117,  -- [MM8]
-	BuySpellsDark = 118,  -- [MM8]
+	
+	-- 36..(66/72/74) = skills
+	
+	HireOrDismiss = 76 - m6*6,  -- NPC command
+	MoreInformation = 77 - m6*6,  -- NPC command
+	TeachSkill = 78 - m6*6,  -- NPC command
+	DoTeachSkill = 79 - m6*6,  -- NPC command
+	
+	JoinGuild = 81 - m6*6,  -- NPC command
+	DoJoinGuild = 82 - m6*6,  -- NPC command
+	BountyHuntNPC = 83 - m6*6,  -- NPC command
+	SeerILostIt = 84 - m6*5,  -- NPC command
+	SeerPilgrimage = is6 and 88,  -- NPC command
+	SeerHint = is6 and 22,  -- NPC command
+	ArenaPage = 85 - m6*5,  -- NPC command
+	ArenaSquire = 86 - m6*5,  -- NPC command
+	ArenaKight = 87 - m6*5,  -- NPC command
+	ArenaLord = 88 - m6*5,  -- NPC command
+	ArenaMenu = 89 - m6*5,  -- NPC command
+	ArenaGoBack = 90 - m6*5,  -- NPC command
+	ArenaWin = 91 - m6*5,  -- NPC command
+	ArenaAlreadyWon = 92 - m6*5,  -- NPC command
+	
+	DisplayInventory = is78 and 94,
+	BuySpecial = is6 and 6 or 95,
+	LearnSkills = is78 and 96,
+	
+	BountyHunt = is78 and 99,
+	PayFine = is78 and 100,
+	ArcomageMenu = is78 and 101,
+	ArcomageRules = is78 and 102,
+	ArcomageConditions = is78 and 103,
+	ArcomagePlay = is78 and 104,
+	Travel1 = 106 - m6*39,
+	Travel2 = 107 - m6*39,
+	Travel3 = 108 - m6*39,
+	Travel4 = is78 and 109,
+	BuySpellsFire = is8 and 110,
+	BuySpellsAir = is8 and 111,
+	BuySpellsWater = is8 and 112,
+	BuySpellsEarth = is8 and 113,
+	BuySpellsSpirit = is8 and 114,
+	BuySpellsMind = is8 and 115,
+	BuySpellsBody = is8 and 116,
+	BuySpellsLight = is8 and 117,
+	BuySpellsDark = is8 and 118,
 }
 
 for k, v in pairs(const.Skills) do
-	const.HouseScreens['Learn'..k] = v + 36
+	const.HouseScreens[k] = v + 36
 end
 
 const.FaceAnimation = {

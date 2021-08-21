@@ -690,6 +690,7 @@ function structs.f.NPC(define)
 	define
 	[0x0].EditPChar  'Name'
 	[0x4].i4  'Pic'
+	[0x8].bit('TalkedBefore', 2)
 	[0x8].bit('Hired', 0x80)
 	[0x8].u4  'Bits'
 	[0xC].i4  'Fame'

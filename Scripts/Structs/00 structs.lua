@@ -88,14 +88,21 @@ function structs.f.GameStructure(define)
 	-- 465012(MM8) SetMainMenuCode
 	[mmv(0x52D0E4, 0x576CEC, 0x587914)].b4  'LoadingScreen'
 	--[mmv(0x4D48F8, nil, nil)].array{20, lenA = i4, lenP = mmv(0x4D46BC, nil, nil)}.struct(structs.Dlg)  'DialogsStack'
+	[mmv(0x533EB8, 0x590F10, 0x5A537C)].i4  'DialogNPC'
+	[mmv(0x54D040, 0x590F0C, 0x5A5378)].i4  'NPCCommand'
 	[mmv(0x9DDD8C, 0xF8B01C, 0xFFD408)].i4  'HouseScreen'
 	[mmv(0x551F94, 0x591270, 0x5A56E0)].i4  'HouseNPCSlot'
+	 .Info "If #HouseNPCSlot:structs.GameStructure.HouseNPCSlot# isn't '0', first slot is occupied by the shop keeper.\nIf #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter icon."
+	[mmv(0x53CB60, 0x5912A4, 0x5A5714)].i4  'HouseNPCSlotsCount'
 	[mmv(0x9DDD9C, 0xF8B034, 0xFFD420)].i4  'HouseCost'
 	[mmv(0x9DDD70, 0xF8B028, 0xFFD414)].i4  'HouseAllowAction'
 	[mmv(0x9DDD88, 0xF8B02C, 0xFFD418)].i4  'HouseActionInfo'
 	[mmv(0x9DDD98, 0xF8B030, 0xFFD41C)].i4  'HouseTeachMastery'
 	[mmv(0x9DDD80, 0xF8B018, 0xFFD404)].i4  'HousePicType'
 	[mmv(0x552F48, 0x590F00, 0x5A5384)].i4  'HouseOwnerPic'
+	[mmv(0x55BDA4, 0x5C3450, 0x5DB8FC)].i4  'HouseExitMap'
+	[mmv(0x54D020, 0x591258, 0x5A56C8)].array(1, 6).i4  'HouseNPCs'
+	 .Info "If #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter pseudo-NPC."
 	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), ret = true}
 	[mmv(0x4C3E10, 0x4F076C, 0x500D30)].array(mmv(17, 11, 11)).i4  'GuildJoinCost'
 	[mmv(0x4D5088, 0x5079F8, 0x5192EC)].array(7).EditPChar  'StatsNames'
@@ -369,7 +376,6 @@ end]=]
 		define[mmv(0x6A9168, 0x724050)]
 		.array(mmv(400, 501)).struct(structs.NPC)  'NPCDataTxt'
 		.array{mmv(400, 501), lenA = i4, lenP = mmv(0x6BA534, 0x73C014)}.struct(structs.NPC)  'NPC'
-		[mmv(0x6B74F0, 0x737F44)].array{100, lenA = i4, lenP = mmv(0x6BA530, 0x73C010)}.struct(structs.NPC)  'StreetNPC'
 		[mmv(0x6BA85C, 0x73C110)].array(mmv(78, 59)).EditPChar  'NPCProfNames'
 		[mmv(0x6B5DC8, 0x737AA8)].array(mmv(78, 59)).struct(structs.NPCProfTxtItem)  'NPCProfTxt'
 		[mmv(0x6B4CE8, 0x7369C8)].array(540).array(2).EditPChar  'NPCNames'
@@ -380,6 +386,7 @@ end]=]
 		.array(551).struct(structs.NPC)  'NPC'
 	end
 	define
+	[mmv(0x6B74F0, 0x737F44, 0x7771A0)].array{100, lenA = i4, lenP = mmv(0x6BA530, 0x73C010, 0x779FF4)}.struct(structs.NPC)  'StreetNPC'
 	[mmv(0x4BDD6E, 0x4E3C46, 0x4F486E)].array(0, mmv(99, 99, 132)).struct(structs.SpellInfo)  'Spells'
 	[mmv(0x56ABD0, 0x5CBEB0, 0x5E8278)].array(0, mmv(99, 99, 132)).struct(structs.SpellsTxtItem)  'SpellsTxt'
 	[mmv(0x4C28E2, 0x4EDF32, 0x4FE12A)].array(1, mmv(99, 99, 132)).i2  'SpellSounds'
@@ -523,6 +530,12 @@ end]=]
 	.func{name = "RestartHouseMovie", p = mmv(0x4A68B0, 0x4BF518, 0x4BD165), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
 	.func{name = "PlayShopSound", p = mmv(0x496520, 0x4B1DF5, 0x4B065F), cc = 2, must = 2}
 	 .Info{Sig = "House, SoundIndex"}
+	if mmver == 6 then
+		define.func{name = "GetCurrentNPCPtr", p = 0x43BCF0}
+	else
+		define.func{name = "GetNPCPtrFromIndex", p = mm78(0x445A1C, 0x442BCE), cc = 2, must = 1}
+	end
+	define
 	.func{name = "CalcSpellDamage", p = mmv(0x47F0A0, 0x43B006, 0x438B05), cc = 0, must = 4}
 	 .Info{Sig = "Spell, Skill, Mastery, MonsterHP"}
 	.func{name = "GetSpellDamageType", p = mmv(0x481A60, 0x48E189, 0x48D618), cc = 0, must = 1}
@@ -616,6 +629,30 @@ end]=]
 		if p ~= 0 then
 			return (mmver == 6 and i2 or i4)[p + 0x1C]
 		end
+	end
+	local function FromArray(p, kind, a, ...)
+		local i = p - a['?ptr']
+		local sz = i >= 0 and a.size
+		i = sz and i < sz and i*a.count/sz + a.low
+		if i then
+			return a[i], i, kind
+		elseif ... then
+			return FromArray(p, ...)
+		end
+	end
+	local NPCFromPtr = |p| FromArray(p, 'NPC', Game.NPC, 'StreetNPC', Game.StreetNPC, mmver < 8 and 'HiredNPC', mmver < 8 and Party.HiredNPC)
+	local GetCurrentNPC = || NPCFromPtr(mmver == 6 and Game.GetCurrentNPCPtr() or Game.GetNPCPtrFromIndex(Game.DialogNPC))
+	define.f.GetCurrentNoHouseNPC = GetCurrentNPC
+	define.f.GetNPCFromPtr = NPCFromPtr
+	function define.f.GetNPCFromIndex(n)
+		if mmver == 8 then
+			return NPCFromPtr(Game.GetNPCPtrFromIndex(n))
+		end
+		local old = Game.DialogNPC
+		Game.DialogNPC = n
+		local v, i, k = GetCurrentNPC()
+		Game.DialogNPC = old
+		return v, i, k
 	end
 end
 
