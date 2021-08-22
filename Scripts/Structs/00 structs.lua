@@ -102,7 +102,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x552F48, 0x590F00, 0x5A5384)].i4  'HouseOwnerPic'
 	[mmv(0x55BDA4, 0x5C3450, 0x5DB8FC)].i4  'HouseExitMap'
 	[mmv(0x54D020, 0x591258, 0x5A56C8)].array(1, 6).i4  'HouseNPCs'
-	[mmv(0x4D50C0, 0x507A3C, 0x519324)].pstruct(structs.Dlg)  'CurrentHouseDialog'
+	[mmv(0x4D50C0, 0x507A3C, 0x519324)].pstruct(structs.Dlg)  'CurrentNPCDialog'
 	 .Info "If #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter pseudo-NPC."
 	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), ret = true}
 	[mmv(0x4C3E10, 0x4F076C, 0x500D30)].array(mmv(17, 11, 11)).i4  'GuildJoinCost'
@@ -608,7 +608,7 @@ end]=]
 				Game.HouseScreen = -1
 				call(mmv(0x4998A0, 0x4B4187, 0x4B2C36), 1, Game.HouseNPCSlot - 1)
 			end
-		elseif Game.CurrentHouseDialog['?ptr'] ~= 0 then
+		elseif Game.CurrentNPCDialog['?ptr'] ~= 0 then
 			internal.RefillNPCTopics()
 		end
 	end

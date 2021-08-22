@@ -45,7 +45,7 @@ local function EnterAnyNPC(p, npc, i, kind)
 		FirstEnterNPC = true
 		CurrentNPC = kind == 'NPC' and i or nil
 		local t = {NPC = npc, Index = i, Kind = kind}
-		-- Happens before #events.EnterNPC:#
+		--!k{NPC :struct.NPC} Happens before #events.EnterNPC:#. 'Kind' ("NPC", "HiredNPC", "StreetNPC") defines the array NPC belongs to and 'Index' is index in that array.
 		events.cocalls("EnterAnyNPC", t, npc)
 	end
 	return npc, i, kind
@@ -399,20 +399,23 @@ local function ArrToHouseScreen(t1, extra)
 end
 
 local function ReadPopulatedDialog(action, NoTopics)
-	local dlg = Game.CurrentHouseDialog
-	-- print('before', dump(dlg, 0))
+	local dlg = Game.CurrentNPCDialog
 	-- MessageBox(dlg.KeyboardItemsCount..' + '..dlg.KeyboardItemsStart..' = '..dlg.ItemsCount)
 	local n = dlg.KeyboardItemsCount
 	local x, y, w, h = 480, 160, 140, 30
 	local t, items = {}, {}
 	local it = structs.Button:new(dlg.LastItemPtr)
-	if NoTopics and n == 1 and it.ActionType ~= action then
+	local diff = n + dlg.KeyboardItemsStart - dlg.ItemsCount
+	if diff < 0 then
+		return  -- unsupported. Can only happen if new uninteractive dlg items are added to beg/threat/bribe menu of MM6
+	elseif diff > 0 then
+		-- unused house PicType produces boken keyboard items count (1 instead of 0)
+		n = dlg.ItemsCount - dlg.KeyboardItemsStart
+		dlg:SetKeyboardNavigation(n, 1, 0, dlg.KeyboardItemsStart)
+	elseif NoTopics and n == 1 and it.ActionType ~= action then
 		n = 0
 	end
 	if n ~= 0 then
-		if dlg.ItemsCount ~= n + dlg.KeyboardItemsStart then
-			return  -- unsupported. Can only happen if new uninteractive dlg items are added to beg/threat/bribe menu of MM6
-		end
 		x, y, w, h = it.Left, it.Top, it.Width, it.Height
 		for i = n, 1, -1 do
 			if it.ActionType ~= (CommandActions[it.ActionInfo1] or action) then
@@ -423,16 +426,13 @@ local function ReadPopulatedDialog(action, NoTopics)
 			it['?ptr'] = it.PrevItemPtr
 		end
 	end
-	-- print(x, y, w, h, action)
 	items[0] = it['?ptr']
 	
 	-- after
 	return t, |t| do
 		local t, extra = ArrToHouseScreen(t or {})
-		-- print(dump(t))
 		-- create
 		for i = n + 1, #t do
-			-- print('add', x, y + h*(i - n), w, h)
 			items[i] = dlg:AddButton(x, y + h*(i - n), w, h)
 		end
 		local changed = #t ~= n
@@ -459,14 +459,11 @@ local function ReadPopulatedDialog(action, NoTopics)
 			if extra[i] then
 				table.copy(extra[i], it, true)
 			end
-			-- print(dump(it, 0))
 		end
 		-- done
 		if changed then
-			-- print('kbd', #t, 1, 0, kbdStart)
 			dlg:SetKeyboardNavigation(#t, 1, 0, dlg.ItemsCount - #t)
 		end
-		-- print('after', dump(dlg, 0))
 		return t, extra
 	end, dlg
 end
@@ -489,7 +486,6 @@ local function PopulateNPCDlg(dlgKind, extraItem)
 		dlgKind = dlgKind == 204 and 'Main' or HouseScreenInv[dlgKind] or dlgKind
 	end
 	local t = {NPC = npc, Index = i, Kind = kind, DlgKind = dlgKind, Result = t}
-	-- print(dump(t))
 	
 	--!k{NPC :struct.NPC} Change topics of an NPC dialog. 'Result' is an array of NPC commands from #const.HouseScreens:#. Names from #const.HouseScreens:# as text are also allowed. You can also add a table with extra parameters, see the example below. 'Kind' ("NPC", "HiredNPC", "StreetNPC") defines the array NPC belongs to and 'Index' is index in that array.
 	-- !\ The following 'DlgKind' values are possible:
@@ -533,7 +529,7 @@ else
 end
 
 function RefillNPCTopics()
-	local dlg = Game.CurrentHouseDialog
+	local dlg = Game.CurrentNPCDialog
 	local extraItem  -- <use NPC> item
 	if mmver < 8 then
 		local it = structs.Button:new(dlg.LastItemPtr)
