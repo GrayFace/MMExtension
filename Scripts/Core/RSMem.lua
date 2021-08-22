@@ -347,6 +347,12 @@ local function code_error(p, level)
 	error(format('memory at address %X is not executable', p), level + 1)
 end
 
+local function need_read(p, size, level)
+	if rawcall(IsBadReadPtr, 0, p, size) ~= 0 then
+		return read_error(p, size, level + TailLevel)
+	end
+end
+
 local VirtualProtect_tmp = StaticAlloc(4)
 local VirtualProtect_ptr = internal.VirtualProtect
 -- local function VirtualProtect(p, size, prot)
@@ -397,9 +403,7 @@ function _mem.copy(dest, src, count)
 		dest = dest["?ptr"]
 	end
 	dest, count = assertnum(dest, 2), assertnum(count, 2)
-	if rawcall(IsBadReadPtr, 0, src, count) ~= 0 then
-		read_error(src, count, 2)
-	end		
+	need_read(src, count, 2)
 	local a1, a2 = Protect(dest, count)
 	return Unprotect(a1, a2, rawcall(internal.memcpy, 0, dest, src, count))
 end
@@ -422,6 +426,29 @@ function _mem.fill(dest, n, c)
 end
 local mem_fill = _mem.fill
 
+do
+	local function toptr(p, n)
+		local tp = type(p)
+		if tp == "table" then
+			n = n or p["?size"]
+			p = p["?ptr"]
+		elseif tp == "string" then
+			n = n or #p
+		end
+		return p, n
+	end
+
+	--!(ptr1, ptr2, n)
+	function _mem.cmp(p1, p2, n)
+		p2, n = toptr(p2, n)
+		p1, n = toptr(p1, n)
+		n = assertnum(n, 2)
+		need_read(p1, n, 2)
+		need_read(p2, n, 2)
+		return rawcall(internal.memcmp, 0, p1, p2, n)
+	end
+end
+local mem_cmp = _mem.cmp
 
 local function memarr(x)
 	local size = abs(x)
@@ -494,9 +521,7 @@ if ffi then
 		local size, type = ffi.sizeof(type), type.."*"
 		local function index(t, a)
 			a = assertnum(a, 2)
-			if rawcall(IsBadReadPtr, 0, a, size) ~= 0 then
-				read_error(a, size, 2)
-			end
+			need_read(a, size, 2)
 			return ffi.cast(type, a)[0]
 		end
 		local function newindex(t, a, v)
@@ -517,9 +542,7 @@ if ffi then
 			type = type.."*"
 			getmetatable(t).__index = function(t, a)
 				a = assertnum(a, 2)
-				if rawcall(IsBadReadPtr, 0, a, 8) ~= 0 then
-					read_error(a, 8, 2)
-				end
+				need_read(a, 8, 2)
 				return tonumber(ffi.cast(type, a)[0])
 			end
 		end
@@ -1532,13 +1555,9 @@ local GetInstructionSize = GetInstructionSize and function(p)
 end
 
 if GetInstructionSize then
-	local function CmpOpcode(p, v, ...)
-		return not v or u1[p] == v and CmpOpcode(p + 1, ...)
-	end
-
-	-- Takes an array of byte values to search for. Only checks for a match at the start of a new instruction.
-	function _mem.findcode(p, ...)
-		while not CmpOpcode(p, ...) do
+	-- Takes a string to search for. Only checks for a match at the start of a new instruction.
+	function _mem.findcode(p, s)
+		while mem_cmp(p, s, #s) ~= 0 do
 			p = p + GetInstructionSize(p)
 		end
 		return p

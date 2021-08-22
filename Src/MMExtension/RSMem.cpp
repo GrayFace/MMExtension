@@ -378,6 +378,7 @@ void RSMemRegister(lua_State *L)
 	RegConst(L, "new", (DWORD)malloc);
 	RegConst(L, "memcpy", (DWORD)memcpy);
 	RegConst(L, "memset", (DWORD)memset);
+	RegConst(L, "memcmp", (DWORD)memcmp);
 	RegConst(L, "VirtualProtect", (DWORD)VirtualProtect);
 	RegConst(L, "IsBadCodePtr", (DWORD)IsBadCodePtr);
 	RegConst(L, "IsBadReadPtr", (DWORD)IsBadReadPtr);
