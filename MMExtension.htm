@@ -2656,9 +2656,9 @@ Id
 </tr>
 <tr>
 <td class="def-left">
-<a id="events.EnterAnyNPC" class="abs"></a><h4 class="def-h4">EnterAnyNPC</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>Index<br><span class="def-nbsp">  </span>Kind<br><span class="def-nbsp">  </span>NPC<br>}, npc<b class="def-rargs">)</b>
+<a id="events.EnterAnyNPC" class="abs"></a><h4 class="def-h4">EnterAnyNPC</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>Index<br><span class="def-nbsp">  </span>Kind<br><span class="def-nbsp">  </span><a href="#struct.NPC">NPC</a><br>}, npc<b class="def-rargs">)</b>
 </td><td class="def-right">
- Happens before <a href="#events.EnterNPC">events.EnterNPC</a>
+ Happens before <a href="#events.EnterNPC">events.EnterNPC</a>. <b class="def-param">Kind</b> ("NPC", "HiredNPC", "StreetNPC") defines the array NPC belongs to and <b class="def-param">Index</b> is index in that array.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -4879,7 +4879,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.GameStructure.CurrentHouseDialog" class="abs"></a><a href="#structs.Dlg">CurrentHouseDialog</a>
+<a id="structs.GameStructure.CurrentNPCDialog" class="abs"></a><a href="#structs.Dlg">CurrentNPCDialog</a>
 </td><td class="def-right">
  If <a href="#structs.GameStructure.HouseExitMap">HouseExitMap</a> isn't <b class="def-param">0</b>, last slot is occupied by map enter pseudo-NPC.
 </td>
@@ -8250,6 +8250,30 @@ Id
 <a id="structs.DialogLogic.AutonotesCategory" class="abs"></a>AutonotesCategory
 </td><td class="def-right">
  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.DialogLogic.ArmorSkills" class="abs"></a>ArmorSkills[]
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.DialogLogic.WeaponSkills" class="abs"></a>WeaponSkills[]
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.DialogLogic.MiscSkills" class="abs"></a>MiscSkills[]
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.DialogLogic.MagicSkills" class="abs"></a>MagicSkills[]
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
 </td>
 </tr></tbody>
 </table>

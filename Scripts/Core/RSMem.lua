@@ -279,7 +279,7 @@ local function ucall(...)
 	return r
 end
 
-local IgnoreCount = 0
+local IgnoreCount, IgnoreInternal = 0, nil
 local IgnoreInc = {[true] = 1, [false] = -1}
 
 -- Pass 'true' to be able to modify code with 'mem.i4' and such, pass 'false' after you've finished.
@@ -287,6 +287,11 @@ function _mem.IgnoreProtection(on)
 	IgnoreCount = IgnoreCount + (IgnoreInc[on] or 0)
 	assert(IgnoreCount >= 0)
 	return IgnoreCount > 0
+end
+
+local function MyProt(on)
+	IgnoreCount = IgnoreCount + (on and 1 or -1)
+	IgnoreInternal = on
 end
 
 --!++(mem.prot)(on) Same as above.
@@ -334,16 +339,25 @@ if internal.StaticAlloc then
 	_mem.StaticAlloc = StaticAlloc
 end
 
+local function CheckIgnoreInternal()
+	if IgnoreInternal then
+		IgnoreInternal = nil
+		IgnoreCount = IgnoreCount - 1
+	end
+end
 
 local function read_error(p, size, level)
+	CheckIgnoreInternal()
 	error(format('memory at address %X of size %d cannot be read', p, size), level + 1)
 end
 
 local function write_error(p, size, level)
+	CheckIgnoreInternal()
 	error(format('memory at address %X of size %d cannot be written to', p, size), level + 1)
 end
 
 local function code_error(p, level)
+	CheckIgnoreInternal()
 	error(format('memory at address %X is not executable', p), level + 1)
 end
 
@@ -740,6 +754,9 @@ do -- mem.struct
 		elseif a == "ro" or a == "RO" then
 			define.isro = true
 			return define
+		elseif a == "prot" then
+			define.isprot = true
+			return define
 		end
 	end
 
@@ -763,6 +780,19 @@ do -- mem.struct
 			error("Field already exists", 2)
 		end
 		member_callback(name, define)
+		if define.isprot then
+			local f0 = f
+			function f(o, obj, name, val, ...)
+				if val ~= nil then
+					IgnoreCount = IgnoreCount + 1
+					f0(o, obj, name, val, ...)
+					IgnoreCount = IgnoreCount - 1
+				else
+					return f0(o, obj, name, val, ...)
+				end
+			end
+			define.isprot = nil
+		end
 		if unions and unions.amin then
 			size, f = declare_array(size, f)
 		end
@@ -1595,14 +1625,14 @@ function _mem.hook(p, f, size)
 		end
 	end
 	mem_hooks[p] = f
-	IgnoreCount = IgnoreCount + 1
+	MyProt(true)
 	u1[p] = OpCALL
 	local std = i4[p + 1] + p + 5
 	i4[p + 1] = Mem_HookProc - p - 5
 	for i = p + 5, p + size - 1 do
 		u1[i] = 0x90
 	end
-	IgnoreCount = IgnoreCount - 1
+	MyProt()
 	return std
 end
 local mem_hook = _mem.hook
@@ -1953,13 +1983,13 @@ function _mem.autohook(p, f, size)
 end
 
 local function PlaceJMP(p, code, size)
-	IgnoreCount = IgnoreCount + 1
+	MyProt(true)
 	u1[p] = OpJMP
 	i4[p + 1] = code - p - 5
 	for i = p + 5, p + size - 1 do
 		u1[i] = 0x90
 	end
-	IgnoreCount = IgnoreCount - 1
+	MyProt()
 	-- In .text:
 	--   call Mem_HookProc
 	-- In block:
@@ -2053,12 +2083,12 @@ function _mem.bytecodepatch(p, code, size)
 				error(format("attempt to patch address %X, which intercepts with existing hook at %X", p, i), 2)
 			end
 		end
-		IgnoreCount = IgnoreCount + 1
+		MyProt(true)
 		mem_copy(p, codef and codef(p) or code, #code)
 		for i = p + #code, p + size - 1 do
 			u1[i] = 0x90
 		end
-		IgnoreCount = IgnoreCount - 1
+		MyProt()
 		return
 	end
 	local new = mem_hookalloc(#code + 5)
@@ -2196,19 +2226,19 @@ end
 
 -- Writes 'n' NOPs. If 'n' is omitted, replaces a single instruction at the given address with NOPs
 function _mem.nop(p, n)
-	IgnoreCount = IgnoreCount + 1
+	MyProt(true)
 	n = n or GetInstructionSize and GetInstructionSize(p)
 	for i = p, p + n - 1 do
 		u1[i] = 0x90
 	end
-	IgnoreCount = IgnoreCount - 1
+	MyProt()
 end
 
 -- Writes NOPs from 'p' to 'p2' - 1
 function _mem.nop2(p, p2)
-	IgnoreCount = IgnoreCount + 1
+	MyProt(true)
 	for i = p, p2 - 1 do
 		u1[i] = 0x90
 	end
-	IgnoreCount = IgnoreCount - 1
+	MyProt()
 end

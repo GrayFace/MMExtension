@@ -807,7 +807,7 @@ function structs.f.Dlg(define)
 	[0x10].i4  'Right_'
 	[0x14].i4  'Bottom_'
 	[0x18].i4  'DlgID'
-	[0x1C].i4  'Param'
+	[0x1C][mmver == 6 and 'i2' or 'i4']  'Param'
 	 .Info "2D Events Id / Chest Id / ..."
 	[0x20].i4  'ItemsCount'
 	-- 24
@@ -2768,6 +2768,10 @@ function structs.f.DialogLogic(define)
 		.b1  'SpellBookSelectedNewSpell'
 		.skip(3 + 5*4)
 		.i4  'AutonotesCategory'
+		[mm78(0x4E29F8, 0x4F3900)].array(5).prot.i4  'ArmorSkills'
+		.array(9).prot.i4  'WeaponSkills'
+		.array(12).prot.i4  'MiscSkills'
+		.array(mm78(9, 12)).prot.i4  'MagicSkills'
 	else
 		define
 		[internal.DialogIndexListPtr or 0].parray{2000, lenA = i4, lenP = 0x4CB1E0}.i4  'List'
