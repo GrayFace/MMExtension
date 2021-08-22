@@ -688,9 +688,13 @@ end
 
 function structs.f.NPC(define)
 	define
+	[0x0].b4  'Exist'
+	 .Info 'Use to check if a slot is empty in Party.HiredNPC array'
 	[0x0].EditPChar  'Name'
 	[0x4].i4  'Pic'
-	[0x8].bit('TalkedBefore', 2)
+	[0x8].bit('BribedBefore', 1)
+	[0x8].bit(mmver == 6 and 'BeggedBefore' or 'TalkedBefore', 2)
+	[0x8].bit('ThreatenedBefore', 4)
 	[0x8].bit('Hired', 0x80)
 	[0x8].u4  'Bits'
 	[0xC].i4  'Fame'
@@ -816,21 +820,34 @@ function structs.f.Dlg(define)
 	-- 40
 	[0x44].i4  'UseKeyboadNavigation'
 	--[0x48].i4  '' -- Param2
-	[0x4C].alt.pstruct(structs.Button)  'BottomItem'
-	[0x4C].i4  'BottomItemPtr'
-	[0x50].alt.pstruct(structs.Button)  'TopItem'
-	[0x50].i4  'TopItemPtr'
+	[0x4C].alt.pstruct(structs.Button)  'FirstItem'
+	[0x4C].i4  'FirstItemPtr'
+	[0x50].alt.pstruct(structs.Button)  'LastItem'
+	[0x50].i4  'LastItemPtr'
 	.size = 0x54
 
 	define
-	.method{p = mmv(0x41A170, 0x41D0D8, 0x41C513), name = "AddButton", cc = 0, must = 4; 0, 0, 0, 0, 0, 0,  0, 0, 0, "";  0, 0, 0, 0, 0, 0}
-	 .Info{Sig = "X, Y, Width, Height, Unk1, Unk2, ActionType, ActionInfo, Unk3, Hint, Sprites..., 0"}
+	.method{p = mmv(0x41A170, 0x41D0D8, 0x41C513), name = "AddButton", cc = 0, must = 4; 0, 0, 0, 0, 1, 0, 0, 0, 0, "";  0, 0, 0, 0, 0, 0}
+	 .Info{Sig = "X, Y, Width, Height, Shape = 1, HintAction, ActionType, ActionInfo, Key, Hint, Sprites..., 0"}
+	.method{p = mmv(0x41A0E0, 0x41D038, 0x41C473), name = "SetKeyboardNavigation"; 0, 1, 0, 0}
+	 .Info{Sig = "KeyboardItemsCount, KeyboardNavigationTrackMouse, KeyboardLeftRightStep, KeyboardItemsStart"}
+	.method{p = mmv(0x419D50, 0x41CCE4, 0x41C205), name = "GetItemPtrByIndex", must = 1; 0}
+	 .Info{Sig = "Index"}
+	
+	function define.m:Destroy(KeepMonPic)
+		local p = 0x5A5370
+		local old = mmver == 8 and KeepMonPic and u4[p]
+		call(mmv(0x4190D0, 0x41C213, 0x41B923), 1, self)
+		if old then
+			u4[p] = old
+		end
+	end
 end
 
 function structs.f.Button(define)
 	define
-	[0x0].i4  'Top'
-	[0x4].i4  'Left'
+	[0x0].i4  'Left'
+	[0x4].i4  'Top'
 	[0x8].i4  'Width'
 	[0xC].i4  'Height'
 	[0x10].i4  'Right'
@@ -846,10 +863,10 @@ function structs.f.Button(define)
 	end
 	define
 	[0x28+o].b4  'Pressed'
-	[0x2C+o].alt.pstruct(structs.Button)  'LowerItem'
-	[0x2C+o].i4  'LowerItemPtr'
-	[0x30+o].alt.pstruct(structs.Button)  'UpperItem'
-	[0x30+o].i4  'UpperItemPtr'
+	[0x2C+o].alt.pstruct(structs.Button)  'PrevItem'
+	[0x2C+o].i4  'PrevItemPtr'
+	[0x30+o].alt.pstruct(structs.Button)  'NextItem'
+	[0x30+o].i4  'NextItemPtr'
 	[0x34+o].alt.pstruct(structs.Dlg)  'Parent'
 	[0x34+o].i4  'ParentPtr'
 	[0x38+o].array{5, lenA = i4, lenP = 0x4C+o}.i4  'Sprites'
@@ -2622,8 +2639,8 @@ function structs.f.NPCProfTxtItem(define)
 	else
 		define
 		.i4  'Cost'
-		.EditPChar  'ActionText'
 		.EditPChar  'Benefit'
+		.EditPChar  'ActionText'
 		.EditPChar  'JoinText'
 		.EditPChar  'DismissText'
 	end

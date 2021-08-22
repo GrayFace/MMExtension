@@ -937,9 +937,12 @@ const.HouseScreens = {
 	JoinGuild = 81 - m6*6,  -- NPC command
 	DoJoinGuild = 82 - m6*6,  -- NPC command
 	BountyHuntNPC = 83 - m6*6,  -- NPC command
-	SeerILostIt = 84 - m6*5,  -- NPC command
+	SeerILostIt = 84 - m6*6,  -- NPC command
+	
 	SeerPilgrimage = is6 and 88,  -- NPC command
 	SeerHint = is6 and 22,  -- NPC command
+	-- MM6: 79 = ?
+	
 	ArenaPage = 85 - m6*5,  -- NPC command
 	ArenaSquire = 86 - m6*5,  -- NPC command
 	ArenaKight = 87 - m6*5,  -- NPC command
@@ -972,6 +975,12 @@ const.HouseScreens = {
 	BuySpellsBody = is8 and 116,
 	BuySpellsLight = is8 and 117,
 	BuySpellsDark = is8 and 118,
+	JoinRoster = is8 and 119,  -- Yes item in the join menu
+	JoinRosterNo = is8 and 120,
+	StreetNPC = 200,  -- Not used by the game, only by MMExt for #PopulateNPCDialog:events.PopulateNPCDialog# event.
+	LackFame = 201,  -- Not used by the game, only by MMExt for #PopulateNPCDialog:events.PopulateNPCDialog# event.
+	BegThreatBribe = 202,  -- Not used by the game, only by MMExt for #PopulateNPCDialog:events.PopulateNPCDialog# event.
+	ThreatBribe = 203,  -- Not used by the game, only by MMExt for #PopulateNPCDialog:events.PopulateNPCDialog# event.
 }
 
 for k, v in pairs(const.Skills) do

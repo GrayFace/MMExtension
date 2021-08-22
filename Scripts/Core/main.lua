@@ -518,6 +518,7 @@ d_debug = _G.debug.debug
 local CoreFiles = offsets.CoreFiles or {
 	CoreGamePath.."ConstAndBits.lua",
 	CoreGamePath.."events.lua",
+	isMM and CoreGamePath.."npc.lua" or nil,
 	isMM and CoreGamePath.."timers.lua" or nil,
 	isMM and CoreGamePath.."evt.lua" or nil,
 }

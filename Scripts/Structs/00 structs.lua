@@ -102,6 +102,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x552F48, 0x590F00, 0x5A5384)].i4  'HouseOwnerPic'
 	[mmv(0x55BDA4, 0x5C3450, 0x5DB8FC)].i4  'HouseExitMap'
 	[mmv(0x54D020, 0x591258, 0x5A56C8)].array(1, 6).i4  'HouseNPCs'
+	[mmv(0x4D50C0, 0x507A3C, 0x519324)].pstruct(structs.Dlg)  'CurrentHouseDialog'
 	 .Info "If #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter pseudo-NPC."
 	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), ret = true}
 	[mmv(0x4C3E10, 0x4F076C, 0x500D30)].array(mmv(17, 11, 11)).i4  'GuildJoinCost'
@@ -265,6 +266,21 @@ function structs.f.GameStructure(define)
 	-- [mmv(0x9CF5C0, 0xF7921C, 0xFEB624)].i4  'MasterVolume'
 	if mmver > 6 then
 		define[mmv(nil, 0xF8BA08, 0xFFDE00)].i4  'BinkVideo'
+		[mm78(0x4b440e, 0x4b2ebc)].CustomType('DialogTopicsLimit', 1, function(o, obj, _, val)
+			if val == nil then
+				return i1[o]
+			else
+				local t = mm78(
+					{0x4b440e, 0x4b445d, 0x4b44ac, 0x4b44fb, 0x4b454a, 0x4b4599, 0x41c67a, 0x41c6cd, 0x41c720, 0x41c773, 0x41c7c6, 0x41c81d},
+					{0x4b2ebc, 0x4b2f0b, 0x4b2f5a, 0x4b2fa9, 0x4b2ff8, 0x4b3047, 0x41bd66, 0x41bdb9, 0x41be0c, 0x41be5f, 0x41beb2, 0x41bf09}
+				)
+				mem.IgnoreProtection(true)
+				for _, p in ipairs(t) do
+					i1[p] = min(val, 127)
+				end
+				mem.IgnoreProtection(false)
+			end
+		end)
 	end
 	define
 	[mmv(0x9DE364, 0xF8B9B0, 0xFFDDA8)].i4  'SmackVideo'
@@ -587,9 +603,13 @@ end]=]
 	end
 	define.Info{Sig = "Name";  "Loads a texture and returns its ID."}
 	function define.f.UpdateDialogTopics()
-		if Game.CurrentScreen == 13 and Game.HouseNPCSlot > (Game.HouseOwnerPic ~= 0 and 1 or 0) then
-			Game.HouseScreen = -1
-			call(mmv(0x4998A0, 0x4B4187, 0x4B2C36), 1, Game.HouseNPCSlot - 1)
+		if Game.CurrentScreen == 13 then
+			if Game.HouseNPCSlot > (Game.HouseOwnerPic ~= 0 and 1 or 0) then
+				Game.HouseScreen = -1
+				call(mmv(0x4998A0, 0x4B4187, 0x4B2C36), 1, Game.HouseNPCSlot - 1)
+			end
+		elseif Game.CurrentHouseDialog['?ptr'] ~= 0 then
+			internal.RefillNPCTopics()
 		end
 	end
 	function define.f.ShowStatusText(text, time)
@@ -635,6 +655,9 @@ end]=]
 	local GetCurrentNPC = || NPCFromPtr(mmver == 6 and Game.GetCurrentNPCPtr() or Game.GetNPCPtrFromIndex(Game.DialogNPC))
 	define.f.GetCurrentNoHouseNPC = GetCurrentNPC
 	define.f.GetNPCFromPtr = NPCFromPtr
+	if mmver ~= 6 then
+		define.f.GetCurrentNPCPtr = || Game.GetNPCPtrFromIndex(Game.DialogNPC)
+	end
 	function define.f.GetNPCFromIndex(n)
 		if mmver == 8 then
 			return NPCFromPtr(Game.GetNPCPtrFromIndex(n))

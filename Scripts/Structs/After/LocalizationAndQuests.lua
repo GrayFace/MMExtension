@@ -509,7 +509,7 @@ end
 local function RegisterQuest(t)
 	local RegQuests = {}
 	local LastSlot = {}
-	local CurrentNPC
+	local CurrentNPC, HiredNPC
 	local CurrentQuests
 	local FreeEvents
 	local BackupTopics = {}
@@ -563,6 +563,26 @@ local function RegisterQuest(t)
 		end
 	end
 	
+	local function CheckHiredNPC()
+		return HiredNPC and HiredNPC.Exist
+	end
+	
+	local function DoRestoreBackupNPC(npc)
+		for i, s in pairs(BackupNPC) do
+			npc.Events[i] = s
+		end
+	end
+	
+	local function RestoreBackupNPC()
+		if CurrentNPC then
+			DoRestoreBackupNPC(Game.NPC[CurrentNPC])
+		end
+		if CheckHiredNPC() then
+			DoRestoreBackupNPC(HiredNPC)
+		end
+		BackupNPC = {}
+	end
+	
 	function UpdateNPCQuests()
 		if not CurrentNPC then
 			return
@@ -572,6 +592,7 @@ local function RegisterQuest(t)
 		for k, v in pairs(table.copy(old, table.copy(CurrentQuests))) do
 			if old[k] == nil or CurrentQuests[k] == nil then
 				Game.UpdateDialogTopics()
+				return
 			end
 		end
 	end
@@ -580,6 +601,20 @@ local function RegisterQuest(t)
 		--!v
 		QuestNPC = npc
 		UpdateCurrentQuests(npc)
+	end
+	
+	events.ShowHiredNPCTopics = |i, npc| if npc then
+		if CheckHiredNPC() then
+			DoRestoreBackupNPC(HiredNPC)
+		else
+			CurrentBranch = QuestBranches[npc] or ""
+		end
+		QuestNPC, CurrentNPC, HiredNPC = npc, npc, Party.HiredNPC[i]
+		UpdateCurrentQuests(npc)
+		-- copy events if they were assigned
+		for i, v in pairs(BackupNPC) do
+			HiredNPC.Events[i] = Game.NPC[CurrentNPC].Events[i]
+		end
 	end
 
 	function events.EvtGlobal(evtId, seq)
@@ -613,19 +648,25 @@ local function RegisterQuest(t)
 		CurrentNPC = npc
 		CurrentBranch = QuestBranches[npc] or ""
 	end
+	
+	local ClearQuestBranches = || for i = 1, #BranchStack do
+		BranchStack[i] = nil
+	end
 
-	function events.ExitNPC(npc)
+	events.ExitAnyNPC = |npc| if CurrentNPC then
 		CurrentBranch = ""
+		ClearQuestBranches()
 		for k, s in pairs(BackupTopics) do
 			Game.NPCTopic[k] = BackupTopics[k]
 		end
 		BackupTopics = {}
-		for i, s in pairs(BackupNPC) do
-			Game.NPC[CurrentNPC].Events[i] = s
-		end
-		BackupNPC = {}
+		RestoreBackupNPC()
 		tget(internal.SaveGameData, "SeenNPC")[CurrentNPC] = true
-		CurrentNPC = nil
+		CurrentNPC, HiredNPC = nil, nil
+	end
+	
+	events.PopulateNPCDialog = |t| if t.DlgKind == "JoinMenu" then
+		RestoreBackupNPC()  -- need to initialize the hired NPC with a clean set of topics
 	end
 	
 	-- Sets current dialog branch to 'branch' if it's specified.
@@ -652,9 +693,7 @@ local function RegisterQuest(t)
 	function ExitQuestBranch(all)
 		if all then
 			CurrentBranch = BranchStack[1]
-			for i = 1, #BranchStack do
-				BranchStack[i] = nil
-			end
+			ClearQuestBranches()
 		elseif BranchStack[1] then
 			CurrentBranch = BranchStack[#BranchStack]
 			BranchStack[#BranchStack] = nil
@@ -669,16 +708,18 @@ local function RegisterQuest(t)
 		return BranchStack
 	end
 
-	function events.CanExitNPC(t)
-		if BranchStack[1] then
-			t.Allow = false
-			ExitQuestBranch()
-		end
+	local CanExitNPC = |t| if t.Allow and BranchStack[1] and Game.NPC[CurrentNPC].Hired ~= not HiredNPC then
+		t.Allow = false
+		ExitQuestBranch()
 	end
+	events.CanExitNPC = CanExitNPC
+	events.CanExitHiredNPC = CanExitNPC
 	
 	function events.LeaveGame()
 		Quests = {}
 		RegQuests = {}
+		CurrentNPC, HiredNPC = nil, nil
+		ExitQuestBranch(true)
 	end
 	
 	function GenerateQuestsLocalization(IsLua)

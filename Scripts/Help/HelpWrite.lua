@@ -270,7 +270,7 @@ local TocMore = [[<h5 class="def-hidden">&#8230;</h5>]]
 		s = s:gsub("'([%w_%.]+)'", '<b class="def-param">%1</b>')
 		s = s:gsub("!'%[(=*)%[(.-)%]%1%]", '<b class="def-param">%2</b>')
 		s = s:gsub("'/(.-)/'", '&nbsp;<i class="def-ib">%1</i>')
-		s = s:gsub("!\\ ([%w_]+)", '<span class="def-vspace">%1</span>')
+		s = s:gsub("!\\ ([^ \r\n]+)", '<span class="def-vspace">%1</span>')
 		for k, v in pairs(vers) do
 			s = s:replace(v, VerFmt:format(v))
 		end

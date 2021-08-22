@@ -231,10 +231,6 @@ internal.GetPlayer, internal.GetMonster = GetPlayer, GetMonster
 
 mem.IgnoreProtection(true)
 
--- for dialogs
-local NoHint = mmv(0x4CB230, 0x5063F0, 0x517B40)
-local CurrentHouseDialog = mmv(0x4D50C0, 0x507A3C, 0x519324)
-
 -- remove unneeded checks in allocMM
 mem.nop2(mmv(0x4213AA, 0x426719, 0x424B65), mmv(0x4213C2, 0x42672E, 0x424B77))
 
@@ -275,7 +271,7 @@ function internal.CalcSpellDamage(dmg, spell, skill, mastery, HP)
 		-- :const
 		Mastery = mastery,
 		HP = HP, HitPoints = HP}
-	events.cocall("CalcSpellDamage", t, spell)
+	events.cocall("CalcSpellDamage", t)
 	return t.Result
 end
 
@@ -486,20 +482,6 @@ if mmver == 7 then
 	mem.hook(0x46496C, IsUnderwaterHook)
 end
 
--- SetMapNoNPC
-if mmver == 7 then
-	mem.hook(0x460B45, function(d)
-		u1[0xA74AEB] = 0
-		-- [MM7]
-		events.cocalls("SetMapNoNPC")
-	end, 7)
-	mem.hook(0x432FE3, function(d)
-		d.edi = 1
-		d.edx = 1
-		events.cocalls("SetMapNoNPC")
-	end)
-end
-
 -- FogRange
 function internal.SetFogRange()
 	events.cocalls("FogRange")
@@ -578,148 +560,8 @@ do
 	]])
 end
 
--- NPC dialogs
-local function ToHouseScreen(v)
-	return const.HouseScreens[v] or v
-end
 
-local function PopulateNPCDialog(dlg, t, h)
-	local street = h
-	dlg = dlg or i4[CurrentHouseDialog]
-	h = h or 30
-	local n = 0
-	for i = 1, table.maxn(t) do
-		local k = ToHouseScreen(t[i])
-		if k then
-			call(mmv(0x41A170, 0x41D0D8, 0x41C513), 0, dlg, 480, (street and 130 or 160) + h*n, 140, h, 1, 0, street and 136 or 135, k, 0, NoHint, 0)
-			n = n + 1
-		end
-	end
-	call(mmv(0x41A0E0, 0x41D038, 0x41C473), 1, dlg, n, 1, 0, street and 1 or 2)
-end
-
--- ShowNPCTopics - called when NPC topics list is about to be shown
-local CurrentNPC, CurrentAnyNPC, FirstEnterNPC
-
-local function EnterAnyNPC(p, npc, i, kind)
-	local start = not CurrentAnyNPC
-	CurrentAnyNPC = p
-	local npc, i, kind = Game.GetNPCFromPtr(p)
-	if start then
-		FirstEnterNPC = true
-		CurrentNPC = kind == 'NPC' and i or nil
-		local t = {NPC = npc, Index = i, Kind = kind}
-		-- happens before #events.EnterNPC# and #GetCurrentNPC:# 
-		events.cocalls("EnterAnyNPC", t, npc)
-	end
-	return npc, i, kind
-end
-
-local function NPCTopicsHook(d, skip, p, dlg, h)
-	local npc, i, kind = EnterAnyNPC(p)
-	if kind == 'NPC' then
-		CurrentNPC = i
-		if FirstEnterNPC then
-			events.cocalls("EnterNPC", i)
-		end
-		FirstEnterNPC = nil
-		events.cocalls("ShowNPCTopics", i)
-	end
-	local t = {NPC = npc, Index = i, Kind = kind, Result = nil}
-	--!k{NPC :struct.NPC} Change topics in an NPC dialog. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. Names from #const.HouseScreens:# as text are allowed. By default 't.Result' is not populated, but it would consist of [MM6]"ProfNews", "JoinMenu", [MM6]"News", "A", "B", "C", [MM7+]"D", [MM7+]"E", [MM7+]"F", but only the visible ones and no more than 4 in total.
-	events.cocall("PopulateNPCDialog", t, npc)
-	if t.Result then
-		PopulateNPCDialog(dlg, t.Result, h)
-		u4[d.esp] = skip
-	end
-end
-
-local function NPCHireHook(d, skip, p, dlg, h)
-	local npc, i, kind = EnterAnyNPC(p)
-	local t = {NPC = npc, Index = i, Kind = kind, Result = nil}
-	--!k{NPC :struct.NPC} [MM6,MM7] Change topics in a street NPC hire dialog or a dismiss dialog. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. Names from #const.HouseScreens:# as text are allowed. By default 't.Result' is not populated, but it would always consist of "MoreInformation", "HireOrDismiss" (both always visible).
-	events.cocall("PopulateJoinDialog", t, npc)
-	if t.Result then
-		PopulateNPCDialog(dlg, t.Result, h)
-		d:push(skip)
-		return true
-	end
-end
-
-if mmver == 6 then
-	mem.autohook(0x4195E6, function(d)  EnterAnyNPC(Game.GetCurrentNPCPtr())  end)  -- street NPC enter
-	mem.autohook(0x419774, function(d)  return NPCTopicsHook(d, 0x4198FC, d.ebp, d.esi, d.edi)  end)  -- street NPC
-	mem.autohook(0x419605, function(d)  return NPCHireHook(d, 0x4198FC, Game.GetCurrentNPCPtr(), d.esi, u1[d.eax + 5])  end)  -- street NPC hire
-	mem.autohook(0x499B3A, function(d)  return NPCTopicsHook(d, 0x499CE5, d.ebp, d.ecx)  end)  -- house NPC
-elseif mmver == 7 then
-	mem.autohook(0x41C5ED, function(d)  EnterAnyNPC(Game.GetNPCPtrFromIndex(Game.DialogNPC))  end)  -- street NPC enter
-	mem.autohook(0x41C633, function(d)  return NPCTopicsHook(d, 0x41CCDB, d.ebp, d.esi, d.ebx)  end)  -- street NPC
-	mem.autohook(0x41C876, function(d)  return NPCHireHook(d, 0x41CCDB, d.ebp, d.esi, d.ebx)  end)  -- street NPC hire
-	mem.autohook(0x4B43CD, function(d)  return NPCTopicsHook(d, 0x4B45EC, d.eax)  end)  -- house NPC
-else
-	mem.autohook(0x41BD22, function(d)  return NPCTopicsHook(d, 0x41C0F4, d.eax, d.esi, d.ebx)  end)  -- street NPC
-	mem.autohook(0x4B2E7E, function(d)  return NPCTopicsHook(d, 0x4B309F, d.eax)  end)  -- house NPC
-end
-
--- DrawNPCGreeting - called when NPC greeting is about to be shown
-local CurNPCGreet
-
-local function NPCGreetingHook(eax, p)
-	local t = {Text = mem.pchar[Game.NPCGreet["?ptr"] + eax*4], Seen = (eax % 2 ~= 0)}
-	t.NPC = (p - Game.NPC["?ptr"])/Game.NPC[0]["?size"]
-	if t.NPC >= 0 and t.NPC < Game.NPC.Length then
-		events.cocall("DrawNPCGreeting", t)
-	end
-	CurNPCGreet = tostring(t.Text)
-	return CurNPCGreet ~= "" and mem.topointer(CurNPCGreet) or 0
-end
-
-if mmver == 7 then
-	mem.i4[0x4455C2 + 2] = 0
-	mem.hook(0x4455D9, function(d)
-		d.eax = NPCGreetingHook(d.eax, d.ebx)
-		if d.eax == 0 then
-			u4[d.esp] = 0x4456FA
-		end
-	end, 7)
-	mem.i4[0x4B2B73 + 2] = 0
-	mem.hook(0x4B2BA1, function(d)
-		d.edx = NPCGreetingHook(d.eax, d.esi)
-		if d.edx == 0 then
-			d.esp = d.esp + 12
-			d:push(0x4B2C3C)
-		end
-	end, 7)
-elseif mmver == 8 then
-	mem.i4[0x44274E + 2] = 0
-	mem.hook(0x442765, function(d)  d.eax = NPCGreetingHook(d.eax, d.edi)  end, 7)
-	mem.i4[0x4B1389 + 2] = 0
-	mem.hook(0x4B13A3, function(d)
-		d.edx = NPCGreetingHook(d.eax, d.esi)
-		if d.edx == 0 then
-			d.esp = d.esp + 12
-			d:push(0x4B1450)
-		end
-	end, 7)
-end
-
--- speak with guards
-if mmver > 6 then
-	local function SpeakWithMonster(d)
-		local t = {Result = nil}
-		t.MonsterIndex, t.Monster = GetMonster(d.esi)
-		--!k{Monster :structs.MapMonster, MonsterIndex} [MM7+] Called when you speak with a guard or any other monster with a generic message from NPCGroup.txt. Assign 'Result' a string to override default monster group message. Assign an empty string to show no message. Initially 'Result' is 'nil'.
-		events.cocalls("SpeakWithMonster", t)
-		if t.Result == "" then
-			d.eax = 0
-		elseif t.Result then
-			Game.TextBuffer = t.Result
-			d.eax = structs.o.GameStructure.TextBuffer
-		end
-	end
-	mem.autohook2(mm78(0x46A586, 0x4688F8), SpeakWithMonster)
-	mem.autohook2(mm78(0x422509, 0x4216EE), SpeakWithMonster)
-end
+-- populate some dialogs
 
 -- allow indexes over 256 in MM6
 local CopyDialogIndexes, CopyDialogIndexesBack = function() end, nil
@@ -873,46 +715,19 @@ if mmver > 6 then
 	Conditional(hooks, "PostRender")
 end
 
-local ExitAnyNPC
 
 -- OnAction
-local screensNPC = {[4] = true, [19] = true}  -- SpeakNPC, street NPC, separate processing for house
 local function OnAction(InGame, a1, a2, a3)
 	local t = {Action = i4[a1], Param = i4[a2], Param2 = a3 and i4[a3] or 0, Handled = false}
 	events.cocall(InGame and "Action" or "MenuAction", t)
-	if t.Handled then
+	if t.Handled or InGame and internal.OnActionNPC(t) then
 		i4[a1] = 0
 	else
 		i4[a1], i4[a2] = t.Action, t.Param
 		if a3 then
 			i4[a3] = t.Param2
 		end
-		if InGame and CurrentAnyNPC and i4[a1] == 113 and screensNPC[Game.CurrentScreen] then
-			local allow = true
-			if CurrentNPC then
-				local t = {NPC = CurrentNPC, Allow = true, Must = false}
-				-- If 'Must' is 'true', the handler can still set 'Allow' to 'false', but can't fully cancel the exit. After a 100 attempts at calling 'CanExitNPC', the exit will happen.
-				events.cocalls("CanExitNPC", t)
-				allow = t.Allow
-			end
-			if allow then
-				ExitAnyNPC()
-			else
-				i4[a1] = 0
-			end
-		end
 	end
-end
-
-function ExitAnyNPC()
-	if CurrentNPC then
-		events.cocalls("ExitNPC", CurrentNPC)
-	end
-	local npc, i, kind = Game.GetNPCFromPtr(CurrentAnyNPC)
-	local t = {NPC = npc, Index = i, Kind = kind}
-	--!k{NPC :struct.NPC}
-	events.cocalls("ExitAnyNPC", t)
-	CurrentNPC, CurrentAnyNPC = nil, nil
 end
 
 if mmver == 6 then
@@ -940,36 +755,6 @@ else
 	end)
 end
 
--- exit house screen
-mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), 0, 0, function()
-	local i = Game.HouseScreen
-	if CurrentNPC and (i == 0 or i == 1) then  -- i == 0 happens with "Enter Temple of Light/Dark"
-		local i = CurrentNPC
-		local t = {NPC = i, Allow = true, Must = (Game.HouseNPCSlot <= 0)}
-		events.cocalls("CanExitNPC", t)
-		if Game.HouseNPCSlot <= 0 then  -- can't talk anymore
-			t.Must = true
-			local _ = 0
-			while not t.Allow and (_ < 100) do
-				events.cocalls("CanExitNPC", t)
-				_ = _ + 1
-			end
-			t.Allow = true
-		end
-		if t.Allow then
-			ExitAnyNPC()
-		else
-			Game.HouseScreen = -1
-		end
-	else
-		events.cocalls("ExitHouseScreen", Game.HouseScreen)
-	end
-end)
-
-function GetCurrentNPC()
-	return CurrentNPC
-end
-
 -- exit map action
 do
 	local reg = mmv('ecx', 'eax', 'eax')
@@ -987,224 +772,6 @@ do
 		events.cocall('ExitMapAction', t)
 		Game.ExitMapAction = t.NextAction or t.Action  -- just in case someone actually needs a trick like this
 		d[reg] = t.Action or Game.ExitMapAction
-	end)
-end
-
--- skill teacher
-do
-	local buf, cant
-	mem.hookfunction(mmv(0x496C90, 0x4B24B0, 0x4B0DC1), 1, 0, function(d, def, topic)
-		cant = true
-		local r = def(topic)
-		if cant then
-			return r
-		end
-		local s = mem.string(r)
-		local t = {Text = s, Cost = Game.HouseCost, Skill = Game.HouseActionInfo, Mastery = Game.HouseTeachMastery, Allow = Game.HouseAllowAction ~= 0}
-		events.cocalls("CanTeachSkillMastery", t)
-		if t.Text ~= s then
-			s = t.Text
-			buf = buf or mem.allocMM(500)
-			mem.copy(buf, s, min(#s+1, 499))
-			r = buf
-		end
-		Game.HouseCost = t.Cost
-		Game.HouseActionInfo = t.Skill
-		Game.HouseTeachMastery = t.Mastery
-		Game.HouseAllowAction = t.Allow and 1 or 0
-		return r
-	end)
-	mem.autohook(mmv(0x496D4F, 0x4B2660, 0x4B0F2E), function(d)
-		cant = false
-	end)
-end
-
--- house dialogs
-local function PopulateDialog(t)
-	local n = 0
-	for i = 1, table.maxn(t) do
-		local k = ToHouseScreen(t[i])
-		if k then
-			call(mmv(0x498450, 0x4B362F, 0x4B1F3C), 2, i - 1, k)
-			n = n + 1
-		end
-	end
-	local dlg = u4[CurrentHouseDialog]
-	call(mmv(0x41A0E0, 0x41D038, 0x41C473), 1, dlg, n, 1, 0, 2)
-	n = i4[dlg + 0x28]
-	i4[mmv(0x9DDDFC, 0xF8B060, 0xFFD450)] = n
-	return n
-end
-
-if mmver == 7 then  -- make room for PopulateHouseDialog hook
-	mem.asmpatch(0x4B3AA9, [[nop]])
-	mem.asmpatch(0x4B3AAA, [[
-		jng @f
-		jmp absolute 0x4B3B8F
-	@@:
-	]])
-end
-
-mem.hookfunction(mmv(0x498490, 0x4B3AA5, 0x4B250A), 1, 0, function(d, def, type)
-	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = nil}
-	--!k{PicType :const.HouseType} Change topics in the main dialog menu in a house, unless isn't an NPC conversation. Unfortunately, the captions displayed won't change as they are hard-coded in various places. To override the default, assign 'Result' an array of topic numbers. See #const.HouseScreens:#. By default 't.Result' is not populated. Names from #const.HouseScreens:# as text are allowed.
-	-- !\ Example:!LUA[[
-	-- events.PopulateHouseDialog = |t| if t.PicType == const.HouseType.Training then
-	-- 	t.Result = {"Train"}  -- disable learning skills at training halls
-	-- end]]
-	events.cocalls("PopulateHouseDialog", t)
-	if not t.Result then
-		return def(type)
-	end
-	return PopulateDialog(t.Result)
-end)
-
--- learn skill dialogs
-
-function _G.SkillToHouseTopic(i)
-	return i + 36
-end
-
-function _G.HouseTopicToSkill(i)
-	return i >= 36 and i <= 36 + const.Skills.Learning and i - 36 or nil
-end
-
-if mmver > 6 then
-	local bufLim = mm78(37, 39)
-	local buf
-	mem.nop(mm78(0x4B381C, 0x4B21B6))
-	mem.autohook2(mm78(0x4B3825, 0x4B21BF) - 5, function(d)
-		local p, pn = d.esi, d.ebp - 4
-		local t = {}
-		for i = 1, i4[pn] do
-			t[i] = i4[p + i*4 - 4] - 36
-		end
-		local t = {Result = t, PicType = Game.HousePicType, House = Game.GetCurrentHouse()}
-		--!k{PicType :const.HouseType} [MM7+] Change skills in Learn Skills dialog. 'Result' is a pre-populated table containing an array of skill numbers. Skill names from #const.Skills:# are also allowed.
-		-- !\ Example:!LUA[[
-		-- events.PopulateLearnSkillsDialog = |t| if t.PicType == const.HouseType.Tavern then
-		-- 	t.Result[#t.Result + 1] = "Blaster"  -- devs apperently forgot to make taverns teach you Blaster skill
-		-- end]]
-		events.cocalls("PopulateLearnSkillsDialog", t)
-		t = t.Result
-		if #t > mm78(3, 5) then
-			buf = buf or mem.allocMM(bufLim*4)
-			p, d.esi = buf, buf
-		end
-		local n = min(#t, bufLim)
-		i4[pn] = n
-		for i = 1, n do
-			i4[p + i*4 - 4] = (const.Skills[t[i]] or t[i]) + 36
-		end
-		if n == 0 then
-			d:push(mm78(0x4B39AF, 0x4B23B6))
-			return true
-		end
-	end)
-end
-
--- arcomage
-
-if mmver == 7 then
-	local hooks
-	-- [MM7] Pass 'false' to remove the deck requirement.
-	function ArcomageRequireDeck(on)
-		if hooks then
-			hooks.Switch(not on)
-		elseif not on then
-			hooks = HookManager()
-			hooks.nop(0x4B3A06)  -- no arcomage deck requirement
-			hooks.nop(0x4B8A31)  -- no arcomage deck requirement
-		end
-	end
-end
-
--- GetShopItemTreatment
-local ShopAction = {nil, 'buy', 'sell', 'identify', 'repair'}
-
-mem.hookfunction(mmv(0x485120, 0x490EE6, 0x49000D), 1, 4, function(d, def, pl, item, housetype, house, action)
-	local t = {
-		House = house,
-		-- :const.HouseType
-		HouseType = housetype,
-		Action = ShopAction[action] or action,
-		-- :structs.Item
-		Item = structs.Item:new(item),
-		Result = def(pl, item, housetype, house, action),
-	}
-	t.PlayerIndex, t.Player = GetPlayer(pl)
-	function t.GetDefault(HouseType, House, Item, Action, Player)
-		return def(Player or pl, Item or item, HouseType or housetype, House or house, Action or action)
-	end
-	--!k{Player :structs.Player}
-	-- 'Action': "buy", "sell", "identify", "repair"
-	-- 'Result': 0-based option from merchant.txt
-	-- 'GetDefault'!Params[[(HouseType, House, Item, Action, Player)]] function lets you get item treatment by another shop type (all parameters are optional)
-	events.cocall("GetShopItemTreatment", t)
-	return t.Result
-end)
-
--- CanShopOperateOnItem
-mem.hookfunction(mmv(0x4A4C30, 0x4BDA12, 0x4BB612), 2, 0, function(d, def, item, house)
-	local t = {
-		House = house,
-		-- :const.HouseType
-		HouseType = Game.Houses[house].Type,
-		Action = ShopAction[Game.HouseScreen],
-		-- :structs.Item
-		Item = structs.Item:new(item),
-		Result = def(item, house) ~= 0,
-	}
-	function t.GetDefault(House, Item)
-		return def(Item or item, House or house) ~= 0
-	end
-	-- 'Action': "buy", "sell", "identify", "repair"
-	-- 'GetDefault'!Params[[(House, Item)]] function lets you get item treatment by another shop type (all parameters are optional)
-	events.cocall("CanShopOperateOnItem", t)
-	return t.Result and 1 or 0
-end)
-
--- ShopItemsGenerated
-mem.hookfunction(mmv(0x49FD40, 0x4B8EF7, 0x4B74B6), 0, 0, function(d, def)
-	def()
-	local house = Game.GetCurrentHouse()
-	local t = {
-		House = house,
-		-- :const.HouseType
-		HouseType = Game.Houses[house].Type,
-	}
-	events.cocall("ShopItemsGenerated", t)
-end)
-
--- GuildItemsGenerated
-mem.autohook(mmv(0x4A465D, 0x4BD307, 0x4BB2B6), function(d)
-	local house = Game.GetCurrentHouse()
-	local t = {
-		House = house,
-		-- :const.HouseType
-		HouseType = Game.Houses[house].Type,
-	}
-	-- Note that you'll have to update #Game.GuildItemIconPtr:# if you change items in this event (see an example there).
-	events.cocall("GuildItemsGenerated", t)
-end)
-
--- HouseMovieFrame
-do
-	local hooks = HookManager()
-	hooks.autohook(mmv(0x4A6113, 0x4BF09B, 0x4BCCCE), function(d)
-		local t = {
-			House = Game.GetCurrentHouse(),
-		}
-		events.cocall("HouseMovieFrame", t)
-	end)
-	Conditional(hooks, "HouseMovieFrame")
-end
-
--- Arcomage
-if mmver > 6 then
-	mem.autohook2(mm78(0x40A005, 0x40AB7D), function(d)
-		--!(arcomage:structs.Arcomage)
-		events.cocalls("ArcomageSetup", Game.Arcomage)
 	end)
 end
 
@@ -1246,11 +813,13 @@ do
 		if internal.SaveGameData then
 			internal.TimersSaveGame()
 			events.cocalls("BeforeSaveGame")
+			--!-
 			events.cocalls("InternalBeforeSaveGame")
 			-- internal.MonstersRestore(true)
 		else
 			internal.SaveGameData = {vars = {}}
 			events.cocalls("BeforeNewGameAutosave")
+			--!-
 			events.cocalls("InternalBeforeNewGameAutosave")
 		end
 		local buf, err = internal.persist(internal.SaveGameData) --, permanentsSave)
@@ -1710,6 +1279,7 @@ mem.hookfunction(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, 8, function(d, def, this,
 			t.Allow = false
 		end
 	end
+	--!-
 	events.cocall("InternalPlaySound", t)
 	if t.Allow then
 		events.cocall("PlaySound", t)
@@ -1762,9 +1332,10 @@ do
 				t.Allow = false
 			end
 		end
-		--!k{Player :structs.Player}
+		--!-
 		events.cocall("InternalFaceAnimation", t)
 		if t.Allow then
+			--!k{Player :structs.Player}
 			events.cocall("FaceAnimation", t)
 		end
 		t.CallDefault()
@@ -2023,18 +1594,6 @@ mem.hookfunction(mmv(0x480010, 0x48DCDC, 0x48D166), 1, mmv(1, 2, 2), function(d,
 	return t.Allow and def(this, thing, mon) or 0
 end)
 
--- CanTempleHealPlayer
-mem.hookfunction(mmv(0x49DAD0, 0x4B6F5C, 0x4B57BD), 1, 0, function(d, def, this)
-	local t = {
-		House = Game.GetCurrentHouse(),
-		Result = def(this) ~= 0,
-	}
-	t.PlayerIndex, t.Player = GetPlayer(this)
-	--!k{Player :structs.Player}
-	events.cocall("CanTempleHealPlayer", t)
-	return t.Result and 1 or 0
-end)
-
 -- GetStatisticEffect
 mem.hookfunction(mmv(0x482DC0, 0x48EA13, 0x48E18E), 0, 1, function(d, def, val)
 	local t = {
@@ -2280,7 +1839,7 @@ delayed(|| if mmver > 6 then
 		}
 		t.MonsterIndex, t.Monster = GetMonster(mon)
 		--!k{Monster :structs.MapMonster} [MM7+]
-		events.cocall("CanMonsterCastSpell", t, spell)
+		events.cocall("CanMonsterCastSpell", t)
 		return t.Allow
 	end)
 	Conditional(hooks, "CanMonsterCastSpell")
