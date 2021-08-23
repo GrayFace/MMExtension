@@ -290,7 +290,7 @@ function _mem.IgnoreProtection(on)
 end
 
 local function MyProt(on)
-	IgnoreCount = IgnoreCount + (on and 1 or -1)
+	IgnoreCount = IgnoreCount + (on and 1 or IgnoreInternal and -1 or 0)
 	IgnoreInternal = on
 end
 
