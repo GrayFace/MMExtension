@@ -821,9 +821,9 @@ function structs.f.Dlg(define)
 	[0x44].i4  'UseKeyboadNavigation'
 	--[0x48].i4  '' -- Param2
 	[0x4C].alt.pstruct(structs.Button)  'FirstItem'
-	[0x4C].i4  'FirstItemPtr'
+	[0x4C].u4  'FirstItemPtr'
 	[0x50].alt.pstruct(structs.Button)  'LastItem'
-	[0x50].i4  'LastItemPtr'
+	[0x50].u4  'LastItemPtr'
 	.size = 0x54
 
 	define
@@ -855,24 +855,39 @@ function structs.f.Button(define)
 	[0x18].i4  'Shape'
 	[0x1C].i4  'HintAction'
 	[0x20].i4  'ActionType'
-	[0x24].i4  'ActionInfo1'
+	[0x24].i4  'ActionParam'
 	local o = 0
 	if mmver > 6 then
-		define[0x28].i4  'ActionInfo2'
+		define[0x28].i4  'ActionParam2'
 		o = 4
 	end
 	define
 	[0x28+o].b4  'Pressed'
 	[0x2C+o].alt.pstruct(structs.Button)  'PrevItem'
-	[0x2C+o].i4  'PrevItemPtr'
+	[0x2C+o].u4  'PrevItemPtr'
 	[0x30+o].alt.pstruct(structs.Button)  'NextItem'
-	[0x30+o].i4  'NextItemPtr'
+	[0x30+o].u4  'NextItemPtr'
 	[0x34+o].alt.pstruct(structs.Dlg)  'Parent'
-	[0x34+o].i4  'ParentPtr'
+	[0x34+o].u4  'ParentPtr'
 	[0x38+o].array{5, lenA = i4, lenP = 0x4C+o}.i4  'Sprites'
 	[0x50+o].u1  'ShortCut'
 	[0x51+o].string(103)  'Hint'
 	.size = 0xB8+o
+	
+	local function GetLink(p, nxt, parent)
+		return p == 0 and parent + 0x4C + (nxt and 0 or 4) or p+o + 0x2C + (nxt and 4 or 0)
+	end
+	function define.m:Destroy()
+		local p = self['?ptr']
+		local pn = u4[GetLink(p, true)]
+		local pl = u4[GetLink(p, false)]
+		local parent = u4[p+o + 0x34]
+		u4[GetLink(pl, true, parent)] = pn
+		u4[GetLink(pn, false, parent)] = pl
+		u4[parent + 0x20] = u4[parent + 0x20] - 1
+		mem.freeMM(p)
+	end
+	define.Info "Make sure to update Parent.KeyboardItemsCount on your own if you delete one of them"
 end
 
 function structs.f.MonsterAttackInfo(define)

@@ -416,11 +416,11 @@ local function ReadPopulatedDialog(action, NoTopics)
 	if n ~= 0 then
 		x, y, w, h = it.Left, it.Top, it.Width, it.Height
 		for i = n, 1, -1 do
-			if it.ActionType ~= (CommandActions[it.ActionInfo1] or action) then
+			if it.ActionType ~= (CommandActions[it.ActionParam] or action) then
 				return  -- alien items detected
 			end
 			items[i] = it['?ptr']
-			t[i] = it.ActionInfo1
+			t[i] = it.ActionParam
 			it['?ptr'] = it.PrevItemPtr
 		end
 	end
@@ -431,39 +431,28 @@ local function ReadPopulatedDialog(action, NoTopics)
 	end
 	
 	-- after
-	return t, |t| do
+	return t, function(t)
 		local t, extra = ArrToHouseScreen(t or {})
 		-- create
 		for i = n + 1, #t do
 			items[i] = dlg:AddButton(x, y + h*(i - n), w, h)
 		end
-		local changed = #t ~= n0
 		-- delete
-		if #t < n then
-			local p = items[#t]
-			dlg.LastItemPtr = p
-			if p ~= 0 then
-				it['?ptr'] = p
-				it.NextItemPtr = 0
-			else
-				dlg.FirstItemPtr = 0
-			end
-			for i = #t + 1, n do
-				mem.freeMM(items[i])
-			end
-			dlg.ItemsCount = dlg.ItemsCount + #t - n
+		for i = #t + 1, n do
+			it['?ptr'] = items[i]
+			it:Destroy()
 		end
 		-- assign
 		for i, v in ipairs(t) do
 			it['?ptr'] = items[i]
 			it.ActionType = CommandActions[v] or action
-			it.ActionInfo1 = v
+			it.ActionParam = v
 			if extra[i] then
 				table.copy(extra[i], it, true)
 			end
 		end
 		-- done
-		if changed then
+		if #t ~= n0 then
 			dlg:SetKeyboardNavigation(#t, 1, 0, dlg.ItemsCount - #t)
 		end
 		return t, extra
@@ -536,7 +525,7 @@ function RefillNPCTopics()
 	if mmver < 8 then
 		local it = structs.Button:new(dlg.LastItemPtr)
 		while it['?ptr'] ~= 0 do
-			if it.ActionType == 136 and it.ActionInfo1 == 9 then
+			if it.ActionType == 136 and it.ActionParam == 9 then
 				extraItem = 9
 				break
 			end
