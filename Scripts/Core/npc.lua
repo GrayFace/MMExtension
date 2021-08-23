@@ -400,20 +400,18 @@ end
 
 local function ReadPopulatedDialog(action, NoTopics)
 	local dlg = Game.CurrentNPCDialog
-	-- MessageBox(dlg.KeyboardItemsCount..' + '..dlg.KeyboardItemsStart..' = '..dlg.ItemsCount)
-	local n = dlg.KeyboardItemsCount
 	local x, y, w, h = 480, 160, 140, 30
 	local t, items = {}, {}
 	local it = structs.Button:new(dlg.LastItemPtr)
-	local diff = n + dlg.KeyboardItemsStart - dlg.ItemsCount
-	if diff < 0 then
-		return  -- unsupported. Can only happen if new uninteractive dlg items are added to beg/threat/bribe menu of MM6
-	elseif diff > 0 then
+	local n0 = dlg.KeyboardItemsCount
+	local n = n0 == 0 and 0 or dlg.ItemsCount - dlg.KeyboardItemsStart
+	if n < n0 then
 		-- unused house PicType produces boken keyboard items count (1 instead of 0)
-		n = dlg.ItemsCount - dlg.KeyboardItemsStart
+		n0 = n
 		dlg:SetKeyboardNavigation(n, 1, 0, dlg.KeyboardItemsStart)
 	elseif NoTopics and n == 1 and it.ActionType ~= action then
-		n = 0
+		-- Seer Pilgrimage
+		n, n0 = 0, 0
 	end
 	if n ~= 0 then
 		x, y, w, h = it.Left, it.Top, it.Width, it.Height
@@ -427,6 +425,10 @@ local function ReadPopulatedDialog(action, NoTopics)
 		end
 	end
 	items[0] = it['?ptr']
+	-- temple bug - each healing adds inactive invisible items to the list
+	for i = n0 + 1, n do
+		t[i] = nil
+	end
 	
 	-- after
 	return t, |t| do
@@ -435,7 +437,7 @@ local function ReadPopulatedDialog(action, NoTopics)
 		for i = n + 1, #t do
 			items[i] = dlg:AddButton(x, y + h*(i - n), w, h)
 		end
-		local changed = #t ~= n
+		local changed = #t ~= n0
 		-- delete
 		if #t < n then
 			local p = items[#t]
