@@ -7,14 +7,17 @@ local P = require"Faces"
 ]]
 
 You can add extra columns into "Faces.txt":
-!'[[!\ AllowVoice]] - [MM7+] Enable/disable selecting voice on start independantly from face.
-!'[[!\ Voice]] - [MM7+] Use specified voice instead of the one with the same number as the face.
-!'[[!\ Expressions]] - Expressions list to use. Default is "Expressions". Use if you combine MM6 faces with faces from other games.
-!'[[!\ Sounds]] - Sounds list to use. Default is "Sounds". Use if you combine MM6 voices with faces from other games.
+!'[[!\ AllowVoice]] - [MM7+] Enable/disable selecting voice on start (if not specified, the value of 'Allow' is used).
+!'[[Voice]] - [MM7+] Use specified default voice instead of the one with the same number as the face.
+!'[[Expressions]] - Expressions list to use. Default is "Expressions". Use if you combine MM6 faces with faces from other games.
+!'[[Sounds]] - Sounds list to use. Default is "Sounds". Use if you combine MM6 voices with faces from other games.
 
-Note that 'AllowVoice', 'Female' and sound counts are properties of voice, the rest are properties of face. You can leave any field empty, then the default value would be used.
+Note that 'AllowVoice', 'Female', 'Sounds' and sound counts are properties of voice, the rest are properties of face. If you leave any field empty, the default value would be used.
 
-You can add extra columns into "Face Animations.txt". If their names are valid identifiers, thay would be read as lists. E.g. imagine you've added MM6 characters into another game - then you can add columns "Expressions6" and "Sounds6" columns here and set 'Expressions' and 'Sounds' columns for these characters to "Expressions6" and "Sounds6" respectively. You would however also need to join PFT.txt files and replace indexes in expressions lists accordingly.
+You can add extra columns into "Face Animations.txt". If their names are valid identifiers, thay would be read as lists. E.g. imagine you've added MM6 characters into another game - then you can add "Expressions6" and "Sounds6" columns there and set 'Expressions' and 'Sounds' columns for these characters to "Expressions6" and "Sounds6" respectively. You would however also need to join PFT.txt files and replace indexes in expressions lists accordingly.
+
+The way animations work: random expression is picked from the list in "Expressions" column of "Face Animations.txt" (or "Expressions6" column in the above example). This number is looked up in PFT.txt and the animation is played. Expression 21 is special - it shows the character speaking the voice line as long as it lasts.
+When it comes to voice, sound index is picked at random from the "Sounds" column list (or "Sounds7" in the above example), then sounds count for the voice is looked up and one of the variations of the sound is played. Up to 2 variations are supported.
 ]=]
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
 local i4, i2, i1, u4, u2, u1, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar, mem.call

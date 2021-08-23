@@ -683,6 +683,12 @@ if mmver == 6 then
 	mem.autohook(0x4202C0, PopulateAwards)
 end
 
+-- show monster info
+mem.autohook(mmv(0x41CF11, 0x41E3CC, 0x41D9B0), function(d)
+	--!(MonId) Called when monster kind in monster info dialog changes. #Game.DialogLogic.MonsterInfoMonster:structs.DialogLogic.MonsterInfoMonster# holds the monster prototype being displayed. This is the event you can use to change #Game.PatchOptions.MonSpritesSizeMul:structs.PatchOptions.MonSpritesSizeMul#.
+	events.cocall("MonsterInfoPictureChanged", Game.DialogLogic.MonsterInfoMonster.Id)
+end)
+
 -- WindowProc
 do
 	local buf = mem.hookalloc()

@@ -2808,6 +2808,8 @@ function structs.f.DialogLogic(define)
 		[0x4CB214].i4  'SpellBookSelection'
 		[0x4CB1FC].i4  'AutonotesCategory'
 	end
+	define
+	[mmv(0x4CB3B8, 0x506400, 0x517B50)].struct(structs.MapMonster)  'MonsterInfoMonster'
 end
 
 function structs.f.MoveToMap(define)
