@@ -417,6 +417,7 @@ end]=]
 	[mmv(0x6A8804, 0x722D90, 0x760390)].array(0, 512).EditPChar  'QuestsTxt'
 	if mmver == 6 then
 		define[0x6A9008].array{0, 87}.EditPChar  'AwardsTxt'
+		define[internal.AwardCategoriesPtr or 0].parray{lenA = i4, lenP = (internal.AwardCategoriesPtr or 0) + 4, lenSet = SetLenRealloc}.i4  'AwardsSort'
 	else
 		define
 		[mm78(0x723D00, 0x761648)].array{0, 104, ItemSize = 8}.EditPChar  'AwardsTxt'

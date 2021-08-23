@@ -386,9 +386,7 @@ function AutoAward(t, text, sort)
 	local i = AutoAwards(t)
 	t.AwardIndex = i
 	t.ShowAwardEffect = t.ShowAwardEffect or AutoAwardEffect
-	if mmver > 6 then
-		Game.AwardsSort[i] = sort or t.AwardSort or 3
-	end
+	Game.AwardsSort[i] = sort or t.AwardSort or 3
 	if text then
 		Game.AwardsTxt[i] = text
 	end

@@ -568,12 +568,12 @@ local CopyDialogIndexes, CopyDialogIndexesBack = function() end, nil
 
 if mmver == 6 then
 	function CopyDialogIndexes()
-		local p, n = Game.DialogLogic.List['?ptr'], Game.DialogLogic.List.limit
+		local p, n = Game.DialogLogic.List['?ptr'], min(2000, Game.DialogLogic.List.limit)
 		for i = 0, n - 1 do
 			i4[p + i*4] = u1[0x55D5B0 + i]
 		end
 	end
-	local p = mem.StaticAlloc(4)
+	local p = mem.StaticAlloc(12)
 	internal.DialogIndexListPtr = p
 	u4[p] = mem.allocMM(2000*4)
 	local hooks = HookManager{
@@ -589,6 +589,25 @@ if mmver == 6 then
 	hooks.asmpatch(0x40E2F7, '%code% %p%, edx, edi')  -- quests
 	hooks.asmpatch(0x40E842, '%code% %p%, edx, edi')  -- autonotes
 	hooks.asmpatch(0x416426, '%code% %p%, ecx, eax')  -- awards
+	
+	-- award categories
+	internal.AwardCategoriesPtr = p + 4
+	local sort = mem.allocMM(88*4)
+	u4[p + 4] = sort
+	u4[p + 8] = 88
+	-- fill
+	local i = 0
+	for v, k in ipairs{8, 32, 37, 64, 81, 88} do
+		for i = i, k - 1 do
+			i4[sort + 4*i] = v - 1
+		end
+		i = k
+	end
+	-- hook
+	hooks.asmpatch(0x4164A4, [[
+		%code% %p% + 4, eax, esi
+		jmp absolute 0x4164DC
+	]])
 end
 
 
@@ -640,12 +659,12 @@ local function PopulateAwards(d)
 		-- :structs.Player
 		Player = pl,
 		PlayerIndex = pidx or pl:GetIndex(),
-		NoShuffle = nil,
+		NoShuffle = mmver == 6,
 	}
 	-- Use this event to add award indexes to #Game.DialogLogic.List:structs.DialogLogic.List# or rearrange them. Awards would later be arranged into groups of different colors. If 'NoShuffle' is set to 'true', their order within groups would be preserved, otherwise default game code will sort them in an unpredictable manner.
 	events.cocall("PopulateAwardsList", t)
 	d.eax = a.ListCount
-	if mmver > 6 and t.NoShuffle then
+	if mmver == 6 or t.NoShuffle then
 		local t, a, sort = {}, Game.DialogLogic.List, Game.AwardsSort
 		local n = sort.Count
 		for i, v in a do
