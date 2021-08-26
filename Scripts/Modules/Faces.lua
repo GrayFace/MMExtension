@@ -11,6 +11,7 @@ You can add extra columns into "Faces.txt":
 !'[[Voice]] - [MM7+] Use specified default voice instead of the one with the same number as the face.
 !'[[Expressions]] - Expressions list to use. Default is "Expressions". Use if you combine MM6 faces with faces from other games.
 !'[[Sounds]] - Sounds list to use. Default is "Sounds". Use if you combine MM6 voices with faces from other games.
+!'[[SoundsOffset]] - This value will be added to the sound id (the one being searched in dsounds.bin). You will need this if you add voices from all 3 games.
 
 Note that 'AllowVoice', 'Female', 'Sounds' and sound counts are properties of voice, the rest are properties of face. If you leave any field empty, the default value would be used.
 
@@ -57,6 +58,7 @@ local function HookFaceAnimations()
 		local snd = get(anim, sounds, 'Sounds')
 		t.Sound = snd
 		t.SoundCount = sounds[snd] or 0
+		t.SoundOffset = sounds.SoundsOffset or 0
 	end
 	HookFaceAnimations = ||
 end
@@ -116,7 +118,7 @@ local rstr = |s| s ~= '' and s or nil
 local rrace = is7 and (|s| const.Race[s] or rint(s))
 local rclass = is8 and (|s| const.Class[s] or rint(s))
 
-local Read = {Allow = rbool, AllowVoice = rbool, Voice = rint, Female = rbi, Race = rrace, Class = rclass, Expressions = rstr, Sounds = rstr}
+local Read = {Allow = rbool, AllowVoice = rbool, Voice = rint, Female = rbi, Race = rrace, Class = rclass, Expressions = rstr, Sounds = rstr, SoundsOffset = rint}
 
 function P.FacesHandler(text)
 	text = text or MakeFaces()
@@ -130,11 +132,11 @@ function P.FacesHandler(text)
 		for s, f in pairs(Read) do
 			q[s] = f(t[s] or '')
 		end
-		for s, f in pairs(P.ExtraFields) do
-			q[s] = f(t[s] or '', q, t, i - 1, s)
-		end
 		if q.AllowVoice == nil then
 			q.AllowVoice = q.Allow
+		end
+		for s, f in pairs(P.ExtraFields) do
+			q[s] = f(t[s] or '', q, t, i - 1, s)
 		end
 		for i = 1, 50 do
 			q[i] = rint(t[i..''] or '')

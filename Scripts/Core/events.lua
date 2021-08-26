@@ -1314,17 +1314,17 @@ end)
 
 -- FaceAnimation
 do
-	local p = mem.StaticAlloc(12)
+	local p = mem.StaticAlloc(16)
 	local hooks = HookManager{
-		snd = p,
-		face = p + 4,
+		face = p,
+		snd = p + 4,
 		scount = p + 8,
+		soff = p + 12,
 		code = [[
 			mmdef a, esp+0x28-0x14, ebp-0x1C, ebp-0x1C
 			cmp dword [p], esi
 			jl @std
 			mov ecx, [p]
-			cmp ecx, 0
 			jz @f
 			inc esi
 			mov [a], ecx
@@ -1339,6 +1339,7 @@ do
 			Face = nil,
 			Sound = nil,
 			SoundCount = nil,
+			SoundOffset = 0,
 			ForceSound = nil,
 			Allow = true,
 		}
@@ -1350,9 +1351,10 @@ do
 				if snd and (anim == 24 and mmver == 8 and not t.ForceSound and Game.Rand()%100 > 10 or mmver == 6 and t.SoundCount == 0) then
 					snd = 0
 				end
-				i4[p] = snd or -1
-				i4[p + 4] = t.Face or -1
+				i4[p] = t.Face or -1
+				i4[p + 4] = snd or -1
 				i4[p + 8] = t.SoundCount or -1
+				i4[p + 12] = t.SoundOffset or 0
 				def(t.Player, t.Animation)
 				t.Allow = false
 			end
@@ -1365,16 +1367,16 @@ do
 		end
 		t.CallDefault()
 	end)
-	-- sound
-	hooks.asmhook2(mmv(0x488D0C, 0x4948E9, 0x492C1A), [[
-		mmdef jmp1, 0x488D2E, 0x494906, 0x492C4C
-		p = %snd%
-		%code%
-	]])
 	-- face
 	hooks.asmhook2(mmv(0x488DAC, 0x49498C, 0x492CD3), [[
 		mmdef jmp1, 0x488DCC, 0x4949A8, 0x492CEF
 		p = %face%
+		%code%
+	]])
+	-- sound
+	hooks.asmhook2(mmv(0x488D0C, 0x4948E9, 0x492C1A), [[
+		mmdef jmp1, 0x488D2E, 0x494906, 0x492C4C
+		p = %snd%
 		%code%
 	]])
 	-- sound count
@@ -1384,6 +1386,10 @@ do
 		jl @f
 		mov reg, [%scount%]
 	@@:
+	]])
+	-- sound offset
+	hooks.asmhook2(mmv(0x488D61, 0x494946, 0x492C8C), [[
+		add esi, [%soff%]
 	]])
 	-- on/off
 	Conditional(hooks, {"FaceAnimation", "InternalFaceAnimation"})
