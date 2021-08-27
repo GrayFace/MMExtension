@@ -92,7 +92,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x54D040, 0x590F0C, 0x5A5378)].i4  'NPCCommand'
 	[mmv(0x9DDD8C, 0xF8B01C, 0xFFD408)].i4  'HouseScreen'
 	[mmv(0x551F94, 0x591270, 0x5A56E0)].i4  'HouseNPCSlot'
-	 .Info "If #HouseNPCSlot:structs.GameStructure.HouseNPCSlot# isn't '0', first slot is occupied by the shop keeper.\nIf #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter icon."
+	 .Info "If #HouseOwnerPic:structs.GameStructure.HouseOwnerPic# isn't '0', first slot is occupied by the shop keeper.\nIf #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter icon."
 	[mmv(0x53CB60, 0x5912A4, 0x5A5714)].i4  'HouseNPCSlotsCount'
 	[mmv(0x9DDD9C, 0xF8B034, 0xFFD420)].i4  'HouseCost'
 	[mmv(0x9DDD70, 0xF8B028, 0xFFD414)].i4  'HouseAllowAction'

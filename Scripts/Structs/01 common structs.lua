@@ -820,9 +820,9 @@ function structs.f.Dlg(define)
 	-- 40
 	[0x44].i4  'UseKeyboadNavigation'
 	--[0x48].i4  '' -- Param2
-	[0x4C].alt.pstruct(structs.Button)  'FirstItem'
+	-- [0x4C].alt.pstruct(structs.Button)  'FirstItem'
 	[0x4C].u4  'FirstItemPtr'
-	[0x50].alt.pstruct(structs.Button)  'LastItem'
+	-- [0x50].alt.pstruct(structs.Button)  'LastItem'
 	[0x50].u4  'LastItemPtr'
 	.size = 0x54
 
@@ -863,9 +863,9 @@ function structs.f.Button(define)
 	end
 	define
 	[0x28+o].b4  'Pressed'
-	[0x2C+o].alt.pstruct(structs.Button)  'PrevItem'
+	-- [0x2C+o].alt.pstruct(structs.Button)  'PrevItem'
 	[0x2C+o].u4  'PrevItemPtr'
-	[0x30+o].alt.pstruct(structs.Button)  'NextItem'
+	-- [0x30+o].alt.pstruct(structs.Button)  'NextItem'
 	[0x30+o].u4  'NextItemPtr'
 	[0x34+o].alt.pstruct(structs.Dlg)  'Parent'
 	[0x34+o].u4  'ParentPtr'
