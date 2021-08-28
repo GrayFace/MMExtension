@@ -1313,12 +1313,15 @@ Usually a better approach is to specify player after 'evt', this way it only eff
 	end)
 
 	---------------------------
-	MakeCmd("IsPlayerInParty", 0x44, function(define)
+	MakeCmd("CanPlayerAct", 0x44, function(define)
 		define
 		.u4  'Id'
-		 .Info "Roster.txt"
+		 .Info "from Roster.txt"
 		YJump  '  jump(ok)'
 	end)
+	for _, t in pairs(EvtTables) do
+		t.IsPlayerInParty = t.CanPlayerAct  -- backward compatibility
+	end
 
 end
 
