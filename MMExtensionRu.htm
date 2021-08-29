@@ -2501,25 +2501,25 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="events.MonsterAttacked" class="abs"></a><h4 class="def-h4">MonsterAttacked</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitMonster">WhoHitMonster</a><br><span class="def-nbsp">  </span>Handled<br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span>MonsterIndex<br><b class="def-rargs">}</b>
+<a id="events.MonsterAttacked" class="abs"></a><h4 class="def-h4">MonsterAttacked</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitMonster">WhoHitMonster</a><br><span class="def-nbsp">  </span>Handled<br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span>MonsterIndex<br>}, attacker<b class="def-rargs">)</b>
 </td><td class="def-right">
  Called when a player or a projectile tries to hit a monster. Can be used to completely replace what happens.
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="events.AfterMonsterAttacked" class="abs"></a><h4 class="def-h4">AfterMonsterAttacked</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitMonster">WhoHitMonster</a><br><span class="def-nbsp">  </span>Handled = carried over from <a href="#events.MonsterAttacked">MonsterAttacked</a> event<br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span>MonsterIndex<br><b class="def-rargs">}</b>
+<a id="events.AfterMonsterAttacked" class="abs"></a><h4 class="def-h4">AfterMonsterAttacked</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitMonster">WhoHitMonster</a><br><span class="def-nbsp">  </span>Handled = carried over from <a href="#events.MonsterAttacked">MonsterAttacked</a> event<br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span>MonsterIndex<br>}, attacker<b class="def-rargs">)</b>
 </td><td class="def-right">
  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="events.PlayerAttacked" class="abs"></a><h4 class="def-h4">PlayerAttacked</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitPlayer">WhoHitPlayer</a><br><span class="def-nbsp">  </span>Handled<br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>PlayerSlot<br><b class="def-rargs">}</b>
+<a id="events.PlayerAttacked" class="abs"></a><h4 class="def-h4">PlayerAttacked</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitPlayer">WhoHitPlayer</a><br><span class="def-nbsp">  </span>Handled<br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>PlayerSlot<br>}, attacker<b class="def-rargs">)</b>
 </td><td class="def-right">
  Called when a monster or a projectile tries to hit a player. Can be used to completely replace what happens.
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="events.AfterPlayerAttacked" class="abs"></a><h4 class="def-h4">AfterPlayerAttacked</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitPlayer">WhoHitPlayer</a><br><span class="def-nbsp">  </span>Handled = carried over from <a href="#events.PlayerAttacked">PlayerAttacked</a> event<br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>PlayerSlot<br><b class="def-rargs">}</b>
+<a id="events.AfterPlayerAttacked" class="abs"></a><h4 class="def-h4">AfterPlayerAttacked</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitPlayer">WhoHitPlayer</a><br><span class="def-nbsp">  </span>Handled = carried over from <a href="#events.PlayerAttacked">PlayerAttacked</a> event<br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>PlayerSlot<br>}, attacker<b class="def-rargs">)</b>
 </td><td class="def-right">
  
 </td>

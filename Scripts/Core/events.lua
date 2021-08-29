@@ -1948,19 +1948,14 @@ do
 			Monster = Map.Monsters[monIndex],
 			Handled = false,
 		}
-		-- function!Params[[()]]
-		-- t.CallDefault = function()
-		-- 	def(attackerID, monIndex, speed, action)
-		-- 	t.Handled = true
-		-- end
 		
 		-- Called when a player or a projectile tries to hit a monster. Can be used to completely replace what happens.
-		events.cocall("MonsterAttacked", t)
+		events.cocall("MonsterAttacked", t, attacker)
 		if not t.Handled then
 			def(attackerID, monIndex, speed, action)
 		end
 		--!k{Handled carried over from #MonsterAttacked:events.MonsterAttacked# event}
-		events.cocall("AfterMonsterAttacked", t)
+		events.cocall("AfterMonsterAttacked", t, attacker)
 		Mon_Who, Mon_Idx = old, old2
 	end
 
@@ -2005,19 +2000,14 @@ do
 			PlayerSlot = slot,
 			Handled = false,
 		}
-		-- function!Params[[()]]
-		-- t.CallDefault = function()
-		-- 	def(attackerID, monIndex, speed, action)
-		-- 	t.Handled = true
-		-- end
 		
 		-- Called when a monster or a projectile tries to hit a player. Can be used to completely replace what happens.
-		events.cocall("PlayerAttacked", t)
+		events.cocall("PlayerAttacked", t, attacker)
 		if not t.Handled then
 			def(attackerID, action, speed, slot)
 		end
 		--!k{Handled carried over from #PlayerAttacked:events.PlayerAttacked# event}
-		events.cocall("AfterPlayerAttacked", t)
+		events.cocall("AfterPlayerAttacked", t, attacker)
 		Pl_Who, Pl_Slot = old, old2
 	end
 	
