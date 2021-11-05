@@ -1436,46 +1436,46 @@ end
 if mmver == 6 then
 	function structs.f.SpellInfo(define)
 		define
-		-- from spells.txt
-		[0x0].u2  'Bits'  -- Bits? (always zero)
-		[0x2].array(1, 3).i2  'SpellPoints'
-		[0x2].i2  'SpellPointsNormal'
-		[0x4].i2  'SpellPointsExpert'
-		[0x6].i2  'SpellPointsMaster'
+		-- copied from spells.txt by my patch
+		[0x0].array(1, 3).i2  'SpellPoints'
+		[0x0].i2  'SpellPointsNormal'
+		[0x2].i2  'SpellPointsExpert'
+		[0x4].i2  'SpellPointsMaster'
 		-- hard-coded
-		[0x8].array(1, 3).i2  'Delay'
-		[0x8].i2  'DelayNormal'
-		[0xA].i2  'DelayExpert'
-		[0xC].i2  'DelayMaster'
+		[0x6].array(1, 3).i2  'Delay'
+		[0x6].i2  'DelayNormal'
+		[0x8].i2  'DelayExpert'
+		[0xA].i2  'DelayMaster'
+		-- from spells.txt
+		[0xC].u2  'Bits'  -- Bits? (always zero)
 		.size = 0xE
 	end
 else
 	function structs.f.SpellInfo(define)
 		define
-		[0x0].bit('CastByMonster', 0x0001)  -- M
-		 .Info '"M" in "Stats" from spells.txt'
-		[0x0].bit('CastByEvent', 0x0002)  -- E
-		 .Info '"E" in "Stats" from spells.txt'
-		[0x0].bit('CauseDamage', 0x0004)  -- C
-		 .Info '"C" in "Stats" from spells.txt'
-		[0x0].bit('SpecialDamage', 0x0008)  -- X
-		 .Info '"X" in "Stats" from spells.txt'
-		-- from spells.txt
-		[0x0].u2  'Bits'
-		 .Info '"Stats" from spells.txt'
-		[0x2].array(1, 4).i2  'SpellPoints'
-		[0x2].i2  'SpellPointsNormal'
-		[0x4].i2  'SpellPointsExpert'
-		[0x6].i2  'SpellPointsMaster'
-		[0x8].i2  'SpellPointsGM'
 		-- hard-coded
-		[0xA].array(1, 4).i2  'Delay'
-		[0xA].i2  'DelayNormal'
-		[0xC].i2  'DelayExpert'
-		[0xE].i2  'DelayMaster'
-		[0x10].i2  'DelayGM'
-		[0x12].u1  'DamageAdd'
-		[0x13].u1  'DamageDiceSides'
+		[0x0].array(1, 4).i2  'SpellPoints'
+		[0x0].i2  'SpellPointsNormal'
+		[0x2].i2  'SpellPointsExpert'
+		[0x4].i2  'SpellPointsMaster'
+		[0x6].i2  'SpellPointsGM'
+		[0x8].array(1, 4).i2  'Delay'
+		[0x8].i2  'DelayNormal'
+		[0xA].i2  'DelayExpert'
+		[0xC].i2  'DelayMaster'
+		[0xE].i2  'DelayGM'
+		[0x10].u1  'DamageAdd'
+		[0x11].u1  'DamageDiceSides'
+		-- from spells.txt
+		[0x12].bit('CastByMonster', 0x0001)  -- M
+		 .Info '"M" in "Stats" from spells.txt'
+		[0x12].bit('CastByEvent', 0x0002)  -- E
+		 .Info '"E" in "Stats" from spells.txt'
+		[0x12].bit('CauseDamage', 0x0004)  -- C
+		 .Info '"C" in "Stats" from spells.txt'
+		[0x12].bit('SpecialDamage', 0x0008)  -- X
+		 .Info '"X" in "Stats" from spells.txt'
+		[0x12].u2  'Bits'
 		.size = 0x14
 	end
 end

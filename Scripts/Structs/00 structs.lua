@@ -92,7 +92,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x54D040, 0x590F0C, 0x5A5378)].i4  'NPCCommand'
 	[mmv(0x9DDD8C, 0xF8B01C, 0xFFD408)].i4  'HouseScreen'
 	[mmv(0x551F94, 0x591270, 0x5A56E0)].i4  'HouseNPCSlot'
-	 .Info "If #HouseOwnerPic:structs.GameStructure.HouseOwnerPic# isn't '0', first slot is occupied by the shop keeper.\nIf #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter icon."
+	 .Info "If #HouseOwnerPic:structs.GameStructure.HouseOwnerPic# isn't '0', the value of '1' refers to the shop keeper and higher value needs to be reduce by 1 before accessing .\nIf #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter icon."
 	[mmv(0x53CB60, 0x5912A4, 0x5A5714)].i4  'HouseNPCSlotsCount'
 	[mmv(0x9DDD9C, 0xF8B034, 0xFFD420)].i4  'HouseCost'
 	[mmv(0x9DDD70, 0xF8B028, 0xFFD414)].i4  'HouseAllowAction'
@@ -394,7 +394,7 @@ end]=]
 	end
 	define
 	[mmv(0x6B74F0, 0x737F44, 0x7771A0)].array{100, lenA = i4, lenP = mmv(0x6BA530, 0x73C010, 0x779FF4)}.struct(structs.NPC)  'StreetNPC'
-	[mmv(0x4BDD6E, 0x4E3C46, 0x4F486E)].array(0, mmv(99, 99, 132)).struct(structs.SpellInfo)  'Spells'
+	[mmv(0x4BDD70, 0x4E3C48, 0x4F4870)].array(0, mmv(99, 99, 132)).struct(structs.SpellInfo)  'Spells'
 	[mmv(0x56ABD0, 0x5CBEB0, 0x5E8278)].array(0, mmv(99, 99, 132)).struct(structs.SpellsTxtItem)  'SpellsTxt'
 	[mmv(0x4C28E2, 0x4EDF32, 0x4FE12A)].array(1, mmv(99, 99, 132)).i2  'SpellSounds'
 	[mmv(0x4BDBD8, 0x4E3AB0, 0x4F4648)].array(1, mmv(99, 99, 132)).CustomType('SpellObjId', 4, function(o, obj, name, val)
@@ -1500,6 +1500,10 @@ function structs.f.PatchOptions(define)
 	bool  'FixMonsterAttackTypes'  Info "[MM7+]"
 	bool  'FixMonsterSpells'
 	bool  'FixSouldrinker'
+	int  'MouseLookPermKey'
+	int  'LastSoundSample'
+	int  'WaterWalkDamage'  Info "[MM7+]"
+	bool  'FixUnmarkedArtifacts'
 	
 	function define.f.Present(name)
 		return not not addr[name]
