@@ -265,7 +265,7 @@ function TakeItemFromParty(id, keep)
 end
 
 local CheckType = {"Group", "Monster", "MonsterIndex", "NameId"}
-local CheckDelta = {0, -1, 0, 0}
+local CheckDelta = {[0] = 0, 0, -1, 0, 0}
 
 --[[!a{
   Group
@@ -275,9 +275,9 @@ local CheckDelta = {0, -1, 0, 0}
 } See !'[=[Quest Kill Monsters.lua]=] from #quest examples:Quests#]]
 function CheckMonstersKilled(t)
 	for i = #CheckType, 0, -1 do
-		local id = t[CheckType[i]]
-		if id or i == 0 then
-			local t1 = {i, id, t.Count, t.InvisibleAsDead ~= false and 1 or 0}
+		local id = t[CheckType[i]] or i == 0 and 0
+		if id then
+			local t1 = {i, 0, t.Count, t.InvisibleAsDead ~= false and 1 or 0}
 			if type(id) ~= "table" then
 				t1[2] = id + CheckDelta[i]
 				return evt.CheckMonstersKilled(t1)
