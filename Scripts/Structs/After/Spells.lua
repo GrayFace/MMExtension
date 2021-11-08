@@ -30,7 +30,7 @@ HookManager{
 	reg = mmv('edx', 'eax', 'eax'),
 	p = grab,
 	p2 = grabEnd,
-}.asmhook2(mmv(0x42A9DD, 0x42F7A8, 0x42E226), [[
+}['asmhook'..mmv('',2,2)](mmv(0x42A9DD, 0x42F7A8, 0x42E226), [[
 	mov ecx, [%p%]
 	cmp ecx, %p2%
 	jz @f
@@ -137,7 +137,7 @@ mem.hookfunction(mmv(0x405130, 0x404AC7, 0x404D67), 2, mmv(2, 3, 3), function(d,
 	-- !Lua[[CallDefault(FakeSpell, FakeSkill)]] would use logic from 'FakeSpell' with 'FakeSkill', but change sound and any created projectiles to match what you've defined in the table.
 	-- !\ Example:!Lua[[
 	-- -- allow Poison Spray to be cast by monsters
-	-- events.MonsterCastSpell = |t, sp| if sp == 24 then
+	-- events.MonsterCastSpell = |t| if t.Spell == 24 then
 	-- 	local sk, mas = SplitSkill(t.Skill)
 	-- 	if mas >= const.Expert then
 	-- 		t.CallDefault(15, JoinSkill(sk, mas - 1))  -- use Sparks as a template
@@ -145,7 +145,7 @@ mem.hookfunction(mmv(0x405130, 0x404AC7, 0x404D67), 2, mmv(2, 3, 3), function(d,
 	-- 		t.CallDefault(2)  -- use Fire Bolt as a template
 	-- 	end
 	-- end]]
-	events.cocall("MonsterCastSpell", t, spell)
+	events.cocall("MonsterCastSpell", t)
 	if not t.Handled then
 		done = true
 		callDef()
@@ -188,7 +188,7 @@ mem.hookfunction(mmv(0x43EAF0, 0x448E1B, 0x44622C), 2, 7, function(d, def, spell
 	-- local spPara = const.Spells.Paralyze
 	-- local objPara = Game.SpellObjId[spPara]
 	--
-	-- local handler = |t, sp| if sp == spPara then
+	-- local handler = |t| if t.Spell == spPara then
 	-- 	t.CallDefault(2)  -- Fire Bolt, because it simply plays a sound and creates a projectile
 	-- end
 	-- events.MonsterCastSpell = handler
@@ -222,7 +222,7 @@ mem.hookfunction(mmv(0x43EAF0, 0x448E1B, 0x44622C), 2, 7, function(d, def, spell
 	-- 		end
 	-- 	end
 	-- end]]]=]
-	events.cocall("EventCastSpell", t, spell)
+	events.cocall("EventCastSpell", t)
 	if not t.Handled then
 		done = true
 		callDef()
