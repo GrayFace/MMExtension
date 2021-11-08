@@ -253,6 +253,10 @@ function structs.f.GameMap(define)
 		define[p].array{400, lenA = i4, lenP = p + 400*12}.struct(structs.BaseLight)  'SpriteLights'
 	end
 
+	define
+	.func{name = "RemoveObject", p = mmv(0x42ABD0, 0x42F90F, 0x42E392), cc = 1, must = 1}
+	 .Info{Sig = "Index"}
+
 	local c = define.class
 	function define.f.Render()
 		local v = Game.Map.IndoorOrOutdoor
@@ -506,11 +510,10 @@ function structs.f.Item(define)
 	.method{p = mmv(0x448660, 0x4564C5, 0x453D3E), name = "GetName", ret = ""}
 	.method{p = mmv(0x448680, 0x4564DF, 0x453D58), name = "GetIdentifiedName", ret = ""}
 	.method{p = mmv(0x44A6B0, 0x4505F8, 0x44DD43), name = "GenerateArtifact"}
-	-- .method{p = 0x, name = ""}
-	-- .method{p = 0x, name = ""}
+
 	function define.m:Randomize(strength, type)
 		mem.fill(self["?ptr"], self["?size"])
-		return call(mmv(0x448790, 0x45664C, 0x453ECC), 1, Game.ItemsTxt["?ptr"] - 4, assertnum(strength, 2), assertnum(type, 2), self)
+		return call(mmv(0x448790, 0x45664C, 0x453ECC), 1, Game.ItemsTxt["?ptr"] - 4, assertnum(strength, 2), assertnum(type or 0, 2), self)
 	end
 	define.Info{Sig = "Strength, Type:const.ItemType"}
 	function define.m:T()

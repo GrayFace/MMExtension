@@ -127,6 +127,7 @@ function internal.BeforeMapLoad()
 			evt.CanShowTopic = events.new()
 		end
 	end
+	--!-
 	events.cocall("InternalBeforeLoadMap", WasInGame, WasLoaded)
 	if not WasInGame then
 		LoadScripts("Global/*.lua", GlobalScripts)
@@ -171,6 +172,7 @@ function internal.OnLoadMap()
 		LoadScripts("Maps/"..path.setext(MapName, ".lua"), CurMapScripts)
 		LoadScripts("Maps/*."..path.setext(MapName, ".lua"), CurMapScripts)
 		internal.ResetEvtPlayer()
+		-- Use this event instead of 'LoadMap' in Global and General scripts
 		events.cocall("LoadMapScripts", WasInGame)
 	end
 	internal.ResetEvtPlayer()
@@ -1088,12 +1090,11 @@ Usually a better approach is to specify player after 'evt', this way it only eff
 	---------------------------
 	MakeCmd("CheckSkill", 0x2B, function(define)
 		define
-		 .Info "Checks that the skill meets specified 'Mastery' and 'Level' requirements"
+		 .Info "Checks that the skill meets specified 'Level' requirement and that 'Mastery' exactly matches that of the player (Novice matches any mastery). Was supposed to include \"Double effect\" enchantments and NPC bonuses, but doesn't."
 		.u1  'Skill'
 		 Type("Skills")
 		Mastery()
 		.i4  'Level'
-		 .Info 'Includes "Double effect" enchantments and NPC bonuses'
 		YJump  '  jump(>=)'
 		CurInfo.ForPlayer = true
 	end)

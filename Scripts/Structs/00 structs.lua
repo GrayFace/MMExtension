@@ -1504,6 +1504,7 @@ function structs.f.PatchOptions(define)
 	int  'LastSoundSample'
 	int  'WaterWalkDamage'  Info "[MM7+]"
 	bool  'FixUnmarkedArtifacts'
+	bool  'FixClubsDelay'  Info "[MM7+]"
 	
 	function define.f.Present(name)
 		return not not addr[name]

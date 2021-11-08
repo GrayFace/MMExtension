@@ -550,6 +550,9 @@ else
 	}
 end
 
+const.SkillClub = mmv(-1, 37, 40)
+const.SkillMisc = mmv(12, 38, 40)
+
 const.Condition = {
 	Cursed         = 0,
 	Weak           = 1,
