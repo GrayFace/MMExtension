@@ -556,7 +556,7 @@ end]=]
 	 .Info{Sig = "Id, X, Y, Z"}
 	if mmver > 6 then
 		define[internal.MonsterKindPtr].parray{lenA = i4, lenP = internal.MonsterKindPtr + 4, lenSet = SetLenRealloc}.struct(structs.MonsterKind)  'MonsterKinds'
-		.func{name = "IsMonsterOfKind", p = mmv(nil, 0x438BCE, 0x436542), cc = 2, must = 2}
+		.func{name = "IsMonsterOfKind", p = mm78(0x438BCE, 0x436542), cc = 2, must = 2}
 		 .Info{Sig = "Id, Kind:const.MonsterKind"}
 		.func{name = "IsMoviePlaying", p = mm78(0x4BF35F, 0x4BCFA0), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
 	end
@@ -1481,7 +1481,7 @@ function structs.f.PatchOptions(define)
 	bool  'FixInterfaceBugs'  Info "[MM7]"
 	pchar 'UILayout'  Info "[MM7+]"
 	int  'PaperDollInChests'
-	bool  'HigherCloseRingsButton'
+	bool  'HigherCloseRingsButton'  Info "[MM7]"
 	int  'RenderBottomPixel'
 	bool  'TrueColorTextures'  Info "[MM7+]"
 	bool  'ResetPalettes'  Info "[MM7+]"
@@ -1503,8 +1503,10 @@ function structs.f.PatchOptions(define)
 	int  'MouseLookPermKey'
 	int  'LastSoundSample'
 	int  'WaterWalkDamage'  Info "[MM7+]"
-	bool  'FixUnmarkedArtifacts'
+	bool  'FixUnmarkedArtifacts'  Info "[MM7]"
 	bool  'FixClubsDelay'  Info "[MM7+]"
+	bool  'FixDarkTrainers'  Info "[MM7]"
+	bool  'FixLightBolt'  Info "[MM7+]"
 	
 	function define.f.Present(name)
 		return not not addr[name]
@@ -1517,6 +1519,7 @@ function structs.f.PatchOptions(define)
 	function define.f.UILayoutActive()
 		return (Game.PatchOptions.UILayout or "") ~= "" and Game.Windowed ~= 0
 	end
+	 define.Info{"Returns 'true' if UILayout mode is currently active"}
 end
 
 if mmver == 7 then

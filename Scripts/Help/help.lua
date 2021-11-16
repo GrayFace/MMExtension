@@ -278,6 +278,10 @@ do
 			ConstComments[ConstName][name] = comment
 		end
 	end
+	
+	
+	internal.VarNumComments = {}
+	ConstComments['evt.VarNum'] = internal.VarNumComments
 end
 
 -----------------------------------------------------

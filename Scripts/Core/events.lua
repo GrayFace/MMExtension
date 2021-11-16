@@ -393,6 +393,11 @@ else
 	u1[0x45CBB6] = 1	
 end
 
+-- fix monsters using 'Spirit Lash', 'Inferno', 'Prismatic Light' (fixed in patch 2.5)
+if mmver == 8 then
+	u2[0x40546F] = 0x9057  -- push edi
+end
+
 local delayedDefs = {}
 
 local function delayed(f)
@@ -410,7 +415,7 @@ end
 
 function internal.GameInitialized2()
 	GameInitialized2 = true
-	-- fix water in maps without a building with WtrTyl texture, also don't turn textures with water bit into water (fixed in new patch version)
+	-- fix water in maps without a building with WtrTyl texture, also don't turn textures with water bit into water (fixed in patch 2.5)
 	if mmver == 7 and Game.IsD3D and not Game.PatchOptions.Present'TrueColorSprites' then
 		mem.autohook(0x4649B7, function(d)
 			i4[0xEF5114] = Game.BitmapsLod:LoadBitmap("WtrTyl")

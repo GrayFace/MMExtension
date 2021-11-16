@@ -362,6 +362,9 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 			-- return GetFromArray(Game.ClassNames, v)
 			return nil, FindConst("Class", v)
 		elseif k == "Awards" then
+			if v < Game.AwardsTxt.Count and v > select(mmver - 5, 87, 104, 104) then
+				Error("Award index outside of normal range")
+			end
 			return GetFromArray(Game.AwardsTxt, v)
 		elseif k == "QBits" then
 			local ret = GetFromArray(Game.QuestsTxt, v)
@@ -377,6 +380,9 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 			return GetFromArray(Game.NPCDataTxt, v, 'Name')
 		elseif k == "HasNPCProfession" then
 			return nil, FindConst("NPCProfession", v)
+		elseif type(k) ~= "string" then
+			-- return nil, "Unknown VarNum: "..k
+			Error("Unknown VarNum")
 		end
 	end
 	

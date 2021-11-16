@@ -52,4 +52,10 @@ function godSkill(lev)
 			pl.Skills[i] = JoinSkill(skill, const.GM or const.Master)
 		end
 	end
+	-- get all spells
+	for _,pl in Party do
+		for i in pl.Spells do
+			pl.Spells[i] = true
+		end
+	end
 end

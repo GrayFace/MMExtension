@@ -495,7 +495,7 @@ function structs.f.Item(define)
 	[0x14].bit('Hardened', 0x200)  -- MM7, MM8
 	[0x14].i4  'Condition'
 	[0x18].i1  'BodyLocation'
-	[0x19].i1  'MaxCharges'
+	[0x19].u1  'MaxCharges'
 	[0x1A].i1  'Owner'  -- ??
 	[0x1B].skip(1)
 	.size = 0x1C

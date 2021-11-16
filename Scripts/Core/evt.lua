@@ -1483,7 +1483,7 @@ end
 
 
 do
-	local p = 1
+	local p, LastName = 1, nil
 	evt.VarNum = {}
 	local function add(name, name2)
 		if name then
@@ -1494,7 +1494,12 @@ do
 		if name2 then
 			evt.VarNum[name2] = p
 		end
-		p = p + 1
+		p, LastName = p + 1, name
+	end
+	local function comment(s)
+		if internal.VarNumComments then
+			internal.VarNumComments[LastName] = s
+		end
 	end
 	
 	add("SexIs")                     -- 01
@@ -1630,29 +1635,30 @@ do
 	add("IsLuckMoreThanBase")        -- D4/E6
 	add("PlayerBits")                -- D5/E7/E9
 	add(mmver ~= 8 and "NPCs" or nil)-- D6/E8
-	add("ReputationIs")              -- D7/E9
-	for i = 0, 5 do  add(nil)  end   -- D8-DD/... : something time-related in 0x90E85C/...
+	add("ReputationIs")              -- D7/E9/EB
+	evt.VarNum.DaysCounters = {}
+	for i = 1, 6 do
+		evt.VarNum.DaysCounters[i] = p
+		add("DaysCounter"..i)          -- D8-DD/EA-EF/EC-F1
+		 comment "#evt.Set:# starts the count, #evt.Cmp:# compares the difference of dates"
+	end
 	add("Flying")                    -- DE/F0/F2
 	add("HasNPCProfession")          -- DF/F1
 	add("TotalCircusPrize")          -- E0/F2
 	add("SkillPoints")               -- E1/F3
 	add("MonthIs")                   -- E2/F4
 	if mmver >= 7 then
-		add("Counter1")                -- F5/F7
-		add("Counter2")                -- F6
-		add("Counter3")                -- F7
-		add("Counter4")                -- F8
-		add("Counter5")                -- F9
-		add("Counter6")                -- FA
-		add("Counter7")                -- FB
-		add("Counter8")                -- FC
-		add("Counter9")                -- FD
-		add("Counter10")               -- FE/100
-		evt.VarNum.SpecialDates = {}   -- FF/101
+		evt.VarNum.Counters = {}
+		for i = 1, 10 do
+			evt.VarNum.Counters[i] = p
+			add("Counter"..i)            -- F5-FE/F7-100
+			 comment "#evt.Set:# starts the count, #evt.Cmp:# compares the exact time spent in hours"
+		end
+		evt.VarNum.SpecialDates = {}
 		for i = 1, 20 do
 			evt.VarNum.SpecialDates[i] = p
-			add('SpecialDate'..i)        -- FF-112/101-114 : set a special date to current time and play sound (not used by CMP)
-			                             -- (no metter what value you use) (the value set can be used in messages as "%51"-"%70")
+			add('SpecialDate'..i)        -- FF-112/101-114
+			 comment('#evt.Set:# remembers current time and plays sound. The date can be used in messages as %'..(50 + i))
 		end
 		add("Reputation")              -- 113/115
 		evt.VarNum.History = {}        -- 114/116

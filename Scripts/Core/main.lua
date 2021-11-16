@@ -60,6 +60,7 @@ local GamePath = internal.AllowForeignDir and AppPath or ""
 dofile(CoreGamePath.."offsets.lua")
 offsets = offsets or {}
 dofile(CoreScriptsPath.."Common.lua")
+internal.NoGlobals.CheckChunkFile(1, 1)
 internal.NoGlobals.Options.NameCharCodes[("?"):byte()] = true
 local package_main = AppPath.."Scripts\\Modules\\?.lua"
 package.path = package_main..(GitPath and ";"..GitPath.."Scripts\\Modules\\?.lua" or "")
@@ -219,6 +220,9 @@ elseif offsets.MainWindow then
 else
 	offsets.MainWindow = u4[internal.MainWindowPtrPtr]
 end
+
+--!++(mem.EditPChar)v Editable PChar
+--!++(mem.ConstPChar)v Editable write-protected PChar
 
 --------- general
 
@@ -432,11 +436,11 @@ local function EditConstPChar_newindex(_, o, v)
 	IgnoreProtection(false)
 end
 
-_G.mem.EditPChar = setmetatable({}, {__index = pchar, __newindex = EditPChar_newindex})
-_G.mem.editpchar = _G.mem.EditPChar
-_G.mem.EditConstPChar = setmetatable({}, {__index = pchar, __newindex = EditConstPChar_newindex})
-_G.mem.ConstPChar = _G.mem.EditConstPChar
-_G.mem.constpchar = _G.mem.ConstPChar
+mem.EditPChar = setmetatable({}, {__index = pchar, __newindex = EditPChar_newindex})
+mem.editpchar = mem.EditPChar
+mem.EditConstPChar = setmetatable({}, {__index = pchar, __newindex = EditConstPChar_newindex})
+mem.ConstPChar = mem.EditConstPChar
+mem.constpchar = mem.ConstPChar
 
 local function EditablePChar(o, obj, name, val)
 	if val == nil then
