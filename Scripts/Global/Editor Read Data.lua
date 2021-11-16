@@ -899,13 +899,13 @@ local function ReadMonster(a, t)
 	-- monster for default values
 	a["?ptr"] = a["?ptr"]  -- speed up
 	t.Id = a.Id
-	XYZ(t, XYZ(a))
 	t.Direction = a.Direction
 	local m0 = Editor.SummonMonster(t.Id, 0, 0, 0, true)
 	m0.AIState = const.AIState.Removed
 	ReadMonProps(a, t, m0, MonsterProps, "")
+	XYZ(t, a.StartX, a.StartY, a.StartZ)
 	for X in XYZ do
-		if t["Guard"..X] == t[X]then
+		if t["Guard"..X] == t[X] then
 			t["Guard"..X] = nil
 		end
 	end
