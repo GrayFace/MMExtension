@@ -1389,7 +1389,9 @@ local MonsterProps = MakeProps{
 				comment = GetFromArray(Game.PlaceMonTxt, ret)
 			elseif prop == "TreasureItemType" then
 				retVal = FindConst("ItemType", ret)
-			elseif prop == "SpellSkill" and ret >= 0x40 and ret < mmv(0xC0, 0x140, 0x140) then
+			elseif prop == "Spell" or prop == "Spell2" then
+				comment = GetFromArray(Game.SpellsTxt, ret, 'Name')
+			elseif (prop == "SpellSkill" or prop == "Spell2Skill") and ret >= 0x40 and ret < mmv(0xC0, 0x140, 0x140) then
 				local n, mast = SplitSkill(ret)
 				retVal = ("JoinSkill(%s, %s)"):format(n, "const."..table.find(const, mast))
 			end
