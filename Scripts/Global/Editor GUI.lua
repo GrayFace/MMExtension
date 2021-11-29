@@ -1355,8 +1355,13 @@ local function GetMonsterKindList()
 		return MonsterKindList
 	end
 	local t = {}
+	local fix
 	for i, a in Game.MonListBin do
-		if i < Game.MonstersTxt.high then
+		fix = fix or i == 0  -- account for incorrect MonListBin definition in old MMExt
+		if fix then
+			i = i + 1
+		end
+		if i <= Game.MonstersTxt.high then
 			t[#t + 1] = Game.MonstersTxt[i].Name
 			t[#t + 1] = "\r\n("..i..")"
 			local a = Game.SFTBin[Game.SFTBin:FindGroup(a.FramesStand)]
