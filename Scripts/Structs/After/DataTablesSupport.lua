@@ -643,7 +643,7 @@ do
 	DataTables.SFTBin = StructsArray(Game.SFTBin.Frames, structs.o.SFTItem, {IgnoreFields = FtIgnore, IgnoreRead = FtIgnoreRead, NoRowHeaders = 'auto'})
 
 
-	DataTables.DecListBin = StructsArray(Game.DecListBin, nil, {NoRowHeaders = 'auto'})
+	DataTables.DecListBin = StructsArray(Game.DecListBin)
 
 
 	DataTables.PFTBin = StructsArray(Game.PFTBin, nil, {NoRowHeaders = true, IgnoreFields = FtIgnore})

@@ -5959,7 +5959,13 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.GameStructure.RendererD3D" class="abs"></a><a href="#structs.RendererD3D">RendererD3D</a>
+<a id="structs.GameStructure.RendererD3D" class="abs"></a>RendererD3D
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.GameStructure.StructRendererD3D" class="abs"></a><a href="#structs.RendererD3D">StructRendererD3D</a>
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
 </td>
@@ -11131,7 +11137,7 @@ Id
 <td class="def-left">
 <a id="structs.MapMonster.BonusMul" class="abs"></a>BonusMul
 </td><td class="def-right">
- (Disease1x5 etc. <span class="def-nbsp"> </span>I wish I knew what it means)
+ Disease1x5 etc. The chance that a monster would use the bonus is <b class="def-param">Level</b>*<b class="def-param">BonusMul</b>
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11269,7 +11275,7 @@ Id
 <td class="def-left">
 <a id="structs.MapMonster.Special" class="abs"></a>Special
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  {shot, summon, explode}
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  1 = shot, 2 = summon, 3 = explode
 </td>
 </tr><tr>
 <td class="def-left">
@@ -13730,7 +13736,7 @@ Id
 <td class="def-left">
 <a id="structs.MonstersTxtItem.BonusMul" class="abs"></a>BonusMul
 </td><td class="def-right">
- (Disease1x5 etc. <span class="def-nbsp"> </span>I wish I knew what it means)
+ Disease1x5 etc. The chance that a monster would use the bonus is <b class="def-param">Level</b>*<b class="def-param">BonusMul</b>
 </td>
 </tr><tr>
 <td class="def-left">
@@ -13868,7 +13874,7 @@ Id
 <td class="def-left">
 <a id="structs.MonstersTxtItem.Special" class="abs"></a>Special
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  {shot, summon, explode}
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  1 = shot, 2 = summon, 3 = explode
 </td>
 </tr><tr>
 <td class="def-left">
@@ -15177,6 +15183,24 @@ Id
 <a id="structs.PatchOptions.FixLightBolt" class="abs"></a>FixLightBolt
 </td><td class="def-right">
  <span class="def-ver">[MM7+]</span>
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.PatchOptions.ArmageddonElement" class="abs"></a>ArmageddonElement
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.PatchOptions.FixKelebrim" class="abs"></a>FixKelebrim
+</td><td class="def-right">
+ <span class="def-ver">[MM7]</span>
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.PatchOptions.FixBarrels" class="abs"></a>FixBarrels
+</td><td class="def-right">
+ <span class="def-ver">[MM7]</span>
 </td>
 </tr><tr>
 <td colspan="2" class="def-functions"><br>
@@ -26081,6 +26105,18 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="evt.VarNum.LightResistance" class="abs"></a>LightResistance <i class="def-const">= 53</i>
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  unused resistance
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="evt.VarNum.DarkResistance" class="abs"></a>DarkResistance <i class="def-const">= 54</i>
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  unused resistance
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="evt.VarNum.ElecResistance" class="abs"></a>ElecResistance <i class="def-const">= 47</i>
 </td><td class="def-right">
 <span class="def-ver">[MM6]</span><span class="def-nbsp"> </span>  
@@ -26099,9 +26135,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="evt.VarNum.MagicResistance" class="abs"></a>MagicResistance <i class="def-const">= 50</i>
+<a id="evt.VarNum.MagicResistance" class="abs"></a>MagicResistance
 </td><td class="def-right">
-<span class="def-ver">[MM6]</span><span class="def-nbsp"> </span>  
+ unused resistance
 </td>
 </tr><tr>
 <td class="def-left">
@@ -26147,6 +26183,18 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="evt.VarNum.LightResBonus" class="abs"></a>LightResBonus <i class="def-const">= 64</i>
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  unused resistance
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="evt.VarNum.DarkResBonus" class="abs"></a>DarkResBonus <i class="def-const">= 65</i>
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  unused resistance
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="evt.VarNum.ElecResBonus" class="abs"></a>ElecResBonus <i class="def-const">= 52</i>
 </td><td class="def-right">
 <span class="def-ver">[MM6]</span><span class="def-nbsp"> </span>  
@@ -26165,9 +26213,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="evt.VarNum.MagicResBonus" class="abs"></a>MagicResBonus <i class="def-const">= 55</i>
+<a id="evt.VarNum.MagicResBonus" class="abs"></a>MagicResBonus
 </td><td class="def-right">
-<span class="def-ver">[MM6]</span><span class="def-nbsp"> </span>  
+ unused resistance
 </td>
 </tr><tr>
 <td class="def-left">
@@ -27768,6 +27816,18 @@ Id
 </tr><tr>
 <td class="def-left">
 <a id="evt.VarNum.MapVars" class="abs"></a>MapVars[]
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="evt.VarNum.ResBonus" class="abs"></a>ResBonus[]
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="evt.VarNum.Resistance" class="abs"></a>Resistance[]
 </td><td class="def-right">
  
 </td>

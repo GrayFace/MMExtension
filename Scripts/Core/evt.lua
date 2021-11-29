@@ -1555,41 +1555,25 @@ do
 			evt.VarNum.CurrentStats[v] = assert(evt.VarNum["Current"..k])
 		end
 	end
-	if mmver == 6 then
-		add("FireResistance")          -- 2E
-		add("ElecResistance")          -- 2F
-		add("ColdResistance")          -- 30
-		add("PoisonResistance")        -- 31
-		add("MagicResistance")         -- 32
-		add("FireResBonus")            -- 33
-		add("ElecResBonus")            -- 34
-		add("ColdResBonus")            -- 35
-		add("PoisonResBonus")          -- 36
-		add("MagicResBonus")           -- 37
-	else
-		add("FireResistance")          -- 2E
-		add("AirResistance")           -- 2F
-		add("WaterResistance")         -- 30
-		add("EarthResistance")         -- 31
-		add("SpiritResistance")        -- 32
-		add("MindResistance")          -- 33
-		add("BodyResistance")          -- 34
-		add(nil)                       -- 35 : LightResistance
-		add(nil)                       -- 36 : DarkResistance
-		add(nil)                       -- 37 : PhysResistance
-		add(nil)                       -- 38 : MagicResistance
-		add("FireResBonus")            -- 39
-		add("AirResBonus")             -- 3A
-		add("WaterResBonus")           -- 3B
-		add("EarthResBonus")           -- 3C
-		add("SpiritResBonus")          -- 3D
-		add("MindResBonus")            -- 3E
-		add("BodyResBonus")            -- 3F
-		add(nil)                       -- 40 : LightResBonus
-		add(nil)                       -- 41 : DarkResBonus
-		add(nil)                       -- 42 : PhysResistance
-		add(nil)                       -- 43 : MagicResistance
+	local function AddRes(name)
+		local t, res = {}, mmver == 6 and
+			{'Fire', 'Elec', 'Cold', 'Poison', 'Magic'} or
+			{'Fire', 'Air', 'Water', 'Earth', 'Spirit', 'Mind', 'Body', 'Light', 'Dark', false, 'Magic'}
+		evt.VarNum[name] = t
+		for i, s in ipairs(res) do
+			if s then
+				t[const.Damage[s]] = p
+				add(s..name)
+				if i >= 8 then
+					comment "unused resistance"
+				end
+			else
+				add(nil)
+			end
+		end
 	end
+	AddRes'Resistance'               -- 2E-32/2E-38
+	AddRes'ResBonus'                 -- 33-37/39-43
 	evt.VarNum.Skills = {}           -- 38-56/44-68/44-6A
 	for i, v in sortpairs(table.invert(const.Skills)) do
 		evt.VarNum.Skills[i] = p

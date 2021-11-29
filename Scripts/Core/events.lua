@@ -12,6 +12,12 @@ end
 
 local _KNOWNGLOBALS_F = Party, Game, Map, VFlipUnfixed, structs, GameInitialized1, GameInitialized2
 
+local PatchOptionsSize  -- Game.PatchOptions.Size
+do
+	local PatchDll = mem.dll[AppPath.."mm"..internal.MMVersion.."patch"] or {}
+	local PatchOptionsPtr = PatchDll.GetOptions
+	PatchOptionsSize = PatchOptionsPtr and i4[PatchOptionsPtr()] or 0
+end
 
 do
 	-- HookManager
@@ -377,9 +383,11 @@ else
 	end)
 end
 
--- always invoke LeaveMap event (death and walking fixed by my patches)
-for _, p in ipairs(mmv({}, {0x433324, 0x44800F, 0x44C30F, 0x4B6A96}, {0x430BC3, 0x445335, 0x4B52F5})) do
-	mem.asmhook(p, 'pushad'..'\ncall absolute '..mm78(0x443FB8, 0x440DBC)..'\npopad')
+-- always invoke LeaveMap event (death and walking fixed by my patches) (fixed in patch 2.5)
+if mmver > 6 and PatchOptionsSize < 336 then
+	for _, p in ipairs(mm78({0x433324, 0x44800F, 0x44C30F, 0x4B6A96}, {0x430BC3, 0x445335, 0x4B52F5})) do
+		mem.asmhook(p, 'pushad'..'\ncall absolute '..mm78(0x443FB8, 0x440DBC)..'\npopad')
+	end
 end
 
 -- fix savegame loading
@@ -394,7 +402,7 @@ else
 end
 
 -- fix monsters using 'Spirit Lash', 'Inferno', 'Prismatic Light' (fixed in patch 2.5)
-if mmver == 8 then
+if mmver == 8 and PatchOptionsSize < 336 then
 	u2[0x40546F] = 0x9057  -- push edi
 end
 
@@ -416,7 +424,7 @@ end
 function internal.GameInitialized2()
 	GameInitialized2 = true
 	-- fix water in maps without a building with WtrTyl texture, also don't turn textures with water bit into water (fixed in patch 2.5)
-	if mmver == 7 and Game.IsD3D and not Game.PatchOptions.Present'TrueColorSprites' then
+	if mmver == 7 and Game.IsD3D and PatchOptionsSize < 336 then
 		mem.autohook(0x4649B7, function(d)
 			i4[0xEF5114] = Game.BitmapsLod:LoadBitmap("WtrTyl")
 		end)

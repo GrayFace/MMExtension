@@ -954,8 +954,8 @@ local function CommonMonsterProps(define, montxt)
 
 	.u1  'Bonus'  -- 0x14/0x13    (steal, curse, ...)
 	 .Info "(steal, curse, ...)"
-	.u1  'BonusMul'  -- 0x15/0x14    (Disease1x5 etc.  I wish I knew what it means)
-	 .Info "(Disease1x5 etc.  I wish I knew what it means)"
+	.u1  'BonusMul'  -- 0x15/0x14
+	 .Info "Disease1x5 etc. The chance that a monster would use the bonus is 'Level'*'BonusMul'"
 	.struct(structs.MonsterAttackInfo)  'Attack1'  -- 0x16/0x15
 	.u1  'Attack2Chance'  -- 0x1B/0x1A    ATTACK2_PERCENTAGE
 	.struct(structs.MonsterAttackInfo)  'Attack2'  -- 0x1C/0x1B
@@ -1015,7 +1015,7 @@ local function CommonMonsterProps(define, montxt)
 		res  'DarkResistance'  -- 0x2C
 		res  'PhysResistance'  -- 0x2D
 		.u1  'Special'  -- 0x2E  {shot, summon, explode}
-		 .Info ("{shot, summon, explode}")
+		 .Info ("1 = shot, 2 = summon, 3 = explode")
 		.u1  'SpecialA'  -- 0x2F
 		 .Info (
 		 "shot: C = count\n"..
