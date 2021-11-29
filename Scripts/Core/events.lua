@@ -406,6 +406,11 @@ if mmver == 8 and PatchOptionsSize < 336 then
 	u2[0x40546F] = 0x9057  -- push edi
 end
 
+-- when addind monsters via evt command, leave space for 5 light elementals for each party member
+if mmver > 6 then
+	i4[mm78(0x44F6FD, 0x44CE1F)] = 500 - (mmver - 3)*5
+end
+
 local delayedDefs = {}
 
 local function delayed(f)
