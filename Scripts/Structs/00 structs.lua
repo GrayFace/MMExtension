@@ -509,7 +509,8 @@ end]=]
 		define[0x6BE8D8].struct(structs.Lod)  'EventsLod'
 	end
 	if mmver > 6 then
-		define[mmv(nil, 0xE31AF0, 0xF01A08)].pstruct(structs.RendererD3D)  'RendererD3D'
+		define[mm78(0xE31AF0, 0xF01A08)].alt.u4  'RendererD3D'
+		.pstruct(structs.RendererD3D)  'StructRendererD3D'
 		.Info{Name = "IsD3D", new = true}
 	end
 	define[0].CustomType('RandSeed', 0, function(o, obj, name, val)
@@ -1507,6 +1508,9 @@ function structs.f.PatchOptions(define)
 	bool  'FixClubsDelay'  Info "[MM7+]"
 	bool  'FixDarkTrainers'  Info "[MM7]"
 	bool  'FixLightBolt'  Info "[MM7+]"
+	int  'ArmageddonElement'
+	bool  'FixKelebrim'  Info "[MM7]"
+	bool  'FixBarrels'  Info "[MM7]"
 	
 	function define.f.Present(name)
 		return not not addr[name]

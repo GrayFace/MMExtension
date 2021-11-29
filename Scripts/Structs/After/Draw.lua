@@ -31,7 +31,7 @@ function DrawScreenEffectD3D(BitmapIndex, u, v, du, dv, x1, y1, x2, y2, cl, cl2,
 	p = D3DTLVertex(p, x1, y2, cl2, u, v + dv)
 	p = D3DTLVertex(p, x2, y2, cl3 or cl2, u + du, v + dv)
 	p = D3DTLVertex(p, x2, y1, cl4 or cl, u + du, v)
-	local dev = u4[Game.RendererD3D['?ptr'] + 56]
+	local dev = u4[Game.RendererD3D + 56]
 	local vt = u4[dev]
 	local SetTexture = u4[vt + 152]
 	local SetRenderState = u4[vt + 88]
