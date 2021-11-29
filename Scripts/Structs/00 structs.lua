@@ -510,7 +510,6 @@ end]=]
 	end
 	if mmver > 6 then
 		define[mm78(0xE31AF0, 0xF01A08)].alt.u4  'RendererD3D'
-		.pstruct(structs.RendererD3D)  'StructRendererD3D'
 		.Info{Name = "IsD3D", new = true}
 	end
 	define[0].CustomType('RandSeed', 0, function(o, obj, name, val)

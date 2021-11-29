@@ -2720,9 +2720,6 @@ function structs.f.ArcomagePlayer(define)
 	.size = 47*4
 end
 
-function structs.f.RendererD3D(define)
-end
-
 function structs.f.ProgressBar(define)
 	define
 	[0xA].u1  'Max'
