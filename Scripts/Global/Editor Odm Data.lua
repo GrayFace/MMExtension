@@ -421,10 +421,7 @@ local function UpdateOutdoorExtra()
 	for k in pairs(Editor.OdmBits) do
 		a[k] = h[k]
 	end
-	if a.Foggy then
-		a.FogRange1 = h.FogRange1 or 0
-		a.FogRange2 = h.FogRange2 or 4096
-	end
+	Game.Weather.SetFog(h.Foggy and (h.FogRange1 or 0), h.Foggy and h.FogRange2 or 4096)
 end
 
 function Editor.UpdateOutdoorHeader()
