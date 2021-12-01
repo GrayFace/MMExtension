@@ -417,9 +417,9 @@ end
 
 function Editor.LoadedBlv()
 	if Editor.LoadBlvTime then
-		Editor.FileName, Editor.DefaultFileName = nil, nil
 		Map.LastRefillDay = 0
 		if not Editor.LoadBlvKeepState then
+			Editor.FileName, Editor.DefaultFileName = nil, nil
 			Editor.ReadMap()
 		else
 			Map.Monsters.Count = 0  -- avoid loading of frames
