@@ -2019,6 +2019,14 @@ function _mem.autohook2(p, f, size)
 	return code
 end
 
+local function copy_codef(p, codef, code)
+	local code2 = codef and codef(p) or code
+	if #code2 ~= #code then
+		error('code size depends on code pointer', 3)
+	end
+	mem_copy(p, code2, #code)
+end
+
 -- Like #autohook:mem.autohook#, but takes a compiled Asm code string as parameter
 -- 'code' can also be a function !Lua[[f(ptr)]]. 'ptr' is the address of memory allocated for hook code or 'nil' (to calculate size)
 function _mem.bytecodehook(p, code, size)
@@ -2026,7 +2034,7 @@ function _mem.bytecodehook(p, code, size)
 	code = (codef and codef() or code)
 	size = size or GetNoJumpSize(p)
 	local new = mem_hookalloc(#code + size + 5)
-	mem_copy(new, codef and codef(new) or code, #code)
+	copy_codef(new, codef, code)
 	local _, size1 = MyCopyCode(p, size, new + #code)
 	PlaceJMP(p, new, size1)
 	-- In .text:
@@ -2047,7 +2055,7 @@ function _mem.bytecodehook2(p, code, size)
 	size = size or GetNoJumpSize(p)
 	local new = mem_hookalloc(size + #code + 5)
 	local _, size1 = MyCopyCode(p, size, new, true)
-	mem_copy(new + size, codef and codef(new + size) or code, #code)
+	copy_codef(new + size, codef, code)
 	copycode(p + size1, 0, new + size + #code)  -- put jmp
 	PlaceJMP(p, new, size1)
 	-- In .text:
@@ -2084,7 +2092,7 @@ function _mem.bytecodepatch(p, code, size)
 			end
 		end
 		MyProt(true)
-		mem_copy(p, codef and codef(p) or code, #code)
+		copy_codef(p, codef, code)
 		for i = p + #code, p + size - 1 do
 			u1[i] = 0x90
 		end
@@ -2092,7 +2100,7 @@ function _mem.bytecodepatch(p, code, size)
 		return
 	end
 	local new = mem_hookalloc(#code + 5)
-	mem_copy(new, codef and codef(new) or code, #code)
+	copy_codef(new, codef, code)
 	copycode(p + size1, 0, new + #code)  -- put jmp
 	PlaceJMP(p, new, size1)
 	return new
@@ -2171,7 +2179,7 @@ if internal.CompileAsm then
 		local codef = (type(code) == "function" and code)
 		code = (codef and codef() or code)
 		local p = mem_hookalloc(#code)
-		mem_copy(p, codef and codef(p) or code, #code)
+		copy_codef(p, codef, code)
 		return p, #code
 	end
 end

@@ -315,7 +315,7 @@ do
 			return function(s)
 				local s, n = check(s, level + 1)
 				return function(p)
-					local r, err = CompileAsm(macro:gsub('%%p', p or 0)..s, n + MacroLines)
+					local r, err = CompileAsm(macro:gsub('%%p', p or 0x10000)..s, n + MacroLines)
 					return r or (error(err, FromMem + 1))
 				end
 			end
