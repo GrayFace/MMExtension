@@ -338,6 +338,19 @@ local function SetModelIndex(id, prop, val)
 	Editor.State.Models[t] = val or true
 end
 
+local function NeedFacetData(a, id)
+	local d = Map.IsOutdoor() and a or a.HasData and Map.FacetData[a.DataIndex]
+	if not d then
+		local n = Map.FacetData.count
+		mem.resizeArrayMM(Map.FacetData, n + 1)
+		d = Map.FacetData[n]
+		d.FacetIndex = id
+		a.DataIndex = n
+		a.HasData = true
+	end
+	return d
+end
+
 local FacetProps = MakeProps{
 	"Bitmap",
 	"BitmapU",
@@ -438,21 +451,14 @@ local FacetProps = MakeProps{
 		elseif prop == "Door" or prop == "MovedByDoor" or prop == "DoorStaticBmp" then
 			if t.Door then
 				FacetUpdateDoors[t.Door] = true
+				NeedFacetData(a, id)
 			end
 		elseif Editor.ShowInvisible and (prop == "Invisible" or prop == "IsSky" and not Game.IsD3D) then
 			-- do nothing
 		elseif not IsFacetDataProp[prop] then
 			a[prop] = val
 		else
-			local d = Map.IsOutdoor() and a or a.HasData and Map.FacetData[a.DataIndex]
-			if not d then
-				local n = Map.FacetData.count
-				mem.resizeArrayMM(Map.FacetData, n + 1)
-				d = Map.FacetData[n]
-				d.FacetIndex = id
-				a.DataIndex = n
-				a.HasData = true
-			end
+			local d = NeedFacetData(a, id)
 			if prop == "BitmapU" or prop == "BitmapV" then
 				Editor["Update"..prop](t)
 				-- print(t[prop], a[prop])
@@ -466,6 +472,9 @@ local FacetProps = MakeProps{
 	end,
 
 	done = function()
+		if next(FacetUpdateDoors) then
+			Editor.DoorCache = nil
+		end
 		Editor.RecreateDoors(FacetUpdateDoors)
 		Editor.UpdateDoorsBounds(FacetUpdateDoors)
 		FacetUpdateDoors = {}

@@ -442,7 +442,6 @@ function Editor.SelectSingleFacet(id)
 			end
 			f.BitmapId = (mmver == 6 and Editor.LoadBitmap("pending") or Editor.LoadBitmap("effpar01"))
 		end
-		f.HasData = true  -- I don't remember why I do this
 		Editor.SelectionChanged = true
 		-- FlickerState = false
 	end

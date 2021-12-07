@@ -1791,6 +1791,9 @@ function Editor.UpdateMap(CompileFile)
 	end
 	profile "PrepareLists"
 	PrepareLists(CompileFile)
+	Editor.Facets = Facets
+	Editor.FacetIds = FacetIds
+	
 	-- prepare to allocate
 	mem.fill(allocBuf, allocPtr - allocBuf, 0)
 	allocPtr = allocStart
@@ -1819,9 +1822,6 @@ function Editor.UpdateMap(CompileFile)
 		WriteFacetBitmaps(Facets)
 		bin.FacetsSize = allocPtr - bin.FacetsBuf
 	end
-	
-	Editor.Facets = Facets
-	Editor.FacetIds = FacetIds
 	
 	-- facetdata
 	profile "facetdata"
