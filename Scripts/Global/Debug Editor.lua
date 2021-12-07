@@ -10,6 +10,11 @@ local skFacet = 6
 local skLight = 7
 local skModel = 8
 
+local mmver = offsets.MMVersion
+local function mmv(...)
+	return (select(mmver - 5, ...))
+end
+
 -----------------------------------------------------
 -- BSP
 -----------------------------------------------------
@@ -669,6 +674,7 @@ function BatchExport(dir, includeBlv)
 end
 
 function DoBatchLoad(mask, odir, preproc, postproc)
+	local oldmap = Map.Name
 	local co = coroutine.running()
 	local done = AutoResume()
 	-- for s in path.find(mask) do
@@ -706,6 +712,13 @@ function DoBatchLoad(mask, odir, preproc, postproc)
 			coroutine.yield()
 		end
 		print('compiling', s)
+		
+		-- prevent bitmaps overflow
+		local inout = Map.IndoorOrOutdoor
+		Map.IndoorOrOutdoor = 0
+		mem.call(mmv(0x454930, 0x4644B6, 0x4627B6), 0)
+		Map.IndoorOrOutdoor = inout
+		
 		Editor.UpdateMap(odir..path.setext(path.name(s), ''))
 		print('ok', s)
 	end
@@ -713,6 +726,7 @@ function DoBatchLoad(mask, odir, preproc, postproc)
 	if postproc then
 		postproc()
 	end
+	Editor.LoadBlv(oldmap)  -- prevent crash from lack of sky texture
 end
 
 function DoBatchLoadAll(dir, odir, ...)
