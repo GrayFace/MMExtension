@@ -82,7 +82,9 @@ function structs.f.GameStructure(define)
 		end
 	end)
 	[mmv(0x4BCDD8, 0x4E28D8, 0x4F37D8)].i4  'CurrentScreen'
+	 .Info ":const.Screens"
 	[mmv(0x4D4714, 0x506DC8, 0x5185A8)].i4  'CurrentCharScreen'
+	 .Info ":const.CharScreens"
 	[mmv(0x5F811C, 0x6A0BC4, 0x6CEB24)].i4  'MainMenuCode'
 	 .Info "-1 = in game, 1 = show new game, 6 = in new game, 3 = load menu, 4 = exit, 2 = show credits, 8 = in credits, 9 = load game"
 	-- 465012(MM8) SetMainMenuCode
@@ -529,6 +531,10 @@ end]=]
 	define
 	.func{name = "DoShowMovie", p = mmv(0x4A59A0, 0x4BE671, 0x4BC1F1), cc = 2, must = 1; "", 0, true, true}
 	 .Info{Sig = "Name, Y, DoubleSize, ExitCurrentScreen"; "Only call from #events.ShowMovie:#, use #evt.ShowMovie:# otherwise."}
+	if mmver > 6 then
+		define.func{name = "IsMoviePlaying", p = mm78(0x4BF35F, 0x4BCFA0), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
+	end
+	define
 	.func{name = "LoadHouseMovie", p = mmv(0x4A63E0, 0x4BF1F5, 0x4BCE28), cc = 1, fixed = {mmv(0x9DE330, 0xF8B988, 0xFFDD80)}, must = 1; "", true}
 	 .Info{Sig = "Name, Loop = true"}
 	.func{name = "EndMovie", p = mmv(0x4A5D10, 0x4BEB3A, 0x4BC755), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
@@ -558,8 +564,12 @@ end]=]
 		define[internal.MonsterKindPtr].parray{lenA = i4, lenP = internal.MonsterKindPtr + 4, lenSet = SetLenRealloc}.struct(structs.MonsterKind)  'MonsterKinds'
 		.func{name = "IsMonsterOfKind", p = mm78(0x438BCE, 0x436542), cc = 2, must = 2}
 		 .Info{Sig = "Id, Kind:const.MonsterKind"}
-		.func{name = "IsMoviePlaying", p = mm78(0x4BF35F, 0x4BCFA0), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
 	end
+	define
+	.func{name = "Uncompress", p = mmv(0x4A7AA0, 0x4C2F60, 0x4D1EC0), cc = 2, must = 4}
+	 .Info{Sig = "pTarget, pTargetSize, pSrc, SrcSize"; "'pTargetSize' must point to a 4-byte buffer specifying unpacked size."}
+	.func{name = "Compress", p = mmv(0x4A7B20, 0x4C2FF0, 0x4D1F50), cc = 2, must = 4, ret = 'u1'; 0,0,0,0, -1}
+	 .Info{Sig = "pTarget, pTargetSize, pSrc, SrcSize, Compression[MM7+] = -1"; "'pTargetSize' must point to a 4-byte buffer specifying max size. The function sets it to actual size it has used up. If successful, returns '0'."}
 	
 	function define.f.LoadSound(soundId, unk, unk2)
 		call(mmv(0x48E2D0, 0x4A99F7, 0x4A7F22), 1, mmv(0x9CF700, 0xF79BDC, 0xFEBFE4), soundId, unk or 0, unk2 or 0)
@@ -1510,6 +1520,7 @@ function structs.f.PatchOptions(define)
 	int  'ArmageddonElement'
 	bool  'FixKelebrim'  Info "[MM7]"
 	bool  'FixBarrels'  Info "[MM7]"
+	bool  'ClimbBetter'  Info "[MM7+]"
 	
 	function define.f.Present(name)
 		return not not addr[name]

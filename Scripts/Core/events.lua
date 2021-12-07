@@ -383,11 +383,19 @@ else
 	end)
 end
 
--- always invoke LeaveMap event (death and walking fixed by my patches) (fixed in patch 2.5)
 if mmver > 6 and PatchOptionsSize < 336 then
+	-- always invoke LeaveMap event (death and walking fixed by my patches) (fixed in patch 2.5)
 	for _, p in ipairs(mm78({0x433324, 0x44800F, 0x44C30F, 0x4B6A96}, {0x430BC3, 0x445335, 0x4B52F5})) do
 		mem.asmhook(p, 'pushad'..'\ncall absolute '..mm78(0x443FB8, 0x440DBC)..'\npopad')
 	end
+	-- read Body attack type of monsters
+	mem.asmhook(mm78(0x454D9A, 0x452580), [[
+		cmp eax, 'b'
+		jnz @f
+		mov eax, 8
+		jmp absolute mm7*0x454DA6 + mm8*0x45258D
+	@@:
+	]])
 end
 
 -- fix savegame loading
@@ -850,7 +858,20 @@ do
 	mem.copy(savehdr, "luadata.bin\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 0x20)
 
 	local tmp = mem.StaticAlloc(4)
-
+	local compress = false
+	
+	function EnableLuaDataCompression(on)
+		if on == nil then
+			return compress
+		end
+		compress = on
+	end
+	
+	local function TryCompress(dst, p, buf, sz)
+		u4[p] = sz
+		return Game.Compress(dst, p, buf, #buf) == 0 and u4[p] < sz
+	end
+	
 	function internal.OnSaveGame()
 		internal.NewGameAutosave = not internal.SaveGameData
 		if internal.SaveGameData then
@@ -869,10 +890,18 @@ do
 		if err then
 			ErrorMessage(err)
 		end
-		u4[tmp] = #buf
-		buf = mem.string(tmp, 4, true)..buf
-		u4[savehdr + 0x14] = #buf
-		call(offsets.SaveFileToLod, 1, offsets.SaveGameLod, savehdr, buf, 0)
+		local p, sz = mem.malloc(#buf + 4), #buf
+		if compress and #buf > 16 and TryCompress(p + 9, p, buf, #buf - 5) then
+			sz = u4[p] + 5    -- 4 bytes : compressed size
+			i1[p + 4] = -1    -- 1 byte  : -1 (if not compressed, RSPersist version goes here)
+			u4[p + 5] = #buf  -- 4 bytes : decompressed size
+		else
+			mem.copy(p + 4, buf)
+		end
+		u4[p] = sz
+		u4[savehdr + 0x14] = sz + 4
+		call(offsets.SaveFileToLod, 1, offsets.SaveGameLod, savehdr, p, 0)
+		mem.free(p)
 	end
 
 	mem.autohook2(mmv(0x44FE3A, 0x4600A7, 0x45DB5F), function()
@@ -892,6 +921,14 @@ do
 			if size ~= 0 then
 				local buf = mem.malloc(size)
 				call(offsets.fread, 0, buf, size, 1, f)
+				if i1[buf] == -1 then  -- compressed
+					local size2 = u4[buf + 1]
+					local buf2 = mem.malloc(size2)
+					u4[tmp] = size2
+					Game.Uncompress(buf2, tmp, buf + 5, size - 5)
+					mem.free(buf)
+					buf, size = buf2, u4[tmp]
+				end
 				local err
 				internal.SaveGameData, err = internal.unpersist(mem.string(buf, size, true)) --, permanentsTable)
 				mem.free(buf)
