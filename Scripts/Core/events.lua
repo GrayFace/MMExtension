@@ -922,12 +922,11 @@ do
 				local buf = mem.malloc(size)
 				call(offsets.fread, 0, buf, size, 1, f)
 				if i1[buf] == -1 then  -- compressed
-					local size2 = u4[buf + 1]
-					local buf2 = mem.malloc(size2)
-					u4[tmp] = size2
-					Game.Uncompress(buf2, tmp, buf + 5, size - 5)
+					local buf2 = mem.malloc(u4[buf + 1])
+					Game.Uncompress(buf2, buf + 1, buf + 5, size - 5)
+					size = u4[buf + 1]
 					mem.free(buf)
-					buf, size = buf2, u4[tmp]
+					buf = buf2
 				end
 				local err
 				internal.SaveGameData, err = internal.unpersist(mem.string(buf, size, true)) --, permanentsTable)
