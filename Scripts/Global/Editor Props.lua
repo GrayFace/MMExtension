@@ -451,7 +451,9 @@ local FacetProps = MakeProps{
 		elseif prop == "Door" or prop == "MovedByDoor" or prop == "DoorStaticBmp" then
 			if t.Door then
 				FacetUpdateDoors[t.Door] = true
-				NeedFacetData(a, id)
+				if mmver > 6 or not t.DoorStaticBmp then
+					NeedFacetData(a, id)
+				end
 			end
 		elseif Editor.ShowInvisible and (prop == "Invisible" or prop == "IsSky" and not Game.IsD3D) then
 			-- do nothing
