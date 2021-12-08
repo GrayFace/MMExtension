@@ -91,7 +91,9 @@ local function CheckFacet(a, nx, ny, nz, d, f)  -- checks if 'a' can be split by
 	local dd = q and -q.MoveLength*(q.DirectionX*nx + q.DirectionY*ny + q.DirectionZ*nz) or 0
 	r = CombineChecks(r, DoCheckFacet(a, nx, ny, nz, d + dd, doors))
 	-- test with all but plane's door moved:
-	doors[q] = nil
+	if q then
+		doors[q] = nil
+	end
 	if r == CHK_DOOR or dd == 0 or not next(doors) then
 		return r
 	end
