@@ -1043,10 +1043,6 @@ local function SplitFilter(shrink, t, move, maybe, static, other, param, param2)
 	local x1, x2 = 1/0, -1/0
 	for v in pairs(vert) do
 		local x = v.X*dirX + v.Y*dirY + v.Z*dirZ
-		if v.Shift then
-			local v = v.Shift
-			x = x + v.X*dirX + v.Y*dirY + v.Z*dirZ
-		end
 		x1 = min(x1, x)
 		x2 = max(x2, x)
 	end
@@ -1056,10 +1052,6 @@ local function SplitFilter(shrink, t, move, maybe, static, other, param, param2)
 	local dvert = {}
 	for v, x in pairs(vert) do
 		local x = v.X*dirX + v.Y*dirY + v.Z*dirZ
-		if v.Shift then
-			local v = v.Shift
-			x = x + v.X*dirX + v.Y*dirY + v.Z*dirZ
-		end
 		if x >= param and x <= param2 then
 			dvert[v] = true
 		end
@@ -1270,7 +1262,7 @@ function Editor.WriteDoor(a, t)
 		local i = assert(VertexIds[v] or v.id)
 		if NDVertex[v] or v.portal then
 			-- a vertex is used both for door and static geometry
-			-- create a "movable" copy of the vertex
+			-- create a "moveable" copy of the vertex
 			local n = Map.Vertexes.Count
 			if n == VertexLim then
 				mem.reallocMM(Map.Vertexes, VertexLim*6, VertexLim*12)

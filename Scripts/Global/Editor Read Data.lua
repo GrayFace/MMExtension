@@ -574,12 +574,52 @@ end
 -- ReadDoor
 -----------------------------------------------------
 
-local function VerToNum(v)
-	return v.X % 0x10000 + (v.Y % 0x10000)*0x10000 + (v.Z % 0x10000)*0x100000000
-end
+-- local function VerToNum(v)
+-- 	return v.X % 0x10000 + (v.Y % 0x10000)*0x10000 + (v.Z % 0x10000)*0x100000000
+-- end
 
-local function DoorCheckFree(t, ver, fac)
-	do return end  -- doesn't work right yet
+-- local function DoorCheckFree(t, ver, fac)
+-- 	do return end  -- doesn't work right yet
+-- 	local fac2, include, exclude = {}, {}, {}
+-- 	for _, f in pairs(Facets) do
+-- 		local need = fac[f]
+-- 		if need and not f.MoveByDoor and not f.IsPortal then
+-- 			need = false
+-- 			for _, v in ipairs(f.Vertexes) do
+-- 				if ver[v] then
+-- 					need = true
+-- 					break
+-- 				end
+-- 			end
+-- 		end
+-- 		if need then
+-- 			fac2[f] = true
+-- 		end
+-- 		if not f.IsPortal then
+-- 			for _, v in ipairs(f.Vertexes) do
+-- 				(need and include or exclude)[v] = true
+-- 				if not need and (not v.Shift or v.Shift.Delete) then
+-- 					exclude[VerToNum(v)] = true
+-- 				end
+-- 			end
+-- 		end
+-- 	end
+-- 	-- check
+-- 	for v in pairs(include) do
+-- 		if not ver[v] and not exclude[v] and (v.Shift and not v.Shift.Delete or not exclude[VerToNum(v)]) then
+-- 			return
+-- 		end
+-- 	end
+-- 	for v in pairs(ver) do
+-- 		if exclude[v] or (not v.Shift or v.Shift.Delete) and exclude[VerToNum(v)] then
+-- 			return
+-- 		end
+-- 	end
+-- 	t.VertexFilter = "Free"
+-- 	return fac2
+-- end
+
+local function DoorCheckShrink(t, ver, fac)
 	local fac2, include, exclude = {}, {}, {}
 	for _, f in pairs(Facets) do
 		local need = fac[f]
@@ -595,27 +635,59 @@ local function DoorCheckFree(t, ver, fac)
 		if need then
 			fac2[f] = true
 		end
-		if not f.IsPortal then
-			for _, v in ipairs(f.Vertexes) do
-				(need and include or exclude)[v] = true
-				if not need and (not v.Shift or v.Shift.Delete) then
-					exclude[VerToNum(v)] = true
+	end
+	local dirX, dirY, dirZ = t.DirectionX, t.DirectionY, t.DirectionZ
+	
+	local range, full = {1/0, -1/0}, {1/0, -1/0}  -- included range, full range
+	local function use(t, x)
+		t[1] = min(t[1], x)
+		t[2] = max(t[2], x)
+	end
+	for f in pairs(fac2) do
+		for _, v in ipairs(f.Vertexes) do
+			local x = v.X*dirX + v.Y*dirY + v.Z*dirZ
+			use(full, x)
+			if ver[v] then
+				use(range, x)
+			end
+		end
+	end
+	
+	local below, above = -1/0, 1/0
+	for f in pairs(fac2) do
+		for _, v in ipairs(f.Vertexes) do
+			if not ver[v] then
+				local x = v.X*dirX + v.Y*dirY + v.Z*dirZ
+				if x < range[1] then
+					below = max(below, x)
+				else
+					above = min(above, x)
 				end
 			end
 		end
 	end
-	-- check
-	for v in pairs(include) do
-		if not ver[v] and not exclude[v] and (v.Shift and not v.Shift.Delete or not exclude[VerToNum(v)]) then
-			return
-		end
+	
+	if below > range[1] - 0.5 or above < range[2] + 0.5 then
+		return
 	end
-	for v in pairs(ver) do
-		if exclude[v] or (not v.Shift or v.Shift.Delete) and exclude[VerToNum(v)] then
-			return
-		end
+	local function inv(t)
+		t[1], t[2] = -t[2], -t[1]
 	end
-	t.VertexFilter = "Free"
+	if below == -1/0 and above ~= 1/0 then
+		t.VertexFilter = "Shrink"
+		inv(range)
+		inv(full)
+		below, above = -above, -below
+	else
+		t.VertexFilter = "Grow"
+	end
+	local x0, L, mid = full[1], full[2] - full[1], (full[2] + full[1])/2
+	if L < 0.49 then
+		t.VertexFilterParam1 = -1  -- include all (below/above are empty)
+	elseif above ~= 1/0 or mid - below < 0.5 or range[1] - mid < 0.5 then
+		t.VertexFilterParam1 = below ~= -1/0 and ((range[1] + below)/2 - x0)/L or -1
+		t.VertexFilterParam2 = above ~= 1/0 and ((range[2] + above)/2 - x0)/L or nil
+	end
 	return fac2
 end
 
@@ -652,7 +724,7 @@ local function ReadDoor(a, t)
 		fac[Facets[i + 1] or fac] = true
 	end
 	fac[fac] = nil
-	fac = DoorCheckFree(t, ver, fac) or fac
+	fac = DoorCheckShrink(t, ver, fac) or fac
 	for _, f in pairs(Facets) do
 		if fac[f] then
 			local num, ismover = 0, true
