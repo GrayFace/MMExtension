@@ -42,6 +42,14 @@ if not TmpHooks.AddEx then  -- support older MMExt versions just in case
 			end, ...)
 			return ret
 		end
+		for proc in pairs{hook = false, hookjmp = false} do
+			t[proc] = function(...)
+				return t.Add(mem[proc], ...)
+			end
+		end
+		function t.AddEx(RetMem, ...)
+			return add(...)
+		end
 		return t
 	end
 	TmpHooks = HookManager()

@@ -420,7 +420,7 @@ function L1()
 	Editor.UpdateMap()
 end
 
-L2 = || Editor.ReadMap()
+L2 = Editor.ReadMap
 
 -- function d()
 	-- print(dump(Map.Vertexes))
