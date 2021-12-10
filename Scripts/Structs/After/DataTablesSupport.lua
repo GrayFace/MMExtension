@@ -244,7 +244,6 @@ function DataTables.StructsArray(arr, offs, t, str)
 				end
 			elseif not v then
 				local ret = struct[col]
-				errorinfo(('%s - value %s'):format(errorinfo(), tostring2(ret)))
 				if alias then
 					alias = aliasInv[col] or table.invert(alias)
 					aliasInv[col] = alias
