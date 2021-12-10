@@ -640,7 +640,7 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 			for i = 1, #order do
 				local k = struct[order[i]]
 				if k > 0 then
-					jumps[#jumps+1] = k
+					jumps[#jumps+1] = struct[order[#jumps+1]]
 				end
 			end
 			table.insert(jumps, 1, jumps[#jumps])  -- Next[0] is emitted last
