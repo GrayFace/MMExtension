@@ -157,7 +157,7 @@ local function AddFacet(t)
 	else
 		OldFacets[a] = true
 	end
-	return a
+	return a, new
 end
 
 -----------------------------------------------------
@@ -176,7 +176,7 @@ local function LoadBlvObj(file, AsObjects)
 	ParseObj(file, AddVertex, 
 		-- Facet
 		function(t, texture, invis, u, v)
-			t = AddFacet(t)
+			local t, new = AddFacet(t)
 			if not t then
 				return
 			end
@@ -189,7 +189,7 @@ local function LoadBlvObj(file, AsObjects)
 			elseif texture and texture == "_Invisible_" then
 				t.Invisible = true
 				t.Bitmap = nil
-			elseif texture and not t.IsPortal then
+			elseif texture and not t.IsPortal and (new or t.Bitmap ~= texture) then
 				t.Invisible = invis
 				t.Bitmap = texture
 			end
