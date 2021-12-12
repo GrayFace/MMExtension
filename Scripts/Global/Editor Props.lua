@@ -994,7 +994,7 @@ local LightProps = MakeProps{
 -- SpawnProps
 -----------------------------------------------------
 
-local PropM = {"m1", "m2", "m3", "m1a", "m1b", "m1c", "m2a", "m2b", "m2c", "m3a", "m3b", "m3c"}
+local PropM = {"m1", "m2", "m3", "m1a", "m2a", "m3a", "m1b", "m2b", "m3b", "m1c", "m2c", "m3c"}
 local PropI = {"i1", "i2", "i3", "i4", "i5", "i6", "i7"}
 local PropM1 = table.invert(PropM)
 local PropI1 = table.invert(PropI)

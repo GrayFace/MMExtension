@@ -1069,6 +1069,7 @@ function structs.f.MapMonster(define)
 	end
 	define
 	[0x20].i2  'NPC_ID'
+	 .Info "[MM6] Index in #Game.StreetNPC:structs.GameStructure.StreetNPC# + 1\n[MM7+] Index in #Game.NPC:structs.GameStructure.NPC# or index in #Game.StreetNPC:structs.GameStructure.StreetNPC# + 5000"
 	.skip(2)
 	.goto(0x24)  internal.MonsterBits(define)
 	[0x24].u4  'Bits'
@@ -2018,7 +2019,7 @@ function structs.f.SpawnPoint(define)
 	[0xe].i2  'Kind'  -- Kind  (const.ObjectRefKind)
 	 .Info {Type = "const.ObjectRefKind"}
 	[0x10].i2  'Index'
-	 .Info "Index: monster (1-3: M1-M3,  4-6: M1a-M1c,  7-9: M2a-M2c,  10-12: M3a-M3c) or item (1-6 for regular item, 7 for artifact)"
+	 .Info "Index: monster (1-3: M1-M3,  4-6: M1a-M3a,  7-9: M1b-M3b,  10-12: M1c-M3c) or item (1-6 for regular items, 7 for artifact)"
 	[0x12].bit('OnAlertMap', 1)
 	[0x12].u2  'Bits'  -- Attributes
 	if mmver > 6 then

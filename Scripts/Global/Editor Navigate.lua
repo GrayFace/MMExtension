@@ -870,7 +870,7 @@ do
 	local PalId = 23391
 	Editor.PaletteNumber = PalId
 	local SpawnNames = {
-		[skMonster] = {"m1", "m2", "m3", "m1a", "m1b", "m1c", "m2a", "m2b", "m2c", "m3a", "m3b", "m3c"},
+		[skMonster] = {"m1", "m2", "m3", "m1a", "m2a", "m3a", "m1b", "m2b", "m3b", "m1c", "m2c", "m3c"},
 		[skObject] = {"i1", "i2", "i3", "i4", "i5", "i6", "i7"},
 	}
 	for _, t in pairs(SpawnNames) do

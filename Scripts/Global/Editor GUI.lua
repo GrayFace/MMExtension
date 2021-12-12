@@ -1291,7 +1291,7 @@ local function GetSpriteKindList()
 end
 
 local SpawnProps = {
-	"m1", "m2", "m3", "m1a", "m1b", "m1c", "m2a", "m2b", "m2c", "m3a", "m3b", "m3c",
+	"m1", "m2", "m3", "m1a", "m2a", "m3a", "m1b", "m2b", "m3b", "m1c", "m2c", "m3c",
 	"i1", "i2", "i3", "i4", "i5", "i6", "i7"
 }
 local SpawnPropName = {
@@ -1299,13 +1299,13 @@ local SpawnPropName = {
 	"Monster 2",
 	"Monster 3",
 	"Monster 1 Weak",
-	"Monster 1 Average",
-	"Monster 1 Strong",
 	"Monster 2 Weak",
-	"Monster 2 Average",
-	"Monster 2 Strong",
 	"Monster 3 Weak",
+	"Monster 1 Average",
+	"Monster 2 Average",
 	"Monster 3 Average",
+	"Monster 1 Strong",
+	"Monster 2 Strong",
 	"Monster 3 Strong",
 	"Item Level 1",
 	"Item Level 2",
