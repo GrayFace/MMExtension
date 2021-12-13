@@ -1407,7 +1407,7 @@ end
 function Editor.MakeDoorCache()
 	Editor.DoorCache, Editor.DoorCacheN = {}, {}
 	local doors = {}
-	for f in pairs(FacetIds) do
+	for f in pairs(Editor.FacetIds) do
 		if f.Door then
 			doors[f.Door] = true
 		end
@@ -1662,6 +1662,8 @@ local function PrepareLists(compile)
 	Editor.SpriteIds = {}
 	Lights = {}
 	LightIds = {}
+	Editor.Facets = Facets
+	Editor.FacetIds = FacetIds
 	
 	-- verts
 	if state.ExactVertexes then
@@ -1776,6 +1778,7 @@ function Editor.UpdateMap(CompileFile)
 	state.Rooms[1] = state.Rooms[1] or {Facets = {}}
 	if not Game.IsD3D or CompileFile then
 		profile "BuildBSP"
+		PrepareLists(CompileFile)
 		Editor.BuildBSP(true)
 	end
 	if CompileFile and not Editor.StateSync then
@@ -1783,8 +1786,6 @@ function Editor.UpdateMap(CompileFile)
 	end
 	profile "PrepareLists"
 	PrepareLists(CompileFile)
-	Editor.Facets = Facets
-	Editor.FacetIds = FacetIds
 	
 	-- prepare to allocate
 	mem.fill(allocBuf, allocPtr - allocBuf, 0)
