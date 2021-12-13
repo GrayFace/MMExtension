@@ -92,9 +92,9 @@ end
 
 MakeBitsDefiner("SpriteBits")
 const.SpriteBits = {
-	TriggerByTouch = 0x0001,  -- triggered when a player comes into 'TriggerRadius'
-	TriggerByMonster = 0x0002,  -- triggered when a monster comes into 'TriggerRadius'
-	TriggerByObject = 0x0004,  -- triggered when an object gets into 'TriggerRadius'
+	TriggerByTouch = 0x0001,  -- only for "Event Trigger" sprites - triggered when a player comes into 'TriggerRadius'
+	TriggerByMonster = 0x0002,  -- only for "Event Trigger" sprites - triggered when a monster comes into 'TriggerRadius'
+	TriggerByObject = 0x0004,  -- only for "Event Trigger" sprites - triggered when an object gets into 'TriggerRadius'
 	ShowOnMap = 0x0008,
 	IsChest = 0x0010,
 	Invisible = 0x0020,

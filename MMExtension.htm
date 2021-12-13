@@ -6041,7 +6041,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.GameStructure.IsMoviePlaying" class="abs"></a>IsMoviePlaying<b class="def-largs">(</b>arg1 = 16300424<b class="def-rargs">)</b>
+<a id="structs.GameStructure.IsMoviePlaying" class="abs"></a>IsMoviePlaying<b class="def-largs">(</b><b class="def-rargs">)</b>
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
 </td>
@@ -6053,13 +6053,13 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.GameStructure.EndMovie" class="abs"></a>EndMovie<b class="def-largs">(</b>arg1 = 10347312<b class="def-rargs">)</b>
+<a id="structs.GameStructure.EndMovie" class="abs"></a>EndMovie<b class="def-largs">(</b><b class="def-rargs">)</b>
 </td><td class="def-right">
  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.GameStructure.RestartHouseMovie" class="abs"></a>RestartHouseMovie<b class="def-largs">(</b>arg1 = 10347312<b class="def-rargs">)</b>
+<a id="structs.GameStructure.RestartHouseMovie" class="abs"></a>RestartHouseMovie<b class="def-largs">(</b><b class="def-rargs">)</b>
 </td><td class="def-right">
  
 </td>
@@ -6071,7 +6071,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.GameStructure.GetNPCPtrFromIndex" class="abs"></a>GetNPCPtrFromIndex<b class="def-largs">(</b>arg1<b class="def-rargs">)</b>
+<a id="structs.GameStructure.GetNPCPtrFromIndex" class="abs"></a>GetNPCPtrFromIndex<b class="def-largs">(</b>Index<b class="def-rargs">)</b>
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
 </td>
@@ -7225,15 +7225,63 @@ Id
  
 </td>
 </tr><tr>
+<td class="def-left">
+<a id="structs.GameScreen.RedBits" class="abs"></a>RedBits
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.GameScreen.BlueBits" class="abs"></a>BlueBits
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.GameScreen.GreenBits" class="abs"></a>GreenBits
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.GameScreen.RedMask" class="abs"></a>RedMask
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.GameScreen.GreenMask" class="abs"></a>GreenMask
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.GameScreen.BlueMask" class="abs"></a>BlueMask
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
 <td colspan="2" class="def-functions"><br>
-  &nbsp;<i class="def-ib">Functions:</i>
+  &nbsp;<i class="def-ib">Methods:</i>
 </td>
 </tr>
 <tr>
 <td class="def-left">
+<a id="structs.GameScreen.SaveToPcx" class="abs"></a>SaveToPcx<b class="def-largs">(</b>name, x = 0, y = 0, width = 640, height = 480<b class="def-rargs">)</b>
+</td><td class="def-right">
+ <b class="def-param">x</b>, <b class="def-param">y</b>, <b class="def-param">width</b>, <b class="def-param">height</b> can only be specified in MM6. MM7 and MM8 save a shot of whole screen area.
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.GameScreen.SaveBufferToPcx" class="abs"></a>SaveBufferToPcx<b class="def-largs">(</b>name, buf, width = 640, height = 480<b class="def-rargs">)</b>
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.GameScreen.Draw" class="abs"></a>Draw<b class="def-largs">(</b>x, y, pic, style, rotate, EnglishD<b class="def-rargs">)</b>
 </td><td class="def-right">
- 
+ <b class="def-param">style</b>:<br><span class="def-nbsp">  </span>"transparent", <b class="def-param">false</b> &ndash; draw treating color index 0 as transparent (default)<br><span class="def-nbsp">  </span>"opaque", <b class="def-param">true</b> &ndash; draw without transparency<br><span class="def-nbsp">  </span>"red" &ndash; draw broken item<br><span class="def-nbsp">  </span>"green" &ndash; draw unidentified item<br>
 </td>
 </tr><tr>
 <td class="def-left">
@@ -7246,23 +7294,6 @@ Id
 <a id="structs.GameScreen.DrawToObjectByPixel" class="abs"></a>DrawToObjectByPixel<b class="def-largs">(</b>x, y, pic, index, rotate, EnglishD<b class="def-rargs">)</b>
 </td><td class="def-right">
  
-</td>
-</tr><tr>
-<td colspan="2" class="def-functions"><br>
-  &nbsp;<i class="def-ib">Methods:</i>
-</td>
-</tr>
-<tr>
-<td class="def-left">
-<a id="structs.GameScreen.SaveToPcx" class="abs"></a>SaveToPcx<b class="def-largs">(</b>name, x, y, width, height<b class="def-rargs">)</b>
-</td><td class="def-right">
- <b class="def-param">x</b>, <b class="def-param">y</b>, <b class="def-param">width</b>, <b class="def-param">height</b> are only used in MM6. MM7 and MM8 save a shot of whole screen area.
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.GameScreen.SaveBufferToPcx" class="abs"></a>SaveBufferToPcx<b class="def-largs">(</b>name, x, y, width, height<b class="def-rargs">)</b>
-</td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  <b class="def-param">x</b>, <b class="def-param">y</b>, <b class="def-param">width</b>, <b class="def-param">height</b> are only used in MM6. MM7 and MM8 save a shot of whole screen area.
 </td>
 </tr></tbody>
 </table>
@@ -10872,7 +10903,7 @@ Id
 <td class="def-left">
 <a id="structs.MapMonster.NPC_ID" class="abs"></a>NPC_ID
 </td><td class="def-right">
- 
+ <span class="def-ver">[MM6]</span> Index in <a href="#structs.GameStructure.StreetNPC">Game.StreetNPC</a> + 1<br><span class="def-ver">[MM7+]</span> Index in <a href="#structs.GameStructure.NPC">Game.NPC</a> or index in <a href="#structs.GameStructure.StreetNPC">Game.StreetNPC</a> + 5000
 </td>
 </tr><tr>
 <td class="def-left">
@@ -12377,7 +12408,7 @@ Id
 <td class="def-left">
 <a id="structs.MapSprite.TriggerByMonster" class="abs"></a>TriggerByMonster
 </td><td class="def-right">
- triggered when a monster comes into <b class="def-param">TriggerRadius</b>
+ only for "Event Trigger" sprites &ndash; triggered when a monster comes into <b class="def-param">TriggerRadius</b>
 </td>
 </tr><tr>
 <td class="def-left">
@@ -12395,13 +12426,13 @@ Id
 <td class="def-left">
 <a id="structs.MapSprite.TriggerByObject" class="abs"></a>TriggerByObject
 </td><td class="def-right">
- triggered when an object gets into <b class="def-param">TriggerRadius</b>
+ only for "Event Trigger" sprites &ndash; triggered when an object gets into <b class="def-param">TriggerRadius</b>
 </td>
 </tr><tr>
 <td class="def-left">
 <a id="structs.MapSprite.TriggerByTouch" class="abs"></a>TriggerByTouch
 </td><td class="def-right">
- triggered when a player comes into <b class="def-param">TriggerRadius</b>
+ only for "Event Trigger" sprites &ndash; triggered when a player comes into <b class="def-param">TriggerRadius</b>
 </td>
 </tr><tr>
 <td class="def-left">
@@ -15226,6 +15257,18 @@ Id
  <span class="def-ver">[MM7+]</span>
 </td>
 </tr><tr>
+<td class="def-left">
+<a id="structs.PatchOptions.FixWaterWalkManaDrain" class="abs"></a>FixWaterWalkManaDrain
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.PatchOptions.KeepEmptyWands" class="abs"></a>KeepEmptyWands
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
 <td colspan="2" class="def-functions"><br>
   &nbsp;<i class="def-ib">Functions:</i>
 </td>
@@ -16919,7 +16962,7 @@ Id
 <td class="def-left">
 <a id="structs.SpawnPoint.Index" class="abs"></a>Index
 </td><td class="def-right">
- Index: monster (1-3: M1-M3, <span class="def-nbsp"> </span>4-6: M1a-M1c, <span class="def-nbsp"> </span>7-9: M2a-M2c, <span class="def-nbsp"> </span>10-12: M3a-M3c) or item (1-6 for regular item, 7 for artifact)
+ Index: monster (1-3: M1-M3, <span class="def-nbsp"> </span>4-6: M1a-M3a, <span class="def-nbsp"> </span>7-9: M1b-M3b, <span class="def-nbsp"> </span>10-12: M1c-M3c) or item (1-6 for regular items, 7 for artifact)
 </td>
 </tr><tr>
 <td class="def-left">
@@ -25300,19 +25343,19 @@ Id
 <td class="def-left">
 <a id="const.SpriteBits.TriggerByTouch" class="abs"></a>TriggerByTouch <i class="def-const">= 1</i>
 </td><td class="def-right">
- triggered when a player comes into <b class="def-param">TriggerRadius</b>
+ only for "Event Trigger" sprites &ndash; triggered when a player comes into <b class="def-param">TriggerRadius</b>
 </td>
 </tr><tr>
 <td class="def-left">
 <a id="const.SpriteBits.TriggerByMonster" class="abs"></a>TriggerByMonster <i class="def-const">= 2</i>
 </td><td class="def-right">
- triggered when a monster comes into <b class="def-param">TriggerRadius</b>
+ only for "Event Trigger" sprites &ndash; triggered when a monster comes into <b class="def-param">TriggerRadius</b>
 </td>
 </tr><tr>
 <td class="def-left">
 <a id="const.SpriteBits.TriggerByObject" class="abs"></a>TriggerByObject <i class="def-const">= 4</i>
 </td><td class="def-right">
- triggered when an object gets into <b class="def-param">TriggerRadius</b>
+ only for "Event Trigger" sprites &ndash; triggered when an object gets into <b class="def-param">TriggerRadius</b>
 </td>
 </tr><tr>
 <td class="def-left">

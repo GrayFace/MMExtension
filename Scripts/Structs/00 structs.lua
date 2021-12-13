@@ -533,21 +533,25 @@ end]=]
 	 .Info{Sig = "Name, Y, DoubleSize, ExitCurrentScreen"; "Only call from #events.ShowMovie:#, use #evt.ShowMovie:# otherwise."}
 	if mmver > 6 then
 		define.func{name = "IsMoviePlaying", p = mm78(0x4BF35F, 0x4BCFA0), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
+		 .Info{Sig = ""}
 	end
 	define
 	.func{name = "LoadHouseMovie", p = mmv(0x4A63E0, 0x4BF1F5, 0x4BCE28), cc = 1, fixed = {mmv(0x9DE330, 0xF8B988, 0xFFDD80)}, must = 1; "", true}
 	 .Info{Sig = "Name, Loop = true"}
 	.func{name = "EndMovie", p = mmv(0x4A5D10, 0x4BEB3A, 0x4BC755), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
+	 .Info{Sig = ""}
 	[mmv(0x9DE330 + 16, 0xF8B988 + 100, 0xFFDD80 + 100)].b4  'IsMovieLooped'
 	[mmv(0x9DE330, 0xF8B988 + 156, 0xFFDD80 + 156)].i4  'MovieKind'
 	 .Info "0 - No movie, 1 - Smack, 2 - Bink"
 	.func{name = "RestartHouseMovie", p = mmv(0x4A68B0, 0x4BF518, 0x4BD165), cc = 1; mmv(0x9DE330, 0xF8B988, 0xFFDD80)}
+	 .Info{Sig = ""}
 	.func{name = "PlayShopSound", p = mmv(0x496520, 0x4B1DF5, 0x4B065F), cc = 2, must = 2}
 	 .Info{Sig = "House, SoundIndex"}
 	if mmver == 6 then
 		define.func{name = "GetCurrentNPCPtr", p = 0x43BCF0}
 	else
 		define.func{name = "GetNPCPtrFromIndex", p = mm78(0x445A1C, 0x442BCE), cc = 2, must = 1}
+		 .Info{Sig = "Index"}
 	end
 	define
 	.func{name = "CalcSpellDamage", p = mmv(0x47F0A0, 0x43B006, 0x438B05), cc = 0, must = 4}
@@ -1338,11 +1342,6 @@ local DrawStyles = {
 	green = mmv(0x40A880, 0x4A687F, 0x4A4A1E),
 }
 
--- 'style':
---   "transparent", 'false' - draw treating color index 0 as transparent (default)
---   "opaque", 'true' - draw without transparency
---   "red" - draw broken item
---   "green" - draw unidentified item
 function structs.f.GameScreen(define)
 	define.Info{Name = "Screen"}
 	if mmver > 6 then
@@ -1358,14 +1357,20 @@ function structs.f.GameScreen(define)
 	.i4  'cy2'
 	[mmv(0x40024, 0x400EC, 0x400EC)].u4  'Buffer'
 	[mmv(0x40028, 0x40034, 0x40034)].u4  'ObjectByPixel'
+	[mmv(0x400AC, 0x400CC, 0x400CC)].u4  'RedBits'
+	.u4  'BlueBits'
+	.u4  'GreenBits'
+	.u4  'RedMask'
+	.u4  'GreenMask'
+	.u4  'BlueMask'
 	.method{p = mmv(0x48D130, 0x49F14C, 0x49C7C0), name = "SaveToPcx", must = 1; '', unpack(mmver == 6 and {0, 0, 640, 480} or {})}
-	 .Info{Sig = "name, x, y, width, height"; "'x', 'y', 'width', 'height' are only used in MM6. MM7 and MM8 save a shot of whole screen area."}
+	 .Info{Sig = "name, x = 0, y = 0, width = 640, height = 480"; "'x', 'y', 'width', 'height' can only be specified in MM6. MM7 and MM8 save a shot of whole screen area."}
 	if mmver > 6 then
 		define.method{p = mm78(0x49F845, 0x49CEB9), name = "SaveBufferToPcx", must = 2; '', 0, 640, 480}
-		 .Info{Sig = "name, x, y, width, height"; "'x', 'y', 'width', 'height' are only used in MM6. MM7 and MM8 save a shot of whole screen area."}
+		 .Info{Sig = "name, buf, width = 640, height = 480"}
 	end
 	
-	function define.f:Draw(x, y, pic, style, rotate, EnglishD)
+	function define.m:Draw(x, y, pic, style, rotate, EnglishD)
 		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
 		local f = DrawStyles[style == true and 'opaque' or style or 'transparent']
 		if mmver == 6 then
@@ -1374,9 +1379,15 @@ function structs.f.GameScreen(define)
 			mem.call(f, 1, self['?ptr'], x, y, Game.IconsLod.Bitmaps[pic], rotate or 0)
 		end
 	end
-	define.Info{Sig = "x, y, pic, style, rotate, EnglishD"}
+	define.Info{Sig = "x, y, pic, style, rotate, EnglishD"; [[
+'style':
+  "transparent", 'false' - draw treating color index 0 as transparent (default)
+  "opaque", 'true' - draw without transparency
+  "red" - draw broken item
+  "green" - draw unidentified item
+]]}
 
-	function define.f:DrawItemEffect(x, y, shapePic, efPic, palShift, palFrom, palTo, rotate, EnglishD, efEnglishD)
+	function define.m:DrawItemEffect(x, y, shapePic, efPic, palShift, palFrom, palTo, rotate, EnglishD, efEnglishD)
 		assert(mmver > 6)
 		shapePic = Game.IconsLod.Bitmaps[type(shapePic) == "number" and shapePic or Game.IconsLod:LoadBitmap(shapePic, EnglishD)]
 		efPic = Game.IconsLod.Bitmaps[type(efPic) == "number" and efPic or Game.IconsLod:LoadBitmap(efPic, efEnglishD)]
@@ -1384,7 +1395,7 @@ function structs.f.GameScreen(define)
 	end
 	define.Info{Sig = "x, y, shapePic, effectPic, palShift, palAnimateFrom, palAnimateTo, rotate, EnglishD, effectEnglishD"}
 	
-	function define.f:DrawToObjectByPixel(x, y, pic, index, rotate, EnglishD)
+	function define.m:DrawToObjectByPixel(x, y, pic, index, rotate, EnglishD)
 		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
 		if mmver == 6 then
 			mem.call(0x40A990, 2, self.ObjectByPixel + (self.Width*y + x)*4, pic, index)
@@ -1521,6 +1532,8 @@ function structs.f.PatchOptions(define)
 	bool  'FixKelebrim'  Info "[MM7]"
 	bool  'FixBarrels'  Info "[MM7]"
 	bool  'ClimbBetter'  Info "[MM7+]"
+	bool  'FixWaterWalkManaDrain'
+	bool  'KeepEmptyWands'
 	
 	function define.f.Present(name)
 		return not not addr[name]
