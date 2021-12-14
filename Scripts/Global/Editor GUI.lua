@@ -616,7 +616,7 @@ local function SelectByProp(prop)
 		end
 	else
 		local models = {}
-		if Keys.IsPressed('CTRL') then
+		if Keys.IsPressed(const.Keys.CTRL) then
 			for m in pairs(Editor.State.Models) do
 				models[m.PartOf] = true
 			end
