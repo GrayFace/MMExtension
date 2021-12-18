@@ -121,7 +121,7 @@ local function InitVertexShifts()
 	VertexShifts = {}
 	for _, t in Map.Doors do
 		local dx = {Delete = Editor.ExactMode ~= 2}
-		dx.X, dx.Y, dx.Z = normalize(t.DirectionX, t.DirectionY, t.DirectionZ, t.MoveLength/2)
+		XYZ(dx, normalize(t.DirectionX, t.DirectionY, t.DirectionZ, t.MoveLength/2))
 		for i, vi in t.VertexIds do
 			VertexShifts[vi] = dx
 		end
@@ -253,27 +253,34 @@ function Editor.ReadFacet(a, _, Verts)
 	for k in pairs(Editor._FacetBits) do
 		t[k] = a[k]
 	end
+	local okMul = 0.99
 	t.MoveByDoor = a.MoveByDoor
+	local nx, ny, nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
 	Editor.FindNormal(t, true)
-	local nx, ny, nz = t.nx, t.ny, t.nz
+	local okBefore = t.ndist and t.nx*nx + t.ny*ny + t.nz*nz > okMul
 	ShiftVertexes(true, t, {})
-	t.nx = nil
+	t.ndist = nil
 	Editor.FindNormal(t, true)
-	if not t.nx or not nx or t.nx*nx + t.ny*ny + t.nz*nz <= 0.9 then
+	local okAfter = t.ndist and t.nx*nx + t.ny*ny + t.nz*nz > okMul
+	ShiftVertexes(false, t, {})
+	if okBefore ~= okAfter then
 		for _, v in ipairs(v) do
 			if v.Shift then
-				v.Shift.Delete = nil
+				v.Shift.Delete = okBefore and 1 or nil
 			end
 		end
 	end
-	ShiftVertexes(false, t, {})
-	if not t.nx then
-		t.nx, t.ny, t.nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
-	end
-	local v = v[1]
-	if v then
+	
+	if okBefore then
+		Editor.FindNormal(t, true)
+	elseif okAfter then
+		local v = v[1]
 		t.ndist = -(v.X*t.nx + v.Y*t.ny + v.Z*t.nz)
 	else
+		t.ndist = nil
+	end
+	if not t.ndist or abs(t.ndist*0x10000 - a.NormalDistance) > 1 then
+		t.nx, t.ny, t.nz = nx, ny, nz
 		t.ndist = a.NormalDistance/0x10000
 	end
 	t.PartOf = t
