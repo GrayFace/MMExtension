@@ -138,6 +138,7 @@ local CopyFacetDataProps = {
 local IsFacetDataProp = table.copy(CopyFacetDataProps, {
 	BitmapU = true,
 	BitmapV = true,
+	ImportVertex = true,
 	AlignLeft = "BitmapU",
 	AlignRight = "BitmapU",
 	AlignTop = "BitmapV",
