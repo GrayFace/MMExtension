@@ -253,27 +253,28 @@ function Editor.ReadFacet(a, _, Verts)
 	for k in pairs(Editor._FacetBits) do
 		t[k] = a[k]
 	end
-	local okMul = 0.99
 	t.MoveByDoor = a.MoveByDoor
+	
+	local okMul = 0.99
 	local nx, ny, nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
 	Editor.FindNormal(t, true)
-	local okBefore = t.ndist and t.nx*nx + t.ny*ny + t.nz*nz > okMul
+	local mulBefore = t.ndist and t.nx*nx + t.ny*ny + t.nz*nz or -2
 	ShiftVertexes(true, t, {})
 	t.ndist = nil
 	Editor.FindNormal(t, true)
-	local okAfter = t.ndist and t.nx*nx + t.ny*ny + t.nz*nz > okMul
+	local mulAfter = t.ndist and t.nx*nx + t.ny*ny + t.nz*nz or -2
 	ShiftVertexes(false, t, {})
-	if okBefore ~= okAfter then
+	if (mulBefore > okMul) ~= (mulAfter > okMul) or (mulBefore > 0) ~= (mulAfter > 0) then
 		for _, v in ipairs(v) do
 			if v.Shift then
-				v.Shift.Delete = okBefore and 1 or nil
+				v.Shift.Delete = (mulBefore > mulAfter) and 1 or nil
 			end
 		end
 	end
 	
-	if okBefore then
+	if mulBefore > okMul then
 		Editor.FindNormal(t, true)
-	elseif okAfter then
+	elseif mulAfter > okMul then
 		local v = v[1]
 		t.ndist = -(v.X*t.nx + v.Y*t.ny + v.Z*t.nz)
 	else
