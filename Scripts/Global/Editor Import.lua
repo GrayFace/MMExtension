@@ -306,6 +306,7 @@ local function BuildRooms()
 			if f.IsPortal then
 				portals[f] = true
 			end
+			f.Room, f.RoomBehind = nil
 		end
 	end
 	
