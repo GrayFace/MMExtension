@@ -1,7 +1,8 @@
 -- 128 models outdoor / 8192 facets indoor is too restricting
 -- This script extends that to x4 of the amounts
 
-if offsets.MMVersion ~= 8 then
+local mmver = offsets.MMVersion
+if mmver < 7 then
 	return
 end
 
@@ -11,17 +12,21 @@ local _KNOWNGLOBALS = Game
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
 local i4, i2, i1, u4, u2, u1, i8, u8 = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.i8, mem.u8
 
+local function mm78(...)
+	return (select(mmver - 5, nil, ...))
+end
+
 --[[
 Only facets may reach indeces above 4096, so repack facets:
 high-order bit 0x8000 indicates it's a facet, other bits contain facet index.
-Other ObjRefs remain unhanged.
+Other ObjRefs remain unchanged.
 ]]
 
 local refs = {
 	[""] = "%",
 	RealRef = mem.StaticAlloc(4),
 	MyRefs = mem.StaticAlloc(640*480*4),
-	ZBufRefs = 0xF019B4,
+	ZBufRefs = mm78(0xE31A9C, 0xF019B4),
 	RefsSize = 640*480*4,
 }
 
@@ -38,56 +43,65 @@ local function hook2(p, code, size)
 end
 
 -- Store D3D
-patch(0x4BE89A, [[
+patch(mm78(0x4C0D11, 0x4BE89A), [[
 	or ax, 0x8000
 ]])
 
-patch(0x4BE982, [[
+patch(mm78(0x4C0DF8, 0x4BE982), [[
 	or ax, 0x8000
 ]])
 
-patch(0x4BF297, [[
+if mmver == 7 then
+	patch(0x4C16F1, [[
+		or cx, 0x8000
+		xor ax, ax
+	]], 9)
+else
+	patch(0x4BF297, [[
+		or cx, 0x8000
+	]])
+end
+
+patch(mm78(0x4C184A, 0x4BF3EA), [[
 	or cx, 0x8000
 ]])
 
-patch(0x4BF3EA, [[
-	or cx, 0x8000
-]])
-
-hook2(0x4BEC07, [[
+hook2(mm78(0x4C107C, 0x4BEC07), [[
 	and eax, 0x7FFF
 	shr eax, 6
 ]], 3)
 
 -- Store indoor SW
-patch(0x4AC94C, [[
+patch(mm78(0x4AE595, 0x4AC94C), [[
 	or ax, 0x8000
 ]])
 
-hook1(0x4AC035, [[
+hook1(mm78(0x4ADC81, 0x4AC035), [[
 	lea eax, [ecx + 0x8000]
-	mov [0xFFCFB0], eax
+	mov [0xF8ABA8*mm7 + 0xFFCFB0*mm8], eax
 ]])
 
 -- Store ourdoor SW
-patch(0x4772B5, [[
+patch(mm78(0x47880B, 0x4772B5), [[
 	or ax, 0x8000
 ]])
 
-patch(0x47778C, [[
-	or ax, 0x8000
-]])
+if mmver == 8 then
+	patch(0x47778C, [[
+		or ax, 0x8000
+	]])
+end
 
-patch(0x477BE5, [[
+patch(mm78(0x478CB4, 0x477BE5), [[
 	or ax, 0x8000
 ]])
 
 -- Render done
 -- fill FacetRefs, return ZBufRefs to its traditional form
 
-hook2(0x43DE78, [[
+hook2(mm78(0x440F2C, 0x43DE78), [[
 	xor ecx, ecx
-	cmp [0xF01A08], ecx  ; is D3D?
+	cmp [0xE31AF0*mm7 + 0xF01A08*mm8], ecx  ; is D3D?
 	jnz @done
 	mov edi, [%ZBufRefs%]
 @loop:	
@@ -108,7 +122,7 @@ hook2(0x43DE78, [[
 -- D3D result
 -- set RealRef, return result in traditional form
 
-hook2(0x4BF6D9, [[
+hook2(mm78(0x4C1B2F, 0x4BF6D9), [[
 	mov edx, eax
 	and edx, 0x7FFF
 	test ax, 0x8000
@@ -146,56 +160,63 @@ local ObjectByPixelHook = [[
 	mov [%RealRef%], edx
 ]]
 
-local hooks = {0x4212CE, 0x43097E, 0x4315E9, 0x432924}
+local hooks = mm78({0x433111, 0x433D9A, 0x434F9D}, {0x4212CE, 0x43097E, 0x4315E9, 0x432924})
 
 for _, p in ipairs(hooks) do
 	hook2(p, ObjectByPixelHook)
 end
 
-hook2(0x420624, ObjectByPixelHook, 8)
+if mmver == 7 then
+	hook2(0x422140, ObjectByPixelHook, 9)
+end
+hook2(mm78(0x4211FD, 0x420624), ObjectByPixelHook, 8)
 
 -- Use RealRef for facets
 
-patch(0x420635, [[
+patch(mm78(0x42120E, 0x420635), [[
 	mov edx, [%RealRef%]
 	; !!! tmp
-	cmp dx, ax
-	jz @f
+	;cmp dx, ax
+	;jz @f
 	;int 3
 	mov dx, ax
 @@:
 ]])
 
-patch(0x42130D, [[
+patch(mm78(0x42217C, 0x42130D), [[
 	mov eax, [%RealRef%]
 	shr eax, 3
 ]])
 
-patch(0x430987, [[
+local eaxReal = [[
 	mov eax, [%RealRef%]
-]])
+]]
 
-patch(0x4315F4, [[
-	mov esi, [%RealRef%]
-]])
+patch(mm78(0x43311A, 0x430987), eaxReal)
 
-patch(0x43292E, [[
-	mov eax, [%RealRef%]
-]])
+if mmver == 7 then
+	patch(0x433DA5, eaxReal)
+else
+	patch(0x4315F4, [[
+		mov esi, [%RealRef%]
+	]])
+end
+
+patch(mm78(0x434FA6, 0x43292E), eaxReal)
 
 -- ObjectByPixel iteration routines (2 special cases)
 
 -- on space press:
 
-patch(0x468570, [[
+patch(mm78(0x46A200, 0x468570), [[
 	mov eax, %MyRefs%
 ]])
 
-hook2(0x4685B1, [[
+hook2(mm78(0x46A241, 0x4685B1), [[
 	and ecx, 0x8007
 ]], 2)
 
-patch(0x468690, [[
+patch(mm78(0x46A320, 0x468690), [[
 	mov eax, ecx
 	and ecx, 0x7FFF
 	test eax, 0x8000
@@ -207,17 +228,17 @@ patch(0x468690, [[
 ]])
 
 -- because mm8patch calls the function passing a fake ref
-hook1(0x4686A9, [[
+hook1(mm78(0x46A339, 0x4686A9), [[
 	mov ecx, [%RealRef%]
 ]])
 
 -- 468F2F:
 
-patch(0x468F2F, [[
+patch(mm78(0x46A9FA, 0x468F2F), [[
 	mov eax, %MyRefs%
 ]])
 
-patch(0x468F78, [[
+patch(mm78(0x46AA3C, 0x468F78), [[
 	cmp edi, ebx
 	jz @stay
 	xor eax, eax
@@ -225,7 +246,7 @@ patch(0x468F78, [[
 	test eax, 0x8007
 ]])
 
-patch(0x469010, [[
+patch(mm78(0x46AAD6, 0x469010), [[
 	mov eax, esi
 	and esi, 0x7FFF
 	test eax, 0x8000
@@ -328,12 +349,14 @@ end
 local GameMouse = structs.f.GameMouse
 function structs.f.GameMouse(define, ...)
 	GameMouse(define, ...)
+	local GetRef = mm78(0x4C1B63, 0x4BF70D)
+	local pCGame = mm78(0x71FE94, 0x75CE00)
 	function define.class.GetTarget()
 		if Game.RendererD3D ~= 0 then
 			MTargetBuf = MTargetBuf or mem.StaticAlloc(8)
 			MTargetBufStd = MTargetBuf + 4
 			MTarget = MTarget or mem.struct(ObjectRefMouse):new(MTargetBufStd)
-			i4[MTargetBufStd] = mem.call(0x4BF70D, 1, u4[u4[0x75CE00] + 3660])
+			i4[MTargetBufStd] = mem.call(GetRef, 1, u4[u4[pCGame] + 3660])
 			i4[MTargetBuf] = i4[refs.RealRef]
 			return MTarget
 		end
