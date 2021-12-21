@@ -316,7 +316,7 @@ local function BuildRooms()
 		HasPortal[rn] = true
 	end
 	for f in pairs(portals) do
-		for _, v in ipairs(f.Vertexes) do
+		for _, v in ipairs(f.PartOf.Vertexes) do
 			AddToRoom(VertexRoom1[v], f)
 			AddToRoom(VertexRoom2[v] or VertexRoom1[v], f)
 		end
