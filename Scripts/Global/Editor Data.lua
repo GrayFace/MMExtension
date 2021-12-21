@@ -1095,7 +1095,7 @@ end
 
 
 Editor.DoorMinCos = 0.05  -- for unmoved facets that can't be stretched
-function Editor.GetDoorVertexLists(t, Add2)
+function Editor.GetDoorVertexLists(t, Add2, write)
 	if t.ExactFacets and t.ExactVertexes then
 		return table.copy(t.ExactVertexes), {}, table.copy(t.ExactFacets)
 	end	
@@ -1122,7 +1122,9 @@ function Editor.GetDoorVertexLists(t, Add2)
 		if tbl == DStaticVertex and abs(f.nx*dirX + f.ny*dirY + f.nz*dirZ) > Editor.DoorMinCos then
 			-- unmoved facet that can't be stretched
 			tbl = ForceStaticVertex
-			Map.Facets[FacetIds[f]].MoveByDoor = false
+			if write then
+				Map.Facets[FacetIds[f]].MoveByDoor = false
+			end
 		end
 		for _, v in ipairs(f.Vertexes) do
 			tbl[v] = true
@@ -1250,7 +1252,7 @@ function Editor.WriteDoor(a, t)
 		end
 	end
 	
-	local DVertex, NDVertex, DFacets = Editor.GetDoorVertexLists(t, AddDFacet2)
+	local DVertex, NDVertex, DFacets = Editor.GetDoorVertexLists(t, AddDFacet2, true)
 	
 	-- cut vertexes, create vertex lists
 	local CutVertex = {}
