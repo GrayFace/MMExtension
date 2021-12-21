@@ -6,7 +6,7 @@ IndoorLimits = {
 	Facets = fcount,
 	FacetData = fcount,
 	VisibleFacets = fcount,
-	BSP = fcount,
+	BSPNodes = fcount,
 }
 
 -- code
@@ -27,7 +27,7 @@ mem.IgnoreProtection(true)
 i4[mmv(0x48A80F, 0x498BD9, 0x496029)+1] = IndoorLimits.Vertexes*structs.MapVertex["?size"]
 i4[mmv(0x48A82A, 0x498BF5, 0x496045)+1] = IndoorLimits.Facets*structs.MapFacet["?size"]
 i4[mmv(0x48A84B, 0x498C12, 0x496062)+1] = IndoorLimits.FacetData*structs.FacetData["?size"]
-i4[mmv(0x48A8D5, 0x498C81, 0x4960D6)+1] = IndoorLimits.BSP*structs.BSPNode["?size"]
+i4[mmv(0x48A8D5, 0x498C81, 0x4960D6)+1] = IndoorLimits.BSPNodes*structs.BSPNode["?size"]
 
 -- visible facets
 
