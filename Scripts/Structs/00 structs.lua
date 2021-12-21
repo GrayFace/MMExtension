@@ -510,6 +510,7 @@ end]=]
 	if mmver == 7 then
 		define[0x6BE8D8].struct(structs.Lod)  'EventsLod'
 	end
+	define.Info{Name = "IsD3D", new = true}
 	if mmver > 6 then
 		define[mm78(0xE31AF0, 0xF01A08)].alt.u4  'RendererD3D'
 		.Info{Name = "IsD3D", new = true}
@@ -1495,7 +1496,7 @@ function structs.f.PatchOptions(define)
 	int  'RenderRectTop'
 	int  'RenderRectRight'
 	int  'RenderRectBottom'
-	bool  'FixUnimplementedSpells'  Info "[MM8]"
+	bool  'FixUnimplementedSpells'  Info "[MM7+]"
 	int  'IndoorMinimapZoomMul'
 	int  'IndoorMinimapZoomPower'
 	bool  'FixMonsterSummon'  Info "[MM7+]"
