@@ -63,8 +63,8 @@ cd "%~dp0\MMEditor"
 "c:\Program Files\WinRAR\Rar.exe" a -m5 -r ..\MMEditor.rar *
 
 cd "%~dp0"
-rmdir MMExtension /S /Q
-rmdir MMEditor /S /Q
+rem rmdir MMExtension /S /Q
+rem rmdir MMEditor /S /Q
 ]] or 'cd "%~dp0"\n')..[[
 del pack.bat
 ]]
@@ -80,6 +80,8 @@ function Build(...)
 	for id in pairs(list) do
 		if id:match("/[eE]ditor") or id:match("MMEditor") or id:match("Convert Blv") then
 			CopyFile(id, "MMEditor")
+		elseif id:match("^MMExtension.+htm$") then
+			CopyFile(id, "MMExtension/Scripts")
 		else
 			CopyFile(id, "MMExtension")
 		end
@@ -91,4 +93,25 @@ function Build(...)
 	events.PostBuild(...)
 	
 	mem.dll.user32.MessageBeep(0x40)
+end
+
+function Build65(...)
+	local list = UpdateList()
+	
+	os.remove(DevPath.."mm6.5/Installer/MMExt", true)
+	
+	events.Build65(...)
+	
+	local dir = "../mm6.5/Installer/MMExt/"
+	
+	for id in pairs(list) do
+		if id:match("/[eE]ditor") or id:match("MMEditor") or id:match("Convert Blv") then
+		elseif id:match("^MMExtension.+htm$") then
+			CopyFile(id, dir.."Scripts")
+		else
+			CopyFile(id, dir)
+		end
+	end
+	
+	events.PostBuild65(...)
 end
