@@ -19,17 +19,22 @@ uses
 type
   TRSHookType = (RShtNop, RSht1, RSht2, RSht4, RShtCall, RShtJmp, RShtJmp6,
     RShtJmp2, RShtBStr, RShtStr, RShtCallStore, RShtBefore, RShtAfter,
-    RShtFunctionStart, RShtCodePtrStore);
+    RShtFunctionStart, RShtCodePtrStore, RShtBeforeJmp6, RShtCallBefore);
 {
   RShtBefore, RShtAfter - seemlessly "insert" new code before/after using JMP
    (note that RShtAfter can't be stacked)
   RShtCallStore - store original function ptr in eax
+  RShtCallBefore - push original function ptr to stack
   RShtFunctionStart - like RShtCallStore, but placed at the start of a function
 
   Explanation:
    @store:
     mov eax, @std
-    call @hook
+    jmp @hook
+
+   @store2:
+    push @std
+    jmp @hook
 
   RShtCallStore:
     call @std  ->  call @store
@@ -38,6 +43,8 @@ type
   RShtFunctionStart:
     <code at @p>  ->  jmp @store
     (here @std is an allocated code block containing code from @p and jump to p + size)
+  RShtCallBefore:
+    call @std  ->  call @store2
 }
 
   PRSHookInfo = ^TRSHookInfo;
@@ -64,6 +71,9 @@ function RSCheckHook(const hk:TRSHookInfo): Boolean;
 function RSCheckHooks(const Hooks): int; overload;
 function RSCheckHooks(const Hooks; Querry: int): int; overload;
 function RSGetHookValue(const hk: TRSHookInfo): int;
+
+const
+  RSEmptyHook: TRSHookInfo = ();
 
 implementation
 
@@ -98,9 +108,9 @@ begin
     RSht1:  Result:= pbyte(p)^;
     RSht2:  Result:= pword(p)^;
     RSht4, RShtCodePtrStore:  Result:= pint(p)^;
-    RShtCall, RShtJmp, RShtCallStore:
+    RShtCall, RShtJmp, RShtCallStore, RShtCallBefore:
       Result:= pint(p+1)^ + p + 5;
-    RShtJmp6:
+    RShtJmp6, RShtBeforeJmp6:
       Result:= pint(p+2)^ + p + 6;
     RShtJmp2:
       Result:= pint1(p+1)^ + p + 2;
@@ -130,12 +140,14 @@ begin
     RSht2:     sz0:= 2;
     RSht4, RShtCodePtrStore:  sz0:= 4;
     RShtJmp2:  sz0:= 2;
-    RShtJmp6:  sz0:= 6;
-    RShtBStr:  sz0:= length(Hook.oldstr);
-    RShtStr:   sz0:= length(Hook.oldstr) + 1;
+    RShtJmp6, RShtBeforeJmp6:  sz0:= 6;
+    RShtBStr:  sz0:= length(Hook.newstr);
+    RShtStr:   sz0:= length(Hook.newstr) + 1;
     else       sz0:= 5;
   end;
   sz:= max(Hook.size, sz0);
+  if Hook.t = RShtBStr then
+    sz:= max(sz, length(Hook.oldstr));
   p:= Hook.p;
   if Hook.pref then  p:= pint(p)^;
   new:= int(Hook.newp);
@@ -167,6 +179,14 @@ begin
       Jmp(p, p1, true);
       Jmp(p1 + 5, new);          // jmp @hook
     end;
+    RShtCallBefore:
+    begin
+      p1:= RSAllocCode(10);      // p: call p1
+      pbyte(p1)^:= $68;          // push @orig
+      pint(p1+1)^:= RSGetHookValue(Hook);
+      Jmp(p, p1, true);
+      Jmp(p1 + 5, new);          // jmp @hook
+    end;
     RShtBefore:
     begin
       p1:= RSAllocCode(sz + 10); // p: jmp p1
@@ -175,6 +195,13 @@ begin
       Jmp(p1, new, true);        // call @hook
       Jmp(p1 + 5 + sz, p + sz);  // std...jmp @after
       if Hook.backup <> nil then  pint(Hook.backup)^:= p1 + 5;
+    end;
+    RShtBeforeJmp6:
+    begin
+      p1:= RSAllocCode(10);               // p: jnz p1
+      Jmp(p1, new, true);                 // call @hook
+      Jmp(p1 + 5, RSGetHookValue(Hook));  // jmp @std
+      pint(p+2)^:= p1 - p - 6;
     end;
     RShtAfter:
     begin
@@ -215,9 +242,9 @@ var
   hk: PRSHookInfo;
 begin
   hk:= @Hooks;
-  while (hk.p <> 0) or (hk.Querry <> 0) do
+  while not CompareMem(hk, @RSEmptyHook, SizeOf(RSEmptyHook)) do
   begin
-    if hk.Querry = Querry then
+    if (hk.p <> 0) and (hk.Querry = Querry) then
       RSApplyHook(hk^);
     inc(hk);
   end;

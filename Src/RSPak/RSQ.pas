@@ -120,17 +120,17 @@ procedure zCount;
 procedure zStopCount(min:DWord = 0);
 function zSwap(var a,b):int; {$IFDEF D2005}inline;{$ENDIF}
 
-// 'inline' is buggy. zSet(v, v - 1) would give wrong value if zSet is inlined
-function zSet(var a: int1; b: int1):int1; overload;
-function zSet(var a: int2; b: int2):int2; overload;
-function zSet(var a: int4; b: int4):int4; overload;
-function zSet(var a: int8; b: int8):int4; overload;
-function zSet(var a: uint1; b: uint1):uint1; overload;
-function zSet(var a: uint2; b: uint2):uint2; overload;
-function zSet(var a: uint4; b: uint4):uint4; overload;
-function zSet(var a: Boolean; b: Boolean):Boolean; overload;
-function zSet(var a: ptr; b: ptr):ptr; overload;
-function zSet(var a: string; const b: string):string; overload;
+// 'inline' is buggy. Each use of argument is reevaluated
+function zSet(var a: int1; b: int1):int1; overload; {$IFDEF D2005}inline;{$ENDIF}
+function zSet(var a: int2; b: int2):int2; overload; {$IFDEF D2005}inline;{$ENDIF}
+function zSet(var a: int4; b: int4):int4; overload; {$IFDEF D2005}inline;{$ENDIF}
+function zSet(var a: int8; b: int8):int4; overload; {$IFDEF D2005}inline;{$ENDIF}
+function zSet(var a: uint1; b: uint1):uint1; overload; {$IFDEF D2005}inline;{$ENDIF}
+function zSet(var a: uint2; b: uint2):uint2; overload; {$IFDEF D2005}inline;{$ENDIF}
+function zSet(var a: uint4; b: uint4):uint4; overload; {$IFDEF D2005}inline;{$ENDIF}
+function zSet(var a: Boolean; b: Boolean):Boolean; overload; {$IFDEF D2005}inline;{$ENDIF}
+function zSet(var a: ptr; b: ptr):ptr; overload; {$IFDEF D2005}inline;{$ENDIF}
+function zSet(var a: string; const b: string):string; overload; {$IFDEF D2005}inline;{$ENDIF}
 
 function IntoRange(v, min, max:int):int; {$IFDEF D2005}inline;{$ENDIF}
 procedure CopyMemory(Destination: Pointer; Source: Pointer; Length: DWORD); {$IFDEF D2005}inline;{$ENDIF}
@@ -356,62 +356,62 @@ end;
 
 function zSet(var a: int1; b: int1):int1; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function zSet(var a: int2; b: int2):int2; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function zSet(var a: int4; b: int4):int4; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function zSet(var a: int8; b: int8):int4; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function zSet(var a: uint1; b: uint1):uint1; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function zSet(var a: uint2; b: uint2):uint2; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function zSet(var a: uint4; b: uint4):uint4; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function zSet(var a: Boolean; b: Boolean):Boolean; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function zSet(var a: ptr; b: ptr):ptr; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function zSet(var a: string; const b: string):string; overload;
 begin
-  a:= b;
   Result:= b;
+  a:= Result;
 end;
 
 function IntoRange(v, min, max:int):int; {$IFDEF D2005}inline;{$ENDIF}
