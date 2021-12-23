@@ -45,7 +45,7 @@ local function EnterAnyNPC(p, npc, i, kind)
 		FirstEnterNPC = true
 		CurrentNPC = kind == 'NPC' and i or nil
 		local t = {NPC = npc, Index = i, Kind = kind}
-		--!k{NPC :struct.NPC} Happens before #events.EnterNPC:#. 'Kind' ("NPC", "HiredNPC", "StreetNPC") defines the array NPC belongs to and 'Index' is index in that array.
+		--!k{NPC :structs.NPC} Happens before #events.EnterNPC:#. 'Kind' ("NPC", "HiredNPC", "StreetNPC") defines the array NPC belongs to and 'Index' is index in that array.
 		events.cocalls("EnterAnyNPC", t, npc)
 	end
 	return npc, i, kind
@@ -151,11 +151,11 @@ internal.OnActionNPC = |t| if CurrentAnyNPC and t.Action == 113 and screensNPC[G
 		local t = {Allow = true, Must = false}
 		t.NPC, t.Index, t.Kind = Game.GetNPCFromPtr(CurrentAnyNPC)
 		if t.Kind ~= 'HiredNPC' then
-			--!k{NPC :struct.NPC}
+			--!k{NPC :structs.NPC}
 			events.cocalls("CanExitStreetNPC", t)
 		else
 			t.RealNPC = FindHiredNPC(t.NPC)
-			--!k{NPC :struct.NPC} 'RealNPC' is the index of the prototype NPC in Game.NPC array or 'nil'.
+			--!k{NPC :structs.NPC} 'RealNPC' is the index of the prototype NPC in Game.NPC array or 'nil'.
 			events.cocalls("CanExitHiredNPC", t)
 		end
 		allow = t.Allow
@@ -174,7 +174,7 @@ function ExitAnyNPC()
 	end
 	local npc, i, kind = Game.GetNPCFromPtr(CurrentAnyNPC)
 	local t = {NPC = npc, Index = i, Kind = kind}
-	--!k{NPC :struct.NPC}
+	--!k{NPC :structs.NPC}
 	events.cocalls("ExitAnyNPC", t)
 	CurrentNPC, CurrentAnyNPC = nil, nil
 end
@@ -343,8 +343,18 @@ end
 -- Arcomage
 if mmver > 6 then
 	mem.autohook2(mm78(0x40A005, 0x40AB7D), function(d)
-		--!(arcomage:structs.Arcomage)
-		events.cocalls("ArcomageSetup", Game.Arcomage)
+		--!(arcomage:structs.Arcomage, house)
+		events.cocalls("ArcomageSetup", Game.Arcomage, Game.GetCurrentHouse())
+	end)
+
+	mem.hook(mm78(0x4B8BFD, 0x4B7143), function(d)
+		local t = {
+			House = Game.GetCurrentHouse(),
+			Result = pchar[d.esp + 8],
+		}
+		-- Lets you modify Victory Conditions text
+		events.cocalls("ArcomageText", t)
+		Game.TextBuffer = t.Result
 	end)
 end
 
@@ -478,7 +488,7 @@ local function PopulateNPCDlg(dlgKind, extraItem)
 	end
 	local t = {NPC = npc, Index = i, Kind = kind, DlgKind = dlgKind, Result = t}
 	
-	--!k{NPC :struct.NPC} Change topics of an NPC dialog. 'Result' is an array of NPC commands from #const.HouseScreens:#. Names from #const.HouseScreens:# as text are also allowed. You can also add a table with extra parameters, see the example below. 'Kind' ("NPC", "HiredNPC", "StreetNPC") defines the array NPC belongs to and 'Index' is index in that array.
+	--!k{NPC :structs.NPC} Change topics of an NPC dialog. 'Result' is an array of NPC commands from #const.HouseScreens:#. Names from #const.HouseScreens:# as text are also allowed. You can also add a table with extra parameters, see the example below. 'Kind' ("NPC", "HiredNPC", "StreetNPC") defines the array NPC belongs to and 'Index' is index in that array.
 	-- !\ The following 'DlgKind' values are possible:
 	-- !Lua[["Main"]] - Regular NPC conversation. In MM6 this is also the Dismiss conversation with a hired NPC.
 	-- !Lua[["StreetNPC"]] - Conversation with a street NPC that you can hire. In MM7 this is also the Dismiss conversation with a hired NPC. In MM6 it ratains items you add to beg/threat/bribe menu.
@@ -495,7 +505,7 @@ local function PopulateNPCDlg(dlgKind, extraItem)
 	events.cocall("PopulateNPCDialog", t, npc)
 	local t, extra = modify(t.Result)
 	local t = {NPC = npc, Index = i, Kind = kind, DlgKind = dlgKind, Result = t, ExtraParams = extra}
-	--!k{NPC :struct.NPC}
+	--!k{NPC :structs.NPC}
 	events.cocall("AfterPopulateNPCDialog", t, npc)
 end
 
