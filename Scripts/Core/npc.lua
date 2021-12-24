@@ -17,6 +17,7 @@ local _KNOWNGLOBALS_F = Party, Game, Map, VFlipUnfixed, structs, GameInitialized
 
 local CurrentNPC, CurrentAnyNPC, FirstEnterNPC
 local RefillNPCTopics
+local pItemsCount = mmv(0x9DDDFC, 0xF8B060, 0xFFD450)
 
 mem.IgnoreProtection(true)
 
@@ -370,6 +371,21 @@ if mmver == 7 then
 			hooks.nop(0x4B8A31)  -- no arcomage deck requirement
 		end
 	end
+	
+	-- draw Arcomage text depending on presense of 4th dialog item
+	HookManager{Count = pItemsCount}.asmpatch(0x4B8887, [[
+		mov eax, 4
+		cmp eax, [%Count%]
+	]])
+elseif mmver == 8 then
+	HookManager{Count = pItemsCount}.asmhook2(0x4B6DEE, [[
+		cmp dword [%Count%], 4
+		jnl @std
+		xor eax, eax
+		pop ecx
+		jmp absolute 0x4B6E3E
+	@std:
+	]])
 end
 
 -- SetMapNoNPC
@@ -575,7 +591,7 @@ local function PopulateHouseDlg(eventName, type)
 	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = t, ExtraParams = extra}
 	--!-
 	events.cocall("After"..eventName, t)
-	i4[mmv(0x9DDDFC, 0xF8B060, 0xFFD450)] = dlg.KeyboardItemsCount
+	i4[pItemsCount] = dlg.KeyboardItemsCount
 end
 
 if mmver == 7 then  -- make room for PopulateHouseDialog hook
