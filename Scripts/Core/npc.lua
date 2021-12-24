@@ -141,7 +141,7 @@ end
 local ExitAnyNPC
 local screensNPC = {[4] = true, [19] = true}  -- SpeakNPC, street NPC, separate processing for house
 
-internal.OnActionNPC = |t| if CurrentAnyNPC and t.Action == 113 and screensNPC[Game.CurrentScreen] then
+internal.OnActionNPC = |t| if CurrentAnyNPC and (t.Action == 113 and screensNPC[Game.CurrentScreen] or t.Action == 491) then
 	local allow = true
 	if CurrentNPC then
 		local t = {NPC = CurrentNPC, Allow = true, Must = false}
@@ -181,7 +181,7 @@ function ExitAnyNPC()
 end
 
 -- exit house screen
-mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()--hookfunction(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), 0, 0, function()
+mem.autohook(mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), function()
 	local i = Game.HouseScreen
 	if CurrentNPC and (i == 0 or i == 1) then  -- i == 0 happens with "Enter Temple of Light/Dark"
 		local i = CurrentNPC

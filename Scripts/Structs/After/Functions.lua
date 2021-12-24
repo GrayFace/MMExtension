@@ -143,14 +143,25 @@ function SuppressSound(on)
 	return SuppressCount > 0
 end
 
+-- Simulates Esc press
+function ExitScreen(process)
+	if mmver ~= 8 or Game.CurrentScreen == 13 and not Game.InQuestionDialog then
+		Game.Actions.Add(113, Game.GetCurrentHouse() and 1 or 0)
+	elseif Game.InOODialog then
+		Game.OODialogProcessKey()
+	end
+	if process then
+		Game.Actions.Process()
+	end
+end
+
 -- Rebuilds house dialog, e.g. after you've moved an NPC to or from this house
 -- Can seemlessly transition between different houses if 'id' is specified.
 function ReloadHouse(id)
 	id = id or Game.GetCurrentHouse()
 	SuppressSound(true)
 	while Game.CurrentScreen ~= 0 do
-		Game.Actions.Add(113)
-		Game.Actions.Process()
+		ExitScreen(true)
 	end
 	evt.EnterHouse(id)
 	SuppressSound(false)
@@ -186,8 +197,10 @@ do
 		mem.u4[p] = old
 	end
 	
+	local closers = {[113] =  true, [405] = true, [410] = true, [495] = true}
+	
 	local function OnAction(t)
-		if not t.Handled and (t.Action == 113 or t.Action == 405 or t.Action == 410) or not HouseMessageVisible then
+		if not t.Handled and (closers[t.Action] or not HouseMessageVisible) then
 			HouseMessageVisible = nil
 			if t.Action == 410 then
 				Game.NPCMessage = false

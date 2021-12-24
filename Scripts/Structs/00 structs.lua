@@ -104,9 +104,23 @@ function structs.f.GameStructure(define)
 	[mmv(0x552F48, 0x590F00, 0x5A5384)].i4  'HouseOwnerPic'
 	[mmv(0x55BDA4, 0x5C3450, 0x5DB8FC)].i4  'HouseExitMap'
 	[mmv(0x54D020, 0x591258, 0x5A56C8)].array(1, 6).i4  'HouseNPCs'
+	[mmv(0x9DDDFC, 0xF8B060, 0xFFD450)].i4  'HouseItemsCount'
+	 .Info "Number of interactive items of the dialog. Items count of the dialog object gets changed to this or 0 depending on selected player being concious."
 	[mmv(0x4D50C0, 0x507A3C, 0x519324)].pstruct(structs.Dlg)  'CurrentNPCDialog'
 	 .Info "If #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter pseudo-NPC."
 	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), ret = true}
+	if mmver == 8 then
+		define
+		[0x5CCCE4].b1  'InQuestionDialog'
+		[0x100614C].b4  'InOODialog'
+		local function d(v, std)
+			return v == nil and (std or 0) or v
+		end
+		function define.f.OODialogProcessKey(key, _1, _2, _3, _4)
+			call(0x4D1D6A, 1, 0x1006148, key or 27, d(_1, 1), d(_2), d(_3), d(_4))
+		end
+	end
+	define
 	[mmv(0x4C3E10, 0x4F076C, 0x500D30)].array(mmv(17, 11, 11)).i4  'GuildJoinCost'
 	[mmv(0x4D5088, 0x5079F8, 0x5192EC)].array(7).EditPChar  'StatsNames'
 	 .Info{Sig = "[stat:const.Stats]"}
