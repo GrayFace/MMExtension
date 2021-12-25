@@ -388,6 +388,26 @@ elseif mmver == 8 then
 	]])
 end
 
+-- NewBountyHunt
+local function BountyReset(d, skip, index)
+	local t = {
+		Index = index,
+		House = Game.GetCurrentHouse(),
+		Result = nil,
+	}
+	events.cocall("NewBountyHunt", t)
+	if t.Result then
+		Party.MonsHuntTarget[index] = t.Result
+		d:push(skip)
+		return true
+	end
+end
+
+mem.autohook2(mmv(0x4A3231, 0x4BBB43, 0x4BADCC), |d| BountyReset(d, mmv(0x4A3277, 0x4BBBA6, 0x4BADD4), d[mmv('esi', 'edi', 'ebp')]))
+if mmver > 6 then
+	mem.autohook2(mm78(0x4BCD02, 0x4B9CF5), |d| BountyReset(d, mm78(0x4BD1BF, 0x4B9D26), mmver == 8 and 0 or d.esi/2))
+end
+
 -- SetMapNoNPC
 if mmver == 7 then
 	mem.autohook(0x460B45, function(d)

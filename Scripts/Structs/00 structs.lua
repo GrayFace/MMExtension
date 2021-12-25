@@ -250,13 +250,21 @@ function structs.f.GameStructure(define)
 				{0x460465, 0x48E71F, 0x49401D, 0x494115, 0x4B1C3C},
 				{0x45DEBB, 0x48DB8A, 0x492253, 0x49234B, 0x4B0428}
 			)
-			local t1 = mmv({}, {0x41E0E2-4}, {0x41D68D-4})
+			local t1 = mmv({}, {0x41E0DE}, {0x41D689})
+			local t2 = mmv(
+				{0x4A3056, 0x4A3201}, 
+				{0x4BBB16, 0x4BCCDE},
+				{0x4B9CC3, 0x4BAD71}
+			)
 			mem.IgnoreProtection(true)
 			for _, p in ipairs(t) do
 				i4[p] = val
 			end
 			for _, p in ipairs(t1) do
 				i4[p] = -val
+			end
+			for _, p in ipairs(t2) do
+				i4[p] = val*12 - 1
 			end
 			mem.IgnoreProtection(false)
 		end
@@ -923,10 +931,12 @@ function structs.f.GameParty(define)
 	[mmv(0x908D64, 0xACD580, 0xB215E8)].i4  'BountiesCollected'
 	if mmver > 6 then
 		define
-		[mmv(nil, 0xAE3060, 0xBB2EF4)].i4  'Fine'
-		[mmv(nil, 0xACD588, 0xB215F0)].array(5).i2  'MonsHuntTarget'  -- only index 0 is used in MM8
-		[mmv(nil, 0xACD592, 0xB215FA)].array(5).i2  'MonsHuntKilled'  -- only index 0 is used in MM8
-		[mmv(nil, 0xACCE74, 0xB20ECC)].array(5).i8  'MonsHuntReset'  -- for some reason 10 values fit there
+		[mm78(0xAE3060, 0xBB2EF4)].i4  'Fine'
+		[mm78(0xACD588, 0xB215F0)].array(5).i2  'MonsHuntTarget'
+		 .Info "Only index 0 is normally used in MM8"
+		[mm78(0xACD592, 0xB215FA)].array(5).i2  'MonsHuntKilled'
+		 .Info "Only index 0 is normally used in MM8"
+		[mm78(0xACCE74, 0xB20ECC)].array(5).i8  'MonsHuntReset'  -- for some reason 10 values fit there
 	else
 		define
 		[0x908DC5].array(3).u1  'MonsHuntTarget'
