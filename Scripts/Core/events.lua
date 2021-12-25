@@ -1325,6 +1325,16 @@ if mmver == 6 then
 	end
 else
 	mem.hook(mm78(0x4ABF6E, 0x4AA3FD), PlayMapTrack)
+	-- allow changing track offset
+	local p = mem.StaticAlloc(4)
+	i4[p] = 14
+	internal.TrackOffsetBuf = p
+	local s = [[
+		add eax, [%p%]
+	]]
+	local hooks = HookManager{p = p}
+	hooks.asmhook(mm78(0x4630C7, 0x461050), s)
+	hooks.asmhook(mm78(0x4BF846, 0x4BD3A1), s)
 end
 
 -- allow trainers for unused skills in MM8

@@ -420,6 +420,40 @@ end]=]
 			return i2[obj["?ptr"] + o]
 		end
 	end)
+	[mmv(0x4A6C1A, 0x4BF832, 0x4BD38D)].CustomType('TitleTrack', 1, function(o, obj, _, val)
+		if val == nil then
+			return u1[o]
+		else
+			mem.IgnoreProtection(true)
+			u1[o] = val
+			u1[mmv(0x453768, 0x4630B1, 0x46103C)] = val
+			mem.IgnoreProtection(false)
+		end
+	end)
+	[internal.TrackOffsetBuf or 0x4A6C31].CustomType('TitleTrackOffset', 4, function(o, obj, _, val)
+		if val == nil then
+			return i4[o]
+		elseif mmver ~= 6 then
+			i4[o] = val
+		else
+			mem.IgnoreProtection(true)
+			i4[o] = val
+			i4[0x45377F] = val
+			mem.IgnoreProtection(false)
+		end
+	end)
+	if mmver == 6 then
+		define[0x452FDE].CustomType('NarratorTrack', 1, function(o, obj, _, val)
+			if val == nil then
+				return u1[o]
+			else
+				mem.IgnoreProtection(true)
+				u1[o] = val
+				mem.IgnoreProtection(false)
+			end
+		end)
+	end
+	
 	local pmis = mem.StaticAlloc(8)
 	mem.fill(pmis, 8)
 	define[pmis].parray{lenA = i4, lenP = pmis + 4, lenSet = SetLenRealloc}.struct(structs.MissileSetup)  'MissileSetup'
