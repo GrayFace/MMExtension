@@ -1304,6 +1304,29 @@ mem.autohook(mmv(0x4554B5, 0x450AD6, 0x44E339), function(d)
 	internal.MapRefilled = 1
 end)
 
+-- PlayMapTrack
+local function PlayMapTrack(d, def, this, track)
+	local index = (mmver == 6 and d.esi - Game.MapStats["?ptr"] or d.eax)/structs.MapStatsItem["?size"]
+	local t = {
+		MapIndex = index,
+		Track = mmver == 6 and track or Game.MapStats[index].RedbookTrack
+	}
+	events.cocall("PlayMapTrack", t)
+	if mmver == 6 then
+		def(this, t.Track)
+	else
+		d.eax = t.Track
+	end
+end
+
+if mmver == 6 then
+	for p in mem.enumcalls(0x454FDF, 0x45504D, 0x48EA30) do
+		mem.hookcall(p, 1, 1, PlayMapTrack)
+	end
+else
+	mem.hook(mm78(0x4ABF6E, 0x4AA3FD), PlayMapTrack)
+end
+
 -- allow trainers for unused skills in MM8
 if mmver == 8 then
 	mem.asmpatch(0x4B0BE1, [[

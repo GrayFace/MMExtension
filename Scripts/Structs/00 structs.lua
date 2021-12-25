@@ -589,19 +589,25 @@ end]=]
 	 .Info{Sig = "pTarget, pTargetSize, pSrc, SrcSize"; "'pTargetSize' must point to a 4-byte buffer specifying unpacked size."}
 	.func{name = "Compress", p = mmv(0x4A7B20, 0x4C2FF0, 0x4D1F50), cc = 2, must = 4, ret = 'u1'; 0,0,0,0, -1}
 	 .Info{Sig = "pTarget, pTargetSize, pSrc, SrcSize, Compression[MM7+] = -1"; "'pTargetSize' must point to a 4-byte buffer specifying max size. The function sets it to actual size it has used up. If successful, returns '0'."}
+	.func{name = "PlayMapTrack", p = mmv(0x454F90, 0x4ABF53, 0x4AA3E7)}
 	
+	local SoundStru = mmv(0x9CF598, 0xF78F58, 0xFEB360)
+	function define.f.PlayTrack(id)
+		mem.call(mmv(0x48EA30, 0x4AA0CF, 0x4A862D), 1, SoundStru, assert(id))
+	end
+	define.Info{Sig = "Index"}
 	function define.f.LoadSound(soundId, unk, unk2)
 		call(mmv(0x48E2D0, 0x4A99F7, 0x4A7F22), 1, mmv(0x9CF700, 0xF79BDC, 0xFEBFE4), soundId, unk or 0, unk2 or 0)
 	end
 	define.Info{Sig = "SoundId, Unk = 0, Unk2 = 0"; "'Unk2' is present only in MM8"}
 	function define.f.PlaySound(soundId, object, loops, x, y, unk, volume, playbackRate)
-		call(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), soundId, object or -1, loops or 0, x or -1, y or 0, unk or 0, volume or 0, playbackRate or 0)
+		call(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, SoundStru, soundId, object or -1, loops or 0, x or -1, y or 0, unk or 0, volume or 0, playbackRate or 0)
 	end
 	define.Info{Sig = "SoundId, Object = -1, Loops = 0, X = -1, Y = 0, Unk = 0, Volume = 0, PlaybackRate = 0"}
 	function define.f.StopAllSounds(keepMin, keepMax)
-		call(mmv(0x48FB40, 0x4AB69F, 0x4A9BF7), 1, mmv(0x9CF598, 0xF78F58, 0xFEB360), keepMin, keepMax)
+		call(mmv(0x48FB40, 0x4AB69F, 0x4A9BF7), 1, SoundStru, keepMin, keepMax)
 	end
-	define.Info{Sig = "keepMin = -1, keepMax = -1"}
+	define.Info{Sig = "KeepMin = -1, KeepMax = -1"}
 	function define.f.LoadDecSprite(name, justFind)
 		local id, pDecList = 0, mmv(0x5E2188, 0x69AC54, 0x6C8B5C)
 		if mmver == 6 then
