@@ -538,9 +538,8 @@ if mmver == 8 then
 end
 
 -- MM7 Question - clean screen afterwards
-if mmver == 7 then
+if mmver == 7 and PatchOptionsSize < 364 then
 	mem.asmhook(0x4451C1, [[
-		mov eax, [0x507A64]
 		cmp dword [eax + 0x1C], 0x1A
 		jnz @f
 		mov dword [0x576EAC], 1
@@ -586,8 +585,6 @@ do
 	]])
 end
 
-
--- populate some dialogs
 
 -- allow indexes over 256 in MM6
 local CopyDialogIndexes, CopyDialogIndexesBack = function() end, nil

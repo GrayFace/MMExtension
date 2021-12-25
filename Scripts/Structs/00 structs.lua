@@ -1549,6 +1549,7 @@ function structs.f.PatchOptions(define)
 	bool  'ClimbBetter'  Info "[MM7+]"
 	bool  'FixWaterWalkManaDrain'
 	bool  'KeepEmptyWands'
+	bool  'DontSkipSimpleMessage'  Info "[MM6, MM7]"
 	
 	function define.f.Present(name)
 		return not not addr[name]
