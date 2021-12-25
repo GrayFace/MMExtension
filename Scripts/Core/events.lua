@@ -977,12 +977,18 @@ do
 	-- 44A253 DrawTextLimited
 end
 
--- A bug I once had with SimpleMessage cmd
 if mmver == 7 then
+	-- A bug I once had with SimpleMessage cmd
 	mem.asmhook(0x44CE7C, [[
 		test edi, edi
 		jnz @f
 		jmp absolute 0x44D0DA
+	@@:
+	]])
+	-- fix weird temple crash I once experienced that may have happened due to my tinkering (div by 0)
+	mem.asmhook(0x4B7792, [[
+		jg @f
+		mov edi, 1
 	@@:
 	]])
 end

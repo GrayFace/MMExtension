@@ -697,7 +697,7 @@ local function RegisterQuest(t)
 			BranchStack[#BranchStack] = nil
 			return #BranchStack
 		else
-			Game.Actions.Add(113)
+			ExitScreen()
 		end
 	end
 

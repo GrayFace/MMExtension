@@ -155,15 +155,18 @@ function ExitScreen(process)
 	end
 end
 
--- Rebuilds house dialog, e.g. after you've moved an NPC to or from this house
+-- Rebuilds house dialog, e.g. after you've moved an NPC to or from this house.
 -- Can seemlessly transition between different houses if 'id' is specified.
+-- Simply closes the house if 'id' is '-1'.
 function ReloadHouse(id)
-	id = id or Game.GetCurrentHouse()
+	id = id or Game.GetCurrentHouse() or -1
 	SuppressSound(true)
 	while Game.CurrentScreen ~= 0 do
 		ExitScreen(true)
 	end
-	evt.EnterHouse(id)
+	if id >= 0 then
+		evt.EnterHouse(id)
+	end
 	SuppressSound(false)
 end
 
