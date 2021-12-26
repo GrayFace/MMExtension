@@ -299,7 +299,7 @@ function ShowQuestEffect(flash_book, operation)
 end
 
 -- Plays sound and shows visual effect on all characters' faces.
--- 'exclude' can be a !Lua[[function(player, slot)]] that returns 'true' is the character should be excluded from the effect.
+-- 'exclude' can be a function(player:structs.Player, slot) that returns 'true' if the character should be excluded from the effect.
 function ShowAwardEffect(exclude, operation)
 	local a, id = Game.AwardsTxt, 1
 	local p = a['?ptr'] + (id - a.low)*mmv(4, 8, 8)
@@ -356,14 +356,15 @@ local function AutoIndex(array, ev, f)
 	end
 end
 
-local AutoQuestEffect = |t| if not t:IsGiven() then
+local AutoQuestEffect = |t| if not t:IsQuestVisible() then
 	ShowQuestEffect(true, t.TakeQuestOperation)
 end
 
+-- 't' can be a function(t), which returns 'true' if quest should be visible in the quest log
 function AutoQuest(t, text)
-	AutoQuests = AutoQuests or AutoIndex(Game.QuestsTxt, 'PopulateQuestLog', |q| q:IsGiven() and q.QuestIndex)
+	AutoQuests = AutoQuests or AutoIndex(Game.QuestsTxt, 'PopulateQuestLog', |q| q:IsQuestVisible() and q.QuestIndex)
 	if type(t) == 'function' then
-		t = {IsGiven = t}
+		t = {IsQuestVisible = t}
 	end
 	local i = AutoQuests(t)
 	t.QuestIndex = i
@@ -378,6 +379,7 @@ local function AutoAwardEffect(t)
 	ShowAwardEffect(|pl| t:IsAwarded(pl:GetIndex(), pl), t.TakeAwardOperation)
 end
 
+-- 't' can be a function(t, player_index, player:structs.Player), which returns 'true' if award should be visible on the Awards page
 function AutoAward(t, text, sort)
 	AutoAwards = AutoAwards or AutoIndex(Game.AwardsTxt, 'PopulateAwardsList', |q, t| q:IsAwarded(t.PlayerIndex, t.Player) and q.AwardIndex)
 	if type(t) == 'function' then
@@ -399,6 +401,7 @@ local function AutoAutonoteEffect(t)
 	ShowAutonoteEffect(cat, t:IsAutonoteVisible(), t.TakeAutonoteOperation)
 end
 
+-- 't' can be a function(t), which returns 'true' if autonote should be visible
 function AutoAutonote(t, text, category)
 	AutoAutonotes = AutoAutonotes or AutoIndex(Game.AutonoteTxt, 'PopulateAutonotesList', 
 		|q, t| t.Category == GetAutonoteCat(q) and q:IsAutonoteVisible() and q.AutonoteIndex
@@ -461,6 +464,7 @@ local function AutonoteTable(t, cat, text)
 	return t
 end
 
+-- Crates a named autonote
 function Autonote(name, cat, text)
 	local t = AutonoteTable(name, cat, text)
 	vars.Autonotes = vars.Autonotes or {}
@@ -470,11 +474,17 @@ function Autonote(name, cat, text)
 	return t
 end
 
+-- Adds a named autonote to Auto Notes. 'force' = 'true' makes it emit the sound even if autonote is already added
 function AddAutonote(name, force)
 	local t = FindAutonote(name, true)
 	if force or not t:IsAutonoteVisible() then
 		t:AddAutonote()
 	end
+end
+
+-- Returns 'true' if named autonote is in Auto Notes
+function CheckAutonote(name)
+	return FindAutonote(name, true):IsAutonoteVisible()
 end
 
 local function GetLocalPrefix(lev)
@@ -486,16 +496,23 @@ local function GetLocalPrefix(lev)
 	return s..':'
 end
 
+function FindLocalAutonote(name)
+	return FindAutonote(GetLocalPrefix(2)..name)
+end
+
+-- Crates a local autonote
 function LocalAutonote(name, cat, text)
 	local t = AutonoteTable(name, cat, text)
 	t.Name = GetLocalPrefix(2)..t.Name
 	return Autonote(t)
 end
 
+-- Adds a local autonote to Auto Notes. 'force' = 'true' makes it emit the sound even if autonote is already added
 function AddLocalAutonote(name, force)
 	AddAutonote(GetLocalPrefix(2)..name, force)
 end
 
+-- Returns 'true' if local autonote is in Auto Notes
 function CheckLocalAutonote(name)
 	return FindAutonote(GetLocalPrefix(2)..name, true):IsAutonoteVisible()
 end
@@ -796,6 +813,7 @@ local SlotLiterals = {A = 0, B = 1, C = 2, D = 3, E = 4, F = 5}
 
 local QuestProto = {
 	IsGiven = |t| vars.Quests[t.BaseName] == t.GivenState,
+	IsQuestVisible = |t| t:IsGiven(),
 	
 	IsAwarded = function(t, idx, pl)
 		if not t.StoreAwards then

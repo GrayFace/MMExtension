@@ -76,9 +76,11 @@ ru|Эти скрипты загружаются при старте игры перед загрузкой скриптов из папки "Ge
 <tr>
 <td>Maps</td>
 <td>en|These scripts correspond to maps. For example, scripts named <'>oute3.lua</'> and <'>some_name.oute3.lua</'> would be loaded when
-<'>oute3.odm</'> map (New Sorpigal) is loaded and unloaded when it is left.|
+<'>oute3.odm</'> map (New Sorpigal) is loaded and unloaded when it is left.<br>
+Map scripts can have accompanying global scripts next to them: <'>oute3.global.lua</'> and <'>some_name.oute3.global.lua</'> respectively. These scripts behave as the ones in Global folder, but are loaded after them and share <a href="#Autonotes">local autonotes</a> with their respective map script.|
 ru|Эти скрипты соответствуют картам. Например, скрипты под названием <'>oute3.lua</'> и <'>любое_имя.oute3.lua</'> будет загружаться при
-загрузке карты <'>Oute3.odm</'> (Нью-Сорпигал) и выгружаться при выходе из неё.|
+загрузке карты <'>Oute3.odm</'> (Нью-Сорпигал) и выгружаться при выходе из неё.<br>
+У скриптов карты здесь же могут быть глобальные скрипты: <'>oute3.global.lua</'> and <'>любое_имя.oute3.global.lua</'> соответственно. Эти скрипты работают так же, как скрипты папки Global, но загружаются после них и разделяют <a href="#Autonotes">локальные автозаметки</a> с соответствующим скриптом карты.|
 </td>
 </tr>
 <tr>
@@ -372,6 +374,32 @@ en|Some examples also work in MM7 if you find the NPCs they operate on. As for M
 ru|В MM7 часть примеров тоже будет работать, если Вы найдёте персонажей, к которыми они применяются. Что касается MM6, в нём нет приветствий персонажей и всего 3 пункта диалога, плюс 2 исключительно текстовых пункта. Первый пример задания на нём должен работать.|
 <br>
 <br>
+
+
+<h3>en|Autonotes|ru|Автозаметки|</h3>
+en|To avoid hassle with autonote indexes and autonote count limit, use <#>LocalAutonote</#> and <#>AddLocalAutonote</#> functions to deal with your autonotes.|
+ru|Чтобы избежать проблем с индексами и лимитом автозаметок, используйте функции <#>LocalAutonote</#> и <#>AddLocalAutonote</#> для новых автозаметок.|
+<br>
+<br>
+en|Example:|ru|Пример:|
+<br>
+<b>Maps\out01.global.lua:</b>
+<lua>LocalAutonote('hi', 1, 'Welcome to out01!')</lua>
+<b>Maps\out01.lua:</b>
+<lua>local TXT = Localize{
+	AutonoteMessage = "Check Auto Notes, it's extremely important!",
+}
+if not CheckLocalAutonote'hi' then  -- just to demonstrate use of CheckLocalAutonote
+	Game.ShowStatusText(TXT.AutonoteMessage)
+end
+AddLocalAutonote'hi'
+</lua>
+<br>
+en|Autonotes added this way are automatically made localizeable. Using local autonotes avoids naming conflicts. For autonotes shared by multiple scripts use <#>Autonote</#> and <#>AddAutonote</#> functions instead.|
+ru|Добавленные таким образом автозаметки автоматически локализуемы. Использование локальных автозаметок позволяет избежать конфликтов имён. Для автозаметок, используемых несколькими скриптами, используйте функции <#>Autonote</#> и <#>AddAutonote</#>.|
+<br>
+<br>
+
 
 <h3>en|Localization|ru|Локализация|</h3>
 en|In order to make a script localizeable you should call <#>Localize</#> function in it, passing a table with default strings. The function will return a table with localized strings. See |
