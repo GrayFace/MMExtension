@@ -395,6 +395,7 @@ local function BountyReset(d, skip, index)
 		House = Game.GetCurrentHouse(),
 		Result = nil,
 	}
+	-- Assign 'Result' to specify the target monster for the hunt
 	events.cocall("NewBountyHunt", t)
 	if t.Result then
 		Party.MonsHuntTarget[index] = t.Result
@@ -406,6 +407,23 @@ end
 mem.autohook2(mmv(0x4A3231, 0x4BBB43, 0x4BADCC), |d| BountyReset(d, mmv(0x4A3277, 0x4BBBA6, 0x4BADD4), d[mmv('esi', 'edi', 'ebp')]))
 if mmver > 6 then
 	mem.autohook2(mm78(0x4BCD02, 0x4B9CF5), |d| BountyReset(d, mm78(0x4BD1BF, 0x4B9D26), mmver == 8 and 0 or d.esi/2))
+end
+
+-- BountyHuntDone
+local function BountyDone(d, index)
+	local t = {
+		Index = index,
+		House = Game.GetCurrentHouse(),
+		Gold = d.ecx,
+	}
+	-- If you modify 'Gold' here, it wouldn't be in line with the promised sum, but you may introduce other rewards for example
+	events.cocall("BountyHuntDone", t)
+	d.ecx = t.Gold
+end
+
+mem.autohook(mmv(0x4A32B9, 0x4BBBD5, 0x4BAE10), |d| BountyDone(d, mmver == 8 and d.ebp/2 or d[mmv('esi', 'edi')]))
+if mmver > 6 then
+	mem.autohook(mm78(0x4BD1F6, 0x4B9D59), |d| BountyDone(d, mmver == 8 and 0 or d.esi/2))
 end
 
 -- SetMapNoNPC

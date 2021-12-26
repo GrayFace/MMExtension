@@ -932,16 +932,25 @@ function structs.f.GameParty(define)
 	if mmver > 6 then
 		define
 		[mm78(0xAE3060, 0xBB2EF4)].i4  'Fine'
-		[mm78(0xACD588, 0xB215F0)].array(5).i2  'MonsHuntTarget'
+		[mm78(0xACD588, 0xB215F0)].alt.array(5).i2  'BountyHuntTarget'
 		 .Info "Only index 0 is normally used in MM8"
-		[mm78(0xACD592, 0xB215FA)].array(5).i2  'MonsHuntKilled'
+		.array(5).i2  'MonsHuntTarget'
+		 .Info "(deprecated old name)"
+		[mm78(0xACD592, 0xB215FA)].alt.array(5).b2  'BountyHuntKilled'
 		 .Info "Only index 0 is normally used in MM8"
-		[mm78(0xACCE74, 0xB20ECC)].array(5).i8  'MonsHuntReset'  -- for some reason 10 values fit there
+		.array(5).i2  'MonsHuntKilled'
+		 .Info "(deprecated old name, integer in MM7+ instead of boolean)"
+		[mm78(0xACCE74, 0xB20ECC)].alt.array(5).i8  'NextBountyHunt'
+		.array(5).i8  'MonsHuntReset'  -- for some reason 10 values fit there
+		 .Info "(deprecated old name)"
 	else
 		define
-		[0x908DC5].array(3).u1  'MonsHuntTarget'
-		[0x908DC8].array(3).b1  'MonsHuntKilled'
-		[0x90E844].array(3).i8  'MonsHuntReset'  -- for some reason 9 values fit there
+		[0x908DC5].alt.array(3).u1  'BountyHuntTarget'
+		.array(3).u1  'MonsHuntTarget'
+		[0x908DC8].alt.array(3).b1  'BountyHuntKilled'
+		.array(3).b1  'MonsHuntKilled'
+		[0x90E844].alt.array(3).i8  'NextBountyHunt'
+		.array(3).i8  'MonsHuntReset'  -- for some reason 9 values fit there
 	end
 	define
 	[mmv(0x908D6D, 0xACD59D, 0xB2160F)].array(mmv(0, 1, 1), mmv(511, 512, 512)).abit  'QBits'
