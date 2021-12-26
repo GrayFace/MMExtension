@@ -446,12 +446,15 @@ function internal.GameInitialized2()
 	events.cocalls("GameInitialized2")
 end
 
-local function MapCheckHook(d, ev, t)
+local function MapCheckHook(d, ev, t, IsArena)
 	local param1, param2 = d:getparams(0, 2)
 	local r = call(mmv(0x4AF370, 0x4CAAF0, 0x4DA920), 0, param1, param2)
 	t = t or {}
 	t.Map = mem.string(param1):lower()
 	t.Result = (r ~= 0)
+	if IsArena then
+		t[IsArena] = (r == 0)
+	end
 	events.cocalls(ev, t)
 	d.eax = t.Result and 1 or 0
 	return t
@@ -462,26 +465,28 @@ mem.hook(mmv(0x44F378, 0x45F4CA, 0x45CF92), function(d)
 --[[!({
   IsArena
   SaveKind
-}) 'SaveKind': 0 - normal, 1 - autosave, 2 - quick save]]
-	MapCheckHook(d, "CanSaveGame", {SaveKind = (mmver == 6 and d.ebx or u4[d.ebp - 0x24])})
+}) 'SaveKind': 0 - normal, 1 - autosave, 2 - quick save
+If 'IsArena' is 'true', the "No saving on the Arena" message is displayed]]
+	MapCheckHook(d, "CanSaveGame", {SaveKind = (mmver == 6 and d.ebx or u4[d.ebp - 0x24])}, 'IsArena')
 end)
 
 if mmver > 6 then
 	local isarena
 	mem.hook(mm78(0x4600CA, 0x45DB81), function(d)
-		isarena = mem.string(offsets.MapName, 20):lower() == mm78("d05.blv", "d42.blv")
-		isarena = MapCheckHook(d, "CanSaveGame", {SaveKind = 0, IsArena = isarena}).IsArena
+		isarena = MapCheckHook(d, "CanSaveGame", {SaveKind = 0}, 'IsArena').IsArena
 	end)
 	mem.hook(mm78(0x4601BE, 0x45DCD1), function(d)
 		if isarena then
 			d:push(mm78(0x44C1A1, 0x4496C5))
+		else
+			Game.PlaySound(27)
 		end
 	end)
 end
 
 if mmver == 8 then
 	mem.hook(0x42F349, function(d)
-		MapCheckHook(d, "CanSaveGame", {SaveKind = 0})
+		MapCheckHook(d, "CanSaveGame", {SaveKind = 0}, 'IsArena')
 	end)
 end
 
