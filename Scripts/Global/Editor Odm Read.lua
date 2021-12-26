@@ -56,6 +56,9 @@ local function ReadFacets(m, base, ids, vert)
 					t.AlignTop, t.AlignBottom = nil, nil
 				end
 			end
+			if mmver == 6 then
+				t.ScrollDown, t.IsSky = t.IsSky, nil
+			end
 		end
 		a["?ptr"] = nil
 	end

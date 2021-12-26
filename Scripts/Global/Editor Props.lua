@@ -386,7 +386,7 @@ local FacetProps = MakeProps{
 	"IsSky",
 	mm7 "IsLava",
 	mm7 "ScrollUp",
-	mm7 "ScrollDown",
+	"ScrollDown",
 	mm7 "ScrollLeft",
 	mm7 "ScrollRight",
 	"AnimatedTFT",
@@ -394,8 +394,9 @@ local FacetProps = MakeProps{
 	GetExcluded = function()
 		return Map.IsIndoor() and {
 			ModelIndex = true,
+			ScrollDown = mmver == 6,  -- implemented through IsSky = true in MM6 outdoors
 		} or {
-			IsSky = true,  -- the only kind of moving texture in MM6 apart from water
+			IsSky = true,
 			IsLava = true,
 			DoorStaticBmp = true,
 			MovedByDoor = true,
@@ -406,15 +407,15 @@ local FacetProps = MakeProps{
 	
 	get = function(id, prop)
 		Editor.CheckLazyModels()
-		local a = Editor.Facets[id + 1]
+		local t = Editor.Facets[id + 1]
 		if prop == "OBJ" then
-			return a
+			return t
 		elseif prop == "Index" then
-			return GetFacetIndex(id, a)
+			return GetFacetIndex(id, t)
 		elseif prop == "ModelIndex" then
 			return GetModelIndex(id)
 		end
-		local ret = a[prop]
+		local ret = t[prop]
 		if ret == nil then
 			if prop == "BitmapU" or prop == "BitmapV" then
 				ret = Editor["Import"..prop][id] or 0
@@ -457,6 +458,8 @@ local FacetProps = MakeProps{
 			end
 		elseif Editor.ShowInvisible and (prop == "Invisible" or prop == "IsSky" and not Game.IsD3D) then
 			-- do nothing
+		elseif prop == "ScrollDown" and mmver == 6 then
+			a.IsSky = val
 		elseif not IsFacetDataProp[prop] then
 			a[prop] = val
 		else

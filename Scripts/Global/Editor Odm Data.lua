@@ -139,6 +139,9 @@ local function WriteFacet(a, t, m, VertexIds)
 	for k in pairs(Editor._FacetBits) do
 		a[k] = t[k]
 	end
+	if mmver == 6 then
+		a.IsSky = t.ScrollDown
+	end
 	
 	-- U, V
 	local oc = Editor.OutdoorUVCorrection
