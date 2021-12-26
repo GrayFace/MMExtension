@@ -1037,14 +1037,26 @@ end
 mem.u1[mmv(0x44D0E7, 0x461939, 0x45F354)+1] = 0xB7
 
 -- fix flat and almost flat surfaces V orientation
-if mmver == 8 then
-	mem.i4[0x4781F6+1] = 0x10000
-	mem.u2[0x4826EA] = 0x9090
-	mem.asmpatch(0x482681, "add eax, [ebp - 0x14]", 3)
-elseif mmver == 7 then
-	mem.i4[0x4792C3+1] = 0x10000
-	mem.u2[0x482D32] = 0x9090
-	mem.asmpatch(0x482CCB, "add eax, [ebp - 0x14]", 3)
+if mmver > 6 then
+	-- need extra work with ScrollUp/ScrollDown
+	mem.asmpatch(mm78(0x4792C3, 0x4781F6), [[
+		mov dl, [edi + 0x31]
+		test dl, 4+8
+		jz @ok
+		and dl, 255-12
+		test byte [esi + 0x1C], 4
+		jz @up
+		or dl, 8
+		jmp @store
+	@up:
+		or dl, 4
+	@store:
+		mov [edi + 0x31], dl
+	@ok:
+		mov edx, 0x10000
+	]])
+	mem.u2[mm78(0x482D32, 0x4826EA)] = 0x9090
+	mem.asmpatch(mm78(0x482CCB, 0x482681), "add eax, [ebp - 0x14]", 3)
 else
 	-- Questionable in MM6. In MM7, MM8 the bug breaks SW/D3D consistency, thus must be fixed
 	-- NWC made models without knowledge that BitmapV of almost-flat surfaces actually gets negated
@@ -1069,7 +1081,7 @@ else
 	hooks.asmhook(0x475A92, code)
 	hooks.asmhook(0x47432D, code)
 	
-	-- [MM6]  Turns off texture flip on horizontal outdoor surfaces. Note that the editor accounts for vertical flip, so you probably shouldn't call this function.
+	-- [MM6]  Turns off texture flip on horizontal outdoor surfaces. Note that the editor accounts for vertical flip, so you probably shouldn't ever call this function.
 	function FixVFlip()
 		mem.IgnoreProtection(true)
 		if VFlipUnfixed then
@@ -1083,7 +1095,7 @@ else
 		end
 		VFlipUnfixed = not VFlipUnfixed
 		hooks.Switch(VFlipUnfixed)
-		mem.IgnoreProtection(true)
+		mem.IgnoreProtection(false)
 		Party.NeedRender = true
 	end
 end
