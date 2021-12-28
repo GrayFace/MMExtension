@@ -17,6 +17,14 @@ Const = const
 
 local _KNOWNGLOBALS
 
+local PatchOptionsSize  -- Game.PatchOptions.Size
+do
+	local PatchDll = mem.dll[AppPath.."mm"..internal.MMVersion.."patch"] or {}
+	local PatchOptionsPtr = PatchDll.GetOptions
+	PatchOptionsSize = PatchOptionsPtr and mem.i4[PatchOptionsPtr()] or 0
+end
+offsets.PatchOptionsSize = PatchOptionsSize
+
 const.Novice = 1
 const.Expert = 2
 const.Master = 3
@@ -550,7 +558,7 @@ else
 	}
 end
 
-const.SkillClub = mmv(-1, 37, 40)
+const.SkillClub = mmv(-1, 37, PatchOptionsSize > 364 and 39 or 40)
 const.SkillMisc = mmv(12, 38, 40)
 
 const.Condition = {

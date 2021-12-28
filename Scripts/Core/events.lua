@@ -12,12 +12,7 @@ end
 
 local _KNOWNGLOBALS_F = Party, Game, Map, VFlipUnfixed, structs, GameInitialized1, GameInitialized2
 
-local PatchOptionsSize  -- Game.PatchOptions.Size
-do
-	local PatchDll = mem.dll[AppPath.."mm"..internal.MMVersion.."patch"] or {}
-	local PatchOptionsPtr = PatchDll.GetOptions
-	PatchOptionsSize = PatchOptionsPtr and i4[PatchOptionsPtr()] or 0
-end
+local PatchOptionsSize = offsets.PatchOptionsSize -- Game.PatchOptions.Size
 
 do
 	-- HookManager
@@ -385,7 +380,7 @@ end
 
 if mmver > 6 and PatchOptionsSize < 336 then
 	-- always invoke LeaveMap event (death and walking fixed by my patches) (fixed in patch 2.5)
-	for _, p in ipairs(mm78({0x433324, 0x44800F, 0x44C30F, 0x4B6A96}, {0x430BC3, 0x445335, 0x4B52F5})) do
+	for _, p in ipairs(mm78({0x433324, 0x44C30F, 0x4B6A96}, {0x430BC3, 0x4B52F5})) do
 		mem.asmhook(p, 'pushad'..'\ncall absolute '..mm78(0x443FB8, 0x440DBC)..'\npopad')
 	end
 	-- read Body attack type of monsters
