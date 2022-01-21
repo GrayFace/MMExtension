@@ -473,7 +473,7 @@ Editor.FacetMiddles = setmetatable({}, {__mode = "k", __index = FacetMiddles_ind
 -- Editor.DeepCopy
 -----------------------------------------------------
 
-function Editor.DeepCopy(t)
+function Editor.DeepCopy(t, base)
 	local all = {}
 	
 	local function copy(t)
@@ -490,7 +490,11 @@ function Editor.DeepCopy(t)
 		return new
 	end
 	
-	return copy(t)
+	t = copy(t)
+	if base then
+		table.copy(base, t, true)
+	end
+	return t
 end
 
 -----------------------------------------------------

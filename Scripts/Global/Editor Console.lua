@@ -101,9 +101,11 @@ local function AutoResume()
 	local function OnWndMsg(t)
 		ResumeGame(state)
 	end
+	SuppressSound(true)
 	events.WindowMessage = OnWndMsg
 	return function()
 		events.WindowMessage.remove(OnWndMsg)
+		SuppressSound(false)
 		Game.PatchOptions.MouseLook = mlook
 	end
 end
@@ -228,6 +230,15 @@ end
 
 function BatchLoad(...)
 	cocall2(DoBatchLoadAll, ...)
+end
+
+function QuickBatch()
+	local s = [[
+		add esp, 8
+		xor eax, eax
+	]]
+	mem.asmpatch(mmv(0x40B76E, 0x4A4D93, 0x4A2C46), s, 5)
+	mem.asmpatch(mmv(0x490829, 0x4A4FF1, 0x4A2EA4), s, 5)
 end
 
 -----------------------------------------------------

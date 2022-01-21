@@ -95,7 +95,6 @@ end
 
 
 local FacetDataProps = {
-	-- !!! TFTBitmap
 	"BitmapU",
 	"BitmapV",
 	"Id",

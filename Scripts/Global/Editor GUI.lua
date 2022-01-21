@@ -935,7 +935,7 @@ function Commands.Clone()
 			Y = y + props.get(id, "Y"),
 			Z = z + props.get(id, "Z"),
 		}
-		t = (props.duplicate or table.copy)(o, t)
+		t = (props.duplicate or Editor.DeepCopy)(o, t)
 		Editor.Selection[props.create(t)] = true
 	end
 	if Editor.AutoLand then
