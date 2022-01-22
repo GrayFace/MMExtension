@@ -116,13 +116,18 @@ local function Extend(t)
 end
 mem.ExtendGameStructure = Extend
 
+local function TrimNull(s)
+	local i = s:match('()%z+$')
+	return i and s:sub(1, i - 1) or s
+end
+
 local function SaveLoad(name, p0, sz0)
 	local sname = 'Extra'..name
 	function events.InternalBeforeSaveGame()
 		local t, sgd = Game[name], internal.SaveGameData
 		local p, sz = t['?ptr'], t['?size'] - sz0
 		mem.copy(p0, p, sz0)
-		sgd[sname] = mem.string(p + sz0, sz, true)
+		sgd[sname] = TrimNull(mem.string(p + sz0, sz, true))
 	end
 	events.InternalBeforeLoadMap = |was, loaded| if not was then
 		local t, s = Game[name], internal.SaveGameData[sname] or ''
@@ -189,7 +194,7 @@ local function NeedSaveBits(a, p)
 		local t = sgd.ExtraBitArrays or {}
 		for a, p in pairs(list) do
 			local p2, n = ptrs[p], lims[p]
-			t[p] = p2 and mem.string(p2, n and (n - sizes[p])/8 or 0, true)
+			t[p] = p2 and TrimNull(mem.string(p2, n and (n - sizes[p])/8 or 0, true))
 		end
 		sgd.ExtraBitArrays = next(t) and t
 	end
