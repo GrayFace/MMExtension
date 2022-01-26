@@ -377,26 +377,26 @@ ru|В MM7 часть примеров тоже будет работать, если Вы найдёте персонажей, к котор
 
 
 <h3>en|Autonotes|ru|Автозаметки|</h3>
-en|To avoid hassle with autonote indexes and autonote count limit, use <#>LocalAutonote</#> and <#>AddLocalAutonote</#> functions to deal with your autonotes.|
-ru|Чтобы избежать проблем с индексами и лимитом автозаметок, используйте функции <#>LocalAutonote</#> и <#>AddLocalAutonote</#> для новых автозаметок.|
+en|To avoid hassle with autonote indexes and autonote count limit, use <#>Autonote</#> and <#>AddAutonote</#> functions to deal with your autonotes.|
+ru|Чтобы избежать проблем с индексами и лимитом автозаметок, используйте функции <#>Autonote</#> и <#>AddAutonote</#> для новых автозаметок.|
 <br>
 <br>
 en|Example:|ru|Пример:|
 <br>
 <b>Maps\out01.global.lua:</b>
-<lua>LocalAutonote('hi', 1, 'Welcome to out01!')</lua>
+<lua>Autonote('hi', 1, 'Welcome to out01!')</lua>
 <b>Maps\out01.lua:</b>
 <lua>local TXT = Localize{
 	AutonoteMessage = "Check Auto Notes, it's extremely important!",
 }
-if not CheckLocalAutonote'hi' then  -- just to demonstrate use of CheckLocalAutonote
+if not CheckAutonote'hi' then  -- just to demonstrate use of CheckLocalAutonote
 	Game.ShowStatusText(TXT.AutonoteMessage)
 end
-AddLocalAutonote'hi'
+AddAutonote'hi'
 </lua>
 <br>
-en|Autonotes added this way are automatically made localizeable. Using local autonotes avoids naming conflicts. For autonotes shared by multiple scripts use <#>Autonote</#> and <#>AddAutonote</#> functions instead.|
-ru|Добавленные таким образом автозаметки автоматически локализуемы. Использование локальных автозаметок позволяет избежать конфликтов имён. Для автозаметок, используемых несколькими скриптами, используйте функции <#>Autonote</#> и <#>AddAutonote</#>.|
+en|Autonotes added this way are automatically made localizeable. By default they are local to the script to avoid naming conflicts. For autonotes shared by multiple scripts use ":" at the beginning of their names (e.g. ":hi").|
+ru|Добавленные таким образом автозаметки автоматически локализуемы. По умолчанию, автозаметки локальны по отношению к скрипту, чтобы избежать конфликтов имён. Для автозаметок, используемых несколькими скриптами, используйте ":" в начале их имени (например ":hi").|
 <br>
 <br>
 

@@ -428,15 +428,19 @@ end
 -----------------------------------------------------
 
 local RegNotes = {}
+local ClearRegNotes = || RegNotes = {}
 
 local function RegisterAutonote(t)
+	if ClearRegNotes then
+		events.LeaveGame, ClearRegNotes = ClearRegNotes, nil
+	end
 	local name = t.Name
-	assert(not RegNotes[name], 'autonote with tihs name already exists')
+	assert(not RegNotes[name], 'autonote with this name already exists')
 	RegNotes[name] = t
 	t.Text = LocalizeAll.Autonotes{[name] = t.Text}[name]
 end
 
-function FindAutonote(name, must)
+local function DoFindAutonote(name, must)
 	return RegNotes[name] or must and error('autonote "'..name..'" not found') or nil
 end
 
@@ -448,27 +452,28 @@ local AutonoteProto = {
 	end,
 }
 
-local function AutonoteTable(t, cat, text)
-	if type(t) ~= "table" then
-		t = {
-			Name = t,
-			Category = cat,
-			Text = text,
-		}
-	else
-		t.Name = t.Name or t[1]
-		t.Category = t.Category or t[2]
-		t.Text = t.Text or t[3]
+function GetLocalName(name, lev)
+	name = name..''
+	if name:find(':', 1, true) then
+		return name
 	end
-	assert(t.Name, 'autonote must have a name')
-	return t
+	local s = path.GetRelativePath(AppPath.."Scripts", debug.FunctionFile((lev or 1) + 1)):lower()
+	s = path.setext(s, '')
+	if path.ext(s) == '.global' then
+		s = path.setext(s, '')
+	end
+	return s:lower()..':'..name
 end
 
--- Crates a named autonote
+-- Crates a named autonote. To operate on global named autonotes, use ":" at the beginning of its name.
 function Autonote(name, cat, text)
-	local t = AutonoteTable(name, cat, text)
+	local t = {
+		Name = GetLocalName(name, 2),
+		Category = cat,
+		Text = text
+	}
 	vars.Autonotes = vars.Autonotes or {}
-	table.copy(AutonoteProto, t)
+	table.copy(AutonoteProto, t, true)
 	RegisterAutonote(t)
 	AutoAutonote(t, t.Text)
 	return t
@@ -476,45 +481,19 @@ end
 
 -- Adds a named autonote to Auto Notes. 'force' = 'true' makes it emit the sound even if autonote is already added
 function AddAutonote(name, force)
-	local t = FindAutonote(name, true)
+	local t = DoFindAutonote(GetLocalName(name, 2), true)
 	if force or not t:IsAutonoteVisible() then
 		t:AddAutonote()
 	end
 end
 
--- Returns 'true' if named autonote is in Auto Notes
+-- Returns 'true' if named autonote was added to Auto Notes
 function CheckAutonote(name)
-	return FindAutonote(name, true):IsAutonoteVisible()
+	return DoFindAutonote(GetLocalName(name, 2), true):IsAutonoteVisible()
 end
 
-local function GetLocalPrefix(lev)
-	local s = path.GetRelativePath(AppPath.."Scripts", debug.FunctionFile(lev + 1)):lower()
-	s = path.setext(s, '')
-	if path.ext(s) == '.global' then
-		s = path.setext(s, '')
-	end
-	return s..':'
-end
-
-function FindLocalAutonote(name)
-	return FindAutonote(GetLocalPrefix(2)..name)
-end
-
--- Crates a local autonote
-function LocalAutonote(name, cat, text)
-	local t = AutonoteTable(name, cat, text)
-	t.Name = GetLocalPrefix(2)..t.Name
-	return Autonote(t)
-end
-
--- Adds a local autonote to Auto Notes. 'force' = 'true' makes it emit the sound even if autonote is already added
-function AddLocalAutonote(name, force)
-	AddAutonote(GetLocalPrefix(2)..name, force)
-end
-
--- Returns 'true' if local autonote is in Auto Notes
-function CheckLocalAutonote(name)
-	return FindAutonote(GetLocalPrefix(2)..name, true):IsAutonoteVisible()
+function FindAutonote(name, must)
+	return DoFindAutonote(GetLocalName(name, 2), must)
 end
 
 -----------------------------------------------------
@@ -1078,6 +1057,11 @@ function KillMonstersQuest(t)
 	-- Quest
 	local function CheckTask(task)
 		return (done[task.TaskId] or 0) > Game.Time or task.Map == CurMap and CheckMonstersKilled(task)
+	end
+	
+	function t:CheckKilled(i)
+		local a = tasks[i]
+		return a and CheckTask(a)
 	end
 	
 	local CheckDone = t.CheckDone
