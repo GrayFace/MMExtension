@@ -37,6 +37,7 @@ local function initItem(a, num)
 	elseif mmver > 6 then
 		mem.call(mmv(nil, 0x456D51, 0x4545E8), 1, Game.ItemsTxt["?ptr"] - 4, a)
 	end
+	a.Number = 0
 end
 
 local SkipFields = {
