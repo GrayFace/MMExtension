@@ -11,7 +11,7 @@ local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
 
-local PatchDll = mem.dll[AppPath.."mm"..internal.MMVersion.."patch"] or {}
+local PatchDll = offsets.PatchDll
 local PatchOptionsPtr = PatchDll.GetOptions
 PatchOptionsPtr = PatchOptionsPtr and PatchOptionsPtr()
 
@@ -621,6 +621,8 @@ end]=]
 	 .Info{Sig = "Text, Unk = 0"}
 	.func{name = "SummonMonster", p = mmv(0x4A35F0, 0x4BBEC4, 0x4BA076), cc = 2, must = 4}
 	 .Info{Sig = "Id, X, Y, Z"}
+	.func{name = "GenerateChests", p = mmv(0x456300, 0x450244, 0x44D96C), cc = 0}
+	 .Info "You can add random items (Number = -1 to -6 for different power or -7 for artifact) to some chests and then call this function to generate them"
 	if mmver > 6 then
 		define[internal.MonsterKindPtr].parray{lenA = i4, lenP = internal.MonsterKindPtr + 4, lenSet = SetLenRealloc}.struct(structs.MonsterKind)  'MonsterKinds'
 		.func{name = "IsMonsterOfKind", p = mm78(0x438BCE, 0x436542), cc = 2, must = 2}
@@ -1598,7 +1600,7 @@ function structs.f.PatchOptions(define)
 	int  'MouseLookPermKey'
 	int  'LastSoundSample'
 	int  'WaterWalkDamage'  Info "[MM7+]"
-	bool  'FixUnmarkedArtifacts'  Info "[MM7]"
+	bool  'FixUnmarkedArtifacts'  Info "[MM6, MM7]"
 	bool  'FixClubsDelay'  Info "[MM7+]"
 	bool  'FixDarkTrainers'  Info "[MM7]"
 	bool  'FixLightBolt'  Info "[MM7+]"
@@ -1609,6 +1611,7 @@ function structs.f.PatchOptions(define)
 	bool  'FixWaterWalkManaDrain'
 	bool  'KeepEmptyWands'
 	bool  'DontSkipSimpleMessage'  Info "[MM6, MM7]"
+	int  'FixItemDuplicates'
 	
 	function define.f.Present(name)
 		return not not addr[name]

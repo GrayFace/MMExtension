@@ -493,6 +493,8 @@ function structs.f.Item(define)
 	[0x14].bit('TemporaryBonus', 8)  -- MM7, MM8
 	[0x14].bit('Stolen', 0x100)  -- MM7, MM8
 	[0x14].bit('Hardened', 0x200)  -- MM7, MM8
+	[0x14].bit('Refundable', 0x400)  -- MM7, MM8
+	 .Info "Added in patch v2.5.4. Used internally to remove artifacts generated in unopened chests from #ArtifactsFound:structs.GameParty.ArtifactsFound# upon map refill."
 	[0x14].i4  'Condition'
 	[0x18].i1  'BodyLocation'
 	[0x19].u1  'MaxCharges'
@@ -511,9 +513,10 @@ function structs.f.Item(define)
 	.method{p = mmv(0x448680, 0x4564DF, 0x453D58), name = "GetIdentifiedName", ret = ""}
 	.method{p = mmv(0x44A6B0, 0x4505F8, 0x44DD43), name = "GenerateArtifact"}
 
+	local pItems = mmv(0x560C10, 0x5D2860, 0x5EFBC8)
 	function define.m:Randomize(strength, type)
 		mem.fill(self["?ptr"], self["?size"])
-		return call(mmv(0x448790, 0x45664C, 0x453ECC), 1, Game.ItemsTxt["?ptr"] - 4, assertnum(strength, 2), assertnum(type or 0, 2), self)
+		return call(mmv(0x448790, 0x45664C, 0x453ECC), 1, pItems, assertnum(strength, 2), assertnum(type or 0, 2), self)
 	end
 	define.Info{Sig = "Strength, Type:const.ItemType"}
 	function define.m:T()
@@ -522,7 +525,7 @@ function structs.f.Item(define)
 	define.Info "Returns ItemsTxt entry."
 	function define.m:InitSpecial()
 		if mmver > 6 then
-			call(mm78(0x456D51, 0x4545E8), 1, Game.ItemsTxt["?ptr"] - 4, self)
+			call(mm78(0x456D51, 0x4545E8), 1, pItems, self)
 		end
 	end
 	define.Info '[MM7+] Sets up enchantments if the item is "Special" as marked by "material" column of items.txt'
@@ -1533,7 +1536,9 @@ function structs.f.Events2DItem(define)
 	.i2  'CloseHour'  -- 0x26
 	.i2  'ExitPic'  -- 0x28
 	.i2  'ExitMap'  -- 0x2A
+	.alt.i2  'QBit'
 	.i2  'QuestBitRestriction'  -- 0x2C
+	 .Info '(old name)'
 	.skip(2)
 	.size = mmv(0x30, 0x34, 0x34)
 end
@@ -1633,6 +1638,10 @@ function structs.f.MapChest(define)
 	[0x4].array(1, 140).struct(structs.Item)  'Items'
 	.array(140).i2  'Inventory'
 	 .Info "('Items' index) for main item cell,  -(1 + main 'Inventory' cell index) for other cells"
+	local RefundChestArtifacts = offsets.PatchDll.RefundChestArtifacts
+	function define.m:RefundArtifacts()
+		return not not (RefundChestArtifacts and RefundChestArtifacts(self['?ptr']))
+	end
 end
 
 function structs.f.MapSprite(define)

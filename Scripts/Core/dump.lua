@@ -1,4 +1,4 @@
-DumpLimit = 10000
+DumpLimit = 30000
 
 local _KNOWNGLOBALS = dump, structs
 

@@ -17,14 +17,13 @@ Const = const
 
 local _KNOWNGLOBALS
 
-local PatchOptionsSize  -- Game.PatchOptions.Size
 do
-	local PatchDll = mem.dll[AppPath.."mm"..internal.MMVersion.."patch"] or {}
-	local PatchOptionsPtr = PatchDll.GetOptions
-	PatchOptionsSize = PatchOptionsPtr and mem.i4[PatchOptionsPtr()] or 0
+	offsets.PatchDll = offsets.PatchDll or mem.dll[AppPath.."mm"..internal.MMVersion.."patch"] or {}
+	local PatchOptionsPtr = offsets.PatchDll.GetOptions
+	offsets.PatchOptionsSize = PatchOptionsPtr and mem.i4[PatchOptionsPtr()] or 0
 end
-offsets.PatchOptionsSize = PatchOptionsSize
-
+local PatchOptionsSize = offsets.PatchOptionsSize  -- Game.PatchOptions.Size
+ 
 const.Novice = 1
 const.Expert = 2
 const.Master = 3

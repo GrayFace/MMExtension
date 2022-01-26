@@ -1099,6 +1099,16 @@ Usually a better approach is to specify player after 'evt', this way it only eff
 		CurInfo.ForPlayer = true
 	end)
 
+
+	--------------------------- Patch
+
+	MakeCmd("RefundChestArtifacts", 0x45, function(define)
+		define
+		 .Info "To be added in 2.5.6 or 2.6 of the patches. Removes all artifacts randomly generated in the chest from #Party.ArtifactsFound:structs.GameParty.ArtifactsFound#."
+		.u1  'Id'
+	end)
+
+
 	--------------------------- MM7
 
 	if mmver < 7 then
@@ -1441,6 +1451,7 @@ CmdDef[0x41] = "\0\0\0\0\0\0"
 CmdDef[0x42] = "\0\0\0\0\220\5\0\0"
 CmdDef[0x43] = "\0\0\0\0\0\0\0\0\0"
 CmdDef[0x44] = "\0\0\0\0\0"
+CmdDef[0x45] = "\0"
 
 DeclareCommands()
 
