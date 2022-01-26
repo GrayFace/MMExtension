@@ -43,11 +43,22 @@ Spawns:
 "m1" / "m2" / "m3" - a group of monsters of type 1 / 2 / 3 (see MapStats.txt)
 "m1a" / "m1b" / "m1c" - a single weak / average / strong monster of type 1
 Similar with "m2a", "m3a" etc.
-"i1".."i7" - item level 1 (.. item level 7). Level 7 is artifact. Other levels are then modified according to location level in MapStats.txt. Map level is the maximum resulting item level. So, resulting level of "i6" item always equals map level.
+"i1".."i7" - item level 1 (.. item level 7). Level 7 is artifact. See "Treasure Levels" section.
 
 Chests:
 Info example:
-1/2/3/4/5/6 A7 C8 - means 1 level 1 item, ..., 6 level 6 items, 7 artifacts, 8 custom items. See the note about location level in MapStats.txt in Spawns section.
+1/2/3/4/5/6 A7 C8 - means 1 level 1 item, ..., 6 level 6 items, 7 artifacts, 8 custom items. See "Treasure Levels" section.
 
 Map Setup:
 OutlineFlatSkip - from 0 to 1 (default is 0.9, game default is 1). Set lower value to ignore more outlines between almost flat facets.
+
+Treasure Levels:
+Treasure levels you specify for chest items or item spawns are modified according to location level in MapStats.txt (the "Tres" column). The following table is used with M# meaning map level and T# meaning treasure level of the item:
+     M1   M2   M3   M4   M5   M6   M7
+T1 [ 1 ][ 1 ][ 1 ][ 1 ][ 1 ][ 1 ][ 1 ]
+T2 [ 1 ][1-2][ 2 ][ 2 ][ 2 ][ 2 ][ 2 ]
+T3 [1-2][ 2 ][2-3][ 3 ][ 3 ][ 3 ][ 3 ]
+T4 [ 2 ][ 2 ][ 3 ][3-4][ 4 ][ 4 ][ 4 ]
+T5 [ 2 ][ 2 ][3-4][ 4 ][4-5][ 5 ][ 5 ]
+T6 [ 2 ][ 2 ][ 4 ][4-5][ 5 ][5-6][ 6 ]
+T7 [ 2 ][ 2 ][ 7 ][ 7 ][ 7 ][ 7 ][ 7 ]
