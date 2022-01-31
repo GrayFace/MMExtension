@@ -79,7 +79,7 @@ local function WriteFacetData(f, t)
 			bw, bh = bw/2, bh/2
 		end
 		Editor.ImportBitmapU[facetId] = -(ux*vertX + uy*vertY + uz*vertZ) + t.ImportU*bw
-		Editor.ImportBitmapV[facetId] = -(vx*vertX + vy*vertY + vz*vertZ) + t.ImportV*bw
+		Editor.ImportBitmapV[facetId] = -(vx*vertX + vy*vertY + vz*vertZ) + t.ImportV*bh
 	end
 	Editor.UpdateBitmapU(t)
 	Editor.UpdateBitmapV(t)
