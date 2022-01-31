@@ -103,12 +103,18 @@ local function LoadScripts(fpath, t)
 	end)
 end
 
-function internal.BeforeMapLoad()
-	MayShow = 0
+local function InitVars()
 	local sgd = tget(internal, "SaveGameData")
 	--!v Variables that are stored in saved game
 	vars = tget(sgd, "Vars")
 	Vars = vars
+	return sgd
+end
+internal.InitVars = InitVars
+
+function internal.BeforeMapLoad()
+	MayShow = 0
+	local sgd = InitVars()
 	if mmver == 6 then
 		evt.MazeInfo = nil
 	end

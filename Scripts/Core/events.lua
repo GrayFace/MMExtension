@@ -878,7 +878,8 @@ do
 			events.cocalls("InternalBeforeSaveGame")
 			-- internal.MonstersRestore(true)
 		else
-			internal.SaveGameData = {vars = {}}
+			internal.SaveGameData = {}
+			internal.InitVars()
 			events.cocalls("BeforeNewGameAutosave")
 			--!-
 			events.cocalls("InternalBeforeNewGameAutosave")
