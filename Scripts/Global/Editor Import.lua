@@ -102,8 +102,7 @@ local function ParseObj(file, AddVertex, AddFacet, NewObject)
 			end
 			local a = t1[1] and vt[t1[1] % (#vt + 1)] or {}
 			if AddFacet then
-				a[2] = a[2] and 1 - a[2]  -- !!! tmp
-				AddFacet(t, texture, invis, unpack(a))
+				AddFacet(t, texture, invis, a[1], a[2] and 1 - a[2])
 			end
 		end
 	end
