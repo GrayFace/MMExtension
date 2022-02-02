@@ -364,19 +364,15 @@ function Commands.Compile(name)
 	Editor.UpdateMap(memstr(name))
 end
 
-local function FindExtInGamesLod(ext)
-	for i, a in Game.GamesLod.Files do
-		if path.ext(a.Name):lower() == ext then
-			return a.Name
-		end
-	end
+local function FindInGamesLod(name)
+	return mem.call(mmv(0x44CCA0, 0x461659, 0x45F09B), 1, Game.GamesLod['?ptr'], name) ~= 0
 end
 
-local function FindInGamesLod(s)
-	s = s:lower()
-	for i, a in Game.GamesLod.Files do
-		if a.Name:lower() == s then
-			return i
+local function FindExtInGamesLod(ext)
+	for _, a in Game.MapStats do
+		local s = a.FileName
+		if path.ext(s):lower() == ext and FindInGamesLod(s) then
+			return s
 		end
 	end
 end

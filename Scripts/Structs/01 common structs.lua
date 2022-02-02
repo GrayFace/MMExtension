@@ -2449,6 +2449,7 @@ function structs.f.Lod(define)
 	[0x230].parray{lenA = i4, lenP = 0x22C}.struct(structs.LodFile)  'Files'
 	[0x234].u4  'FilesOffset'
 	[0x238].skip(4)
+	.method{p = mmv(0x44CCA0, 0x461659, 0x45F09B), name = "HasFile", ret = true, must = 1;  ""}
 end
 
 local bmpbuf = mem.StaticAlloc(64)
