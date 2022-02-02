@@ -443,9 +443,9 @@ local function UpdateBitmapCoord(t, prop, Left, Right, UList)
 			local oc = Editor.OutdoorUVCorrection
 			local x, y, z = oc, oc, oc
 			local ux, uy, uz, vx, vy, vz = Editor.GetUVDirections(a)
-			v = (v - (prop == "BitmapU" and ux*x + uy*y + uz*z or vx*x + vy*y + vz*z)):round()
+			v = v - (prop == "BitmapU" and ux*x + uy*y + uz*z or vx*x + vy*y + vz*z)
 		end
-		d[prop] = v
+		d[prop] = v:round()
 	end
 end
 
