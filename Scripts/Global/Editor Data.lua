@@ -443,9 +443,9 @@ local function UpdateBitmapCoord(t, prop, Left, Right, UList)
 			local oc = Editor.OutdoorUVCorrection
 			local x, y, z = oc, oc, oc
 			local ux, uy, uz, vx, vy, vz = Editor.GetUVDirections(a)
-			v = v - (prop == "BitmapU" and ux*x + uy*y + uz*z or vx*x + vy*y + vz*z)
+			v = round(v - (prop == "BitmapU" and ux*x + uy*y + uz*z or vx*x + vy*y + vz*z))
 		end
-		d[prop] = v:round()
+		d[prop] = v
 	end
 end
 
@@ -480,8 +480,8 @@ local function WriteFacetData(a, t)
 		if BitmapsHDScale then
 			bw, bh = bw/2, bh/2
 		end
-		Editor.ImportBitmapU[facetId] = -(ux*vertX + uy*vertY + uz*vertZ) + t.ImportU*bw
-		Editor.ImportBitmapV[facetId] = -(vx*vertX + vy*vertY + vz*vertZ) + t.ImportV*bh
+		Editor.ImportBitmapU[facetId] = -floor(ux*vertX + uy*vertY + uz*vertZ) + t.ImportU*bw
+		Editor.ImportBitmapV[facetId] = -floor(vx*vertX + vy*vertY + vz*vertZ) + t.ImportV*bh
 	end
 	Editor.UpdateBitmapU(t)
 	Editor.UpdateBitmapV(t)
