@@ -545,6 +545,7 @@ if mmver == 7 and PatchOptionsSize < 364 then
 		mov dword [0x576EAC], 1
 	@@:
 	]])
+	mem.nop(0x4501E8)  -- also fix null artifact generation
 end
 
 -- MM8 Question - don't react to key presses

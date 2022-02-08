@@ -137,6 +137,20 @@ if mmver > 6 then
 	mem.autohook2(mm78(0x422509, 0x4216EE), SpeakWithMonster)
 end
 
+-- make all peasants hireable
+if mmver == 7 then
+	local hooks
+	-- [MM7] Normally first level peasants just tall you the news and can't be hired. Pass 'on' = 'true' to this function to make all peasants hireable.
+	function HireAllPeasants(on)
+		if hooks then
+			hooks.Switch(on)
+		elseif on then
+			hooks = HookManager()
+			hooks.asmpatch(0x4611DC, [[jmp absolute 0x461382]])
+		end
+	end
+end
+
 -- OnAction
 local ExitAnyNPC
 local screensNPC = {[4] = true, [19] = true}  -- SpeakNPC, street NPC, separate processing for house
@@ -424,6 +438,26 @@ end
 mem.autohook(mmv(0x4A32B9, 0x4BBBD5, 0x4BAE10), |d| BountyDone(d, mmver == 8 and d.ebp/2 or d[mmv('esi', 'edi')]))
 if mmver > 6 then
 	mem.autohook(mm78(0x4BD1F6, 0x4B9D59), |d| BountyDone(d, mmver == 8 and 0 or d.esi/2))
+end
+
+-- Training
+if mmver > 6 then
+	local levels
+
+	-- [MM7+] Set number of levels the party can train per training session. '0' means any number of levels, as in MM6. '1' is MM7+ default. If 'n' isn't specified, returns current setting.
+	function TrainPerWeek(n)
+		if not n then
+			return levels or 1
+		elseif not levels then
+			local reg = mm78('ecx', 'edx')
+			mem.autohook(mm78(0x4B4BA5, 0x4B360C), |d| if (levels > 0 and d[reg] % levels or d[reg]) > 0 then
+				d:push(mm78(0x4B4BF4, 0x4B3640))
+				return true
+			end)
+			levels = 1
+		end
+		levels = n + 0
+	end
 end
 
 -- SetMapNoNPC
