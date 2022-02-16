@@ -721,21 +721,25 @@ local function RegisterQuest(t)
 		local str = (IsLua and {} or {"Key=\tValue$=", "Quests{\t"})
 		local npcs = {}
 		local function AddQuest(t, npc)
+			while t and not next(t.Texts) do
+				t = t.LastQuest
+			end
 			if not t then
 				return
 			elseif npc and not npcs[npc] then
 				npcs[npc] = true
 				local s = ("-"):rep(80)
+				local info = npc >= 0 and Game.NPC[npc].Name or 'any NPC'
 				if IsLua then
-					str[#str+1] = ("%s\n-- (%s) %s\n%s\n"):format(s, npc, Game.NPC[npc].Name, s)
+					str[#str+1] = ("%s\n-- (%s) %s\n%s\n"):format(s, npc, info, s)
 				else
-					str[#str+1] = ("\r\n(%s) %s -\t%s\r\n"):format(npc, Game.NPC[npc].Name, s)
+					str[#str+1] = ("\r\n(%s) %s -\t%s\r\n"):format(npc, info, s)
 				end
 			end
 			AddQuest(t.LastQuest)
-			if next(t.Texts) and IsLua then
+			if IsLua then
 				str[#str+1] = ("LocalizeAll.Quests[%q] = %s\n"):format(t.Name, dump(SanitizeLoc(t.Texts), nil, true))
-			elseif next(t.Texts) then
+			else
 				str[#str+1] = ("[%q]{\t"):format(t.Name)
 				for k, v in sortpairs(SanitizeLoc(t.Texts)) do
 					str[#str+1] = LocalizationTableStr(k, v)
