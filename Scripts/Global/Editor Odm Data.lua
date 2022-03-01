@@ -525,6 +525,7 @@ function Editor.UpdateOdm(CompileFile)
 	Editor.WriteSpawns()
 	Editor.WriteSprites()
 	
+	state.Chests = state.Chests or {}
 	if CompileFile then
 		RebildIDList()
 		Editor.WriteChests()

@@ -480,8 +480,8 @@ local function WriteFacetData(a, t)
 		if BitmapsHDScale then
 			bw, bh = bw/2, bh/2
 		end
-		Editor.ImportBitmapU[facetId] = -floor(ux*vertX + uy*vertY + uz*vertZ) + t.ImportU*bw
-		Editor.ImportBitmapV[facetId] = -floor(vx*vertX + vy*vertY + vz*vertZ) + t.ImportV*bh
+		Editor.ImportBitmapU[facetId] = -floor(ux*vertX + uy*vertY + uz*vertZ) + round(t.ImportU*bw)
+		Editor.ImportBitmapV[facetId] = -floor(vx*vertX + vy*vertY + vz*vertZ) + round(t.ImportV*bh)
 	end
 	Editor.UpdateBitmapU(t)
 	Editor.UpdateBitmapV(t)
@@ -1879,6 +1879,7 @@ function Editor.UpdateMap(CompileFile)
 	state.OutlineFlatSkip = state.OutlineFlatSkip or 0.9
 	WriteOutlines()
 
+	state.Chests = state.Chests or {}
 	if CompileFile then
 		Editor.WriteChests()
 	end
