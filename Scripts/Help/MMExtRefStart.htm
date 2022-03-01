@@ -650,6 +650,25 @@ end
 </lua>
 <br>
 
+<h3>en|Skill Bonuses|ru|Бонусы умений|</h3>
+en|Making GM Dagger do +2 damage/skill instead of +1:|
+ru|Сделать, чтобы Гранд топора добавлял +2 повреждения за очко умения вместо +1:|
+<lua>
+function events.CalcStatBonusBySkills(t)
+	if t.Result ~= 0 and t.Stat == const.Stats.MeleeDamageBase then  -- t.Result ~= 0 is for speedup
+		local sk, mas = SplitSkill(t.Player.Skills[const.Skills.Dagger])
+		if mas >= const.GM then
+			local it = t.Player:GetActiveItem(const.ItemSlot.MainHand)
+			if it and it:T().Skill == const.Skills.Dagger then
+				t.Result = t.Result + sk
+			end
+		end
+	end
+end
+</lua>
+<br>
+
+
 <h3>en|Spells Damage|ru|Урон заклинания|</h3>
 en|Change damage of spell 2 - Flame Arrow. You can also make damage depend on <'>t.Mastery</'> (skill mastery) and <'>t.HP</'> (monster hit points).|
 ru|Изменить урон заклинания №2 - Стрела пламени. Также можно сделать его зависящим от мастерства <'>t.Mastery</'> в магии и здоровья <'>t.HP</'> монстра.|

@@ -140,7 +140,7 @@ end
 -- make all peasants hireable
 if mmver == 7 then
 	local hooks
-	-- [MM7] Normally first level peasants just tall you the news and can't be hired. Pass 'on' = 'true' to this function to make all peasants hireable.
+	-- [MM7] Normally first level of each peasant kind just talls you some news and can't be hired. Pass 'on' = 'true' to this function to make all peasants hireable.
 	function HireAllPeasants(on)
 		if hooks then
 			hooks.Switch(on)

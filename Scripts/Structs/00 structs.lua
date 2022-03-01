@@ -1611,8 +1611,9 @@ function structs.f.PatchOptions(define)
 	bool  'FixWaterWalkManaDrain'
 	bool  'KeepEmptyWands'
 	bool  'DontSkipSimpleMessage'  Info "[MM6, MM7]"
-	int  'FixItemDuplicates'
+	bool  'FixItemDuplicates'
 	bool  'FixClubsGeneration'  Info "[MM8]"
+	bool  'FixAcidBurst'  Info "[MM7+]"
 	
 	function define.f.Present(name)
 		return not not addr[name]
