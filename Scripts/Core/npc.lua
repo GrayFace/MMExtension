@@ -133,8 +133,8 @@ if mmver > 6 then
 			d.eax = structs.o.GameStructure.TextBuffer
 		end
 	end
-	mem.autohook2(mm78(0x46A586, 0x4688F8), SpeakWithMonster)
-	mem.autohook2(mm78(0x422509, 0x4216EE), SpeakWithMonster)
+	mem.autohook(mm78(0x46A58D, 0x4688FF), SpeakWithMonster)
+	mem.autohook(mm78(0x422510, 0x4216F5), SpeakWithMonster)
 end
 
 -- make all peasants hireable
