@@ -1930,6 +1930,15 @@ function _mem.copycode(ptr, size, MemPtr, NoJumpBack, DuplicateHooks)
 end
 local copycode = _mem.copycode
 
+_mem.MovedCode = {}
+
+local function moved(p, p1, size)
+	for i = p, p + size - 1 do
+		_mem.MovedCode[i] = i - p + p1
+	end
+	return p1, size
+end
+
 local function MyCopyCode(p, size, MemPtr, NoJumpBack)
 	if size < 5 then
 		local size1 = GetHookSize(p)
@@ -1942,9 +1951,9 @@ local function MyCopyCode(p, size, MemPtr, NoJumpBack)
 		if not NoJumpBack then
 			copycode(p + size1, 0, MemPtr)
 		end
-		return MemPtr, size1
+		return moved(p, MemPtr, size), size1
 	else
-		return copycode(p, size, MemPtr, NoJumpBack), size
+		return moved(p, copycode(p, size, MemPtr, NoJumpBack), size)
 	end
 end
 
@@ -2190,7 +2199,7 @@ end
 function _mem.hookfunction(p, nreg, nstack, f, size)
 	size = size or GetNoJumpSize(p)
 	assert(size >= 5)
-	local code = copycode(p, size)
+	local code = MyCopyCode(p, size)
 	local function def(...)
 		return call(code, nreg, ...)
 	end

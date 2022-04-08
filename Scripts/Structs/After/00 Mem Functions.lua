@@ -8,7 +8,9 @@ end
 
 local function BatchAdd(t, d)
 	prot(true)
+	local moved = mem.MovedCode
 	for _, p in ipairs(t) do
+		p = moved[p] or p
 		u4[p] = u4[p] + d
 	end
 	prot(false)
