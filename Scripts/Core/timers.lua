@@ -13,6 +13,11 @@ Check some condition (e.g. that you killed all monsters) every 5 minutes, includ
 Timer(CheckCondition, 5*const.Minute, true)
 ]]
 
+Refill a well each time a week passes:
+!LUA[[
+RefillTimer(RefillWell, const.Week)
+]]
+
 Refill a well every week on Tuesday at 3 AM:
 !LUA[[
 RefillTimer(RefillWell, const.Week, const.Day + 3*const.Hour)
@@ -61,18 +66,19 @@ end
 --!(f, Period = const.Minute, [Start,] [PastAware,] [Exact])
 -- 'f' = !LUA[[function(TriggerTime, Period, LastTick, Tick)]]:
 --   Function to call when the timer is triggered.
--- 'Start' is !LUA[[Game.Time + Period]] if not specified (or !LUA[[Game.Time]] if 'PastAware' = 'true').
+-- 'Start' defaults to !LUA[[Game.Time + Period]] if not specified (unless 'PastAware' = 'true', in which case it deafults to !LUA[[Game.Time]]).
 -- 'PastAware' = remember last visit time and fire right away if timer condition was met in the period of your absence.
---   If not specified, it's 'true' if 'Start' is specified, 'false' otherwise.
+--   Defaults to 'true' if 'Start' is specified and 'false' otherwise.
 -- Possible 'Exact' values:
---   false:  re-fires after 'Period' passes since last invocation (this is the default if 'Start' is not specified).
---   true:  fires whenever (start + period*N) line is crossed (this is the default if 'Start' is specified).
+--   false:  re-fires after at least 'Period' passes since last invocation (this is the default if 'Start' is not specified).
+--   true:  fires whenever (Start + Period*N) line is crossed (this is the default if 'Start' is specified).
 --   !LUA[[function(TriggerTime, Period, LastTick, IsInit)]]:  returns next trigger time when called.
 --     'IsInit' = 'true' if it's called by Timer function itself which happens if 'Start' has already passed.
 -- Note that the timer remembers last time you were in the location, so for example,
 -- an exact weekly timer would fire right away if you haven't visited the map for a week.
 function Timer(f, period, start, PastAware, exact)
 	period = period or const.Minute
+	assert(tonumber(period))
 	if start == nil or tonumber(start) then
 		start = tonumber(start)
 	else
@@ -81,20 +87,17 @@ function Timer(f, period, start, PastAware, exact)
 	if type(PastAware) == "function" or type(PastAware) == "table" then
 		PastAware, exact = nil, PastAware
 	end
-	if exact == nil then
-		exact = not not start
-	end
-	if exact == true then
+	if exact == true or exact == nil and start then
 		exact = NextExact
 	elseif not exact then
 		exact = NextPeriod
 	end
-	local last = (PastAware and start and LastTick or LastTick - 1 or Game.Time)
+	local last = (PastAware ~= false and start and LastTick or PastAware and -1 or Game.Time)
 	start = start or Game.Time
 	if start <= Game.Time and start <= last then
 		start = exact(start, period, last, true)
 	end
-	timers[#timers+1] = {f, period, start, exact} -- Game.Map.LastRefillDay*0x5A000})
+	timers[#timers+1] = {f, period, start, exact}
 end
 
 
