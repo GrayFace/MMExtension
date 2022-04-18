@@ -289,7 +289,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x9CF5A4, 0xF79200, 0xFEB608)].i4  'MSSHandle'
 	-- [mmv(0x9CF5C0, 0xF7921C, 0xFEB624)].i4  'MasterVolume'
 	if mmver > 6 then
-		define[mmv(nil, 0xF8BA08, 0xFFDE00)].i4  'BinkVideo'
+		define[mm78(0xF8BA08, 0xFFDE00)].i4  'BinkVideo'
 		[mm78(0x4b440e, 0x4b2ebc)].CustomType('DialogTopicsLimit', 1, function(o, obj, _, val)
 			if val == nil then
 				return i1[o]
@@ -394,10 +394,10 @@ end]=]
 	[mmv(0x6A7684, 0x7214EC, 0x75E454)].array{1, mmv(517, 789, 1000), ItemSize = 8}.EditPChar  'NPCText'
 	if mmver > 6 then
 		define
-		[mmv(nil, 0x73B8D4, 0x7798B8)].array(0, 205).array(0, 1).EditPChar  'NPCGreet'
-		[mmv(nil, 0x73BFAA, 0x779F8E)].array(0, 50).i2  'NPCGroup'
-		[mmv(nil, 0x739CF4, 0x778F50)].array(0, 50).EditPChar  'NPCNews'
-		[mmv(nil, 0x5C89E0, 0x5E4DA8)].array(1, 29).struct(structs.HistoryTxtItem)  'HistoryTxt'
+		[mm78(0x73B8D4, 0x7798B8)].array(0, 205).array(0, 1).EditPChar  'NPCGreet'
+		[mm78(0x73BFAA, 0x779F8E)].array(0, 50).i2  'NPCGroup'
+		[mm78(0x739CF4, 0x778F50)].array(0, 50).EditPChar  'NPCNews'
+		[mm78(0x5C89E0, 0x5E4DA8)].array(1, 29).struct(structs.HistoryTxtItem)  'HistoryTxt'
 	else
 		define
 		[0x6B8C60].array{0, 279}.struct(structs.NPCNewsItem)  'NPCNews'
@@ -509,7 +509,7 @@ end]=]
 	[mmv(0x4C3F20, 0x4F0830, 0x500DF8)].array(mmv(36, 35, 25)).struct(structs.TravelInfo)  'TransportLocations'
 	[mmv(0x4C43A0, 0x4F0C90, 0x501118)].array(mmv(48, 54, 54), mmv(68, 73, 73)).array(1, mmv(3, 4, 4)).i1  'TransportIndex'
 	if mmver > 6 then
-		define[mmv(nil, 0x5C8B40, 0x5E4F08)].array(89).array(89).u1  'HostileTxt'
+		define[mm78(0x5C8B40, 0x5E4F08)].array(89).array(89).u1  'HostileTxt'
 		 .Info{Sig = "[mon1][mon2]"; "0 - 4. Attitude of 'mon1' towards 'mon2'. 'mon2' = 0 is party. 'mon1' and 'mon2' are monster classes: !Lua[[mon1 = (Id1 + 2):div(3)]]"}
 	end
 	define
@@ -582,7 +582,7 @@ end]=]
 	.func{name = "Rand", p = mmv(0x4AE22B, 0x4CAAC2, 0x4D99F2), cc = 0}
 
 	if mmver == 7 then
-		define.func{name = "SetInterfaceColor", p = mmv(nil, 0x422698, nil), cc = 2, must = 1; 1, 1}  -- 0 - good, 1 - neutral, 2 - evil
+		define.func{name = "SetInterfaceColor", p = 0x422698, cc = 2, must = 1; 1, 1}  -- 0 - good, 1 - neutral, 2 - evil
 		 .Info{Sig = "Color, Unk = 1"; "0 = good, 1 = neutral, 2 = evil"}
 	end
 	define
@@ -666,7 +666,7 @@ end]=]
 			DecListBuf = DecListBuf or mmver > 6 and mem.malloc(32)
 			assert(#name < 32, 'DecList name too long')
 			mem.copy(DecListBuf, name, #name + 1)
-			id = i2(call(mmv(nil, 0x4488D9, 0x445C59), 1, pDecList, DecListBuf))
+			id = i2(call(mm78(0x4488D9, 0x445C59), 1, pDecList, DecListBuf))
 		end
 		if not justFind then
 			call(mmv(0x44AC80, 0x4586CC, 0x455F4A), 1, pDecList, id)
@@ -977,7 +977,7 @@ function structs.f.GameParty(define)
 				Map.Reputation = val
 			end
 		end)
-		[mmv(nil, 0xACD364, 0xB213CC)].array(1, 29).i8  'History'
+		[mm78(0xACD364, 0xB213CC)].array(1, 29).i8  'History'
 		.array(1, 20).i8  'SpecialDates'
 		 .Info 'E.g. set date 1:!Lua[[\nevt.Add("SpecialDate1", 0)]]\nUse date 1: "%51" in any NPC message'
 		[mm78(0xACD5DD, 0xB2164F)].array(mm78(108, 107), mm78(108, 107) + 15).b1  'ArcomageWins'
@@ -1137,9 +1137,9 @@ function structs.f.Player(define)
 		[0x1266].i2  'MagicResistanceBonus'
 	else
 		define
-		[mmv(nil, 0x1774, 0x1A08)].array(11).struct(structs.PlayerResistanceBaseBonus)  'Resistances'
+		[mm78(0x1774, 0x1A08)].array(11).struct(structs.PlayerResistanceBaseBonus)  'Resistances'
 		 .Info{Sig = "[kind:const.Damage]"}
-		[mmv(nil, 0x1774, 0x1A08)].i2  'FireResistanceBase'
+		[mm78(0x1774, 0x1A08)].i2  'FireResistanceBase'
 		.i2  'AirResistanceBase'
 		.i2  'WaterResistanceBase'
 		.i2  'EarthResistanceBase'
@@ -1161,7 +1161,7 @@ function structs.f.Player(define)
 		.i2  'BodyResistanceBonus'
 		.i2  ''  -- UnusedResistance3Bonus
 		.i2  ''  -- UnusedResistance4Bonus
-		[mmv(nil, 0x1920, 0x1BE4)].i4  'Voice'
+		[mm78(0x1920, 0x1BE4)].i4  'Voice'
 	end
 	define
 	[mmv(0x1268, 0x17A0, 0x1A34)].array(mmv(16, 24, 27)).struct(structs.SpellBuff)  'SpellBuffs'
@@ -1216,7 +1216,7 @@ function structs.f.Player(define)
 	[mmv(0x1619, 0x1B39, 0x1D25)].u1  'ArmageddonCasts'
 	.size = mmv(0x161C, 0x1B3C, 0x1D28)
 	if mmver > 6 then
-		define[mmv(nil, 0x1B3A, 0x1D26)].u1  'FireSpikeCasts'
+		define[mm78(0x1B3A, 0x1D26)].u1  'FireSpikeCasts'
 	end
 	if mmver == 7 then
 		define[0x1924].i4  'FaceBeforeZombie'
@@ -1268,18 +1268,18 @@ function structs.f.Player(define)
 	define.class.AddHitPoints = define.class.AddHP
 	if mmver > 6 then
 		define
-		.method{p = mmv(nil, 0x48CD2B, 0x48C6D5), name = "GetMeleeDamageMin"}
-		.method{p = mmv(nil, 0x48CD76, 0x48C717), name = "GetMeleeDamageMax"}
-		.method{p = mmv(nil, 0x48D10A, 0x48CA37), name = "GetRangedDamageMin"}
-		.method{p = mmv(nil, 0x48D177, 0x48CA9F), name = "GetRangedDamageMax"}
-		.method{p = mmv(nil, 0x48D6B6, 0x48CF8A), name = "HasItemBonus", must = 1}
+		.method{p = mm78(0x48CD2B, 0x48C6D5), name = "GetMeleeDamageMin"}
+		.method{p = mm78(0x48CD76, 0x48C717), name = "GetMeleeDamageMax"}
+		.method{p = mm78(0x48D10A, 0x48CA37), name = "GetRangedDamageMin"}
+		.method{p = mm78(0x48D177, 0x48CA9F), name = "GetRangedDamageMax"}
+		.method{p = mm78(0x48E737, 0x48DBA2), name = "GetBaseResistance", must = 1}
+		 .Info{Sig = "Res:const.Damage"}
+		.method{p = mm78(0x48E7C8, 0x48DD6B), name = "GetResistance", must = 1}
+		 .Info{Sig = "Res:const.Damage"}
+		.method{p = mm78(0x48D6B6, 0x48CF8A), name = "HasItemBonus", must = 1}
 		 .Info{Sig = "Bonus2";  "Checks whether the player is wearing an item with specified Bonus2:structs.Item.Bonus2. of items See SPCITEMS.TXT for "}
-		.method{p = mmv(nil, 0x48D6EF, 0x48CFC3), name = "WearsItem", must = 1, ret = true; 0, 16}
+		.method{p = mm78(0x48D6EF, 0x48CFC3), name = "WearsItem", must = 1, ret = true; 0, 16}
 		 .Info{Sig = "ItemNum, Slot:const.ItemSlot = 16"; "If 'Slot' isn't specified, searches all slots for the item"}
-		.method{p = mmv(nil, 0x48E737, 0x48DBA2), name = "GetBaseResistance", must = 1}
-		 .Info{Sig = "Res:const.Damage"}
-		.method{p = mmv(nil, 0x48E7C8, 0x48DD6B), name = "GetResistance", must = 1}
-		 .Info{Sig = "Res:const.Damage"}
 	else
 		define
 		.method{p = 0x4829A0, name = "GetBaseFireResistance"}
@@ -1305,6 +1305,9 @@ function structs.f.Player(define)
 			return false
 		end
 	end
+	define
+	.method{p = mmv(0x4873F0, 0x492A2E, 0x49133B), name = "RemoveFromInventory", must = 1}
+	 .Info{Sig = "Slot"}
 	if mmver == 6 then
 		define.method{p = 0x4852D0, name = "GetDiplomacyTotalSkill"}
 		-- 486CF0 Character_CanTakeItemInPos
@@ -1339,11 +1342,11 @@ function structs.f.Player(define)
 	.method{p = mmv(0x4876E0, 0x492C03, 0x491514), name = "IsConscious", ret = true}
 	if mmver > 6 then
 		define
-		.method{p = mmv(nil, 0x48F87A, 0x48EF4F), name = "GetSkill", must = 1}
+		.method{p = mm78(0x48F87A, 0x48EF4F), name = "GetSkill", must = 1}
 		 .Info{Sig = "Skill:const.Skills"}
-		.method{p = mmv(nil, 0x491252, 0x4902DF), name = "GetPerceptionTotalSkill"}
-		.method{p = mmv(nil, 0x49130F, 0x49036E), name = "GetLearningTotalSkill"}
-		.method{p = mmv(nil, 0x492D5D, 0x49165D), name = "AddCondition", must = 1; 0, false}
+		.method{p = mm78(0x491252, 0x4902DF), name = "GetPerceptionTotalSkill"}
+		.method{p = mm78(0x49130F, 0x49036E), name = "GetLearningTotalSkill"}
+		.method{p = mm78(0x492D5D, 0x49165D), name = "AddCondition", must = 1; 0, false}
 		 .Info{Sig = "Condition:const.Condition, CanResist = false";  "Passing 'const.Condition.Good' isn't supported.\n'CanResist' only affects application of Protection from Magic spell. If it's 'true' and the spell protects the player, spell strength is decreased instead of condition being applied."}
 		.method{p = mmv(0x482D30, 0x48E9EC, 0x48E127), name = "GetMainCondition"}
 		 .Info{Type = "const.Condition";  "Returns the condition that affects character stats. Also see #GetDisplayedCondition:structs.Player.GetDisplayedCondition#."}
