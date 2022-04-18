@@ -878,10 +878,6 @@ function Quest(t)
 	Quests[t.Name] = t
 	--!v([name])
 	-- Quest states: nil, "Given", "Done" or a custom state.
-	if not vars.Quests then
-		vars.Quests = {}
-		internal.SaveGameData.NewQuests = 1
-	end
 	vars.QuestAwards = vars.QuestAwards or {}
 	vars.QuestAutonotes = vars.QuestAutonotes or {}
 	t.BaseName = t.BaseName or t.Name

@@ -108,6 +108,10 @@ local function InitVars()
 	--!v Variables that are stored in saved game
 	vars = tget(sgd, "Vars")
 	Vars = vars
+	if not vars.Quests then
+		vars.Quests = {}
+		sgd.NewQuests = 1
+	end
 	return sgd
 end
 internal.InitVars = InitVars
