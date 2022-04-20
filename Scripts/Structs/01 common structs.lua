@@ -514,8 +514,11 @@ function structs.f.Item(define)
 	.method{p = mmv(0x44A6B0, 0x4505F8, 0x44DD43), name = "GenerateArtifact"}
 
 	local pItems = mmv(0x560C10, 0x5D2860, 0x5EFBC8)
-	function define.m:Randomize(strength, type)
+	function define.m:Clear()
 		mem.fill(self["?ptr"], self["?size"])
+	end
+	function define.m:Randomize(strength, type)
+		self:Clear()
 		return call(mmv(0x448790, 0x45664C, 0x453ECC), 1, pItems, assertnum(strength, 2), assertnum(type or 0, 2), self)
 	end
 	define.Info{Sig = "Strength, Type:const.ItemType"}
