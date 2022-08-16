@@ -2042,6 +2042,9 @@ do
 	end
 
 	local function HitMon(d, def, attackerID, monIndex, speed, action)
+		if attackerID < 0 then
+			return
+		end
 		local attacker, old, old2 = Who(attackerID, action), Mon_Who, Mon_Idx
 		Mon_Who, Mon_Idx = attacker, monIndex
 		local t = {
