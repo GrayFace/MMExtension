@@ -32,7 +32,7 @@ if mmver ~= 6 then
 end
 const.MapLimit = 22528
 
-const.Minute = 256
+const.Minute = 256  -- each in-game minute amounts to 2 seconds of real time
 const.Second = const.Minute/60
 const.Hour = const.Minute*60
 const.Day = const.Hour*24
@@ -470,7 +470,7 @@ if mmver == 6 then
 		Perception = 26,
 		Diplomacy = 27,
 		Thievery = 28,
-		DisarmTraps = 29,
+		DisarmTraps = 29,  -- proper name "DisarmTrap" is supported since MMExt 2.3
 		Learning = 30,
 	}
 elseif mmver == 7 then
@@ -556,6 +556,7 @@ else
 		Learning = 38,
 	}
 end
+setmetatable(const.Skills, {__index = {DisarmTrap = const.Skills.DisarmTraps}})
 
 const.SkillClub = mmv(-1, 37, PatchOptionsSize > 364 and 39 or 40)
 const.SkillMisc = mmv(12, 38, 40)
