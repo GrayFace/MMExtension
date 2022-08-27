@@ -379,7 +379,7 @@ do
 	if serv then
 		serv:close()
 	else
-		_G.jit.on()
+		pcall(_G.jit.on)
 	end
 end
 
