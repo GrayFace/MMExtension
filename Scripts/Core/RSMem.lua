@@ -846,7 +846,7 @@ do -- mem.struct
 	types.i4 = arraydef(4, _mem.i4)
 	types.i2 = arraydef(2, _mem.i2)
 	types.i1 = arraydef(1, _mem.i1)
-	types.u8 = arraydef(4, _mem.u8)
+	types.u8 = arraydef(8, _mem.u8)
 	types.u4 = arraydef(4, _mem.u4)
 	types.u2 = arraydef(2, _mem.u2)
 	types.u1 = arraydef(1, _mem.u1)
