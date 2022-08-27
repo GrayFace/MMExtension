@@ -541,7 +541,15 @@ end
 -----------------------------------------------------
 
 function MTarget()
-	return Mouse:GetTarget():Get()
+	return (Mouse:GetTarget():Get())
+end
+
+function MTarget2()
+	local obj = Mouse:GetTarget()
+	if obj.Kind == skFacet then
+		local f, m = obj:Get()
+		return m or f.HasData and Map.FacetData[f.DataIndex] or nil
+	end
 end
 
 function ToBin(s, size)
