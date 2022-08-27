@@ -367,6 +367,8 @@ end]=]
 		[0x4C47B8].array(42, 47).struct(structs.GeneralStoreItemKind)  'GeneralStoreItemKindsSpecial'
 		 .Info "Yes, MM6 generates special items in general stores, but doesn't support buying them."
 	end
+	define
+	[mmv(0x4C3D60, 0x4F0238, 0x5007A0)].array(19).EditConstPChar  'ShopBackgroundByType'
 	
 	if mmver < 8 then
 		define[mmv(0x4CA718, 0x505828)].array(480).i4  'ScanlineOffset'
@@ -1193,6 +1195,8 @@ function structs.f.Player(define)
 	.i4  'ItemRing6'
 	[mmv(0x152E, 0x1A4E, 0x1C44)].i1  'SpellBookPage'
 	[mmv(0x152F, 0x1A4F, 0x1C45)].u1  'QuickSpell'
+	[mmv(0x137E, 0x1936, 0x1C8E)].u1  'AttackSpell'
+	 .Info "Added in version 2.5 of my patches"
 	[mmv(0x1530, 0x1A50, 0x1C46)].array(mmv(0, 1, 1), mmv(511, 512, 512)).abit  'PlayerBits'
 	if mmver < 8 then
 		define

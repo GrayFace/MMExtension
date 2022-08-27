@@ -517,11 +517,11 @@ function structs.f.Item(define)
 	function define.m:Clear()
 		mem.fill(self["?ptr"], self["?size"])
 	end
-	function define.m:Randomize(strength, type)
+	function define.m:Randomize(strength, type, alwaysEnchant)
 		self:Clear()
-		return call(mmv(0x448790, 0x45664C, 0x453ECC), 1, pItems, assertnum(strength, 2), assertnum(type or 0, 2), self)
+		return call(mmv(0x448790, 0x45664C, 0x453ECC), 1, pItems, assertnum(strength, 2), assertnum(type or 0, 2), self, alwaysEnchant and 1 or 0)
 	end
-	define.Info{Sig = "Strength, Type:const.ItemType"}
+	define.Info{Sig = "Strength, Type:const.ItemType, AlwaysEnchant [MM8]"; "Generates a random item. The chance that it would be enchanted depends on 'Strength'. In MM8 you can guarantee its enchantment by passing 'true' as 'AlwaysEnchant' parameter."}
 	function define.m:T()
 		return Game.ItemsTxt[self.Number]
 	end
@@ -956,8 +956,6 @@ local function CommonMonsterProps(define, montxt)
 		define.skip(1)
 	end
 	define
-
-
 	.u1  'Bonus'  -- 0x14/0x13    (steal, curse, ...)
 	 .Info "(steal, curse, ...)"
 	.u1  'BonusMul'  -- 0x15/0x14
@@ -1153,7 +1151,7 @@ function structs.f.MapMonster(define)
 		 .Info "From PlaceMon.txt"
 		[0x218+o].skip(3*3)  -- RESERVED
 		.method{p = mm78(0x40104C, 0x401051), cc = 2, name = "IsAgainst"; 0}
-		 .Info{Sig = "Mon2:structs.MapMonster";  "If 'Mon2' isn't specified, attitude towards party is checked"}
+		 .Info{Sig = "Mon2:structs.MapMonster";  "Returns aggression number between 0 and 4. If 'Mon2' isn't specified, attitude towards party is checked."}
 	end
 	define.size = mmv(0x224, 0x344, 0x3CC)
 
@@ -1675,8 +1673,9 @@ function structs.f.MapSprite(define)
 	[0x14].i2  (mmv('EventVariable', 'Id', 'Id'))
 	[0x16].i2  'Event'
 	 .Info "normal event"
-	[0x18].i2  'TriggerRadius'  -- variable1
-	--[0x1a].i2  ''  -- variable2
+	[0x18].i2  'TriggerRadius'
+	[0x1a].i2  'DirectionDegrees'
+	 .Info "only used if 'Direction' is '0'"
 	if mmver > 6 then
 		define
 		[0x1C].i2  'EventVariable'
@@ -1808,6 +1807,24 @@ function structs.f.MapFacet(define)
 	[0x4d+o].u1  'VertexesCount'
 	[0x4e+o].skip(2)
 	.size = mmv(0x50, 0x60, 0x60)
+	function define.m:GetData(create)
+		local d = Map.IsOutdoor() and self or self.HasData and Map.FacetData[self.DataIndex]
+		if not d and create then
+			local a = Map.Facets
+			local i = (self['?ptr'] - a['?ptr'])/self['?size']
+			if i >= 0 and i < a.Count then
+				local fdata = Map.FacetData
+				local n = fdata.count
+				mem.resizeArrayMM(fdata, n + 1)
+				d = fdata[n]
+				d.FacetIndex = i
+				self.DataIndex = n
+				self.HasData = true
+			end
+		end
+		return d
+	end
+	define.Info{Sig = "Create"; "Returns #Map.FacetData:structs.FacetData# structure associated with the facet. If 'Create' is 'true', the data gets automatically allocated if it doesn't exist.\nOn outdoor maps the method returns the facet itself, because all data is inside its own structure."}
 end
 
 function structs.f.FacetData(define)
