@@ -1418,7 +1418,7 @@ CmdDef[0x1E] = "\0\0\0\0"
 CmdDef[0x1F] = "\0\0\0\0\0\0\0\0\0\0"
 CmdDef[0x20] = "\1\0\0\0\0"
 CmdDef[0x21] = "\0"
-CmdDef[0x22] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\232\3\0\0\1\0"
+CmdDef[0x22] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1\0"
 CmdDef[0x23] = "\0"
 CmdDef[0x24] = "\0"
 CmdDef[0x25] = "\0"
@@ -1600,6 +1600,8 @@ do
 		evt.VarNum.Skills[i] = p
 		add(v.."Skill")
 	end
+	evt.VarNum.DisarmTrapSkill = evt.VarNum.DisarmTrapsSkill
+	evt.VarNum.Skills.DisarmTrap = evt.VarNum.Skills.DisarmTraps
 	evt.VarNum.Conditions = {}
 	for k, i in pairs(const.Condition) do
 		if i <= 16 then
