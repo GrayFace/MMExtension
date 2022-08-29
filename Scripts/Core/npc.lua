@@ -365,11 +365,15 @@ if mmver > 6 then
 	mem.hook(mm78(0x4B8BFD, 0x4B7143), function(d)
 		local t = {
 			House = Game.GetCurrentHouse(),
-			Result = pchar[d.esp + 8],
+			Result = nil,
 		}
-		-- Lets you modify Victory Conditions text
+		function t.GetDefault()
+			return pchar[d.esp + 8]
+		end
+		-- Lets you modify Victory Conditions text.
+		-- 'Result' is not pre-initialized. Instead, you need to call 'GetDefault' function to get the default string.
 		events.cocalls("ArcomageText", t)
-		Game.TextBuffer = t.Result
+		Game.TextBuffer = t.Result or pchar[d.esp + 8]
 	end)
 end
 
