@@ -59,7 +59,7 @@ local function HookAwardsCount()
 	local hooks = HookManager{p = PAwardsCount}
 	hooks.asmpatch(mm78(0x419138, 0x418A2E), [[
 		cmp ebx, [%p%]
-		jl absolute mm7*0x419108 + mm8*0x4189FE
+		jle absolute mm7*0x419108 + mm8*0x4189FE
 	]])
 end
 
