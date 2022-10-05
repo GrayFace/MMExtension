@@ -1602,6 +1602,8 @@ do
 	end
 	evt.VarNum.DisarmTrapSkill = evt.VarNum.DisarmTrapsSkill
 	evt.VarNum.Skills.DisarmTrap = evt.VarNum.Skills.DisarmTraps
+	evt.VarNum.RepairItemSkill = evt.VarNum.RepairSkill
+	evt.VarNum.Skills.RepairItem = evt.VarNum.Skills.Repair
 	evt.VarNum.Conditions = {}
 	for k, i in pairs(const.Condition) do
 		if i <= 16 then

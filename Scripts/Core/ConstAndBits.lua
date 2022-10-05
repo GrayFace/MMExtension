@@ -464,7 +464,7 @@ if mmver == 6 then
 		Dark = 20,
 		IdentifyItem = 21,
 		Merchant = 22,
-		Repair = 23,
+		Repair = 23,  -- proper name "RepairItem" is supported since MMExt 2.3
 		Bodybuilding = 24,
 		Meditation = 25,
 		Perception = 26,
@@ -557,6 +557,7 @@ else
 	}
 end
 setmetatable(const.Skills, {__index = {DisarmTrap = const.Skills.DisarmTraps}})
+setmetatable(const.Skills, {__index = {RepairItem = const.Skills.Repair}})
 
 const.SkillClub = mmv(-1, 37, PatchOptionsSize > 364 and 39 or 40)
 const.SkillMisc = mmv(12, 38, 40)
@@ -583,6 +584,7 @@ const.Condition = {
 }
 if mmver > 6 then
 	const.Condition.Zombie = 17
+	-- Condition 19 was originally meant to mean Lich
 end
 
 const.ItemType = {
