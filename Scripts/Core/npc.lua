@@ -375,6 +375,11 @@ if mmver > 6 then
 		events.cocalls("ArcomageText", t)
 		Game.TextBuffer = t.Result or pchar[d.esp + 8]
 	end)
+	
+	mem.autohook2(mm78(0x40D604, 0x40E7F2), function(d)
+		--!(house)
+		events.cocalls("ArcomageWin", d[mm78('eax', 'ecx')])
+	end)
 end
 
 if mmver == 7 then
@@ -396,6 +401,7 @@ if mmver == 7 then
 		cmp eax, [%Count%]
 	]])
 elseif mmver == 8 then
+	-- draw Arcomage text depending on presense of 4th dialog item
 	HookManager{Count = pItemsCount}.asmhook2(0x4B6DEE, [[
 		cmp dword [%Count%], 4
 		jnl @std
