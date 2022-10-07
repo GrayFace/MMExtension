@@ -302,6 +302,38 @@ function Editor.ReadFacet(a, _, Verts)
 	return t
 end
 
+local function CheckAlign(t, prop, Left, Right, Width)
+	if t[Left] or t[Right] then
+		local a = Map.GetFacet(Editor.FacetIds[t])
+		local a = Map.IsOutdoor() and a or a.HasData and Map.FacetData[a.DataIndex]
+		local u = a[prop]
+		Editor['Update'..prop](t)
+		if u ~= a[prop] then
+			a[prop] = u
+			t[Left], t[Right] = nil, nil
+		end
+	end
+end
+
+function Editor.ReadFacetCheckAlign(t)
+	CheckAlign(t, "BitmapU", "AlignLeft", "AlignRight")
+	CheckAlign(t, "BitmapV", "AlignTop", "AlignBottom")
+end
+
+local function CheckFacetAligns()
+	local FacetDoor = {}
+	for di, t in Map.Doors do
+		for _, i in t.FacetIds do
+			FacetDoor[i] = true
+		end
+	end
+	for f, i in pairs(Editor.FacetIds) do
+		if not FacetDoor[i] then
+			Editor.ReadFacetCheckAlign(f)
+		end
+	end
+end
+
 -----------------------------------------------------
 -- JoinFacets
 -----------------------------------------------------
@@ -1100,6 +1132,8 @@ function Editor.ReadMap()
 	Editor.Facets, Editor.FacetIds = ReadListEx(Facets, {}, Map.Facets, Editor.ReadFacet)
 	if mmver == 6 then
 		CompatibleIds(Editor.FacetIds)
+	else
+		CheckFacetAligns()
 	end
 	-- join facets
 	-- InitFacetDoorIdx()

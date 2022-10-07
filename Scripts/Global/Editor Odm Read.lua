@@ -40,24 +40,10 @@ local function ReadFacets(m, base, ids, vert)
 			ids[t] = i
 			Editor.Facets[base + i + 1] = t
 			-- check U, V align properties
-			if t.AlignLeft or t.AlignRight then
-				local u = a.BitmapU
-				Editor.UpdateBitmapU(t)
-				if u ~= a.BitmapU then
-					a.BitmapU = u
-					t.AlignLeft, t.AlignRight = nil, nil
-				end
-			end
-			if t.AlignTop or t.AlignBottom then
-				local v = a.BitmapV
-				Editor.UpdateBitmapV(t)
-				if v ~= a.BitmapV then
-					a.BitmapV = v
-					t.AlignTop, t.AlignBottom = nil, nil
-				end
-			end
 			if mmver == 6 then
 				t.ScrollDown, t.IsSky = t.IsSky, nil
+			else
+				Editor.ReadFacetCheckAlign(t)
 			end
 		end
 		a["?ptr"] = nil
