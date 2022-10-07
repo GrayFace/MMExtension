@@ -1424,8 +1424,10 @@ do -- mem.struct
 						return f(size*a1, t, a, v)
 					end
 					error(format(sOutOfBounds, tostring(a), low, low + n - 1), 2)
-				else
-					error(format("attempt to %s field %s of array", v == nil and "get" or "set", tostring2(aorig)), 2)
+				-- else
+				-- 	error(format("attempt to %s field %s of array", v == nil and "get" or "set", tostring2(aorig)), 2)
+				elseif v ~= nil then
+					error(format("attempt to set field %s of array", tostring2(aorig)), 2)
 				end
 			end
 			
