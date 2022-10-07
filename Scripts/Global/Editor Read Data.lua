@@ -2,7 +2,7 @@ local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.
 local mmver = offsets.MMVersion
 
 Editor = Editor or {}
-local _KNOWNGLOBALS
+local _KNOWNGLOBALS = DeduceDoorStartState2
 
 local VertexShifts
 local FacetDoorIdx
@@ -578,6 +578,16 @@ function Editor.ResetDoors()
 end
 
 -----------------------------------------------------
+-- DeduceDoorStartState2
+-----------------------------------------------------
+
+local function DeduceDoorStartState2()
+	for _, t in Map.Doors do
+		t.StartState2 = t.State ~= 0
+	end
+end
+
+-----------------------------------------------------
 -- ReadDoor
 -----------------------------------------------------
 
@@ -1062,6 +1072,9 @@ function Editor.ReadMap()
 	Editor.profile "ReadMap"
 	Editor.ImportIndex = Editor.ImportIndex and setmetatable({}, {__mode = "k"})
 	Editor.ImportBin = Editor.ImportIndex and setmetatable({}, {__mode = "k"})
+	if Editor.LoadBlvTime then
+		DeduceDoorStartState2()  -- only important for preview version of mm7
+	end
 	Editor.ResetDoors()
 	-- separate door vertices, because otherwise they would collapse with other vertices in MM6
 	InitVertexShifts()
