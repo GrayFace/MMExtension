@@ -998,8 +998,8 @@ end
 -- Improve doors in D3D mode
 if mmver > 6 then
 	-- Bitmap-independant door UV calculation in D3D mode (was good for editor when it used to change textures)
-	u4[mm78(0x46F7C4, 0x46E2A5)] = 0xC0316690
-	u4[mm78(0x46F7C4, 0x46E265)] = 0xC0316690
+	u4[mm78(0x46F7C4, 0x46E2A5)] = 0xC0316690  -- xor ax,ax
+	u4[mm78(0x46F784, 0x46E265)] = 0xC0316690  -- xor ax,ax
 	-- Don't reset static door texture coordinates in D3D mode
 	mem.asmpatch(mm78(0x46F622, 0x46E103), [[
 		mov ecx, [ebx + 0x2C]  ; bits
