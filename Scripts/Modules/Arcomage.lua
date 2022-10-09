@@ -8,7 +8,7 @@ end
 
 assert(mmver > 6)
 
-local P = {Taverns = {}, LazyMode = false}
+local P = {LazyMode = true}
 
 local NeedStarting = table.invert{'Tower', 'Wall', 'IncomeBricks', 'IncomeGems', 'IncomeBeasts', 'Bricks', 'Gems', 'Beasts'}
 
@@ -69,6 +69,13 @@ end
 
 function events.DataTablesUpdate2(DataTable)
 	DataTable('Arcomage', P.SaveLoad, nil, P.LazyMode)
+	if not P.Text then
+		P.SaveLoad()
+	end
+end
+
+if GameInitialized2 then
+	P.SaveLoad()
 end
 
 function events.ArcomageSetup(t, house)
@@ -87,7 +94,7 @@ function events.ArcomageText(t)
 	end
 end
 
-events.PopulateHouseDialog = |t| if t.PicType == const.HouseType.Tavern and P.Text then
+events.PopulateHouseDialog = |t| if t.PicType == const.HouseType.Tavern then
 	t.Result = {15, 16, 96, P.Taverns[t.House] and 101}
 end
 
