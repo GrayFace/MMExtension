@@ -1576,9 +1576,6 @@ local function WriteMonster(a, t, CompileFile)
 	a.HP = a.FullHitPoints
 	a.AIState = t.Invisible and const.AIState.Invisible or nil
 	mem.u8[a["?ptr"] + 0x2C] = 0  -- StandardName, Picture pointers
-	if not CompileFile then
-		a.AIState = 0
-	end
 	a["?ptr"] = nil
 end
 
@@ -1905,6 +1902,7 @@ function Editor.UpdateMap(CompileFile)
 		a.Event = 666  -- set Event to make sprites clickable
 	end
 	for _, a in Map.Monsters do
+		assert(a.AIState == a.Invisible and const.AIState.Invisible or 0)
 		a.AIState = 0
 	end
 	for _, o in Map.Outlines do
