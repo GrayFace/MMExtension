@@ -234,6 +234,7 @@ end)
 local hooks = HookManager{
 	p = Game.MissileSetup.pptr,
 	sz = Game.MissileSetup.lenP,
+	elSz = structs.MissileSetup['?size'],
 }
 
 -- collide
@@ -243,7 +244,7 @@ hooks.asmhook(mmv(0x45C7A7, 0x46C0C2, 0x46A702), [[
 	cmp eax, [%sz%]
 	jnb @std
 	mov ecx, [%p%]
-	test byte [ecx + eax], 4
+	test byte [ecx + eax*%elSz%], 4
 	mov ecx, eax
 	jnz absolute go1
 @std:
@@ -257,7 +258,7 @@ if mmver > 6 then
 		cmp edx, [%sz%]
 		jnb @std
 		mov eax, [%p%]
-		mov al, [eax + edx]
+		mov al, [eax + edx*%elSz%]
 		test al, 3  ; is changed?
 		jz @std
 		test al, 2  ; hide spc effect?
