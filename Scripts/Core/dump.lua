@@ -121,15 +121,14 @@ function dump(t, depth, exact, detectClones, limit)
 	end
 	
 	local function ShowArray(t, space)
-		-- local i = 1
+		local i = 1
 		for k, v in t do
-			ShowVal(nil, v, space)
-			-- if k == i then
-				-- ShowVal(nil, v, space)
-				-- i = i + 1
-			-- else
-				-- ShowVal(k, v, space)
-			-- end
+			if not exact or k == i then
+				ShowVal(nil, v, space)
+				i = i + 1
+			else
+				ShowVal(k, v, space)
+			end
 		end
 	end
 
