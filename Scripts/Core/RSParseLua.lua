@@ -572,8 +572,11 @@ Reg(function()
 	if E.Special == "for" then
 		E.Special = nil
 		return SetNewLine()
+	elseif E.Special == "while" then
+		E.Special = nil
+	else
+		NewStatement()
 	end
-	NewStatement()
 	Block()
 end, "do")
 
