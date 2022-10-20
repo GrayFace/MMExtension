@@ -573,7 +573,7 @@ Reg(function()
 		E.Special = nil
 		return SetNewLine()
 	end
-	E.Special = nil
+	NewStatement()
 	Block()
 end, "do")
 
