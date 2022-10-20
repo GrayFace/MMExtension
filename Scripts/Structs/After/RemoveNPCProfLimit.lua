@@ -13,10 +13,28 @@ local function mmv(...)
 end
 
 local BaseCount = Game.NPCProfNames.limit
+local BasePtr = Game.NPCProfNames['?ptr']
+
+local function unbind(n, old)
+	-- make sure they don't reference Global.txt
+	local gl = {[0] = 153, 308, 309, 7, 306, 310, 311, 312, 313, 314, 105, 315, 316, 317, 115, 318, 319, 320, 321, 322, 323, 293, 324, 498, 525, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 596, 345, 346, 347, 348, 349, 350, 597, 352, 353, 598, 344, 26, 599, 21, 600, 370}
+	local names = Game.NPCProfNames
+	local p1, p2 = names['?ptr'], Game.GlobalTxt['?ptr']
+	for i = 0, min(n, old) - 1 do
+		if gl[i] and u4[p1 + i*4] == u4[p2 + gl[i]*4] then
+			local s = names[i]
+			u4[p1 + i*4] = 0
+			names[i] = s
+		end
+	end
+end
 
 mem.ExtendGameStructure{'NPCProfNames', Size = 4,
 	Refs = {0x416C79, 0x41E9DD, 0x445488, 0x4B2B10},
 	Fill = 0,
+	Custom = {
+		|...| unbind = unbind and unbind(...)
+	}
 }
 
 mem.ExtendGameStructure{'NPCProfTxt', Size = mmv(0x4C, 0x14),
@@ -27,7 +45,7 @@ mem.ExtendGameStructure{'NPCProfTxt', Size = mmv(0x4C, 0x14),
 
 mem.autohook(mmv(nil, 0x477167), function(d)
 	local n = DataTables.ComputeRowCountInPChar(d.eax, 3, mmv(4, 3)) - 3
-	if n == BaseCount and n == Game.NPCProfNames.count then
+	if n == BaseCount and BasePtr == Game.NPCProfNames['?ptr'] then
 		return
 	end
 	Game.NPCProfNames.Resize(n, true)  -- shrink when needed
