@@ -544,7 +544,17 @@ local function MakeCmd(name, num, f, invis)
 				AsyncProc = t.OnDone
 				AsyncPlayer, AsyncCurrentPlayer = evt.Player, evt.CurrentPlayer
 				local c = not AsyncProc and not t.NoYield and coroutine.running()
-				if c then
+				if num == 0x1A and (c or AsyncProc) then
+					local function cmp()
+						local s = Game.StatusMessage:lower()
+						return s == evt.str[t.Answer1]:lower() or s == evt.str[t.Answer2]:lower()
+					end
+					AsyncProc = c or || t.OnDone(cmp()) 
+					if c then
+						coroutine.yield()
+						return cmp()
+					end
+				elseif c then
 					AsyncProc = c
 					return coroutine.yield()
 				end
