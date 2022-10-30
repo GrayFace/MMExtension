@@ -374,6 +374,7 @@ const.Keys = {
 	F23 = 134,
 	F24 = 135,
 	NUMLOCK = 144,
+	SCROLLLOCK = 145,
 	SCROLL = 145,
 	-- VK_L & VK_R - left and right Alt, Ctrl and Shift virtual keys.
 	-- Used only as parameters to GetAsyncKeyState() and GetKeyState().
@@ -1780,3 +1781,26 @@ else
 	}, const.Spells, true)
 	
 end
+
+const.ArcomageIf = {
+	Always = 1,
+	LessIncomeBricks = 2,
+	LessIncomeGems = 3,
+	LessIncomeBeasts = 4,
+	EqualIncomeBricks = 5,
+	EqualIncomeGems = 6,
+	EqualIncomeBeasts = 7,
+	MoreIncomeBricks = 8,
+	MoreIncomeGems = 9,
+	MoreIncomeBeasts = 10,
+	NoWall = 11,
+	HaveWall = 12,
+	NoEnemyWall = 13,
+	HaveEnemyWall = 14,
+	LessWall = 15,
+	LessTower = 16,
+	EqualWall = 17,
+	EqualTower = 18,
+	MoreWall = 19,
+	MoreTower = 20,
+}
