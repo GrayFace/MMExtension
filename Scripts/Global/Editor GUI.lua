@@ -36,33 +36,37 @@ Editor.Commands = Commands
 	-- end
 -- end
 
-function events.KeyDown(t)
-	local key = t.Key
-	if key == const.Keys.F1 and t.Alt then
-		t.Key = 0
-		Editor()
-	elseif Editor.VisibleGUI and Game.CurrentScreen == 0 then
-		if t.Alt then
-			--
-		elseif Keys.IsPressed(const.Keys.CTRL) then
-			DLL.CtrlKeyPressed(key)
-		else
-			DLL.KeyPressed(key)
-		end
-		local IsNum = (key >= const.Keys.NUMPAD0 and key <= const.Keys.NUMPAD9)
-		local IsShift = Keys.IsPressed(const.Keys.SHIFT) or not t.ExtendedKey and Keys.IsToggled(const.Keys.NUMLOCK) ~= IsNum
-		if key == const.Keys.RIGHT or key == const.Keys.NUMPAD6 then
-			Editor.MoveKeyPressed(1, 0, 0, IsShift)
-		elseif key == const.Keys.LEFT or key == const.Keys.NUMPAD4 then
-			Editor.MoveKeyPressed(-1, 0, 0, IsShift)
-		elseif key == const.Keys.UP or key == const.Keys.NUMPAD8 then
-			Editor.MoveKeyPressed(0, 1, 0, IsShift)
-		elseif key == const.Keys.DOWN or key == const.Keys.NUMPAD2 then
-			Editor.MoveKeyPressed(0, -1, 0, IsShift)
-		elseif key == const.Keys.PGUP or key == const.Keys.NUMPAD9 then
-			Editor.MoveKeyPressed(0, 0, 1, IsShift)
-		elseif key == const.Keys.PGDN or key == const.Keys.NUMPAD3 then
-			Editor.MoveKeyPressed(0, 0, -1, IsShift)
+do
+	local ck = const.Keys
+
+	function events.KeyDown(t)
+		local key = t.Key
+		if key == ck.F1 and t.Alt then
+			t.Key = 0
+			Editor()
+		elseif Editor.VisibleGUI and Game.CurrentScreen == 0 then
+			if t.Alt then
+				--
+			elseif Keys.IsPressed(ck.CTRL) then
+				DLL.CtrlKeyPressed(key)
+			else
+				DLL.KeyPressed(key)
+			end
+			local IsNum = (key >= ck.NUMPAD0 and key <= ck.NUMPAD9)
+			local IsShift = Keys.IsPressed(ck.SHIFT) or not t.ExtendedKey and Keys.IsToggled(ck.NUMLOCK) ~= IsNum
+			if key == ck.RIGHT or key == ck.NUMPAD6 then
+				Editor.MoveKeyPressed(1, 0, 0, IsShift)
+			elseif key == ck.LEFT or key == ck.NUMPAD4 then
+				Editor.MoveKeyPressed(-1, 0, 0, IsShift)
+			elseif key == ck.UP or key == ck.NUMPAD8 then
+				Editor.MoveKeyPressed(0, 1, 0, IsShift)
+			elseif key == ck.DOWN or key == ck.NUMPAD2 then
+				Editor.MoveKeyPressed(0, -1, 0, IsShift)
+			elseif key == ck.PGUP or key == ck.NUMPAD9 then
+				Editor.MoveKeyPressed(0, 0, 1, IsShift)
+			elseif key == ck.PGDN or key == ck.NUMPAD3 then
+				Editor.MoveKeyPressed(0, 0, -1, IsShift)
+			end
 		end
 	end
 end
@@ -400,6 +404,7 @@ function Editor.LoadBlv(name, KeepState)
 		Editor.LoadBlvKeepState = KeepState
 		Game.Time = Game.Time + 0x1000000000
 		Editor.ClearUndoStack()
+		Editor.SwitchWorkLoadEvents(true)
 		if mmver == 6 then
 			mem.u1[offsets.MapName] = 1  -- avoid triggering losing game
 		end

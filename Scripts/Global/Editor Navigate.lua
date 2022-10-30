@@ -89,6 +89,7 @@ Editor.SelectionKind = Editor.SelectionKind or skObject
 
 local PatchOptionsPtr = mem.dll[AppPath.."mm"..mmver.."patch"].GetOptions
 PatchOptionsPtr = PatchOptionsPtr and PatchOptionsPtr()
+local PatchOptionsSize = PatchOptionsPtr and i4[PatchOptionsPtr] or 0
 
 local PatchOptions = {}
 local PatchOpOff = 4
@@ -96,7 +97,7 @@ local PatchOpOff = 4
 local function PatchOption(name, val, p)
 	p = p or PatchOpOff
 	PatchOpOff = p + 4
-	if val and PatchOptions and i4[PatchOptionsPtr] >= p + 4 then
+	if val and PatchOptionsSize >= p + 4 then
 		Editor[name] = Editor[name] or i4[PatchOptionsPtr + p]
 		PatchOptions[#PatchOptions + 1] = {PatchOptionsPtr + p, Editor[name], val}
 	end
@@ -120,11 +121,35 @@ PatchOption("BaseMouseLookChangeKey")
 PatchOption("BaseInventoryKey", 0)
 PatchOption("BaseCharScreenKey", 0)
 
+local function SwitchableEvents()
+	local t, was = {}, false
+	return t, function(on)
+		if not on ~= was then
+			return
+		end
+		was = not was
+		for s, f in pairs(t) do
+			events[was and 'add' or 'remove'](s, f)
+		end
+	end
+end
+local WorkEvents, SwitchWorkEvents = SwitchableEvents()
+local WorkLoadEvents, SwitchWorkLoadEvents = SwitchableEvents()
+Editor.SwitchWorkLoadEvents = SwitchWorkLoadEvents
+
+function events.LeaveGame()
+	Editor.LoadBlvTime = nil
+	Editor.SetWorkMode(false)
+	Editor.SwitchWorkLoadEvents = nil
+end
+
 function Editor.SetWorkMode(mode)
 	Editor.Time = Game.Time
 	Editor.WorkMode = mode
 	SwitchPatchOptions(mode)
 	WorkModeHooks.Switch(mode)
+	SwitchWorkEvents(mode)
+	SwitchWorkLoadEvents(mode or Editor.LoadBlvTime)
 	if mode then
 		-- Party.NeedRender = false
 		Party.Drowning = false
@@ -176,9 +201,18 @@ function Editor.ProcessDoors()
 end
 
 local deltaX, deltaY, deltaZ = 0, 0, 0
+local SubDir = PatchOptionsSize >= 388 + 8 and PatchOptionsPtr + 388
+
+local function PartyDir()
+	return Party.Direction + (SubDir and i4[SubDir] or 0)/2048
+end
+
+local function PartyLookAngle()
+	return Party.LookAngle + (SubDir and i4[SubDir + 4] or 0)/2048
+end
 
 function Editor.GetPartyDirection()
-	local a, b = Party.Direction*math.pi/1024, Party.LookAngle*math.pi/1024
+	local a, b = PartyDir()*math.pi/1024, PartyLookAngle()*math.pi/1024
 	local c = math.cos(b)
 	return math.cos(a)*c, math.sin(a)*c, math.sin(b)
 end
@@ -189,8 +223,8 @@ function Editor.GetMouseDirection()
 		my = my + i4[0x9DE3C0] - i4[0x9DE3C4]
 	end
 
-	local angle = Party.LookAngle + mem.call(mmv(0x45B880, 0x46A0FA, 0x46846A), 2, my)
-	local a, b = Party.Direction*math.pi/1024, angle*math.pi/1024
+	local angle = PartyLookAngle() + mem.call(mmv(0x45B880, 0x46A0FA, 0x46846A), 2, my)
+	local a, b = PartyDir()*math.pi/1024, angle*math.pi/1024
 	local ca, sa = math.cos(a), math.sin(a)
 	local cb = math.cos(b)
 	local x, y, z = ca*cb, sa*cb, math.sin(b)
@@ -241,14 +275,15 @@ WorkModeHooks.hook(mmv(0x453B5E, 0x463471, 0x461451), function(data)
 	u4[data.esp] = u4[data.esp] + 5  -- skip movement
 end)
 
-function events.WindowMessage(t)
-	-- mouse wheel
-	if t.Msg == 0x20A and Editor.WorkMode and Game.CurrentScreen == 0 then
+function WorkEvents.WindowMessage(t)
+	if t.Msg == 0x20A and Game.CurrentScreen == 0 then  -- mouse wheel
 		local d = 40*(t.WParam < 0 and -1 or 1)*(Keys.IsPressed(const.Keys.SHIFT) and 2 or 1)
 		local x, y, z = Editor.GetPartyUpDirection()
 		Party.X = Party.X + d*x
 		Party.Y = Party.Y + d*y
 		Party.Z = Party.Z + d*z
+	elseif t.Msg == 0x203 and Editor.StateSync then  -- WM_LBUTTONDBLCLK
+		t.Msg = 0x201  -- WM_LBUTTONDOWN
 	end
 end
 
@@ -258,8 +293,8 @@ function Editor.CopyPartyPos(to, from)
 	to.LookAngle = from.LookAngle
 end
 
-function events.Tick()
-	if Editor.WorkMode and Editor.StateSync and Game.CurrentScreen == 0 and not Game.MoveToMap.Defined then
+function WorkEvents.Tick()
+	if Editor.StateSync and Game.CurrentScreen == 0 and not Game.MoveToMap.Defined then
 		Editor.State.Party = Editor.State.Party or {}
 		Editor.CopyPartyPos(Editor.State.Party, Party)
 	end
@@ -293,14 +328,14 @@ local IgnoreActionsSync = {
 	[110] = true,  -- select character
 }
 
-function events.Action(t)
-	if Editor.WorkMode and Game.CurrentScreen == 0 and
+function WorkEvents.Action(t)
+	if Game.CurrentScreen == 0 and
 			(IgnoreActions[t.Action] or Editor.StateSync and IgnoreActionsSync[t.Action]) then
 		t.Action = 0
 	end
 end
 
-function events.KeysFilter(t)
+function WorkLoadEvents.KeysFilter(t)
 	if (Editor.WorkMode or Editor.LoadBlvTime) and Game.CurrentScreen == 0 then
 		t.Result = t.On and ((t.Key == 18) or (t.Key == 9) and not Editor.StateSync)  -- and Keys.IsPressed(const.Keys.M)
 	end
@@ -387,8 +422,8 @@ end)
 -- Tick - Keep game time
 -----------------------------------------------------
 
-function events.Tick()
-	if Editor.WorkMode and not Editor.LoadBlvTime then
+function WorkEvents.Tick()
+	if not Editor.LoadBlvTime then
 		Game.Time = Editor.Time
 	end
 end
@@ -519,12 +554,6 @@ std = TmpHooks.hook(mmv(0x42D4E6, 0x434F45, 0x4328D2), function()
 		mem.call(std, 0)
 	end
 end)
-
-function events.WindowMessage(t)
-	if t.Msg == 0x203 and Editor.WorkMode and Editor.StateSync then  -- WM_LBUTTONDBLCLK
-		t.Msg = 0x201  -- WM_LBUTTONDOWN
-	end
-end
 
 
 -----------------------------------------------------
