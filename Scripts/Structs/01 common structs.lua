@@ -2738,6 +2738,8 @@ function structs.f.Arcomage(define)
 	[mm78(0x505588, 0x516BE0)].array(2).struct(structs.ArcomagePlayer)  'Players'
 	 .Info{Sig = "[2]", "Player 0 is the human, player 1 is AI"}
 	.indexmember  'Players'
+	[mm78(0x4DF3A8, 0x4F0228)].array(mm78(87, 102)).struct(structs.ArcomageCard)  'CardKinds'
+	[mm78(0x5053D4, 0x5169F4)].array(mm78(108, 123)).i4  'Deck'
 end
 
 local function ArcIncome(o, obj, name, val)
@@ -2765,6 +2767,39 @@ function structs.f.ArcomagePlayer(define)
 	.array(10).array(2).i4  'unk'
 	 .Info{Sig = "[10][2]"}
 	.size = 47*4
+end
+
+function structs.f.ArcomageCard(define)
+	define
+	.string(32)  'Name'
+	.i4  'Sprite'
+	.i1  'CostKind'
+	.array(3).i1  'CostIncome'
+	.array(3).i1  'CostRes'
+	.b1  'Discardable'
+	.i4  'If'
+	 .Info ":const.ArcomageIf"
+	.struct(structs.ArcomageActions)  'Then'
+	.struct(structs.ArcomageActions)  'Else'
+	.skip(2)
+end
+
+function structs.f.ArcomageActions(define)
+	define
+	.b1  'PlayAgain'
+	.i1  'DiscardCards'
+	.struct(structs.ArcomageAction)  'Me'
+	.struct(structs.ArcomageAction)  'Enemy'
+	.struct(structs.ArcomageAction)  'All'
+end
+
+function structs.f.ArcomageAction(define)
+	define
+	.array(3).i1  'Income'
+	.array(3).i1  'Res'
+	.i1  'Damage'
+	.i1  'Wall'
+	.i1  'Tower'
 end
 
 function structs.f.ProgressBar(define)
