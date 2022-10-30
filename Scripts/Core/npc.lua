@@ -513,11 +513,7 @@ local function ReadPopulatedDialog(action, NoTopics)
 	local it = structs.Button:new(dlg.LastItemPtr)
 	local n0 = dlg.KeyboardItemsCount
 	local n = n0 == 0 and 0 or dlg.ItemsCount - dlg.KeyboardItemsStart
-	if n < n0 then
-		-- unused house PicType produces boken keyboard items count (1 instead of 0)
-		n0 = n
-		dlg:SetKeyboardNavigation(n, 1, 0, dlg.KeyboardItemsStart)
-	elseif NoTopics and n == 1 and it.ActionType ~= action then
+	if NoTopics and n == 1 and it.ActionType ~= action then
 		-- Seer Pilgrimage
 		n, n0 = 0, 0
 	end
@@ -686,6 +682,10 @@ if mmver == 7 then  -- make room for PopulateHouseDialog hook
 end
 
 mem.hookfunction(mmv(0x498490, 0x4B3AA5, 0x4B250A), 1, 0, function(d, def, type)
+	-- unused house PicType produces boken keyboard items count
+	local dlg = Game.CurrentNPCDialog
+	dlg:SetKeyboardNavigation(0, 1, 0, 2)
+	
 	def(type)
 	PopulateHouseDlg("PopulateHouseDialog", type)
 end)
