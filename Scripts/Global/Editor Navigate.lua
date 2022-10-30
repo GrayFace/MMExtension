@@ -335,9 +335,11 @@ function WorkEvents.Action(t)
 	end
 end
 
+local allowKeys = {[9] = 1, [18] = 2, [23] = 2, [24] = 2}
+
 function WorkLoadEvents.KeysFilter(t)
 	if (Editor.WorkMode or Editor.LoadBlvTime) and Game.CurrentScreen == 0 then
-		t.Result = t.On and ((t.Key == 18) or (t.Key == 9) and not Editor.StateSync)  -- and Keys.IsPressed(const.Keys.M)
+		t.Result = t.On and (allowKeys[t.Key] or 0) > (Editor.StateSync and 1 or 0)  -- and Keys.IsPressed(const.Keys.M)
 	end
 end
 
