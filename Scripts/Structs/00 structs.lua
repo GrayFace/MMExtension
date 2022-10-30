@@ -130,7 +130,17 @@ function structs.f.GameStructure(define)
 	 .Info{Sig = "[skill:const.Skills]"}
 	[mmv(0x56F394, 0x5C88F0, 0x5E4CB0)].array(mmv(31, 37, 39)).EditPChar  'SkillDescriptions'
 	 .Info{Sig = "[skill:const.Skills]"}
-	[mmv(0x970BEC, 0xAE3070, 0xBB2FD0)].array(mmv(18, 36, 36)).EditPChar  'ClassNames'
+	[mmv(0x56B76C, 0x5C8858, 0x5E4C10)].array(mmv(31, 37, 39)).EditPChar  'SkillDesNormal'
+	 .Info{Sig = "[skill:const.Skills]"}
+	[mmv(0x56F29C, 0x5C87C0, 0x5E4B70)].array(mmv(31, 37, 39)).EditPChar  'SkillDesExpert'
+	 .Info{Sig = "[skill:const.Skills]"}
+	[mmv(0x56F318, 0x5C8728, 0x5E4AD0)].array(mmv(31, 37, 39)).EditPChar  'SkillDesMaster'
+	 .Info{Sig = "[skill:const.Skills]"}
+	if mmver > 6 then
+		define[mm78(0x5C8690, 0x5E4A30)].array(mmv(31, 37, 39)).EditPChar  'SkillDesGM'
+	 .Info{Sig = "[skill:const.Skills]"}
+	end
+	define[mmv(0x970BEC, 0xAE3070, 0xBB2FD0)].array(mmv(18, 36, 36)).EditPChar  'ClassNames'
 	 .Info{Sig = "[class:const.Class]"}
 	[mmv(0x56B6C0, 0x5C8560, 0x5E48F0)].array(mmv(18, 36, 36)).EditPChar  'ClassDescriptions'
 	 .Info{Sig = "[class:const.Class]"}
@@ -171,6 +181,9 @@ function structs.f.GameStructure(define)
 	[mmv(0x560C14, 0x5D2864, 0x5EFBCC)].array{mmv(581, 800, 803), lenA = i4, lenP = mmv(0x560C10, 0x5D2860, 0x5EFBC8)}.struct(structs.ItemsTxtItem)  'ItemsTxt'
 	.array(mmv(14, 24, 24)).struct(structs.StdItemsTxtItem)  'StdItemsTxt'
 	.array(mmv(59, 72, 72)).struct(structs.SpcItemsTxtItem)  'SpcItemsTxt'
+	[mmv(0x6A86A8, 0x723BB8, 0x761500)].array(mmv({500, 586}, {700, 781}, {700, 781})).EditPChar  'ScrollTxt'
+	-- rnditems
+
 	local i, j = mmv(160, 222, 222), mmv(188, 271, 271)
 	define[mmv(0x56A780, 0x5E17C4, 0x5FEC10)].array(i, j).array(i, j)[mmv('u1','i2','i2')]  'PotionTxt'
 	
@@ -382,6 +395,8 @@ end]=]
 	 .Info "damage is 50 + skill"
 	[mmv(0x6296F4, 0x6BDF04, 0x6F300C)].i4  'OutdoorViewMul'
 	 .Info "Acts as the opposite of FOV"
+	.i4  'OutdoorViewDiv'
+	 .Info "!Lua[[= math.floor(0x10000/Game.OutdoorViewMul)]]"
 	[mmv(0x56B830, 0x5E4000, 0x601448)].array(mmv(596, 677, 750)).EditPChar  'GlobalTxt'
 	[mmv(0x52D530, 0x5912B8, 0x5A5728)].array(mmv(558, 526, 526)).struct(structs.Events2DItem)  'Houses'  -- 2DEvents
 	 .Info "2DEvents.txt"
@@ -424,10 +439,10 @@ end]=]
 	[mmv(0x56ABD0, 0x5CBEB0, 0x5E8278)].array(0, mmv(99, 99, 132)).struct(structs.SpellsTxtItem)  'SpellsTxt'
 	[mmv(0x4C28E2, 0x4EDF32, 0x4FE12A)].array(1, mmv(99, 99, 132)).i2  'SpellSounds'
 	[mmv(0x4BDBD8, 0x4E3AB0, 0x4F4648)].array(1, mmv(99, 99, 132)).CustomType('SpellObjId', 4, function(o, obj, name, val)
-		if val ~= nil then
-			i2[obj["?ptr"] + o] = val
-		else
+		if val == nil then
 			return i2[obj["?ptr"] + o]
+		else
+			i2[obj["?ptr"] + o] = val
 		end
 	end)
 	[mmv(0x4A6C1A, 0x4BF832, 0x4BD38D)].CustomType('TitleTrack', 1, function(o, obj, _, val)
@@ -557,8 +572,6 @@ end]=]
 	[mmv(0x4C22F0, 0x4ED280, 0x4FD660)].array(mmv(103, 110, 110)).struct(structs.FaceAnimationInfo)  'StandardFaceAnimations'
 	[mmv(0x4C20DC, 0x4ECDB0, 0x4FD0A0)].array(1, mmv(44, 49, 49)).array(mmv(12, 25, 30)).u1  'StandardPlayerSoundsCount'
 	
-	-- stditems, spcitems, rnditems
-
 	define
 	[mmv(0x6104F8, 0x6A08E0, 0x6CE838)].struct(structs.Lod)  'GamesLod'
 	[mmv(0x4CB6D0, 0x6D0490, 0x70D3E8)].struct(structs.BitmapsLod)  'IconsLod'
@@ -613,7 +626,7 @@ end]=]
 		 .Info{Sig = "Index"}
 	end
 	define
-	.func{name = "CalcSpellDamage", p = mmv(0x47F0A0, 0x43B006, 0x438B05), cc = 0, must = 4}
+	.func{name = "CalcSpellDamage", p = mmv(0x47F0A0, 0x43B006, 0x438B05), cc = mmv(0, 2, 2), must = 4}
 	 .Info{Sig = "Spell, Skill, Mastery, MonsterHP"}
 	.func{name = "GetSpellDamageType", p = mmv(0x481A60, 0x48E189, 0x48D618), cc = 0, must = 1}
 	 .Info{Sig = "Spell"}
@@ -905,6 +918,7 @@ function structs.f.GameParty(define)
 			end
 		end)
 		[mmv(0x90E7A4, 0xAD44F4)].array(1, 2).struct(structs.NPC)  'HiredNPC'
+		[mmv(0x91886E, 0xAE2EAC)].array(1, 2).string(100)  'HiredNPCName'
 	else
 		define
 		[0xB20E90 + 2540].array(50).struct(structs.Player)  'PlayersArray'
@@ -1219,12 +1233,11 @@ function structs.f.Player(define)
 	[mmv(0x1618, 0x1B38, 0x1D24)].u1  'DevineInterventionCasts'
 	[mmv(0x1619, 0x1B39, 0x1D25)].u1  'ArmageddonCasts'
 	.size = mmv(0x161C, 0x1B3C, 0x1D28)
-	if mmver > 6 then
-		define[mm78(0x1B3A, 0x1D26)].u1  'FireSpikeCasts'
-	end
 	if mmver == 7 then
-		define[0x1924].i4  'FaceBeforeZombie'
-		.i4  'VoiceBeforeZombie'
+		define[0x1924].alt.i4  'FaceBeforeZombie'
+		.i4  'OriginalFace'
+		.alt.i4  'VoiceBeforeZombie'
+		.i4  'OriginalVoice'
 	end
 
 	define
@@ -1281,7 +1294,7 @@ function structs.f.Player(define)
 		.method{p = mm78(0x48E7C8, 0x48DD6B), name = "GetResistance", must = 1}
 		 .Info{Sig = "Res:const.Damage"}
 		.method{p = mm78(0x48D6B6, 0x48CF8A), name = "HasItemBonus", must = 1}
-		 .Info{Sig = "Bonus2";  "Checks whether the player is wearing an item with specified Bonus2:structs.Item.Bonus2. of items See SPCITEMS.TXT for "}
+		 .Info{Sig = "Bonus2";  "Checks whether the player is wearing an item with specified Bonus2:structs.Item.Bonus2. See SPCITEMS.TXT for more info about each bonus."}
 		.method{p = mm78(0x48D6EF, 0x48CFC3), name = "WearsItem", must = 1, ret = true; 0, 16}
 		 .Info{Sig = "ItemNum, Slot:const.ItemSlot = 16"; "If 'Slot' isn't specified, searches all slots for the item"}
 	else
@@ -1621,6 +1634,12 @@ function structs.f.PatchOptions(define)
 	bool  'FixItemDuplicates'
 	bool  'FixClubsGeneration'  Info "[MM8]"
 	bool  'FixAcidBurst'  Info "[MM7+]"
+	bool  'EnchantMayFail'
+	bool  'TownPortalMayFail'
+	bool  'RegenerationIcon'  Info "[MM7+] In MM8 it's used for \"SeparateBuffIcons\" setting."
+	int  'SubDirection'
+	int  'SubLookAngle'
+	int  'TownPortalCost'  Info "Gets set before opening Town Portal dialog, retrieved when the town is chosen."
 	
 	function define.f.Present(name)
 		return not not addr[name]
