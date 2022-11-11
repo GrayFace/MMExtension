@@ -504,6 +504,7 @@ local function MakeCmd(name, num, f, invis)
 			DeclareCmd[num](t)
 			DeclareCmd[1]()
 			DeclareCmd[1]()  -- for jump
+			local curLineN, curBufSize = LineN, BufPtr - oldBuf
 
 			if num == 3 then
 				Game.LoadSound(t.Id or 0)
@@ -525,6 +526,7 @@ local function MakeCmd(name, num, f, invis)
 			end
 			u4[o.CurrentEvtBuf] = EvtBuf
 			u4[o.CurrentEvtLines] = oldLines
+			i4[o.AbortEvt] = 0
 
 			local ret = mem.call(internal.CallProcessEvent2, 0, 0x7FFF, t.KeepSound and 1 or 0, player, MayShow)
 			local abort = i4[o.AbortEvt] ~= 0
@@ -540,21 +542,12 @@ local function MakeCmd(name, num, f, invis)
 					return coroutine.yield()
 				end
 			elseif ret == 0 then -- async command
+				mem.call(internal.StoreReenterEventInfo, 0, oldBuf, curBufSize, oldLines, curLineN)
 				AsyncTrue = jumpTrue
 				AsyncProc = t.OnDone
 				AsyncPlayer, AsyncCurrentPlayer = evt.Player, evt.CurrentPlayer
 				local c = not AsyncProc and not t.NoYield and coroutine.running()
-				if num == 0x1A and (c or AsyncProc) then
-					local function cmp()
-						local s = Game.StatusMessage:lower()
-						return s == evt.str[t.Answer1]:lower() or s == evt.str[t.Answer2]:lower()
-					end
-					AsyncProc = c or || t.OnDone(cmp()) 
-					if c then
-						coroutine.yield()
-						return cmp()
-					end
-				elseif c then
+				if c then
 					AsyncProc = c
 					return coroutine.yield()
 				end

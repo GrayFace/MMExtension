@@ -194,29 +194,60 @@ void __stdcall AfterProcessEvent(int retseq, int evt, int seq, int GlobalEventIn
 	LuaRun("AfterProcessEvent", evt, seq, GlobalEventInfo, targetObj, param, retseq);
 }
 
+// Reenter info - use stored event buffer
+#define StartRestoreReenter(CurrentEvtBuf, CurrentEvtLines, CurrentEvtLinesCount) }\
+	_asm{ mov edx, ds:[CurrentEvtBuf] }\
+	_asm{ push edx }\
+	_asm{ mov edx, ds:[CurrentEvtLines] }\
+	_asm{ push edx }\
+	_asm{ mov edx, ds:[CurrentEvtLinesCount] }\
+	_asm{ push edx }\
+	_asm{ lea edx, ReenterEvtBuf }\
+	_asm{ mov ds:[CurrentEvtBuf], edx }\
+	_asm{ mov edx, ReenterEvtLines }\
+	_asm{ mov ds:[CurrentEvtLines], edx }\
+	_asm{ mov edx, [ReenterEvtLinesCount] }\
+	_asm{ mov ds:[CurrentEvtLinesCount], edx }\
+	_asm{ mov [ReenterEvtLinesCount], 0 }\
+	_asm{
+
+// Reenter info - revert to game's event buffer
+#define EndRestoreReenter(CurrentEvtBuf, CurrentEvtLines, CurrentEvtLinesCount) }\
+	_asm{ pop edx }\
+	_asm{ mov ds:[CurrentEvtLinesCount], edx }\
+	_asm{ pop edx }\
+	_asm{ mov ds:[CurrentEvtLines], edx }\
+	_asm{ pop edx }\
+	_asm{ mov ds:[CurrentEvtBuf], edx }\
+	_asm{
+
 int tmp1, tmp2;
 long ProcessEventStartStd;
 // Calls AfterProcessEvent after the EVT_ProcessEvent finishes
-__declspec(naked) void _MM6_ProcessEventStart() 
+__declspec(naked) void _MM6_ProcessEventStart()
 {
 	_asm
 	{
-		cmp ecx, 0x7FFF // check for reenter my event
+		cmp ecx, 0x7FFF // reentering my event?
 		jnz _normal
 		pop eax            // -return address (into the EVT_ProcessEvent)
 
+		// AfterProcessEvent params
 		push 0             // param
 		push edx           // targetObj
 		push ds:[0x55BC00] // GlobalEventInfo
 		push ds:[0x54D03C] // seq
 		push ecx           // evt
-		// int evtId, int seq, int LinesCount, int vTargetMember, int param
+		StartRestoreReenter(0x551D14, 0x533EC0, 0x54D010) // CurrentEvtBuf, CurrentEvtLines, CurrentEvtLinesCount
+		// CallProcessEvent params: int evtId, int seq, int vTargetMember, int param
 		push 0             // param
 		push 1               /// vTargetMember
 		push ds:[0x54D03C]   /// seq
 		push ecx             /// evtId
 		call MM6_CallProcessEvent
-		push eax           // ret
+		EndRestoreReenter(0x551D14, 0x533EC0, 0x54D010) // CurrentEvtBuf, CurrentEvtLines, CurrentEvtLinesCount
+		// call AfterProcessEvent
+		push eax           // retseq
 		call AfterProcessEvent
 		ret
 
@@ -248,23 +279,26 @@ __declspec(naked) void _MM7_ProcessEventStart()
 {
 	_asm
 	{
-		cmp ecx, 0x7FFF // check for reenter my event
+		cmp ecx, 0x7FFF // reentering my event?
 		jnz _normal
 		pop eax            // -return address (into the EVT_ProcessEvent)
 
+		// AfterProcessEvent params
 		push [esp + 4]     // param
 		push edx           // targetObj
 		mov edx, [esp + 4]
 		push ds:[0x5C32A0] // GlobalEventInfo
 		push ds:[0x597D98] // seq
 		push ecx           // evt
-		// int evtId, int seq, int LinesCount, int vTargetMember, int param
+		StartRestoreReenter(0x590EFC, 0x5840B8, 0x590EF8) // CurrentEvtBuf, CurrentEvtLines, CurrentEvtLinesCount
+		// CallProcessEvent params: int evtId, int seq, int vTargetMember, int param
 		push edx             /// param
 		push 1               /// vTargetMember
 		push ds:[0x597D98]   /// seq
 		push ecx             /// evtId
 		call MM7_CallProcessEvent
-		push eax           // ret
+		EndRestoreReenter(0x590EFC, 0x5840B8, 0x590EF8) // CurrentEvtBuf, CurrentEvtLines, CurrentEvtLinesCount
+		push eax           // retseq
 		call AfterProcessEvent
 		ret 4
 
@@ -294,23 +328,26 @@ __declspec(naked) void _MM8_ProcessEventStart()
 {
 	_asm
 	{
-		cmp ecx, 0x7FFF // check for reenter my event
+		cmp ecx, 0x7FFF // reentering my event?
 		jnz _normal
 		pop eax            // -return address (into the EVT_ProcessEvent)
 
+		// AfterProcessEvent params
 		push [esp + 4]     // param
 		push edx           // targetObj
 		mov edx, [esp + 4]
 		push ds:[0x5DB750] // GlobalEventInfo
 		push ds:[0x5AC208] // seq
 		push ecx           // evt
-		// int evtId, int seq, int LinesCount, int vTargetMember, int param
+		StartRestoreReenter(0x5A536C, 0x596908, 0x5A5368) // CurrentEvtBuf, CurrentEvtLines, CurrentEvtLinesCount
+		// CallProcessEvent params: int evtId, int seq, int vTargetMember, int param
 		push edx             /// param
 		push 1               /// vTargetMember
 		push ds:[0x5AC208]   /// seq
 		push ecx             /// evtId
 		call MM8_CallProcessEvent
-		push eax           // ret
+		EndRestoreReenter(0x5A536C, 0x596908, 0x5A5368) // CurrentEvtBuf, CurrentEvtLines, CurrentEvtLinesCount
+		push eax           // retseq
 		call AfterProcessEvent
 		ret 4
 

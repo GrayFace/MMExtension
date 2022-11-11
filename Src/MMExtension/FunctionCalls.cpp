@@ -117,6 +117,22 @@ int __stdcall CallProcessEventOld(int evtId, int seq, int vTargetMember, int par
 }
 
 
+byte ReenterEvtBuf[1024];
+byte* ReenterEvtLines;
+int ReenterEvtLinesCount;
+
+int __stdcall StoreReenterEventInfo(void* buf, int bufSize, void* lines, int linesCount)
+{
+	int linesSize = linesCount*12;
+	if (bufSize + linesSize > sizeof(ReenterEvtBuf))
+		return (ReenterEvtLinesCount = 0);
+	CopyMemory(ReenterEvtBuf, buf, bufSize);
+	ReenterEvtLines = &ReenterEvtBuf[sizeof(ReenterEvtBuf) - linesSize];
+	CopyMemory(ReenterEvtLines, lines, linesSize);
+	ReenterEvtLinesCount = linesCount;
+	return 1;
+}
+
 
 void RegisterFunctionCalls()
 {
@@ -131,6 +147,7 @@ void RegisterFunctionCalls()
 		CallProcessEvent = MM8_CallProcessEvent;
 	LuaInternalConst("CallProcessEvent", (int)CallProcessEventOld);  // compatibility with old versions of Lua code just in case
 	LuaInternalConst("CallProcessEvent2", (int)CallProcessEvent);
+	LuaInternalConst("StoreReenterEventInfo", (int)StoreReenterEventInfo);
 
 	LuaInternalConst("TextBuffer", (int)TextBuffer);
 }
