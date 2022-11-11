@@ -11,6 +11,9 @@ local _KNOWNGLOBALS_F = SimpleMessage, HouseMessageVisible
 
 
 function SplitSkill(val)
+	if not val then
+		return
+	end
 	local n = val % 0x40
 	local mast
 	if val >= 0x100 then
