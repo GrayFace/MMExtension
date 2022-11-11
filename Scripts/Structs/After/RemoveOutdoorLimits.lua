@@ -3,7 +3,7 @@ local mmver = offsets.MMVersion
 mem.IgnoreProtection(true)
 
 local OldCount = 2000
-local NewCount = (FacetRefsLimit or 8192) + 64*128  -- support drawing all facets and half of all tiles at once
+local NewCount = (FacetRefsLimit or 8192) + 128*128  -- support drawing all facets and all tiles at once
 local BatchAdd = mem.BatchAdd
 
 if mmver == 6 then
@@ -24,6 +24,45 @@ if mmver == 6 then
 	BatchAdd(endrefs, Offset + dn*PolySize)
 	BatchAdd(refs2, Offset2)
 
+	-- SW limits
+	do
+		local OldEdgeCount = 4000
+		local NewEdgeCount = NewCount*3
+
+		local OldSpansCount = 12500
+		local NewSpansCount = OldSpansCount*(NewCount/OldCount)
+		
+		-- surfs
+		local size = 0x2C
+		local refs = {0x46A18B}
+		local endrefs = {0x4793CA}
+		local counts = {0x47915C}
+		local Offset = mem.StaticAlloc(size*NewCount) - 0x74CE10
+		BatchAdd(counts, dn)
+		BatchAdd(refs, Offset)
+		BatchAdd(endrefs, Offset + dn*size)
+		
+		-- edges
+		local size = 0x1C
+		local refs = {0x46A195}
+		local endrefs = {0x479332}
+		local counts = {0x479177}
+		local dn = NewEdgeCount - OldEdgeCount
+		local Offset = mem.StaticAlloc(size*NewEdgeCount) - 0x731870
+		BatchAdd(counts, dn)
+		BatchAdd(refs, Offset)
+		BatchAdd(endrefs, Offset + dn*size)
+
+		-- spans
+		local size = 0x10
+		local refs = {0x479131, 0x479436, 0x47A0E9, 0x47A32F, 0x47A494}
+		local counts = {0x4796D0, 0x479777, 0x479136}
+		local dn = NewSpansCount - OldSpansCount
+		local Offset = mem.StaticAlloc(size*NewSpansCount) - 0x6FB728
+		BatchAdd(counts, dn)
+		BatchAdd(refs, Offset)
+	end
+
 elseif mmver == 7 then
 
 	local PolySize = 268
@@ -40,6 +79,38 @@ elseif mmver == 7 then
 	BatchAdd(refs, Offset)
 	BatchAdd(endrefs, Offset + dn*PolySize)
 	BatchAdd(refs2, Offset2)
+
+	-- SW limits
+	do
+		local OldEdgeCount = 6000
+		local NewEdgeCount = NewCount*3
+
+		local OldSpansCount = 12500
+		local NewSpansCount = OldSpansCount*(NewCount/OldCount)
+		
+		-- surfs
+		local size = 0x24
+		local sizes = {0x486A80, 0x486F69}
+		local counts = {0x486BB2+6}
+		BatchAdd(counts, dn)
+		BatchAdd(sizes, dn*size)
+		
+		-- edges
+		local size = 0x34
+		local sizes = {0x486A63, 0x486EE3}
+		local counts = {0x486BC8}
+		local dn = NewEdgeCount - OldEdgeCount
+		BatchAdd(counts, dn)
+		BatchAdd(sizes, dn*size)
+
+		-- spans
+		local size = 0x18
+		local sizes = {0x486A51}
+		local counts = {0x48716B+6, 0x487254+6}
+		local dn = NewSpansCount - OldSpansCount
+		BatchAdd(counts, dn)
+		BatchAdd(sizes, dn*size)
+	end
 
 else
 	
