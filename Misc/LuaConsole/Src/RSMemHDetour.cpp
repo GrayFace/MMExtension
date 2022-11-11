@@ -17,7 +17,7 @@ static DWORD ToDWORD(lua_State *L, int i)
 		return (int)num;
 }
 
-static int DoGetHookSize(lua_State *L, int lim)
+static int DoGetHookSize(lua_State *L, DWORD lim)
 {
 	DWORD p = ToDWORD(L, 1);
 	lua_settop(L, 0);
