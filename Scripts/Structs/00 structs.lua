@@ -585,6 +585,16 @@ end]=]
 	if mmver > 6 then
 		define[mm78(0xE31AF0, 0xF01A08)].alt.u4  'RendererD3D'
 		.Info{Name = "IsD3D", new = true}
+		[mm78(0x474913, 0x4737ED)].CustomType('ModelClimbRequirement', 4, function(o, obj, name, val)
+			if val == nil then
+				return i4[o]
+			else
+				mem.prot(true)
+				i4[o] = val
+				mem.prot(false)
+			end
+		end)
+		 .Info "Minimum required Z coordinate of the normal to climb a building surface. MM6 default is 1 (any non-vertical surface), MM7+ default is 46378, which corresponds to Lua[[46378/0x10000 = 0.7]]."
 	end
 	define[0].CustomType('RandSeed', 0, function(o, obj, name, val)
 		local p = (mmver > 6 and call(mmv(0, 0x4CECD2, 0x4DDD52), 0) + 5*4 or 0x4C5354)
@@ -909,6 +919,7 @@ function structs.f.GameParty(define)
 	if mmver < 8 then
 		define
 		[mmv(0x908F34, 0xACD804)].array(4).struct(structs.Player)  'PlayersArray'
+		 .Info "Array of all players"
 		[mmv(0x944C68, 0xA74F48)].array(4).CustomType('Players', 4, function(o, obj, _, val)
 			if val then
 				i4[obj["?ptr"] + o] = val["?ptr"]  -- to be used at your own risk!
@@ -917,17 +928,19 @@ function structs.f.GameParty(define)
 				return a[(i4[obj["?ptr"] + o] - a["?ptr"])/structs.Player["?size"]]
 			end
 		end)
+		 .Info "Array of players corresponding to each player slot"
 		[mmv(0x90E7A4, 0xAD44F4)].array(1, 2).struct(structs.NPC)  'HiredNPC'
 		[mmv(0x91886E, 0xAE2EAC)].array(1, 2).string(100)  'HiredNPCName'
 	else
 		define
 		[0xB20E90 + 2540].array(50).struct(structs.Player)  'PlayersArray'
-		[0xB20E90 + 375740].array(5).i4  'PlayersIndexes'
-		[0xB20E90 + 375740].array{5, lenA = i4, lenP = 0xB7CA60}.CustomType('Players', 4, function(o, obj, _, val)
+		[0xB20E90 + 375740].alt.array(5).i4  'PlayersIndexes'
+		 .Info "Array of players indexes in #PlayersArray:structs.GameParty.PlayersArray# corresponding to each player slot"
+		.array{5, lenA = i4, lenP = 0xB7CA60}.CustomType('Players', 4, function(o, obj, _, val)
 			local a = Party.PlayersArray
 			if val then
 				local i = (val["?ptr"] - a["?ptr"])/structs.Player["?size"]
-				i4[obj["?ptr"] + o] = a[i] and val
+				i4[obj["?ptr"] + o] = a[i] and i
 			else
 				local i = i4[obj["?ptr"] + o]
 				return a[i < 0 and 0 or i]
@@ -1429,6 +1442,7 @@ function structs.f.Player(define)
 			return i
 		end
 	end
+	define.Info "Returns player index in #Party.PlayersArray:structs.GameParty.PlayersArray#"
 end
 
 local DrawStyles = {
