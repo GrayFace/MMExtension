@@ -62,8 +62,23 @@ offsets = offsets or {}
 dofile(CoreScriptsPath.."Common.lua")
 internal.NoGlobals.CheckChunkFile(1, 1)
 internal.NoGlobals.Options.NameCharCodes[("?"):byte()] = true
+
+local function path_insert(str, new, after)
+	local n1, n2 = str:find(after, 1, true)
+	if n1 then
+		return str:sub(1, n2)..';'..new..str:sub(n2 + 1)
+	end
+	return new..';'..str
+end
+
+local function make_cpath(scripts)
+	return scripts.."Dll\\?.dll;"..scripts.."Dll\\loadall.dll"
+end
+
 local package_main = AppPath.."Scripts\\Modules\\?.lua"
 package.path = package_main..(GitPath and ";"..GitPath.."Scripts\\Modules\\?.lua" or "")
+local package_cmain = make_cpath(AppPath.."Scripts\\")
+package.cpath = package_cmain..(GitPath and ";"..make_cpath(GitPath.."Scripts\\") or "")--..';'..DevPath.."ExeMods\\MMExtension\\socket.dll"
 GitPath = internal.GitPath  -- allow changing GitPath by offsets.lua
 local loadfile = loadfile
 local loadstring = loadstring
@@ -503,13 +518,8 @@ internal.PathList = PathList
 function _G.AddScriptsPath(s)
 	s = path_addslash(s)
 	if not PathList[s] then
-		local sp = package.path
-		local n1, n2 = sp:find(package_main, 1, true)
-		if n1 then
-			package.path = sp:sub(1, n2)..';'..s..'Modules\\?.lua'..sp:sub(n2 + 1)
-		else
-			package.path = s..'Modules\\?.lua;'..sp
-		end
+		package.path = path_insert(package.path, s..'Modules\\?.lua', package_main)
+		package.cpath = path_insert(package.cpath, make_cpath(s), package_cmain)
 	end
 	PathList[s] = true
 end
