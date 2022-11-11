@@ -10,6 +10,7 @@ end
 local is6 = mmver == 6 or nil
 local is7 = mmver == 7 or nil
 local is8 = mmver == 8 or nil
+local is67 = mmver < 8 or nil
 local is78 = mmver > 6 or nil
 
 local TXT = {}
@@ -23,7 +24,7 @@ TakeQuestOperation = (mmver == 7 and "Set" or "Add")
 --!v
 Quests = {}
 
-local _KNOWNGLOBALS_F = QuestNPC, vars, LocalizeAll, curry
+local _KNOWNGLOBALS_F = QuestNPC, vars, LocalizeAll, curry, GenerateLocalization_BakFiles, GameLocalizationIgnore, GameLocalizationSchema
 
 -----------------------------------------------------
 -- LocalizeAll
@@ -111,15 +112,23 @@ end
 -----------------------------------------------------
 -- some black magic to generate localization for all files...
 
+--!v Set it to 'false' in a General script to turn off *.bak files creation when generating localization
+GenerateLocalization_BakFiles = true
+
 local function SaveWithBak(fname, s)
-	for fname in path.find(fname) do
-		local fbak = fname..'.bak'
-		os.remove(fbak)
-		os.rename(fname, fbak)
+	if GenerateLocalization_BakFiles then
+		for fname in path.find(fname) do
+			local fbak = fname..'.bak'
+			os.remove(fbak)
+			os.rename(fname, fbak)
+		end
+	else
+		os.remove(fname)
 	end
 	io.save(fname, s)
 end
 
+-- Generates localization file for quests created with functions from this file.
 function GenerateQuestsLocalization(IsLua)  -- do nothing until quests are added
 end
 
@@ -250,6 +259,9 @@ local function GenerateLocalizationFile(fname, t, IsLua, IsCommon)
 	SaveWithBak(AppPath.."Scripts/Localization/"..fname..".txt", table.concat(str, "\r\n"))
 end
 
+-- Generates localization files for scripts that call #Localize:# or #LocalizeAll:# functions.
+-- Pass 'IsLua' = 'true' to generate *.lua files instead of *.txt tables. Whichever is more convenient for you.
+-- Unless 'IncludeQuests' is 'false', localization for quests is also generated.
 function GenerateLocalization(IsLua, IncludeQuests)
 	RunLocalizationInFiles()
 	local common, scripts = MakeLocalizationLists()
@@ -272,6 +284,204 @@ local function SanitizeLoc(loc)
 		end
 	end
 	return t
+end
+
+-----------------------------------------------------
+-- GenerateGameLocalization
+-----------------------------------------------------
+
+local GameLocalizationStart = [[
+if not GameInitialized2 then
+	local f = debug.getinfo(1, "f").func
+	events.GameInitialized2 = f
+	events.TxtFilesReloaded = f
+	return
+end
+
+]]
+
+local GameLocalizationStartRoster = [[
+if not GameInitialized2 then
+	events.LoadedRosterTxt = debug.getinfo(1, "f").func
+	return
+end
+
+]]
+
+--!v List of table names in Game structure that shouldn't be included in localization by #GenerateGameLocalization:#
+GameLocalizationIgnore = {}
+--!v Defines which files contain which names of Game structure tables and more (see in code)
+GameLocalizationSchema = {
+	{ Name = 'Game',
+		'MonstersTxt', 'PlaceMonTxt', 'SpellsTxt',
+	},
+	{ Name = 'GamePlaces',
+		'MapStats', 'Houses', 'TransTxt',
+	},
+	{ Name = 'GameNotes',
+		'AutonoteTxt', 'AwardsTxt', 'HistoryTxt', 'QuestsTxt',
+	},
+	{ Name = 'GameItems',
+		'StdItemsTxt', 'SpcItemsTxt', 'ItemsTxt', 'ScrollTxt',
+	},
+	{ Name = 'GameNPC',
+		'NPCDataTxt', 'NPCNews', 'NPCProfTxt', 'NPCGreet', 'NPCTopic', 'NPCText',
+	},
+	{ Name = 'GameRoster', Start = GameLocalizationStartRoster,
+		'roster',
+	},
+}
+
+local GameLocalizationParams = {
+	-- Unused
+	GlobalTxt = {false, 'global', 'Global.txt', {}},  -- requires changing ClassNames, SkillNames, StatsNames, ...
+	ClassDescriptions = {false, 'class_desc', 'Class.txt (Description),', Inc = 'Class.txt'},
+	SkillDescriptions = {false, 'skill_desc', 'SkillDes.txt (Description),', Inc = 'SkillDes.txt'},
+	SkillDesNormal = {false, 'skill_normal', 'SkillDes.txt (Normal),', Inc = 'SkillDes.txt'},
+	SkillDesExpert = {false, 'skill_expert', 'SkillDes.txt (Expert),', Inc = 'SkillDes.txt'},
+	SkillDesMaster = {false, 'skill_master', 'SkillDes.txt (Master),', Inc = 'SkillDes.txt'},
+	SkillDesGM = {false, 'skill_gm', 'SkillDes.txt (Grand Master),', Inc = 'SkillDes.txt'},
+	StatsDescriptions = {false, 'stat_desc', 'Stats.txt (Description),', Inc = 'Stats.txt'},
+	MerchantTxt = {false, 'merchant', 'Merchant.txt'},
+	-- Game
+	MonstersTxt = {{'Name'}, 'monster', 'Monsters.txt', {[''] = true, ['0'] = true}},
+	PlaceMonTxt = {false, 'place_mon', 'PlaceMon.txt', {[''] = true, ['0'] = true}},
+	SpellsTxt = {{'Name', 'ShortName', 'Description', 'Normal', 'Expert', 'Master', is78 and 'GM'}, 'spell', 'Spells.txt'},
+	-- GamePlaces
+	MapStats = {{'Name'}, 'map', 'MapStats.txt'},
+	Houses = {{'Name', 'OwnerName', 'OwnerTitle', 'EnterText'}, 'house', '2DEvents.txt'},
+	TransTxt = {false, 'enter', 'Trans.txt'},
+	-- GameNotes
+	AutonoteTxt = {false, 'note', 'Autonote.txt'},
+	AwardsTxt = {false, 'award', 'Awards.txt'},
+	HistoryTxt = {{'Text', 'Title'}, 'history', 'History.txt'},
+	QuestsTxt = {false, 'quest', 'Quests.txt', {[''] = true, ['0'] = true}},
+	-- GameItems
+	StdItemsTxt = {{'NameAdd', 'BonusStat'}, 'enchant', 'StdItems.txt'},
+	SpcItemsTxt = {{'NameAdd', 'BonusStat'}, 'enchant2', 'SpcItems.txt'},
+	ItemsTxt = {{'Name', 'NotIdentifiedName', 'Notes'}, 'item', 'Items.txt', false, {[0] = true}},
+	ScrollTxt = {false, 'scroll', 'Scroll.txt'},
+	-- GameNPC
+	NPCDataTxt = {{'Name'}, 'npc', 'NPCData.txt'},
+	NPCNews = {is6 and {'Topic', 'Text'}, 'news', 'NPCNews.txt'},
+	NPCProfTxt = {is6 and {'Benefit', 'JoinText', 'ProfNewsTopic', 'ProfNewsText'} or {'Benefit', 'JoinText', 'DismissText', 'ActionText'}, 'prof', 'NPCProf.txt, ProfText.txt', false, {[0] = true}},
+	NPCGreet = {false, 'greet', 'NPCGreet.txt', false, {[0] = true}},
+	NPCTopic = {false, 'topic', 'NPCTopic.txt'},
+	NPCText = {false, 'text', 'NPCText.txt'},
+	NPCNames = {false, 'names', 'npcnames.txt'},  -- need to set NPCNamesCount accordingly
+	-- GameRoster
+	roster = {Inc = 'Roster.txt', Check = is8},
+	pcnames = {Inc = 'PCNames.txt', Check = is8},
+}
+
+local function GameTableStart(t, comment)
+	t[#t+1] = '-----------------------------------------------------'
+	t[#t+1] = '-- '..comment
+	t[#t+1] = '-----------------------------------------------------'
+end
+
+local function GameTableIterate(t, arr, fields, short, skip, skipEx)
+	skip = skip or {[''] = true}
+	skipEx = skipEx or {}
+	local dot = fields and '.' or ''
+	local function add(k, field, v)
+		if (skipEx[field] or skip)[v] then
+			-- skip
+		elseif type(v) == 'table' then
+			t[#t+1] = ('copy(%s[%s]%s%s, %s)'):format(short, k, dot, field or '', dump(v, nil, true))
+			t.copy = true
+		else
+			local multi = v:find('\n', 1, true)
+			local std = not multi and not v:find('"', 1, true) or v:find(']]', 1, true) or v:find('[%z\1-\8\11-\31]') or v:sub(-1) == ']'
+			local vfmt = std and '%q' or multi and '[[\n%s]]' or '[[%s]]'
+			t[#t+1] = ('%s[%s]%s%s = '..vfmt):format(short, k, dot, field or '', v)
+		end
+	end
+	for k, a in arr do
+		if skipEx[k] then
+			-- skip
+		elseif fields then
+			for _, field in ipairs(fields) do
+				add(k, field, a[field])
+			end
+		else
+			add(k, nil, a)
+		end
+	end
+	t[#t+1] = ''
+end
+
+-- Generates localization files for various game data found in TXT files. Returns(in text form) the list of files not included in the generated localization.
+function GenerateGameLocalization()
+	local inc = {}
+	local t
+	
+	local function Process(name, fields, short, comment, ...)
+		if not Game[name] then
+			return
+		elseif comment then
+			GameTableStart(t, comment)
+		end
+		t[#t+1] = ('local %s = Game.%s'):format(short, name)
+		GameTableIterate(t, Game[name], fields, short, ...)
+	end
+	
+	local function ProcessRoster(name, fields, short, comment, ...)
+		if not is8 then
+			return
+		elseif not t.RosterLoaded and Game.MainMenuCode >= 0 and Game.MainMenuCode ~= 6 then
+			call(0x4949BD, 1, Party.ptr)
+			t.RosterLoaded = true
+		end
+		GameTableStart(t, 'roster.txt')
+		t[#t+1] = 'local players = Party.PlayersArray'
+		t[#t+1] = ('players[0].Biography = %q'):format(Party.PlayersArray[0].Biography)
+		GameTableIterate(t, Party.PlayersArray, {'Name', 'Biography'}, 'players', nil, {[0] = true})
+	end
+	
+	for _, list in ipairs(GameLocalizationSchema) do
+		t = {Name = assert(list.Name), Start = list.Start or GameLocalizationStart}
+		for _, s in ipairs(list) do
+			local ignore, par = GameLocalizationIgnore[s], GameLocalizationParams[s]
+			if ignore then
+				inc[s] = ignore == 'skip'
+			elseif s == 'roster' then
+				inc[s] = true
+				ProcessRoster()
+			elseif s == 'pcnames' then
+				assert(false)
+			elseif par then
+				inc[s] = true
+				Process(s, unpack(par))
+				if s == 'NPCProfTxt' and is67 and Game.NPCProfNames['?ptr'] ~= mmv(0x6BA85C, 0x73C110) then
+					Process('NPCProfNames', nil, 'prof_name', 'NPCProf.txt (names)', nil, {[0] = true})
+				end
+			else
+				s(t, inc)
+			end
+		end
+		if t and t[1] then
+			if t.copy then
+				table.insert(t, 1, 'local copy = |a, b| table.copy(b, a, true)\n')
+			end
+			SaveWithBak(AppPath.."Scripts/Localization/"..t.Name..".lua", t.Start..table.concat(t, "\n"))
+		end
+	end
+	
+	local missing = {}
+	
+	for s, par in pairs(GameLocalizationParams) do
+		if not inc[s] and (par.Check or Game[s]) then
+			missing[par.Inc or par[3]] = true
+		end
+	end
+	
+	local miss = {}
+	for s in sortpairs(missing) do
+		miss[#miss + 1] = s
+	end
+	
+	return "Not included: "..table.concat(miss, ', ')
 end
 
 -----------------------------------------------------
@@ -465,7 +675,7 @@ function GetLocalName(name, lev)
 	return s:lower()..':'..name
 end
 
--- Crates a named autonote. To operate on global named autonotes, use ":" at the beginning of its name.
+-- Creates a named autonote. To operate on global named autonotes, use ":" at the beginning of its name.
 function Autonote(name, cat, text)
 	local t = {
 		Name = GetLocalName(name, 2),
@@ -876,9 +1086,12 @@ function Quest(t)
 	end
 	t.Award = t.Award or t.Awards  -- backward compatibility
 	Quests[t.Name] = t
-	--!v([name])
+	--!++(vars.Quests)v([name])
 	-- Quest states: nil, "Given", "Done" or a custom state.
+	
+	--!v([name])
 	vars.QuestAwards = vars.QuestAwards or {}
+	--!v([name])
 	vars.QuestAutonotes = vars.QuestAutonotes or {}
 	t.BaseName = t.BaseName or t.Name
 	t.GivenState = t.GivenState or "Given"
