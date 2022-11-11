@@ -505,8 +505,9 @@ void InitLua()
 	DebugDialogResize(Width, Height);
 	DebugDialogCaption("Lua Console");
 
-	lua_State* L = Lua = luaL_newstate();
-	//lua_State* L = Lua = lua_newstate(LuaAlloc, 0);
+	//lua_State* L = Lua = luaL_newstate();
+	lua_Alloc LuaAlloc = (lua_Alloc)DllImport(RelPath("ExeMods\\MMExtension\\MMExtDialogs.dll"), "LuaAlloc", true);
+	lua_State* L = Lua = lua_newstate(LuaAlloc, 0);
 	//lua_ignorelocale(L);
 	//lua_alnum(L)['?'] = 1;
 	lj_get_char_bits()['?'] = 128;

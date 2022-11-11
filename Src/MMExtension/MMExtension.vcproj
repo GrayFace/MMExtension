@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				UseUnicodeResponseFiles="false"
-				AdditionalIncludeDirectories=".\LuaJIT\src\;.\HDetour\;.\luasocket\src\"
+				AdditionalIncludeDirectories=".\LuaJIT\src_inc\;.\HDetour\;.\luasocket\src\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MMEXTENSION_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib HDetour.lib socket.lib Ws2_32.lib"
+				AdditionalDependencies="lua51static.lib HDetour.lib socket.lib Ws2_32.lib"
 				OutputFile="$(SolutionDir)\..\ExeMods\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=".\LuaJIT\src;.\HDetour;.\luasocket"
@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				UseUnicodeResponseFiles="false"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\LuaJIT\src\;.\HDetour\;.\luasocket\src\"
+				AdditionalIncludeDirectories=".\LuaJIT\src_inc\;.\HDetour\;.\luasocket\src\"
 				PreprocessorDefinitions="MM8;WIN32;_DEBUG;_WINDOWS;_USRDLL;MMEXTENSION_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -146,7 +146,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="lua51.lib HDetour.lib socket.lib Ws2_32.lib"
+				AdditionalDependencies="lua51static.lib HDetour.lib socket.lib Ws2_32.lib"
 				OutputFile="$(SolutionDir)\..\ExeMods\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories=".\LuaJIT\src;.\HDetour;.\luasocket"
@@ -155,6 +155,91 @@
 				GenerateMapFile="true"
 				MapFileName="$(ProjectDir)\Release\$(ConfigurationName)\$(TargetName).map"
 				SubSystem="2"
+				BaseAddress="0x60000000"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release (Lua as DLL)|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
+				AdditionalIncludeDirectories=".\LuaJIT\src_inc\;.\HDetour\;.\luasocket\src\"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MMEXTENSION_EXPORTS;MMEXTENSION_LUADLL"
+				GeneratePreprocessedFile="0"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="lua51.lib HDetour.lib socket.lib Ws2_32.lib"
+				OutputFile="$(SolutionDir)\..\ExeMods\$(ProjectName)\MMExtCore.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories=".\LuaJIT\src;.\HDetour;.\luasocket"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="$(ProjectDir)\Release\$(ConfigurationName)\$(TargetName).pdb"
+				GenerateMapFile="true"
+				MapFileName="$(ProjectDir)\Release\$(ConfigurationName)\$(TargetName).map"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
 				BaseAddress="0x60000000"
 				TargetMachine="1"
 			/>
@@ -251,6 +336,14 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release (Lua as DLL)|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -299,6 +392,14 @@
 			<File
 				RelativePath=".\MMExtension.rc"
 				>
+				<FileConfiguration
+					Name="Release (Lua as DLL)|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions="MMEXTENSION_LUADLL"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\MMExtension.txt"

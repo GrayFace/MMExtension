@@ -40,7 +40,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\LuaJIT\src"
+				AdditionalIncludeDirectories="..\LuaJIT\src_inc"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;LUASOCKET_EXPORTS;LUASOCKET_API=__declspec(dllexport);LUASOCKET_DEBUG"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"

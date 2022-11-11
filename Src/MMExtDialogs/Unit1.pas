@@ -519,6 +519,18 @@ begin
     inherited;
 end;
 
+{function MyReallocMem(p: ptr; sz: int): ptr;
+begin
+  ReallocMem(p, sz);
+  Result:= p;
+end;}
+
+function LuaAlloc(_, p: ptr; __, sz: uint): ptr; cdecl;
+begin
+  Result:= p;
+  ReallocMem(Result, sz);
+end;
+
 exports
   DebugDialog,
   DebugDialogResize,
@@ -527,6 +539,8 @@ exports
   DebugDialogBranch,
   DebugDialogCaption,
   DebugDialogLastResult,
+  //MyReallocMem name 'ReallocMem',
+  LuaAlloc,
   SaveBufferToBitmap;
-  
+
 end.

@@ -1,6 +1,6 @@
 /*
 ** LuaJIT VM builder: Assembler source code emitter.
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2022 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #include "buildvm.h"
@@ -51,8 +51,8 @@ static const char *const jccnames[] = {
   "js", "jns", "jpe", "jpo", "jl", "jge", "jle", "jg"
 };
 
-/* Emit relocation for the incredibly stupid OSX assembler. */
-static void emit_asm_reloc_mach(BuildCtx *ctx, uint8_t *cp, int n,
+/* Emit x86/x64 text relocations. */
+static void emit_asm_reloc_text(BuildCtx *ctx, uint8_t *cp, int n,
 				const char *sym)
 {
   const char *opname = NULL;
@@ -71,7 +71,69 @@ err:
     exit(1);
   }
   emit_asm_bytes(ctx, cp, n);
+  if (strncmp(sym+(*sym == '_'), LABEL_PREFIX, sizeof(LABEL_PREFIX)-1)) {
+    /* Various fixups for external symbols outside of our binary. */
+    if (ctx->mode == BUILD_elfasm) {
+      if (LJ_32)
+	fprintf(ctx->fp, "#if __PIC__\n\t%s lj_wrap_%s\n#else\n", opname, sym);
+      fprintf(ctx->fp, "\t%s %s@PLT\n", opname, sym);
+      if (LJ_32)
+	fprintf(ctx->fp, "#endif\n");
+      return;
+    } else if (LJ_32 && ctx->mode == BUILD_machasm) {
+      fprintf(ctx->fp, "\t%s L%s$stub\n", opname, sym);
+      return;
+    }
+  }
   fprintf(ctx->fp, "\t%s %s\n", opname, sym);
+}
+#elif LJ_TARGET_S390X
+/* Emit halfwords piecewise as assembler text. */
+static void emit_asm_halfwords(BuildCtx *ctx, uint8_t *p, int n)
+{
+  uint16_t *cp = (uint16_t*)p;
+  n /= 2;
+  int i;
+  for (i = 0; i < n; i++) {
+    if ((i & 7) == 0)
+      fprintf(ctx->fp, "\t.hword 0x%hx", cp[i]);
+    else
+      fprintf(ctx->fp, ",0x%hx", cp[i]);
+    if ((i & 7) == 7) putc('\n', ctx->fp);
+  }
+  if ((n & 7) != 0) putc('\n', ctx->fp);
+}
+
+/* Emit s390x text relocations. */
+static void emit_asm_reloc_text(BuildCtx *ctx, uint8_t *cp, int n,
+				const char *sym)
+{
+  if (n & 1 || n < 2) {
+    fprintf(stderr, "Error: instruction stream length invalid: %d.\n", n);
+    exit(1);
+  }
+  n -= 2;
+  const char *opname = NULL;
+  const char *argt = ""; /* Inserted before argument. */
+  int opcode = *(uint16_t*)(&cp[n]);
+  int arg = (opcode>>4) & 0xf;
+  switch (opcode & 0xff0f) {
+  case 0xa705: opname = "bras"; argt = "%r"; break;
+  case 0xc005: opname = "brasl"; argt = "%r"; break;
+  case 0xa704: opname = "brc"; break;
+  case 0xc004: opname = "brcl"; break;
+  default:
+    fprintf(stderr, "Error: unsupported opcode for %s symbol relocation.\n",
+	    sym);
+    exit(1);
+  }
+  emit_asm_halfwords(ctx, cp, n);
+  if (strncmp(sym+(*sym == '_'), LABEL_PREFIX, sizeof(LABEL_PREFIX)-1)) {
+    /* Various fixups for external symbols outside of our binary. */
+    fprintf(ctx->fp, "\t%s %s%d, %s@PLT\n", opname, argt, arg, sym);
+    return;
+  }
+  fprintf(ctx->fp, "\t%s %s%d, %s\n", opname, argt, arg, sym);
 }
 #else
 /* Emit words piecewise as assembler text. */
@@ -79,10 +141,14 @@ static void emit_asm_words(BuildCtx *ctx, uint8_t *p, int n)
 {
   int i;
   for (i = 0; i < n; i += 4) {
+    uint32_t ins = *(uint32_t *)(p+i);
+#if LJ_TARGET_ARM64 && LJ_BE
+    ins = lj_bswap(ins);  /* ARM64 instructions are always little-endian. */
+#endif
     if ((i & 15) == 0)
-      fprintf(ctx->fp, "\t.long 0x%08x", *(uint32_t *)(p+i));
+      fprintf(ctx->fp, "\t.long 0x%08x", ins);
     else
-      fprintf(ctx->fp, ",0x%08x", *(uint32_t *)(p+i));
+      fprintf(ctx->fp, ",0x%08x", ins);
     if ((i & 15) == 12) putc('\n', ctx->fp);
   }
   if ((n & 15) != 0) putc('\n', ctx->fp);
@@ -107,13 +173,26 @@ static void emit_asm_wordreloc(BuildCtx *ctx, uint8_t *p, int n,
 	    ins, sym);
     exit(1);
   }
-#elif LJ_TARGET_PPC || LJ_TARGET_PPCSPE
+#elif LJ_TARGET_ARM64
+  if ((ins >> 26) == 0x25u) {
+    fprintf(ctx->fp, "\tbl %s\n", sym);
+  } else {
+    fprintf(stderr,
+	    "Error: unsupported opcode %08x for %s symbol relocation.\n",
+	    ins, sym);
+    exit(1);
+  }
+#elif LJ_TARGET_PPC
 #if LJ_TARGET_PS3
 #define TOCPREFIX "."
 #else
 #define TOCPREFIX ""
 #endif
-  if ((ins >> 26) == 16) {
+  if ((ins >> 26) == 14) {
+    fprintf(ctx->fp, "\taddi %d,%d,%s\n", (ins >> 21) & 31, (ins >> 16) & 31, sym);
+  } else if ((ins >> 26) == 15) {
+    fprintf(ctx->fp, "\taddis %d,%d,%s\n", (ins >> 21) & 31, (ins >> 16) & 31, sym);
+  } else if ((ins >> 26) == 16) {
     fprintf(ctx->fp, "\t%s %d, %d, " TOCPREFIX "%s\n",
 	    (ins & 1) ? "bcl" : "bc", (ins >> 21) & 31, (ins >> 16) & 31, sym);
   } else if ((ins >> 26) == 18) {
@@ -215,6 +294,9 @@ void emit_asm(BuildCtx *ctx)
   int i, rel;
 
   fprintf(ctx->fp, "\t.file \"buildvm_%s.dasc\"\n", ctx->dasm_arch);
+#if LJ_ARCH_PPC_ELFV2
+  fprintf(ctx->fp, "\t.abiversion 2\n");
+#endif
   fprintf(ctx->fp, "\t.text\n");
   emit_asm_align(ctx, 4);
 
@@ -228,10 +310,19 @@ void emit_asm(BuildCtx *ctx)
 
 #if LJ_TARGET_ARM && defined(__GNUC__) && !LJ_NO_UNWIND
   /* This should really be moved into buildvm_arm.dasc. */
+#if LJ_ARCH_HASFPU
+  fprintf(ctx->fp,
+	  ".fnstart\n"
+	  ".save {r5, r6, r7, r8, r9, r10, r11, lr}\n"
+	  ".vsave {d8-d15}\n"
+	  ".save {r4}\n"
+	  ".pad #28\n");
+#else
   fprintf(ctx->fp,
 	  ".fnstart\n"
 	  ".save {r4, r5, r6, r7, r8, r9, r10, r11, lr}\n"
 	  ".pad #28\n");
+#endif
 #endif
 #if LJ_TARGET_MIPS
   fprintf(ctx->fp, ".set nomips16\n.abicalls\n.set noreorder\n.set nomacro\n");
@@ -255,12 +346,16 @@ void emit_asm(BuildCtx *ctx)
       BuildReloc *r = &ctx->reloc[rel];
       int n = r->ofs - ofs;
 #if LJ_TARGET_X86ORX64
-      if (ctx->mode == BUILD_machasm && r->type != 0) {
-	emit_asm_reloc_mach(ctx, ctx->code+ofs, n, ctx->relocsym[r->sym]);
+      if (r->type != 0 &&
+	  (ctx->mode == BUILD_elfasm || ctx->mode == BUILD_machasm)) {
+	emit_asm_reloc_text(ctx, ctx->code+ofs, n, ctx->relocsym[r->sym]);
       } else {
 	emit_asm_bytes(ctx, ctx->code+ofs, n);
 	emit_asm_reloc(ctx, r->type, ctx->relocsym[r->sym]);
       }
+      ofs += n+4;
+#elif LJ_TARGET_S390X
+      emit_asm_reloc_text(ctx, ctx->code+ofs, n, ctx->relocsym[r->sym]);
       ofs += n+4;
 #else
       emit_asm_wordreloc(ctx, ctx->code+ofs, n, ctx->relocsym[r->sym]);
@@ -270,6 +365,8 @@ void emit_asm(BuildCtx *ctx)
     }
 #if LJ_TARGET_X86ORX64
     emit_asm_bytes(ctx, ctx->code+ofs, next-ofs);
+#elif LJ_TARGET_S390X
+    emit_asm_halfwords(ctx, ctx->code+ofs, next-ofs);
 #else
     emit_asm_words(ctx, ctx->code+ofs, next-ofs);
 #endif
@@ -290,10 +387,7 @@ void emit_asm(BuildCtx *ctx)
 #if !(LJ_TARGET_PS3 || LJ_TARGET_PSVITA)
     fprintf(ctx->fp, "\t.section .note.GNU-stack,\"\"," ELFASM_PX "progbits\n");
 #endif
-#if LJ_TARGET_PPCSPE
-    /* Soft-float ABI + SPE. */
-    fprintf(ctx->fp, "\t.gnu_attribute 4, 2\n\t.gnu_attribute 8, 3\n");
-#elif LJ_TARGET_PPC && !LJ_TARGET_PS3
+#if LJ_TARGET_PPC && !LJ_TARGET_PS3 && !LJ_ABI_SOFTFP
     /* Hard-float ABI. */
     fprintf(ctx->fp, "\t.gnu_attribute 4, 1\n");
 #endif

@@ -8,7 +8,9 @@ extern "C"
 	#include "lua.h"
 	#include "lualib.h"
 	#include "lauxlib.h"
+#ifndef MMEXTENSION_NOSOCKET
 	#include "luasocket.h"
+#endif
 	extern unsigned char *lj_get_char_bits();
 }
 #include "FunctionCalls.h"
@@ -498,7 +500,9 @@ void InitLua()
 	*(PROC*)&fasm_Assemble = DllImport(RelPath("ExeMods\\MMExtension\\FASM.DLL"), "fasm_Assemble", true);
 
 	lua_State* L = Lua = luaL_newstate();
+	//lua_Alloc LuaAlloc = (lua_Alloc)DllImport(RelPath("ExeMods\\MMExtension\\MMExtDialogs.dll"), "LuaAlloc", true);
 	//lua_State* L = Lua = lua_newstate(LuaAlloc, 0);
+	
 	//lua_ignorelocale(L);
 	//lua_alnum(L)['?'] = 1;
 	lj_get_char_bits()['?'] = 128;
@@ -515,11 +519,13 @@ void InitLua()
 	RSMemRegister(L);
 
 	// load luasocket
+#ifndef MMEXTENSION_NOSOCKET
 	lua_getfield(L, LUA_GLOBALSINDEX, "package");
 	lua_getfield(L, -1, "preload");
 	lua_pushcfunction(L, luaopen_socket_core);
 	lua_setfield(L, -2, "socket.core");
 	lua_pop(L, 2);
+#endif
 
 	// coroutine.main
 	lua_getglobal(L, "coroutine");

@@ -1,6 +1,6 @@
 /*
 ** Debugging and introspection.
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2022 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #ifndef _LJ_DEBUG_H
@@ -26,20 +26,26 @@ typedef struct lj_Debug {
   int isvararg;
 } lj_Debug;
 
+LJ_FUNC BCPos lj_debug_framepc(lua_State *L, GCfunc *fn, cTValue *nextframe);
 LJ_FUNC cTValue *lj_debug_frame(lua_State *L, int level, int *size);
 LJ_FUNC BCLine LJ_FASTCALL lj_debug_line(GCproto *pt, BCPos pc);
 LJ_FUNC const char *lj_debug_uvname(GCproto *pt, uint32_t idx);
-LJ_FUNC const char *lj_debug_uvnamev(cTValue *o, uint32_t idx, TValue **tvp);
+LJ_FUNC const char *lj_debug_uvnamev(cTValue *o, uint32_t idx, TValue **tvp,
+				     GCobj **op);
 LJ_FUNC const char *lj_debug_slotname(GCproto *pt, const BCIns *pc,
 				      BCReg slot, const char **name);
-LJ_FUNC const char *lj_debug_funcname(lua_State *L, TValue *frame,
+LJ_FUNC const char *lj_debug_funcname(lua_State *L, cTValue *frame,
 				      const char **name);
-LJ_FUNC void lj_debug_shortname(char *out, GCstr *str);
+LJ_FUNC void lj_debug_shortname(char *out, GCstr *str, BCLine line);
 LJ_FUNC void lj_debug_addloc(lua_State *L, const char *msg,
 			     cTValue *frame, cTValue *nextframe);
 LJ_FUNC void lj_debug_pushloc(lua_State *L, GCproto *pt, BCPos pc);
 LJ_FUNC int lj_debug_getinfo(lua_State *L, const char *what, lj_Debug *ar,
 			     int ext);
+#if LJ_HASPROFILE
+LJ_FUNC void lj_debug_dumpstack(lua_State *L, SBuf *sb, const char *fmt,
+				int depth);
+#endif
 
 /* Fixed internal variable names. */
 #define VARNAMEDEF(_) \
@@ -57,5 +63,16 @@ enum {
 #undef VARNAMEENUM
   VARNAME__MAX
 };
+
+#ifdef LUA_USE_TRACE_LOGS
+LJ_FUNC void LJ_FASTCALL lj_log_trace_direct_exit(lua_State *L,
+  int vmstate, const BCIns *pc);
+LJ_FUNC void LJ_FASTCALL lj_log_trace_normal_exit(lua_State *L,
+  int vmstate, const BCIns *pc);
+LJ_FUNC void LJ_FASTCALL lj_log_trace_entry(lua_State *L,
+  unsigned traceno, const BCIns *pc);
+LJ_FUNC void LJ_FASTCALL lj_log_trace_start_record(lua_State *L, unsigned traceno,
+  const BCIns *pc, GCfunc *fn);
+#endif
 
 #endif

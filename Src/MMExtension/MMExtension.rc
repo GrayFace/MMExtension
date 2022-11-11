@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,2,0,0
- PRODUCTVERSION 2,2,0,0
+ FILEVERSION 2,3,0,0
+ PRODUCTVERSION 2,3,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -70,12 +70,16 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "MMExtension, https://sites.google.com/site/sergroj/mm/mmextension"
-            VALUE "FileVersion", "2.2.0.0"
+            VALUE "FileVersion", "2.3.0.0"
             VALUE "InternalName", "MMExtension"
             VALUE "LegalCopyright", "Sergey Rozhenko (sergroj@mail.ru)"
+#ifdef MMEXTENSION_LUADLL
+            VALUE "OriginalFilename", "MMExtCore.dll"
+#else
             VALUE "OriginalFilename", "MMExtension.dll"
+#endif
             VALUE "ProductName", "MMExtension"
-            VALUE "ProductVersion", "2.2.0.0"
+            VALUE "ProductVersion", "2.3.0.0"
         END
     END
     BLOCK "VarFileInfo"

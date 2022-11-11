@@ -50,7 +50,11 @@ void InitPath(HMODULE hModule)
 	char name[MAX_PATH+1], *namePart;
 	GetModuleFileName(hModule, name, MAX_PATH+1);
 	//LoadLibrary(name);
+#ifdef MMEXTENSION_LUADLL
+	strcat_s(name, "\\..\\..\\..\\a");
+#else
 	strcat_s(name, "\\..\\..\\a");
+#endif
 	GetFullPathName(name, MAX_PATH+1, PathBuffer, &PathNamePart);
 	GetCurrentDirectory(MAX_PATH+1, name);
 	strcat_s(name, "\\a");

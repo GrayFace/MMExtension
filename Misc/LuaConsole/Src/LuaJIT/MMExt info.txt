@@ -1,0 +1,5 @@
+LuaJIT 2.0.5 has a bug that results in random crashes on startup from time to time.
+OpenResty fork of LuaJIT 2.1.* doesn't seem to have this bug, but something's wrong with its header files (probably incompatible with VS2005).
+So, I use header files from LuaJIT 2.0.5, but lua51.lib and lua51.dll from OpenResty fork.
+I also had to modify OpenResty fork a bit to make it build in VS2005 (without C99 support).
+VS versions with C99 support don't support Windows XP by default and there's no info on how to configure that from command line.

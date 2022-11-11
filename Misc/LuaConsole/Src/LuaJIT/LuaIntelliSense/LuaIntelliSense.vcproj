@@ -138,23 +138,23 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\src\lauxlib.h"
+			RelativePath="..\src_inc\lauxlib.h"
 			>
 		</File>
 		<File
-			RelativePath="..\src\lua.h"
+			RelativePath="..\src_inc\lua.h"
 			>
 		</File>
 		<File
-			RelativePath="..\src\luaconf.h"
+			RelativePath="..\src_inc\luaconf.h"
 			>
 		</File>
 		<File
-			RelativePath="..\src\luajit.h"
+			RelativePath="..\src_inc\luajit.h"
 			>
 		</File>
 		<File
-			RelativePath="..\src\lualib.h"
+			RelativePath="..\src_inc\lualib.h"
 			>
 		</File>
 	</Files>

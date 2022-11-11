@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				UseUnicodeResponseFiles="false"
-				AdditionalIncludeDirectories=".\LuaJIT\src\;.\HDetour\;.\luasocket\src\"
+				AdditionalIncludeDirectories=".\LuaJIT\src_inc\;.\HDetour\;.\luasocket\src\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MMEXTENSION_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				UseUnicodeResponseFiles="false"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\LuaJIT\src\;.\HDetour\;.\luasocket\src\"
+				AdditionalIncludeDirectories=".\LuaJIT\src_inc\;.\HDetour\;.\luasocket\src\"
 				PreprocessorDefinitions="MM8;WIN32;_DEBUG;_WINDOWS;_USRDLL;MMEXTENSION_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
