@@ -20,7 +20,7 @@ Space       	Indoor: Switch door state (same as double-clicking the Door State b
             	Outdoor: Switch between facet mode and model mode.
 Q           	Door properties
 R           	Room properties
-T           	Choose Texture / Type of object / Test chest
+T           	Choose Texture / Type of object / Test chest / Load model
 C           	Create / Clone object
 Delete      	Delete object / chest
 P           	Move object to party position (and set its direction to direction of the party)
@@ -39,6 +39,9 @@ Rooms improve performance significantly, but more importantly the minimap is ope
 Import can't be undone with Undo button. However, when importing models to an outdoor map and choosing to delete models not present in the .obj, you can then undo the deletion.
 
 
+Map Setup:
+OutlineFlatSkip - from 0 to 1 (default is 0.9, game default is 1). Set lower value to ignore more outlines between almost flat facets.
+
 Spawns:
 "m1" / "m2" / "m3" - a group of monsters of type 1 / 2 / 3 (see MapStats.txt)
 "m1a" / "m1b" / "m1c" - a single weak / average / strong monster of type 1
@@ -48,9 +51,6 @@ Similar with "m2a", "m3a" etc.
 Chests:
 Info example:
 1/2/3/4/5/6 A7 C8 - means 1 level 1 item, ..., 6 level 6 items, 7 artifacts, 8 custom items. See "Treasure Levels" section.
-
-Map Setup:
-OutlineFlatSkip - from 0 to 1 (default is 0.9, game default is 1). Set lower value to ignore more outlines between almost flat facets.
 
 Treasure Levels:
 Treasure levels you specify for chest items or item spawns are modified according to location level in MapStats.txt (the "Tres" column). The following table is used with M# meaning map level and T# meaning treasure level of the item:
@@ -62,3 +62,20 @@ T4 [ 2 ][ 2 ][ 3 ][3-4][ 4 ][ 4 ][ 4 ]
 T5 [ 2 ][ 2 ][3-4][ 4 ][4-5][ 5 ][ 5 ]
 T6 [ 2 ][ 2 ][ 4 ][4-5][ 5 ][5-6][ 6 ]
 T7 [ 2 ][ 2 ][ 7 ][ 7 ][ 7 ][ 7 ][ 7 ]
+
+Doors:
+When modelling a door, think of how it will look on the minimap. If it move into a wall of a hall, this would be visible to the player. That's why in all standard maps doors are continuations of walls.
+When making the door interactive in the editor, it would be easier to first select its side that's perpendicular to its future movement direction and press New Door. The direction of the door would be set accordingly, but you may need to change its sign. Then select other sides and press Door Shape.
+In D3D UV coordinates of moving parts of doors get reset, it's a limitation of the engine. Use Align* properties of such facets, as they are respected.
+VertexFilter parameter determines how moving vertexes are chosen for the door:
+"Free"       - Vertexes that aren't connected to any non-door walls would be moving.
+nil          - All vertexes of facets with MovedByDoor attribute would be moving.
+"Grow"       - Vertexes further along the door's direction axis would move, making it grow.
+"Shrink"     - Vertexes from the other end would be chosen causing it to shrink.
+"CheckShift" - You can see it on some MM6 maps. When other filters don't fit, this one is used. Currently there's no way to edit what vertexes are moved in this case. These vertexes have a hidden Shift parameter. You'll also see that the door is halfway closed when you export the dungeon.
+
+"Grow" and "Shrink" filters also support VertexFilterParam1 and VertexFilterParam2 parameters. When you use "Grow" filter, VertexFilterParam1 is 0.5 by default, which means everything further than half of door's length will move. Lowering it would make more vertexes move. VertexFilterParam2 is the upper limit, unset by default. It can be useful in some scenarios. With "Shrink" filter it's the same logic, but door movement is in reverse direction.
+
+Models:
+When you select a facet, Space switches to model selection mode.
+Besides exporting and importing whole outdoor map, you can also save/load individual models, which would also copy facet bits like water flowing in a fountain. The Save button is visible when you select a model. To load a saved model, when nothing is selected choose Model and then click Type and choose it, then press Create.

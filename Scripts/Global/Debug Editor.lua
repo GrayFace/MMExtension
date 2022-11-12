@@ -536,6 +536,33 @@ function ExtractChests(fname)
 end
 
 
+function FindClosest(a, index)
+	local x, y, z = XYZ(Party)
+	local b, bv = 1/0, nil
+	local function chk(i, m)
+		local d = (m.X - x)^2 + (m.Y - y)^2, (m.Z - z)^2
+		if d < b then
+			b, bv = d, index and i or m
+		end
+	end
+	local function array(a)
+		for i, m in a do
+			chk(i, m)
+		end
+	end
+	if not pcall(array, a) then
+		for k, v in pairs(a) do
+			if type(k) == 'number' then
+				chk(k, v)
+			else
+				chk(v, k)
+			end
+		end
+	end
+	return bv
+end
+
+
 -----------------------------------------------------
 -- Unrelated to editor itself
 -----------------------------------------------------
