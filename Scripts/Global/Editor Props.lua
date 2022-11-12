@@ -612,8 +612,8 @@ local DoorProps = MakeProps{
 
 local CoordCache = {}
 
-local function GetModelCoord(t, X)
-	t = t.BaseFacets
+local function GetModelCoord(m, X)
+	local t = m.BaseFacets
 	if not CoordCache[X] then
 		CoordCache[X] = setmetatable({}, {__mode = "k"})
 	end
@@ -623,12 +623,14 @@ local function GetModelCoord(t, X)
 	end
 	local m1, m2 = 1/0, -1/0
 	for f in pairs(t) do
-		local v = f.Vertexes[1][X]
-		if v < m1 then
-			m1 = v
-		end
-		if v > m2 then
-			m2 = v
+		for _, a in ipairs(f.Vertexes) do
+			local v = a[X]
+			if v < m1 then
+				m1 = v
+			end
+			if v > m2 then
+				m2 = v
+			end
 		end
 	end
 	if X == "Z" then
@@ -637,6 +639,9 @@ local function GetModelCoord(t, X)
 		x = (m2 + m1)/2
 	end
 	x = round(x)
+	if m['Lazy'..X] then
+		x = x + m[X] - m['Lazy'..X]
+	end
 	CoordCache[X][t] = x
 	return x
 end
@@ -671,14 +676,13 @@ local ModelProps = MakeProps{
 			return
 		end
 		if IsXYZ[prop] and val ~= nil then
-			if val ~= nil then
-				local last = t[prop] or GetModelCoord(t, prop)
-				ModelsToMove[t] = ModelsToMove[t] or {}
-				ModelsToMove[t][prop] = ModelsToMove[t][prop] or last
-				t["Lazy"..prop] = t["Lazy"..prop] or last
-				Editor.State.LazyModels = true
-			elseif t["Lazy"..prop] then
-				Editor.CheckLazyModels()
+			local last = t[prop] or GetModelCoord(t, prop)
+			ModelsToMove[t] = ModelsToMove[t] or {}
+			ModelsToMove[t][prop] = ModelsToMove[t][prop] or last
+			t["Lazy"..prop] = t["Lazy"..prop] or last
+			Editor.State.LazyModels = true
+			if CoordCache[prop] then
+				CoordCache[prop][t.BaseFacets] = nil
 			end
 		elseif prop == "Name" then
 			Editor.State.ModelByName[t[prop]] = nil
