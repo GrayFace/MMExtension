@@ -73,7 +73,7 @@ internal.OnLeaveMap = OnLeaveMap
 local function OnLeaveGame()
 	MayShow = 0
 	if internal.InGame then
-		events.cocall("LeaveGame")
+		events.cocalls("LeaveGame")
 		internal.TimersLeaveGame()
 		internal.InGame = false
 	end
@@ -138,7 +138,7 @@ function internal.BeforeMapLoad()
 		end
 	end
 	--!-
-	events.cocall("InternalBeforeLoadMap", WasInGame, WasLoaded)
+	events.cocalls("InternalBeforeLoadMap", WasInGame, WasLoaded)
 	if not WasInGame then
 		LoadScripts("Global/*.lua", GlobalScripts)
 		LoadScripts("Maps/*.global.lua", GlobalScripts)
@@ -175,10 +175,10 @@ function internal.OnLoadMap()
 	-- internal.LoadMonsterIds()
 	CurMapScripts = {}
 	-- Return 'true' to cancel execution of map scripts. Used by the Editor.
-	local NoScripts = events.call("CancelLoadingMapScripts", WasInGame)
+	local NoScripts = events.cocalls("CancelLoadingMapScripts", WasInGame)
 	if not NoScripts then
 		internal.ResetEvtPlayer()
-		events.cocall("BeforeLoadMapScripts", WasInGame)
+		events.cocalls("BeforeLoadMapScripts", WasInGame)
 		LoadScripts("Maps/"..path.setext(MapName, ".lua"), CurMapScripts)
 		LoadScripts("Maps/*."..path.setext(MapName, ".lua"), CurMapScripts)
 		internal.ResetEvtPlayer()
@@ -194,7 +194,7 @@ end
 
 function internal.AfterLoadMap()
 	internal.ResetEvtPlayer()
-	events.cocall("AfterLoadMap", WasInGame)
+	events.cocalls("AfterLoadMap", WasInGame)
 end
 
 ----------- Hint, MazeInfo
@@ -208,7 +208,7 @@ local function GetHouseHint(id)
 end
 
 function internal.OnGetEventHint(evtId)
-	local h = evt.house and (events.call("GetEventHint", evtId) or evt.hint[evtId] or GetHouseHint(evt.house[evtId]))
+	local h = evt.house and (events.cocalls("GetEventHint", evtId) or evt.hint[evtId] or GetHouseHint(evt.house[evtId]))
 	if h then
 		mem.copy(TextBuffer, h, #h + 1)
 	end
@@ -217,7 +217,7 @@ end
 
 if mmver == 6 then
 	function internal.OnGetMazeInfo()
-		local h = events.call("GetMazeInfo") or evt.MazeInfo
+		local h = events.cocalls("GetMazeInfo") or evt.MazeInfo
 		if h then
 			mem.copy(TextBuffer, h, #h + 1)
 		end

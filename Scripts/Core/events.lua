@@ -276,7 +276,7 @@ function internal.CalcSpellDamage(dmg, spell, skill, mastery, HP)
 		-- :const
 		Mastery = mastery,
 		HP = HP, HitPoints = HP}
-	events.cocall("CalcSpellDamage", t)
+	events.cocalls("CalcSpellDamage", t)
 	return t.Result
 end
 
@@ -316,7 +316,7 @@ function internal.TravelWalk(mapName, x, y, buf, bufsize, result)
 	-- Sides:
 	--   0, "up", "down", "left", "right".
 	--   0 means "party start" sprite.
-	events.cocall("WalkToMap", t)
+	events.cocalls("WalkToMap", t)
 	local res = t.EnterMap and tostring(t.EnterMap)
 	if res and res ~= oldRes and assert(#res < bufsize) then
 		mem.copy(buf, res, #res + 1)
@@ -662,7 +662,7 @@ if mmver ~= 7 then
 	mem.autohook2(mmv(0x40D40F, nil, 0x4CC481), function(d)
 		CopyDialogIndexes()
 		-- Use this event to add quest indexes to #Game.DialogLogic.List:structs.DialogLogic.List# or rearrange them
-		events.cocall("PopulateQuestLog")
+		events.cocalls("PopulateQuestLog")
 	end)
 	
 	-- populate autonotes list
@@ -670,7 +670,7 @@ if mmver ~= 7 then
 		CopyDialogIndexes()
 		local t = {Category = Game.DialogLogic.AutonotesCategory}
 		-- Use this event to add autonote indexes to #Game.DialogLogic.List:structs.DialogLogic.List# or rearrange them
-		events.cocall("PopulateAutonotesList", t)
+		events.cocalls("PopulateAutonotesList", t)
 	end)
 else
 	local p = mem.StaticAlloc(4)
@@ -679,10 +679,10 @@ else
 	mem.autohook2(0x4126A8, function(d)
 		local k = i4[p]
 		if k == 200 then
-			events.cocall("PopulateQuestLog")
+			events.cocalls("PopulateQuestLog")
 		elseif k == 201 then
 			local t = {Category = Game.DialogLogic.AutonotesCategory}
-			events.cocall("PopulateAutonotesList", t)
+			events.cocalls("PopulateAutonotesList", t)
 		end
 	end)
 end
@@ -691,7 +691,7 @@ end
 mem.autohook2(mmv(0x40E73E, 0x413832, 0x4CCDB6), function(d)
 	CopyDialogIndexes()
 	local t = {Category = Game.DialogLogic.AutonotesCategory}
-	events.cocall("PopulateAutonotesList", t)
+	events.cocalls("PopulateAutonotesList", t)
 end)
 
 -- populate awards list
@@ -708,7 +708,7 @@ local function PopulateAwards(d)
 		NoShuffle = mmver == 6,
 	}
 	-- Use this event to add award indexes to #Game.DialogLogic.List:structs.DialogLogic.List# or rearrange them. Awards would later be arranged into groups of different colors. If 'NoShuffle' is set to 'true', their order within groups would be preserved, otherwise default game code will sort them in an unpredictable manner.
-	events.cocall("PopulateAwardsList", t)
+	events.cocalls("PopulateAwardsList", t)
 	d.eax = a.ListCount
 	if mmver == 6 or t.NoShuffle then
 		local t, a, sort = {}, Game.DialogLogic.List, Game.AwardsSort
@@ -732,7 +732,7 @@ end
 -- show monster info
 mem.autohook(mmv(0x41CF11, 0x41E3CC, 0x41D9B0), function(d)
 	--!(MonId) Called when monster kind in monster info dialog changes. #Game.DialogLogic.MonsterInfoMonster:structs.DialogLogic.MonsterInfoMonster# holds the monster prototype being displayed. This is the event you can use to change #Game.PatchOptions.MonSpritesSizeMul:structs.PatchOptions.MonSpritesSizeMul#.
-	events.cocall("MonsterInfoPictureChanged", Game.DialogLogic.MonsterInfoMonster.Id)
+	events.cocalls("MonsterInfoPictureChanged", Game.DialogLogic.MonsterInfoMonster.Id)
 end)
 
 -- WindowProc
@@ -755,7 +755,7 @@ do
 		local wnd, msg, wp, lp = d:getparams(0, 4)
 		d:ret(4*4)
 		local t = {Window = wnd, Msg = msg, WParam = wp, LParam = lp, Handled = false, Result = 0}
-		events.cocall("WindowMessage", t)
+		events.cocalls("WindowMessage", t)
 		if t.Handled then
 			d.eax = t.Result
 			return
@@ -768,7 +768,7 @@ do
 				Alt = (msg >= 0x104), ExtendedKey = lp:And(0x1000000) ~= 0,
 				WasPressed = lp:And(0x40000000) ~= 0, Handled = false}
 			local down = (msg % 2 == 0)
-			events.cocall(down and "KeyDown" or "KeyUp", t)
+			events.cocalls(down and "KeyDown" or "KeyUp", t)
 			if down then
 				internal.TimersKeyDown(wp, t)
 			end
@@ -786,7 +786,7 @@ end
 if mmver > 6 then
 	local hooks = HookManager()
 	hooks.autohook(mm78(0x4A1F92, 0x49FA68), function()
-		events.cocall("PostRender")
+		events.cocalls("PostRender")
 	end)
 	Conditional(hooks, "PostRender")
 end
@@ -795,7 +795,7 @@ end
 -- OnAction
 local function OnAction(InGame, a1, a2, a3)
 	local t = {Action = i4[a1], Param = i4[a2], Param2 = a3 and i4[a3] or 0, Handled = false}
-	events.cocall(InGame and "Action" or "MenuAction", t)
+	events.cocalls(InGame and "Action" or "MenuAction", t)
 	if t.Handled or InGame and internal.OnActionNPC(t) then
 		i4[a1] = 0
 	else
@@ -845,7 +845,7 @@ do
 			-- :const.ExitMapAction
 			Action = d[reg],
 		}
-		events.cocall('ExitMapAction', t)
+		events.cocalls('ExitMapAction', t)
 		Game.ExitMapAction = t.NextAction or t.Action  -- just in case someone actually needs a trick like this
 		d[reg] = t.Action or Game.ExitMapAction
 	end)
@@ -1409,7 +1409,7 @@ do
 		-- You can do a number of things here:
 		-- 1. Set #Map.LastRefillDay:structs.GameMap.LastRefillDay# to '0' to force a refill.
 		-- 2. In MM7+ handle games saved in an older version of your mod. The game checks #Map.SanitySpritesCount:structs.GameMap.SanitySpritesCount# against #Map.Sprites.Count:structs.GameMap.Sprites#, #Map.SanityFacetsCount:structs.GameMap.SanityFacetsCount# against 'FacetsCount', and on outdoor maps #Map.SanityModelsCount:structs.GameMap.SanityModelsCount# against #Map.Models.Count:structs.GameMap.Models#. If all sanity fields are non-zero and either of them doesn't match the real count, the map is forcibly refilled. You can do a similar check and either change 'Data' (use #mem.free:# and #mem.malloc:# if needed) or backup monsters and objects data and restore them in #CancelLoadingMapScripts:events.CancelLoadingMapScripts# event (that's the first of events that fire once the map is loaded).
-		events.cocall("LoadSavedMap", t)
+		events.cocalls("LoadSavedMap", t)
 		a[p] = t.Data + dx
 	end
 	mem.autohook(mmv(0x46DAB4, 0x47E520, 0x47DA26), |d| f(d, true))
@@ -1423,7 +1423,7 @@ local function PlayMapTrack(d, def, this, track)
 		MapIndex = index,
 		Track = mmver == 6 and track or Game.MapStats[index].RedbookTrack
 	}
-	events.cocall("PlayMapTrack", t)
+	events.cocalls("PlayMapTrack", t)
 	if mmver == 6 then
 		def(this, t.Track)
 	else
@@ -1476,7 +1476,7 @@ mem.hookfunction(mmv(0x4A59A0, 0x4BE671, 0x4BC1F1), 2, mmv(1, 2, 2), function(d,
 			t.Allow = false
 		end
 	end
-	events.cocall("ShowMovie", t)
+	events.cocalls("ShowMovie", t)
 	t.CallDefault()
 end)
 
@@ -1501,9 +1501,9 @@ mem.hookfunction(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, 8, function(d, def, this,
 		end
 	end
 	--!-
-	events.cocall("InternalPlaySound", t)
+	events.cocalls("InternalPlaySound", t)
 	if t.Allow then
-		events.cocall("PlaySound", t)
+		events.cocalls("PlaySound", t)
 	end
 	t.CallDefault()
 end)
@@ -1556,10 +1556,10 @@ do
 			end
 		end
 		--!-
-		events.cocall("InternalFaceAnimation", t)
+		events.cocalls("InternalFaceAnimation", t)
 		if t.Allow then
 			--!k{Player :structs.Player}
-			events.cocall("FaceAnimation", t)
+			events.cocalls("FaceAnimation", t)
 		end
 		t.CallDefault()
 	end)
@@ -1696,7 +1696,7 @@ mem.hookfunction(mmv(0x482E80, 0x48EAA6, 0x48E213), 1, mmv(1, 2, 2), function(d,
 	--   [MM6] It just adds the 'value' to 'Result'. The game does the same, but only includes one instance of each artifact into consideration.
 	--
 	-- 'SetMagicBonus' does the same to 'MagicBonus'.
-	events.cocall("CalcStatBonusByItems", t)
+	events.cocalls("CalcStatBonusByItems", t)
 	return t.Result
 end)
 
@@ -1709,7 +1709,7 @@ mem.hookfunction(mmv(0x483800, 0x48F734, 0x48EE09), 1, 1, function(d, def, this,
 	}
 	t.PlayerIndex, t.Player = GetPlayer(this)
 	--!k{Player :structs.Player}
-	events.cocall("CalcStatBonusByMagic", t)
+	events.cocalls("CalcStatBonusByMagic", t)
 	return t.Result
 end)
 
@@ -1722,7 +1722,7 @@ mem.hookfunction(mmv(0x483930, 0x48FBF8, 0x48F084), 1, 1, function(d, def, this,
 	}
 	t.PlayerIndex, t.Player = GetPlayer(this)
 	--!k{Player :structs.Player}
-	events.cocall("CalcStatBonusBySkills", t)
+	events.cocalls("CalcStatBonusBySkills", t)
 	return t.Result
 end)
 
@@ -1735,7 +1735,7 @@ if mmver > 6 then
 		}
 		t.PlayerIndex, t.Player = GetPlayer(this)
 		--!k{Player :structs.Player} [MM7+]
-		events.cocall("GetSkill", t)
+		events.cocalls("GetSkill", t)
 		return t.Result
 	end)
 end
@@ -1748,7 +1748,7 @@ mem.hookfunction(mmv(0x481A80, 0x48E19B, 0x48D62A), 1, 1, function(d, def, this,
 	}
 	t.PlayerIndex, t.Player = GetPlayer(this)
 	--!k{Player :structs.Player}
-	events.cocall("GetAttackDelay", t)
+	events.cocalls("GetAttackDelay", t)
 	return t.Result
 end)
 
@@ -1762,7 +1762,7 @@ mem.hookfunction(mmv(0x47F670, 0x48D499, 0x48CDA6), 1, 2, function(d, def, this,
 	}
 	t.PlayerIndex, t.Player = GetPlayer(this)
 	--!k{Player :structs.Player}
-	events.cocall("CalcDamageToPlayer", t)
+	events.cocalls("CalcDamageToPlayer", t)
 	return t.Result
 end)
 
@@ -1774,7 +1774,7 @@ local function SimplePlayerHook(p, name)
 		}
 		t.PlayerIndex, t.Player = GetPlayer(this)
 		--!k{Player :structs.Player}
-		events.cocall(name, t)
+		events.cocalls(name, t)
 		return t.Result
 	end)
 end
@@ -1795,14 +1795,14 @@ if false then  -- for help
 		Player = 1,
 		PlayerIndex = 1,
 	}
-	events.cocall("GetMerchantTotalSkill", t)
-	events.cocall("GetDisarmTrapTotalSkill", t)
+	events.cocalls("GetMerchantTotalSkill", t)
+	events.cocalls("GetDisarmTrapTotalSkill", t)
 	-- [MM6]
-	events.cocall("GetDiplomacyTotalSkill", t)
+	events.cocalls("GetDiplomacyTotalSkill", t)
 	-- [MM7+]
-	events.cocall("GetPerceptionTotalSkill", t)
+	events.cocalls("GetPerceptionTotalSkill", t)
 	-- [MM7+]
-	events.cocall("GetLearningTotalSkill", t)
+	events.cocalls("GetLearningTotalSkill", t)
 end
 
 -- DoBadThingToPlayer
@@ -1817,7 +1817,7 @@ mem.hookfunction(mmv(0x480010, 0x48DCDC, 0x48D166), 1, mmv(1, 2, 2), function(d,
 		t.MonsterIndex, t.Monster = GetMonster(mon)
 	end
 	--!k{Player :structs.Player, Monster :structs.MapMonster [MM7+], MonsterIndex [MM7+]}
-	events.cocall("DoBadThingToPlayer", t)
+	events.cocalls("DoBadThingToPlayer", t)
 	return t.Allow and def(this, thing, mon) or 0
 end)
 
@@ -1827,7 +1827,7 @@ mem.hookfunction(mmv(0x482DC0, 0x48EA13, 0x48E18E), 0, 1, function(d, def, val)
 		Value = val,
 		Result = def(val),
 	}
-	events.cocall("GetStatisticEffect", t)
+	events.cocalls("GetStatisticEffect", t)
 	return t.Result
 end)
 
@@ -1854,7 +1854,7 @@ do
 		end
 		t.ActivePlayerIndex, t.ActivePlayer = GetPlayer(this)
 		--!k{Player :structs.Player, ActivePlayer :structs.Player}
-		events.cocall("UseMouseItem", t)
+		events.cocalls("UseMouseItem", t)
 		t.CallDefault()
 	end)
 end
@@ -1876,7 +1876,7 @@ if mmver > 6 then
 		}
 		t.PlayerIndex, t.Player = GetPlayer(d.esi)
 		--!k{Player :structs.Player}
-		events.cocall("CanLearnSpell", t)
+		events.cocalls("CanLearnSpell", t)
 		local new = t.NeedMastery
 		if new ~= mas then
 			d.edx = MasteryToIndex[new] or new < 1 and 0 or 11
@@ -1900,7 +1900,7 @@ do
 		end
 		-- 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes care of conditions
 		--!k{Player :structs.Player}
-		events.cocall('Regeneration', t)
+		events.cocalls('Regeneration', t)
 		if t.HP ~= 0 then
 			local v = pl.HP
 			v = min(v + t.HP, max(v, pl:GetFullHP()))
@@ -1926,7 +1926,7 @@ local function ModifyItemDamage(dmg, mon, pl, slot)
 	local i = (pl - Party.PlayersArray["?ptr"]):div(Party.PlayersArray[0]["?size"])
 	t.PlayerIndex, pl = i, Party.PlayersArray[i]
 	t.Player, t.Item = pl, pl:GetActiveItem(slot, true)
-	events.cocall("ModifyItemDamage", t)
+	events.cocalls("ModifyItemDamage", t)
 	return t.Result
 end
 
@@ -1980,11 +1980,11 @@ do
 			def(this, t.Strength or strength, t.Kind or kind, item)
 			t.Handled = true
 		end
-		events.cocall("GenerateItem", t)
+		events.cocalls("GenerateItem", t)
 		if not t.Handled then
 			def(this, t.Strength or strength, t.Kind or kind, item)
 		end
-		events.cocall("ItemGenerated", t)
+		events.cocalls("ItemGenerated", t)
 	end)
 	Conditional(hooks, {"GenerateItem", "ItemGenerated"})
 end
@@ -1998,7 +1998,7 @@ mem.hookfunction(mmv(0x403050, 0x402D6E, 0x402E78), 1, 0, function(d, def, index
 		def = def and def(index) and nil
 	end
 	--!(mon:structs.MapMonster, monIndex, defaultHandler)
-	events.cocall("MonsterKilled", Map.Monsters[index], index, callDef)
+	events.cocalls("MonsterKilled", Map.Monsters[index], index, callDef)
 	callDef()
 end)
 
@@ -2018,7 +2018,7 @@ do
 			t.Exp = t.Monster.Exp
 		end
 		--!k{Monster :structs.MapMonster}
-		events.cocall("MonsterKillExp", t)
+		events.cocalls("MonsterKillExp", t)
 		if not t.Handled and t.Exp ~= 0 then
 			def(t.Exp)
 		end
@@ -2086,7 +2086,7 @@ if mmver > 6 then
 		t.DamageKind = i4[kind]
 		t.Vampiric = (i4[vampiric] ~= 0)
 		-- [MM7+]
-		events.cocall("ItemAdditionalDamage", t)
+		events.cocalls("ItemAdditionalDamage", t)
 		i4[kind] = t.DamageKind
 		i4[vampiric] = (t.Vampiric and 1 or 0)
 		return t.Result
@@ -2104,7 +2104,7 @@ mem.hookfunction(mmv(0x421DC0, 0x427522, 0x425951), 0, 3, function(d, def, mon, 
 	}
 	t.MonsterIndex, t.Monster = GetMonster(mon)
 	--!k{Monster :structs.MapMonster}
-	events.cocall("CalcDamageToMonster", t)
+	events.cocalls("CalcDamageToMonster", t)
 	return t.Result
 end)
 
@@ -2122,7 +2122,7 @@ mem.hookfunction(mmv(0x421670, 0x426A03, 0x424E3D), 0, 1, function(d, def, mon)
 	end
 	t.MonsterIndex, t.Monster = GetMonster(mon)
 	--!k{Monster :structs.MapMonster}
-	events.cocall("PickCorpse", t)
+	events.cocalls("PickCorpse", t)
 	t.CallDefault()
 end)
 
@@ -2141,7 +2141,7 @@ if mmver > 6 then
 		end
 		t.MonsterIndex, t.Monster = GetMonster(mon)
 		--!k{Monster :structs.MapMonster} [MM7+]
-		events.cocall("CastTelepathy", t)
+		events.cocalls("CastTelepathy", t)
 		t.CallDefault()
 	end)
 end
@@ -2158,7 +2158,7 @@ delayed(|| if mmver > 6 then
 		}
 		t.MonsterIndex, t.Monster = GetMonster(mon)
 		--!k{Monster :structs.MapMonster} [MM7+]
-		events.cocall("CanMonsterCastSpell", t)
+		events.cocalls("CanMonsterCastSpell", t)
 		return t.Allow
 	end)
 	Conditional(hooks, "CanMonsterCastSpell")
@@ -2187,7 +2187,7 @@ do
 			return r
 		end
 		-- 'Action' starts uninitialized. Each time you call 'CallDefault', it generates new result, assigns it to 'Action' and returns the value.
-		events.cocall("MonsterChooseAction", t)
+		events.cocalls("MonsterChooseAction", t)
 		return t.Action or def(ai, mon, monIndex, dist)
 	end)
 	Conditional(hooks, "MonsterChooseAction")
@@ -2265,12 +2265,12 @@ do
 		}
 		
 		-- Called when a player or a projectile tries to hit a monster. Can be used to completely replace what happens.
-		events.cocall("MonsterAttacked", t, attacker)
+		events.cocalls("MonsterAttacked", t, attacker)
 		if not t.Handled then
 			def(attackerID, monIndex, speed, attacker.MonsterAction or action)
 		end
 		--!k{Handled carried over from #MonsterAttacked:events.MonsterAttacked# event}
-		events.cocall("AfterMonsterAttacked", t, attacker)
+		events.cocalls("AfterMonsterAttacked", t, attacker)
 		Mon_Who, Mon_Idx, Is_Pl = old, old2, old3
 	end
 
@@ -2321,14 +2321,14 @@ do
 		}
 		
 		-- Called when a monster or a projectile tries to hit a player. Can be used to completely replace what happens.
-		events.cocall("PlayerAttacked", t, attacker)
+		events.cocalls("PlayerAttacked", t, attacker)
 		Pl_Slot = t.PlayerSlot or slot
 		if not t.Handled then
 			def(attackerID, attacker.MonsterAction or action, speed, Pl_Slot)
 		end
 		
 		--!k{Handled carried over from #PlayerAttacked:events.PlayerAttacked# event}
-		events.cocall("AfterPlayerAttacked", t, attacker)
+		events.cocalls("AfterPlayerAttacked", t, attacker)
 		Pl_Who, Pl_Slot, Is_Pl = old, old2, old3
 	end
 	
