@@ -146,11 +146,13 @@ local function DoSleep(c, time, realtime, screens)
 	table.insert(sleeps, {c, time, realtime, screens})--, FunctionFile(2)})
 end
 
-function Sleep(time, realtime, screens)
+function Sleep(time, realtime, screens, NoYield)
 	local c = coroutine.running()
 	if c then
 		DoSleep(c, time, realtime, screens)
-		return coroutine.yield(c)
+		if not NoYield then
+			return coroutine.yield(c)
+		end
 	elseif realtime then
 		mem.dll.kernel32.Sleep(time)
 	end
