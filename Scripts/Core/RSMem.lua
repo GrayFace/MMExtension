@@ -1353,7 +1353,7 @@ do -- mem.struct
 
 		local function myF(o, obj, name, val)
 			if val then
-				roError(name)
+				roError(name, 2)
 			end
 			val = {}
 			
