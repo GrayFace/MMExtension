@@ -182,8 +182,15 @@ function structs.f.GameMap(define)
 	define
 	[base + d + 1220].parray{lenA = i4, lenP = base + d + 1216}.struct(structs.SpawnPoint)  'OutdoorSpawns'
 	[base + d + 1224].i4  'OutdoorRefillCount'
-	[base + d + 1228].i4  'OutdoorLastRefillDay'
-	 .Info "First visit day"
+	[base + d + 1228].u4  'OutdoorLastRefillDay'
+	 .Info "The day of refill plus 1"
+	if mmver > 6 then
+		local d = mm78(0, 4)
+		define
+		[base + d + 1240].i4  'OutdoorSanityFacetsCount'
+		[base + d + 1244].i4  'OutdoorSanitySpritesCount'
+		[base + d + 1248].i4  'SanityModelsCount'
+	end
 	 
 	local d = mmv(393184, 0, 12)
 	define
@@ -191,7 +198,7 @@ function structs.f.GameMap(define)
 	[base + d + 1264].i8  'OutdoorLastVisitTime'
 	[base + d + 1320].array(88).array(88).abit  'VisibleMap1'
 	[base + d + 2288].array(88).array(88).abit  'VisibleMap2'
-	if mmver >= 7 then
+	if mmver > 6 then
 		define[base + d + 1232].i4  'OutdoorReputation'
 	end
 	if mmver == 8 then
@@ -201,7 +208,7 @@ function structs.f.GameMap(define)
 		[base + 192].parray(128).array(128).u1  'UnknownMap2'  -- DMAP
 		[0x6CF894].array(100).struct(structs.MapNote)  'Notes'
 	end
-	if mmver >= 7 then
+	if mmver > 6 then
 		-- [x][y] instead of [y][x]
 		define
 		[mmv(nil, 0x73D394, 0x77B35C)].array(128).array(128).array(2).r4  'TerNormDist'
@@ -224,12 +231,15 @@ function structs.f.GameMap(define)
 	[base + 680].pstruct(structs.MapOutlines)  'Outlines'
 	[base + 704].parray{lenA = i4, lenP = base + 700}.struct(structs.SpawnPoint)  'IndoorSpawns'
 	[base + 708].i4  'IndoorRefillCount'
-	[base + 712].i4  'IndoorLastRefillDay'
+	[base + 712].u4  'IndoorLastRefillDay'
+	 .Info "The day of refill plus 1"
 	[base + mmv(716, 748, 748)].struct(structs.MapExtra)  'IndoorExtra'
 	[base + mmv(716, 748, 748)].i8  'IndoorLastVisitTime'
 	[base + mmv(772, 804, 804)].array(7000).abit  'VisibileOutlines'
-	if mmver >= 7 then
+	if mmver > 6 then
 		define[base + 716].i4  'IndoorReputation'
+		define[base + 724].i4  'IndoorSanityFacetsCount'
+		define[base + 728].i4  'IndoorSanitySpritesCount'
 	end
 	
 	local function IndoorOutdoorField(o, obj, name, val)
@@ -245,11 +255,15 @@ function structs.f.GameMap(define)
 	.CustomType('Spawns', 0, IndoorOutdoorField)
 	.CustomType('RefillCount', 0, IndoorOutdoorField)
 	.CustomType('LastRefillDay', 0, IndoorOutdoorField)
+	 .Info "The day of refill plus 1"
 	.CustomType('LastVisitTime', 0, IndoorOutdoorField)
 	.CustomType('Reputation', 0, IndoorOutdoorField)
 	
 	if mmver > 6 then
-		local p = mmv(nil, 0x518674, 0x529F5C)
+		define
+		.CustomType('SanityFacetsCount', 0, IndoorOutdoorField)
+		.CustomType('SanitySpritesCount', 0, IndoorOutdoorField)
+		local p = mm78(0x518674, 0x529F5C)
 		define[p].array{400, lenA = i4, lenP = p + 400*12}.struct(structs.BaseLight)  'SpriteLights'
 	end
 
@@ -1999,8 +2013,6 @@ function structs.f.BaseLight(define)
 		[0x9].u1  'G'
 		[0xA].u1  'B'
 		[0xB].u1  'Type'
-	else
-		define.skip(2)  -- unknown
 	end
 end
 
@@ -2009,12 +2021,10 @@ function structs.f.MapLight(define)
 	define
 	.bit('Off', 0x8)
 	.u2  'Bits'  -- Attributes
+	.i2  'Brightness'  -- Brightness
 	if mmver == 6 then
 		define.i2  'Radius'  -- Radius
-	else
-		define.i2  'Brightness'  -- Brightness
-	end
-	if mmver == 8 then
+	elseif mmver == 8 then
 		define[0x10].i4  'Id'
 	end
 	define.size = mmv(0xC, 0x10, 0x14)

@@ -9,6 +9,10 @@ end
 local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
+local is6 = mmver == 6 or nil
+local is7 = mmver == 7 or nil
+local is8 = mmver == 8 or nil
+local is78 = mmver > 6 or nil
 
 local _KNOWNGLOBALS_F = Party, Game, Map, VFlipUnfixed, structs, GameInitialized0, GameInitialized1, GameInitialized2, RespectMonsterExp, SplitSkill
 
@@ -1383,6 +1387,34 @@ end
 mem.autohook(mmv(0x4554B5, 0x450AD6, 0x44E339), function(d)
 	internal.MapRefilled = 1
 end)
+
+-- LoadSavedMap
+do
+	local function f(d, outdoor)
+		local ebp = (is8 or is7 and not outdoor) and d.ebp
+		if ebp and u4[ebp - 0xC] ~= 0 then
+			return
+		end
+		local a = ebp and u4 or d
+		local p = is6 and 'ebx' or ebp and ebp - 4 or 'edi'
+		local dx = is6 and 8 or outdoor and 40 or 0
+		local t = {
+			-- Raw 'ddm' or 'dlv' data
+			Data = a[p] - dx,
+			IsOutdoor = outdoor,
+			IsIndoor = not outdoor,
+			-- [MM7+] Total numuber of facets on the map
+			FacetsCount = outdoor and d.ecx or is78 and Map.Facets.Count,
+		}
+		-- You can do a number of things here:
+		-- 1. Set #Map.LastRefillDay:structs.GameMap.LastRefillDay# to '0' to force a refill.
+		-- 2. In MM7+ handle games saved in an older version of your mod. The game checks #Map.SanitySpritesCount:structs.GameMap.SanitySpritesCount# against #Map.Sprites.Count:structs.GameMap.Sprites#, #Map.SanityFacetsCount:structs.GameMap.SanityFacetsCount# against 'FacetsCount', and on outdoor maps #Map.SanityModelsCount:structs.GameMap.SanityModelsCount# against #Map.Models.Count:structs.GameMap.Models#. If all sanity fields are non-zero and either of them doesn't match the real count, the map is forcibly refilled. You can do a similar check and either change 'Data' (use #mem.free:# and #mem.malloc:# if needed) or backup monsters and objects data and restore them in #CancelLoadingMapScripts:events.CancelLoadingMapScripts# event (that's the first of events that fire once the map is loaded).
+		events.cocall("LoadSavedMap", t)
+		a[p] = t.Data + dx
+	end
+	mem.autohook(mmv(0x46DAB4, 0x47E520, 0x47DA26), |d| f(d, true))
+	mem.autohook(mmv(0x48BEB1, 0x49A4FE, 0x4979E8), |d| f(d, false))
+end
 
 -- PlayMapTrack
 local function PlayMapTrack(d, def, this, track)
