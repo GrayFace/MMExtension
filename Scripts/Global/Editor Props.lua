@@ -960,7 +960,7 @@ local LightProps = MakeProps{
 	mm7 "R",
 	mm7 "G",
 	mm7 "B",
-	-- MM8
+	mm7 "Halo",
 	
 	IndexList = "Lights",
 	IndexSetId = mmver < 8,
@@ -969,12 +969,18 @@ local LightProps = MakeProps{
 		local a = Editor.Lights[id + 1]
 		if prop == "OBJ" then
 			return a
+		elseif prop == "Halo" then
+			return (a.Type or 5)%4 == 2
 		end
 		return a[prop] or prop ~= "Off" and 0
 	end,
 
 	set = function(id, prop, val)
 		local t = Editor.Lights[id + 1]
+		if prop == "Halo" then
+			prop = "Type"
+			val = (t.Type or 5):AndNot(3) + (val and 2 or 1)
+		end
 		AddUndoProp(id, prop, t[prop])
 		t[prop] = val
 		Map.Lights[id][prop] = val
