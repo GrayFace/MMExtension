@@ -402,7 +402,9 @@ function Editor.LoadBlv(name, KeepState)
 	if not Editor.JustOpenMap then
 		Editor.LoadBlvTime = Game.Time
 		Editor.LoadBlvKeepState = KeepState
-		Game.Time = Game.Time + 0x1000000000
+		if not (Game.PatchOptions or {}).Present then
+			Game.Time = Game.Time + 0x1000000000
+		end
 		Editor.ClearUndoStack()
 		Editor.SwitchWorkLoadEvents(true)
 		if mmver == 6 then

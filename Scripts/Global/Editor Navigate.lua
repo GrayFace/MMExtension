@@ -1186,7 +1186,14 @@ end
 
 function events.CancelLoadingMapScripts()
 	if Editor.State and Editor.StateSync or Editor.LoadBlvTime then
+		Map.LastRefillDay = 0
 		return true
+	end
+end
+
+function events.LoadSavedMap(t)
+	if Editor.LoadBlvTime then
+		Map.LastRefillDay = 0
 	end
 end
 
