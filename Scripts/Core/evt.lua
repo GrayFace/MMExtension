@@ -175,7 +175,7 @@ function internal.OnLoadMap()
 	-- internal.LoadMonsterIds()
 	CurMapScripts = {}
 	-- Return 'true' to cancel execution of map scripts. Used by the Editor.
-	local NoScripts = events.call("CancelLoadingMapScripts")
+	local NoScripts = events.call("CancelLoadingMapScripts", WasInGame)
 	if not NoScripts then
 		internal.ResetEvtPlayer()
 		events.cocall("BeforeLoadMapScripts", WasInGame)
