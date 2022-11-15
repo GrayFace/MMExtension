@@ -603,6 +603,14 @@ if isMM then
 	for f in path_find(AppPath.."General/*.lua") do
 		CheckNoDel(f)
 	end
+	if isMM == 6 then
+		for s in path.find(AppPath..'Data/Tables/Town Portal.txt') do
+			local bad = "#\9Map\9X\9Y\9Z\9Direction\9LookAngle\9Icon X\9Icon Y\9Icon Width\9Icon Height\13\n0\9OutB2.Odm\9-15079\00912878\009161\0091536\0090\009346\009280\00962\00931\13\n1\9OutC2.Odm\0096991\00913438\00997\0090\0090\009360\009186\00946\00942\13\n2\9OutE2.Odm\0093489\9-14582\009257\0090\0090\009318\009121\00952\00926\13\n3\9OutE3.Odm\9-9705\9-6858\009161\0091536\0090\009223\009156\00951\00930\13\n4\9OutD1.Odm\00913146\9-9194\0091\0090\0090\009113\009150\00951\00933\13\n5\9OutC1.Odm\9-9138\00914518\00997\0090\0090\009192\00981\00954\00930\13\n"
+			if io.load(s) == bad then
+				os.remove(s, true)
+			end
+		end
+	end
 end
 
 RunFiles("General/*.lua")

@@ -1394,3 +1394,18 @@ function KillMonstersQuest(t)
 		
 	return t
 end
+
+-----------------------------------------------------
+-- QCheck
+-----------------------------------------------------
+
+-- Mostly for backward compatibility.
+-- A function to show a topic only when the <name> quest is in <state> state.
+-- <name> defaults to current quest name.
+function QCheck(name, ...)
+	local state = ...
+	if select('#', ...) == 0 then
+		name, state = nil, name
+	end
+	return |t| vars.Quests[name or t.BaseName] == state
+end
