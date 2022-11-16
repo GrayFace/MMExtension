@@ -525,6 +525,7 @@ local LightProps = {
 	Y = true,
 	Z = true,
 	Radius = true,
+	Type = true,
 	-- Brightness = true,
 	-- Bits
 	Off = true,

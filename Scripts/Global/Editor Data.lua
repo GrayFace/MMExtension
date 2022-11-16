@@ -935,9 +935,9 @@ local function WriteLights()
 		local a = Map.Lights[i]
 		rawset(a, "?ptr", nil)
 		a["?ptr"] = a["?ptr"]  -- speed up
+		a.Brightness = 31
 		if mmver ~= 6 then
 			a.Type = 5
-			a.Brightness = 31
 		end
 		table.copy(t, a, true)
 		a["?ptr"] = nil
