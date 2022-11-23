@@ -533,6 +533,8 @@ _mem.r10 = memarr(7)
 if ffi then
 	local function ffiarr(type)
 		local size, type = ffi.sizeof(type), type.."*"
+		local ptype = type:sub(1,3) == 'int' and 'u'..type or type
+		local ntype = type:sub(1,4) == 'uint' and type:sub(2) or type
 		local function index(t, a)
 			a = assertnum(a, 2)
 			need_read(a, size, 2)
@@ -541,7 +543,7 @@ if ffi then
 		local function newindex(t, a, v)
 			a = assertnum(a, 2)
 			local a1, a2 = Protect(a, size)
-			ffi.cast(type, a)[0] = v
+			ffi.cast(v < 0 and ntype or ptype, a)[0] = v
 			Unprotect(a1, a2)
 		end
 		return setmetatable({}, {__index = index, __newindex = newindex})

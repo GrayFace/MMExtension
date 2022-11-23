@@ -192,7 +192,7 @@ end
 _G.tget = tget
 
 local function pcall2_ret(ok, ...)
-	if not ok then
+	if not ok and internal.ErrorMessage then
 		internal.ErrorMessage((...))
 	end
 	return ok, ...
@@ -529,15 +529,16 @@ if offsets.exit then
 end
 
 local FindStruct = mem.struct(function(define)
+	local u8 = mem.u8x and 'u8x' or 'u8'
 	define
 	.u4  'FileAttributes'
-	.alt.u8x  'CreationTime'
+	.alt[u8]  'CreationTime'
 	.u4  'CreationTimeLow'
 	.u4  'CreationTimeHigh'
-	.alt.u8x  'LastAccessTime'
+	.alt[u8]  'LastAccessTime'
 	.u4  'LastAccessTimeLow'
 	.u4  'LastAccessTimeHigh'
-	.alt.u8x  'LastWriteTime'
+	.alt[u8]  'LastWriteTime'
 	.u4  'LastWriteTimeLow'
 	.u4  'LastWriteTimeHigh'
 	.i4  'FileSizeHigh'

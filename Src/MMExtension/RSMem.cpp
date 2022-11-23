@@ -222,16 +222,16 @@ static int Mem_SetNum(lua_State *L)
 	//if (IsBadWritePtr((void*)p, Mem_NumSize(t))) return 0; // checked in the calling code
 	switch(t)
 	{
-		case 8:   *(long long*)p = (long long)v;                    break;
-		case 4:   *(int*)p = (int)v;                                break;
-		case 2:   *(short*)p = (short)v;                            break;
-		case 1:   *(signed char*)p = (signed char)v;                break;
-		case -8:  *(unsigned long long*)p = (unsigned long long)v;  break;
-		case -4:  *(unsigned int*)p = (unsigned int)v;              break;
-		case -2:  *(unsigned short*)p = (unsigned short)v;          break;
-		case -1:  *(unsigned char*)p = (unsigned char)v;            break;
-		case 5:   *(float*)p = (float)v;                            break;
-		case 6:   *(double*)p = (double)v;                          break;
+		case 8:   *(long long*)p = (v < 0 ? (long long)v : (unsigned long long)v);  break;
+		case 4:   *(int*)p = (v < 0 ? (int)v : (unsigned int)v);                    break;
+		case 2:   *(short*)p = (v < 0 ? (short)v : (unsigned short)v);              break;
+		case 1:   *(signed char*)p = (v < 0 ? (signed char)v : (unsigned char)v);   break;
+		case -8:  *(unsigned long long*)p = (unsigned long long)v;                  break;
+		case -4:  *(unsigned int*)p = (unsigned int)v;                              break;
+		case -2:  *(unsigned short*)p = (unsigned short)v;                          break;
+		case -1:  *(unsigned char*)p = (unsigned char)v;                            break;
+		case 5:   *(float*)p = v;                                                   break;
+		case 6:   *(double*)p = v;                                                  break;
 		case 7:
 			if (sizeof(long double) == 10)
 				*(long double*)p = v;

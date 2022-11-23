@@ -222,16 +222,16 @@ static int Mem_SetNum(lua_State *L)
 	//if (IsBadWritePtr((void*)p, Mem_NumSize(t))) return 0; // checked in the calling code
 	switch(t)
 	{
-		case 8:   *(long long*)p = (long long)v;                    break;
-		case 4:   *(int*)p = (int)v;                                break;
-		case 2:   *(short*)p = (short)v;                            break;
-		case 1:   *(signed char*)p = (signed char)v;                break;
-		case -8:  *(unsigned long long*)p = (unsigned long long)v;  break;
-		case -4:  *(unsigned int*)p = (unsigned int)v;              break;
-		case -2:  *(unsigned short*)p = (unsigned short)v;          break;
-		case -1:  *(unsigned char*)p = (unsigned char)v;            break;
-		case 5:   *(float*)p = (float)v;                            break;
-		case 6:   *(double*)p = (double)v;                          break;
+		case 8:   *(long long*)p = (v < 0 ? (long long)v : (unsigned long long)v);  break;
+		case 4:   *(int*)p = (v < 0 ? (int)v : (unsigned int)v);                    break;
+		case 2:   *(short*)p = (v < 0 ? (short)v : (unsigned short)v);              break;
+		case 1:   *(signed char*)p = (v < 0 ? (signed char)v : (unsigned char)v);   break;
+		case -8:  *(unsigned long long*)p = (unsigned long long)v;                  break;
+		case -4:  *(unsigned int*)p = (unsigned int)v;                              break;
+		case -2:  *(unsigned short*)p = (unsigned short)v;                          break;
+		case -1:  *(unsigned char*)p = (unsigned char)v;                            break;
+		case 5:   *(float*)p = v;                                                   break;
+		case 6:   *(double*)p = v;                                                  break;
 		case 7:
 			if (sizeof(long double) == 10)
 				*(long double*)p = v;
@@ -245,7 +245,11 @@ static int Mem_SetNum(lua_State *L)
 
 static int Mem_String(lua_State *L)
 {
-	char* p = (char*)ToInteger(L, 1);
+	int ptr;
+	if (!ToParam(L, 1, ptr))
+		luaL_error(L, "invalid address passed to mem.string");
+
+	char* p = (char*)ptr;
 	if (p == 0 && lua_gettop(L) == 1)
 	{
 		lua_pushstring(L, "");
@@ -374,6 +378,7 @@ void RSMemRegister(lua_State *L)
 	RegConst(L, "new", (DWORD)malloc);
 	RegConst(L, "memcpy", (DWORD)memcpy);
 	RegConst(L, "memset", (DWORD)memset);
+	RegConst(L, "memcmp", (DWORD)memcmp);
 	RegConst(L, "VirtualProtect", (DWORD)VirtualProtect);
 	RegConst(L, "IsBadCodePtr", (DWORD)IsBadCodePtr);
 	RegConst(L, "IsBadReadPtr", (DWORD)IsBadReadPtr);
