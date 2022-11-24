@@ -324,13 +324,6 @@ function Editor.ReadFacetCheckAlign(t)
 	CheckAlign(t, "BitmapV", "AlignTop", "AlignBottom")
 end
 
-local function CheckAlignMM6(t)
-	t.AlignLeft, t.AlignTop = true, true
-	CheckAlign(t, "BitmapU", "AlignLeft", "AlignRight")
-	CheckAlign(t, "BitmapV", "AlignTop", "AlignBottom")
-	-- detection of AlignRight and AlignBottom isn't there yet, so I don't bother
-end
-
 local function CheckFacetAligns()
 	local FacetDoor = {}
 	for di, t in Map.Doors do
@@ -339,10 +332,8 @@ local function CheckFacetAligns()
 		end
 	end
 	for f, i in pairs(Editor.FacetIds) do
-		if mmver ~= 6 and not FacetDoor[i] then
+		if not FacetDoor[i] then
 			Editor.ReadFacetCheckAlign(f)
-		elseif mmver == 6 and FacetDoor[i] then
-			CheckAlignMM6(f)
 		end
 	end
 end
@@ -1146,8 +1137,9 @@ function Editor.ReadMap()
 	Editor.Facets, Editor.FacetIds = ReadListEx(Facets, {}, Map.Facets, Editor.ReadFacet)
 	if mmver == 6 then
 		CompatibleIds(Editor.FacetIds)
+	else
+		CheckFacetAligns()
 	end
-	CheckFacetAligns()
 	-- join facets
 	-- InitFacetDoorIdx()
 	-- JoinFacets()
