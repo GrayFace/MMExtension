@@ -1217,7 +1217,7 @@ function Editor.GetDoorVertexLists(t, Add2, write)
 end
 
 
-function Editor.WriteDoor(a, t)
+function Editor.WriteDoor(a, t, CompileFile)
 	rawset(a, "?ptr", nil)
 	a["?ptr"] = a["?ptr"]  -- speed up
 	mem.fill(a)
@@ -1317,7 +1317,7 @@ function Editor.WriteDoor(a, t)
 
 	if next(Vertexes) or next(DFacets) then
 		a.TimeStep = (a.MoveLength*128/a.Speed2):ceil()
-		a.State = a.StartState2 and 1 or 3
+		a.State = (not CompileFile and a.StartState2) and 1 or 3
 		a.SilentMove = true
 		Editor.NeedDoorsUpdate = true
 	else
@@ -1338,7 +1338,7 @@ function Editor.ResetMoveByDoor()
 	end
 end
 
-local function WriteDoors()
+local function WriteDoors(CompileFile)
 	DoorUncutVertex = {}
 	local Doors = {}
 	local DoorIds = {}
@@ -1349,7 +1349,7 @@ local function WriteDoors()
 			DoorIds[f.Door], nd = nd, nd + 1
 			Doors[nd] = f.Door
 			Map.Doors.Count = nd
-			Editor.WriteDoor(Map.Doors[nd - 1], f.Door)
+			Editor.WriteDoor(Map.Doors[nd - 1], f.Door, CompileFile)
 		end
 	end
 	Editor.Doors = Doors
@@ -1863,7 +1863,7 @@ function Editor.UpdateMap(CompileFile)
 		Map.Doors.Count = Map.Doors.Limit
 		mem.fill(Map.Doors)
 	end
-	WriteDoors()
+	WriteDoors(CompileFile)
 	bin.DoorsSize = allocPtr - bin.DoorsBuf
 	
 	profile "WriteSprites"
@@ -1888,6 +1888,11 @@ function Editor.UpdateMap(CompileFile)
 	Editor.CheckDoorsUpdate()
 
 	if CompileFile then
+		for _, a in Map.Doors do
+			if a.StartState2 then
+				a.State = 2
+			end
+		end
 		Editor.CompileBlv(CompileFile)
 		Editor.WriteListIds()
 	end
@@ -1910,6 +1915,16 @@ function Editor.UpdateMap(CompileFile)
 	end
 	InitRoomEntityList("Sprites")
 	InitRoomEntityList("Lights")
+	if CompileFile then
+		for _, a in Map.Doors do
+			if a.StartState2 then
+				a.State = 1
+				a.SilentMove = true
+				Editor.NeedDoorsUpdate = true
+			end
+		end
+		Editor.CheckDoorsUpdate()
+	end
 	profile(nil)
 	-- return standard struct behavior
 	Editor.RemoveListSpeedup(Map.Vertexes)
