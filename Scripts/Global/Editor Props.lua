@@ -459,16 +459,15 @@ local FacetProps = MakeProps{
 		elseif Editor.ShowInvisible and (prop == "Invisible" or prop == "IsSky" and not Game.IsD3D) then
 			-- do nothing
 		elseif prop == "ScrollDown" and mmver == 6 then
-			a.IsSky = val
+			a.IsSky = val or false
 		elseif not IsFacetDataProp[prop] then
-			a[prop] = val
+			a[prop] = val or not FacetBits[prop] or 0
 		else
 			local d = NeedFacetData(a, id)
 			if prop == "BitmapU" or prop == "BitmapV" then
 				Editor["Update"..prop](t)
-				-- print(t[prop], a[prop])
 			elseif IsFacetAlignProp[prop] then
-				a[prop] = val
+				a[prop] = val or false
 				Editor["Update"..IsFacetAlignProp[prop]](t)
 			else
 				d[prop] = val
