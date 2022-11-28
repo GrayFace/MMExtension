@@ -240,6 +240,8 @@ function structs.f.GameMap(define)
 		define[base + 716].i4  'IndoorReputation'
 		define[base + 724].i4  'IndoorSanityFacetsCount'
 		define[base + 728].i4  'IndoorSanitySpritesCount'
+		define[base + 732].i4  'SanityDoorDataSize'
+		 .Info "Added in MMExtension. Instead of being checked against, it actually replaces #Map.IndoorHeader.DoorDataSize:structs.BlvHeader.DoorDataSize# when loading the .dlv, if it's non-zero."
 	end
 	
 	local function IndoorOutdoorField(o, obj, name, val)

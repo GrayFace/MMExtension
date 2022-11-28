@@ -1031,7 +1031,7 @@ if mmver > 6 then
 	-- Bitmap-independant door UV calculation in D3D mode (was good for editor when it used to change textures)
 	u4[mm78(0x46F7C4, 0x46E2A5)] = 0xC0316690  -- xor ax,ax
 	u4[mm78(0x46F784, 0x46E265)] = 0xC0316690  -- xor ax,ax
-	-- Don't reset static door texture coordinates in D3D mode
+	-- Don't reset texture coordinates if Align* properties aren't set in D3D mode
 	mem.asmpatch(mm78(0x46F622, 0x46E103), [[
 		mov ecx, [ebx + 0x2C]  ; bits
 		test ecx, 0x9000
@@ -1103,6 +1103,22 @@ else
 	mem.asmhook(mm78(0x478C40, 0x477B71), [[
 		mov [ebx + 0x4C], ax
 	]])
+end
+
+-- restore AnimatedTFT and HasData bits from Blv rather than Dlv in case patch is below 2.6
+if mmver > 6 and PatchOptionsSize < 400 then
+	local s = [[
+		mov eax, [esp+4]
+		mov edx, [esp+8]
+		mov edx, [edx]
+		mov ecx, [eax]
+		and ecx, 0x80004000  ; AnimatedTFT + HasData
+		and edx, 0xFFFFFFFF - 0x80004000
+		or edx, ecx
+		mov [eax], edx
+	]]
+	mem.asmpatch(mm78(0x49A745, 0x497C3A), s)  -- blv
+	mem.asmpatch(mm78(0x47E787, 0x47DCAD), s)  -- odm
 end
 
 -- allow 64k files in lods instead of 32k
@@ -1404,16 +1420,29 @@ do
 			IsOutdoor = outdoor,
 			IsIndoor = not outdoor,
 			-- [MM7+] Total numuber of facets on the map
-			FacetsCount = outdoor and d.ecx or is78 and Map.Facets.Count,
+			FacetsCount = is78 and (outdoor and d.ecx or Map.Facets.Count),
 		}
 		-- You can do a number of things here:
 		-- 1. Set #Map.LastRefillDay:structs.GameMap.LastRefillDay# to '0' to force a refill.
-		-- 2. In MM7+ handle games saved in an older version of your mod. The game checks #Map.SanitySpritesCount:structs.GameMap.SanitySpritesCount# against #Map.Sprites.Count:structs.GameMap.Sprites#, #Map.SanityFacetsCount:structs.GameMap.SanityFacetsCount# against 'FacetsCount', and on outdoor maps #Map.SanityModelsCount:structs.GameMap.SanityModelsCount# against #Map.Models.Count:structs.GameMap.Models#. If all sanity fields are non-zero and either of them doesn't match the real count, the map is forcibly refilled. You can do a similar check and either change 'Data' (use #mem.free:# and #mem.malloc:# if needed) or backup monsters and objects data and restore them in #CancelLoadingMapScripts:events.CancelLoadingMapScripts# event (that's the first of events that fire once the map is loaded).
+		-- 2. In MM7+ you could handle games saved in an older version of your mod. The game checks #Map.SanitySpritesCount:structs.GameMap.SanitySpritesCount# against #Map.Sprites.Count:structs.GameMap.Sprites#, #Map.SanityFacetsCount:structs.GameMap.SanityFacetsCount# against 'FacetsCount', and on outdoor maps #Map.SanityModelsCount:structs.GameMap.SanityModelsCount# against #Map.Models.Count:structs.GameMap.Models#. If all sanity fields are non-zero and either of them doesn't match the real count, the game forcibly refills the map. You can do a similar check and either change 'Data' (use #mem.free:# and #mem.malloc:# if needed) or backup monsters, objects, chests and visible map data and restore them in #CancelLoadingMapScripts:events.CancelLoadingMapScripts# event (that's the first of events that fire once the map is loaded). Not an easy task, but it will provide saves compatibility when signinficant changes to maps happen.
+		-- !b[[Important:]] #Map.Name:structs.GameMap.Name# at this point is changed from "map.odm"/"map.blv" to "map.ddm"/"map.dlv".
+		-- Another note: #Map.SanityDoorDataSize:structs.GameMap.SanityDoorDataSize# was added in MMExtension. At this point you can check it against #Map.IndoorHeader.DoorDataSize:structs.BlvHeader.DoorDataSize#, later on 'DoorDataSize' gets replaced with 'SanityDoorDataSize' if the latter is non-zero.
 		events.cocalls("LoadSavedMap", t)
 		a[p] = t.Data + dx
 	end
 	mem.autohook(mmv(0x46DAB4, 0x47E520, 0x47DA26), |d| f(d, true))
 	mem.autohook(mmv(0x48BEB1, 0x49A4FE, 0x4979E8), |d| f(d, false))
+end
+
+-- SanityDoorDataSize
+if mmver > 6 then
+	-- write
+	mem.hook(mm78(0x45FB69, 0x45D5AA), || Map.SanityDoorDataSize = Map.IndoorHeader.DoorDataSize)
+	-- read
+	mem.autohook(mm78(0x49A5B8, 0x497AAD), || Map.SanityDoorDataSize = 0)
+	mem.autohook(mm78(0x49A92E, 0x497E28), || if Map.SanityDoorDataSize ~= 0 then
+		Map.IndoorHeader.DoorDataSize = Map.SanityDoorDataSize
+	end)
 end
 
 -- PlayMapTrack
@@ -1693,7 +1722,7 @@ mem.hookfunction(mmv(0x482E80, 0x48EAA6, 0x48E213), 1, mmv(1, 2, 2), function(d,
 	--!k{Player :structs.Player}
 	-- Here's how 'SetArtifactBonus'!Params[[(value)]] method works:
 	--   [MM7+] If 'value' is bigger than 'ArtifactBonus', it modifies 'ArtifactBonus' and increases 'Result'.
-	--   [MM6] It just adds the 'value' to 'Result'. The game does the same, but only includes one instance of each artifact into consideration.
+	--   [MM6] It just adds the 'value' to 'Result'. The game does the same, but only takes one instance of each artifact into consideration.
 	--
 	-- 'SetMagicBonus' does the same to 'MagicBonus'.
 	events.cocalls("CalcStatBonusByItems", t)
