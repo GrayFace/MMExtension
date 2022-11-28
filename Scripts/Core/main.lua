@@ -416,6 +416,16 @@ end
 
 setmetatable(structs, {__index = structs_index})
 
+-- returns address of a field inside a structure or an element inside an array
+function structs.ptr(t, field)
+	local name = structs.name(t)
+	if name then
+		return structs.o[name][field] + t['?ptr']
+	end
+	-- assume an array
+	return (field - t.Low)*t.ItemSize + t['?ptr']
+end
+
 -- EditablePChar
 
 local EditablePCharText = {}

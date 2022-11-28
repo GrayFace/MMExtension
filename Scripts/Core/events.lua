@@ -1436,12 +1436,28 @@ end
 
 -- SanityDoorDataSize
 if mmver > 6 then
-	-- write
-	mem.hook(mm78(0x45FB69, 0x45D5AA), || Map.SanityDoorDataSize = Map.IndoorHeader.DoorDataSize)
-	-- read
-	mem.autohook(mm78(0x49A5B8, 0x497AAD), || Map.SanityDoorDataSize = 0)
-	mem.autohook(mm78(0x49A92E, 0x497E28), || if Map.SanityDoorDataSize ~= 0 then
-		Map.IndoorHeader.DoorDataSize = Map.SanityDoorDataSize
+	delayed(function()
+		local hooks = HookManager{
+			sanity = structs.ptr(Map, "SanityDoorDataSize"),
+			size = structs.ptr(Map.IndoorHeader, "DoorDataSize"),
+		}
+		-- write
+		hooks.asmpatch(mm78(0x45FB69, 0x45D5AA), [[
+			mov eax, [%size%]
+			mov [%sanity%], eax
+		]])
+		-- read
+		hooks.asmhook(mm78(0x49A5B8, 0x497AAD), [[
+			xor eax, eax
+			mov [%sanity%], eax
+		]])
+		hooks.asmhook(mm78(0x49A92E, 0x497E28), [[
+			mov eax, [%sanity%]
+			test eax, eax
+			jz @f
+			mov [%size%], eax
+		@@:
+		]])
 	end)
 end
 
