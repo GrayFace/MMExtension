@@ -635,53 +635,8 @@ end
 -- ReadDoor
 -----------------------------------------------------
 
--- local function VerToNum(v)
--- 	return v.X % 0x10000 + (v.Y % 0x10000)*0x10000 + (v.Z % 0x10000)*0x100000000
--- end
-
--- local function DoorCheckFree(t, ver, fac)
--- 	do return end  -- doesn't work right yet
--- 	local fac2, include, exclude = {}, {}, {}
--- 	for _, f in pairs(Facets) do
--- 		local need = fac[f]
--- 		if need and not f.MoveByDoor and not f.IsPortal then
--- 			need = false
--- 			for _, v in ipairs(f.Vertexes) do
--- 				if ver[v] then
--- 					need = true
--- 					break
--- 				end
--- 			end
--- 		end
--- 		if need then
--- 			fac2[f] = true
--- 		end
--- 		if not f.IsPortal then
--- 			for _, v in ipairs(f.Vertexes) do
--- 				(need and include or exclude)[v] = true
--- 				if not need and (not v.Shift or v.Shift.Delete) then
--- 					exclude[VerToNum(v)] = true
--- 				end
--- 			end
--- 		end
--- 	end
--- 	-- check
--- 	for v in pairs(include) do
--- 		if not ver[v] and not exclude[v] and (v.Shift and not v.Shift.Delete or not exclude[VerToNum(v)]) then
--- 			return
--- 		end
--- 	end
--- 	for v in pairs(ver) do
--- 		if exclude[v] or (not v.Shift or v.Shift.Delete) and exclude[VerToNum(v)] then
--- 			return
--- 		end
--- 	end
--- 	t.VertexFilter = "Free"
--- 	return fac2
--- end
-
 local function DoorCheckShrink(t, ver, fac)
-	local fac2, include, exclude = {}, {}, {}
+	local fac2 = {}
 	for _, f in pairs(Facets) do
 		local need = fac[f]
 		if need and not f.MoveByDoor and not f.IsPortal then
@@ -824,19 +779,36 @@ local function ReadDoor(a, t)
 				break
 			end
 		end
-	-- elseif t.VertexFilter == "Free" then
-	-- 	local v2 = Editor.GetDoorVertexLists(t)
-	-- 	for v in pairs(v2) do
-	-- 		if not ver[v] then
-	-- 			SetShiftFilter(t, ver)
-	-- 			break
-	-- 		end
-	-- 	end
 	end
 	
 	a["?ptr"] = nil
 
 	return t
+end
+
+local function CheckSameTable(t, q)
+	local n = 0
+	for v in pairs(q) do
+		if t[v] == nil then
+			return
+		end
+		n = n + 1
+	end
+	for v in pairs(t) do
+		n = n - 1
+	end
+	return n == 0
+end
+
+local function DoorTryFreeFilter(t)
+	local ver = Editor.GetDoorVertexLists(t)
+	local filter = t.VertexFilter
+	t.VertexFilter = "Free"
+	if CheckSameTable(ver, Editor.GetDoorVertexLists(t)) then
+		t.VertexFilterParam1, t.VertexFilterParam2 = nil
+	else
+		t.VertexFilter = filter
+	end
 end
 
 -----------------------------------------------------
@@ -1200,6 +1172,11 @@ function Editor.ReadMap()
 	Editor.SetState(state)
 	if Editor.ExactMode ~= 2 then
 		Editor.AddUnique()
+		for t in pairs(Editor.DoorIds) do
+			-- if t.VertexFilter then
+				DoorTryFreeFilter(t)
+			-- end
+		end
 	end
 	Editor.DefaultFileName = (Editor.MapsDir or "")..path.setext(Map.Name, '.dat')
 	-- Editor.ProcessDoors()
