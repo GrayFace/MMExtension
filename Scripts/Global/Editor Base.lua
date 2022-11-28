@@ -76,6 +76,16 @@ function Editor.AddUnique(state, SingleModel)
 			UniqueFacet(a.Vertexes, a)
 		end
 	end
+	-- update VertexIds
+	local t = {}
+	for v, id in pairs(state.VertexIds or {}) do
+		local v1 = UniqueVertex(v.X, v.Y, v.Z, v)
+		t[v1] = id
+		if v1 ~= v then
+			state.VertexIds = t
+		end
+	end
+	
 	starting = false
 	
 	return UniqueVertex, UniqueFacet

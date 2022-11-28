@@ -196,8 +196,15 @@ end
 -- Free movement
 -----------------------------------------------------
 
-function Editor.ProcessDoors()
+function Editor.ProcessDoors(move)
+	local old = not move and Game.TimeDelta
+	if old then
+		Game.TimeDelta = 0
+	end
 	mem.call(mmv(0x4603E0, 0x46F22C, 0x46DD08))
+	if old then
+		Game.TimeDelta = old
+	end
 end
 
 local deltaX, deltaY, deltaZ = 0, 0, 0
@@ -271,7 +278,7 @@ WorkModeHooks.hook(mmv(0x453B5E, 0x463471, 0x461451), function(data)
 	deltaX, deltaY, deltaZ = x%1, y%1, z%1
 	Party.X, Party.Y, Party.Z = Party.X + x - deltaX, Party.Y + y - deltaY, Party.Z + z - deltaZ
 
-	Editor.ProcessDoors()
+	Editor.ProcessDoors(true)
 	u4[data.esp] = u4[data.esp] + 5  -- skip movement
 end)
 

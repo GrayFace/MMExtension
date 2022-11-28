@@ -7,6 +7,7 @@ local _KNOWNGLOBALS = DeduceDoorStartState2
 local VertexShifts
 local FacetDoorIdx
 local Vertexes
+local NeedVertexIds
 local Facets
 local Sprites
 local Lights
@@ -567,7 +568,14 @@ end
 -- Editor.ResetDoors
 -----------------------------------------------------
 
-function Editor.ResetDoor(t)
+Editor.ResetDoor = |t| if t.State ~= 0 then
+	t.TimeStep = t.Speed2 > 0 and (t.MoveLength*128/t.Speed2):ceil() or 15360
+	t.State = 3
+	t.SilentMove = true
+	Editor.NeedDoorsUpdate = true
+end
+
+function Editor.ResetDoor2(t)
 	for i, fi in t.FacetIds do
 		assert(fi < Map.Facets.count)
 		local f = Map.Facets[fi]
@@ -583,16 +591,15 @@ function Editor.ResetDoor(t)
 		v.Y = t.VertexStartY[i]
 		v.Z = t.VertexStartZ[i]
 	end
-	if t.State == 2 then
-		t.State = 1
-		t.SilentMove = true
-	end
-	Editor.NeedDoorsUpdate = true
 end
 
 function Editor.ResetDoors()
 	for _, t in Map.Doors do
 		Editor.ResetDoor(t)
+	end
+	Editor.CheckDoorsUpdate()
+	for _, t in Map.Doors do
+		Editor.ResetDoor2(t)
 	end
 	-- local states = {}
 	-- local times = {}
@@ -773,6 +780,7 @@ local function ReadDoor(a, t)
 	local fac = {}
 	for _, i in a.VertexIds do
 		ver[Vertexes[i]] = true
+		Editor.State.VertexIds[Vertexes[i]] = i
 	end
 	for _, i in a.FacetIds do
 		fac[Facets[i + 1] or fac] = true
@@ -1168,6 +1176,7 @@ function Editor.ReadMap()
 		end
 	end
 	-- doors
+	state.VertexIds = {}
 	Editor.State = state
 	Editor.Doors, Editor.DoorIds = ReadListEx({}, {}, Map.Doors, ReadDoor)
 	-- outlines
