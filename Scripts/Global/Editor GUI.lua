@@ -685,6 +685,42 @@ local function FreeDoorId()
 	return id + 1
 end
 
+local function DoorFromSelection(door)
+	local ver = door.VertexFilter and {}
+	local props = Editor.GetProps()
+	for id in pairs(Editor.Selection) do
+		if ver then
+			local f = Editor.Facets[id + 1]
+			for _, v in ipairs(f.Vertexes) do
+				ver[v] = true
+			end
+		end
+		props.set(id, "Door", door)
+	end
+	if not ver then
+		return props.done()
+	end
+
+	local check = |f| for _, v in ipairs(f.Vertexes) do
+		if ver[v] then
+			return true
+		end
+	end
+
+	-- add all facets containing these vertexes
+	for f, id in pairs(Editor.FacetIds) do
+		if f.Door ~= door and check(f) then
+			if f.Door then
+				props.set(id, "MultiDoor", true)
+			else
+				props.set(id, "Door", door)
+			end
+		end
+	end
+	props.done()
+	Commands.SelectDoor()
+end
+
 function Commands.NewDoor()
 	-- find the 'main' facet that would define door direction
 	local FoundMoving
@@ -699,14 +735,16 @@ function Commands.NewDoor()
 	end
 	-- create door
 	local door = {
-		DirectionX = -f.nx, DirectionY = -f.ny, DirectionZ = -f.nz,
+		DirectionX = f.nx, DirectionY = f.ny, DirectionZ = f.nz,
 		MoveLength = 128, Speed1 = 50, Speed2 = 50,
 		VertexFilter = not FoundMoving and "Free" or nil,
 		Id = FreeDoorId(),
 	}
-	for id, props in Editor.ForSelection() do
-		props.set(id, "Door", door)
-	end
+	Editor.BeginUndoState()
+	DoorFromSelection(door)
+	local props = Editor.GetNewProps("Door")
+	props.set(next(Editor.Selection), "MoveLength", nil)
+	Editor.EndUndoState()
 end
 
 local function FindDoor()

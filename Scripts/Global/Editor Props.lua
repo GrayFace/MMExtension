@@ -532,6 +532,33 @@ local FirstSelDoor
 local DoorsNeedBounds = {}
 local DoorsNeedUpdate = {}
 
+local function CalcMoveLength(t)
+	local MaxLen = 64000
+	local move = MaxLen
+	local ver = Editor.GetDoorVertexLists(t)
+	local function check(f, v1, v2)
+		if not ver[v2] then
+			for X in XYZ do
+				local x = v1[X] - v2[X]
+				if (x + t['Direction'..X]*move)*x < 0 then
+					move = abs(x/t['Direction'..X])
+				end
+			end
+		end
+	end
+	for f, id in pairs(Editor.FacetIds) do
+		if f.Door == t or f.MultiDoor then
+			for i, v in ipairs(f.Vertexes) do
+				if ver[v] then
+					check(f, v, f.Vertexes[i % #f.Vertexes + 1])
+					check(f, v, f.Vertexes[(i - 2) % #f.Vertexes + 1])
+				end
+			end
+		end
+	end
+	return move ~= MaxLen and move
+end
+
 local DoorProps = MakeProps{
 	"Id",
 	"Speed1",
@@ -567,10 +594,13 @@ local DoorProps = MakeProps{
 		if not t then
 			return
 		end
-		AddUndoProp(id, prop, t[prop])
+		if prop == 'MoveLength' and not val then
+			val = CalcMoveLength(t) or t.MoveLength or 128
+		end
 		if t[prop] == val then
 			return
 		end
+		AddUndoProp(id, prop, t[prop])
 		local a = Map.Doors[Editor.DoorIds[t]]
 		t[prop] = val
 		if IsDoorDirProp[prop] then
