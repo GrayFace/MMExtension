@@ -1218,7 +1218,6 @@ function Editor.GetDoorVertexLists(t, Add2, write)
 	for f, rid in pairs(Mults) do
 		for i, v in ipairs(f.Vertexes) do
 			if DVertex[v] then
-				AddDFacet(f, rid)
 				AddFacetVerts(f, true)
 				break
 			end
@@ -1243,6 +1242,16 @@ function Editor.GetDoorVertexLists(t, Add2, write)
 		else
 			Editor.LastError = "Unknown VertexFilter"
 			Editor.LastErrorFacets = DFacets
+		end
+	end
+
+	-- enumerate differed multidoor facets
+	for f, rid in pairs(Mults) do
+		for i, v in ipairs(f.Vertexes) do
+			if DVertex[v] then
+				AddDFacet(f, rid)
+				break
+			end
 		end
 	end
 	

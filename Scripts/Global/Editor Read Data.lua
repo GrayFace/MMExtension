@@ -811,6 +811,14 @@ local function DoorTryFreeFilter(t)
 	end
 end
 
+local function ClearMovedByDoor()
+	for f in pairs(Editor.FacetIds) do
+		if f.MovedByDoor and f.Door.VertexFilter then
+			f.MovedByDoor = nil
+		end
+	end
+end
+
 -----------------------------------------------------
 -- ReadChest
 -----------------------------------------------------
@@ -1173,11 +1181,10 @@ function Editor.ReadMap()
 	if Editor.ExactMode ~= 2 then
 		Editor.AddUnique()
 		for t in pairs(Editor.DoorIds) do
-			-- if t.VertexFilter then
-				DoorTryFreeFilter(t)
-			-- end
+			DoorTryFreeFilter(t)
 		end
 	end
+	ClearMovedByDoor()
 	Editor.DefaultFileName = (Editor.MapsDir or "")..path.setext(Map.Name, '.dat')
 	-- Editor.ProcessDoors()
 	Editor.profile(nil)
