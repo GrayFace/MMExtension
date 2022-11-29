@@ -187,7 +187,7 @@ local mm6 = (PaperDollMode == 6)
 -- 	'MainHand',
 -- 	'Player.hand1a', 'Player.hand1', 'Armor.hand1a', 'Armor.hand1',
 -- 	'ExtraHand.hand2', 'ExtraHand.shield',
--- 	'Player.hand2', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2h',
+-- 	'Player.hand2', 'Player.hand2f', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2f', 'Armor.hand2h',
 -- }]]
 PaperDollDrawOrder = {'BackDoll', 'BackDoll.menu', 'BackDoll.game',
 	'Bow', 'Cloak',
@@ -203,7 +203,7 @@ PaperDollDrawOrder = {'BackDoll', 'BackDoll.menu', 'BackDoll.game',
 	'MainHand',
 	'Player.hand1a', 'Player.hand1', 'Armor.hand1a', 'Armor.hand1',
 	'ExtraHand.hand2', 'ExtraHand.shield',
-	'Player.hand2', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2h',
+	'Player.hand2', 'Player.hand2f', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2f', 'Armor.hand2h',
 }
 
 local function Is2Handed(it)
@@ -291,6 +291,8 @@ local function GetHiddenPieces(pl)
 		hide.shield = not hide.hand2  -- hand under shield
 	end
 	hide[InMenu and 'game' or 'menu'] = true
+	-- 2nd hand when not holding anything
+	hide.hand2f = hide.arm2f
 	-- 2nd hand for 2-handed weapon
 	hide.hand2h = hide.arm2h
 	-- 2nd arm for 2-handed weapon, drawn behind armor
