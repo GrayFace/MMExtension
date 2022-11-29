@@ -185,7 +185,7 @@ local mm6 = (PaperDollMode == 6)
 -- 	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h',
 -- 	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
 -- 	'MainHand',
--- 	'Player.hand1a', 'Player.hand1', 'Armor.hand1a', 'Armor.hand1',
+-- 	'Player.hand1a', 'Player.hand1', 'Player.hand1f', 'Armor.hand1a', 'Armor.hand1', 'Armor.hand1f',
 -- 	'ExtraHand.hand2', 'ExtraHand.shield',
 -- 	'Player.hand2', 'Player.hand2f', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2f', 'Armor.hand2h',
 -- }]]
@@ -201,7 +201,7 @@ PaperDollDrawOrder = {'BackDoll', 'BackDoll.menu', 'BackDoll.game',
 	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h',
 	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
 	'MainHand',
-	'Player.hand1a', 'Player.hand1', 'Armor.hand1a', 'Armor.hand1',
+	'Player.hand1a', 'Player.hand1', 'Player.hand1f', 'Armor.hand1a', 'Armor.hand1', 'Armor.hand1f',
 	'ExtraHand.hand2', 'ExtraHand.shield',
 	'Player.hand2', 'Player.hand2f', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2f', 'Armor.hand2h',
 }
@@ -303,6 +303,8 @@ local function GetHiddenPieces(pl)
 	hide.arm1f = not hide.arm1
 	-- 1st hand when holding a weapon
 	hide.hand1 = hide.arm1
+	-- 1st hand when not holding a weapon
+	hide.hand1f = not hide.arm1
 	local player = pl
 	--!k{hand1a 1st hand (always drawn), menu in new game menu (for BackDoll in MM8), game in game (for BackDoll in MM8)} Here I've described pieces that 'PaperDoll' module handles automatically. You can define your own pieces through #PaperDollDrawOrder:# array and hide them conditionally here.
 	events.cocall('PaperDollHiddenPieces', hide, player)
