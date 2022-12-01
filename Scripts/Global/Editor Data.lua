@@ -620,7 +620,7 @@ local function WriteRoom(a, t)
 	a.Bits = t.BSP and 24 or 8  -- 8 for 'have non-vertical portals', 16 for 'has BSP'
 	a.Darkness = t.Darkness or state.DefaultDarkness
 	a.FirstBSPNode = StoreBSP(t.BSP)
-	a.NonBSPDrawFacetsCount = t.NonBSP
+	a.NonBSPDrawFacetsCount = t.BSP and t.NonBSP or #t.DrawFacets
 	if Game.Version == 8 then
 		a.EaxEnvironment = t.EaxEnvironment or 0
 	end
