@@ -145,6 +145,7 @@ function Editor.SetState(state)
 end
 
 function Editor.SetStateLoaded()
+	Editor.LoadingOldState = nil
 	Editor.StateSync = true
 	Editor.UpdateSelectionState(true)
 	Editor.UpdateTileSelectState()
@@ -382,6 +383,7 @@ local function FindExtInGamesLod(ext)
 end
 
 function Editor.NeedStateSync()
+	Editor.LoadingOldState = true
 	local s = Editor.State.BaseInternalMap
 	if s and s:lower() ~= Map.Name:lower() and FindInGamesLod(s) then
 		return Editor.LoadBlv(s, true)
@@ -396,6 +398,7 @@ function Editor.NeedStateSync()
 			Editor.UpdateSelectionState(true)  -- unknown error
 		end
 	end
+	Editor.LoadingOldState = nil
 end
 
 function Editor.LoadBlv(name, KeepState)
@@ -405,7 +408,9 @@ function Editor.LoadBlv(name, KeepState)
 		if not (Game.PatchOptions or {}).Present then
 			Game.Time = Game.Time + 0x1000000000
 		end
-		Editor.ClearUndoStack()
+		if not KeepState then
+			Editor.ClearUndoStack()
+		end
 		Editor.SwitchWorkLoadEvents(true)
 		if mmver == 6 then
 			mem.u1[offsets.MapName] = 1  -- avoid triggering losing game

@@ -39,6 +39,7 @@ end
 local state
 local Facets
 local FacetIds
+local LastFacetIds
 local DeanimateFacets
 
 
@@ -203,7 +204,7 @@ local function WriteModel(a, t, mid, update)
 	Facets.n = mid*64
 	for f, i in pairs(t.Facets) do
 		if not update then
-			Editor.AddToList(Facets, FacetIds, f, type(i) == "number" and mid*64 + i)
+			Editor.AddToList(Facets, FacetIds, f, type(i) == "number" and mid*64 + i or LastFacetIds[f])
 		end
 		fn = fn + 1
 		for _, v in ipairs(f.Vertexes) do
@@ -461,6 +462,10 @@ end
 local function PrepareLists()
 	Editor.CheckLazyModels()
 	state.Header = state.Header or {}
+	LastFacetIds = Editor.LoadingOldState and Editor.FacetIds or {}
+	local LastModelIds = Editor.LoadingOldState and Editor.ModelIds or {}
+	local LastSpriteIds = Editor.LoadingOldState and Editor.SpriteIds or {}
+
 	-- facets
 	DeanimateFacets = {}
 	Facets = {}
@@ -475,7 +480,7 @@ local function PrepareLists()
 	Editor.ModelIds = {}
 	Editor.Models = {}
 	for a, id in pairs(state.Models) do
-		Editor.AddToList(Editor.Models, Editor.ModelIds, a, id)
+		Editor.AddToList(Editor.Models, Editor.ModelIds, a, LastModelIds[a] or id)
 	end
 	Editor.FinalizeList(Editor.Models, Editor.ModelIds)
 	-- sprites
@@ -483,7 +488,7 @@ local function PrepareLists()
 	Editor.SpriteIds = {}
 	state.Sprites = state.Sprites or {}
 	for a, id in pairs(state.Sprites) do
-		Editor.AddToList(Editor.Sprites, Editor.SpriteIds, a, id)
+		Editor.AddToList(Editor.Sprites, Editor.SpriteIds, a, LastSpriteIds[a] or id)
 	end
 	Editor.FinalizeList(Editor.Sprites, Editor.SpriteIds)
 	-- other

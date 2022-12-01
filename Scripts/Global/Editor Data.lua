@@ -1039,11 +1039,10 @@ end
 function Editor.WriteSpawns()
 	local state = Editor.State
 	local Spawns, SpawnIds = {}, {}
-	local n = 0
+	local LastIds = Editor.LoadingOldState and Editor.SpawnIds or {}
 	state.Spawns = state.Spawns or {}
 	for a in pairs(state.Spawns) do
-		SpawnIds[a], n = n, n + 1
-		Spawns[n] = a
+		AddToList(Spawns, SpawnIds, a, LastIds[a])
 	end
 	Editor.Spawns = Spawns
 	Editor.SpawnIds = SpawnIds
@@ -1600,30 +1599,19 @@ function Editor.WriteObject(a, t)
 	a["?ptr"] = nil
 end
 
-local function RemapSelection(old, new)
-	local t = {}
-	for id in pairs(Editor.Selection) do	
-		t[new[old[id + 1]]] = true
-	end
-	Editor.Selection = t
-end
-
 local function WriteObjects()
 	Editor.State.Objects = Editor.State.Objects or {}
 	Map.Objects.Count = 0
-	local OldObjects = Editor.Objects
+	local LastIds = Editor.LoadingOldState and Editor.ObjectIds or {}
 	Editor.Objects = {}
 	Editor.ObjectIds = {}
 	for t, id in pairs(Editor.State.Objects) do
-		AddToList(Editor.Objects, Editor.ObjectIds, t, id)
+		AddToList(Editor.Objects, Editor.ObjectIds, t, LastIds[t] or id)
 	end
 	FinalizeList(Editor.Objects, Editor.ObjectIds)
 	Map.Objects.Count = #Editor.Objects
 	for i, t in ipairs(Editor.Objects) do
 		Editor.WriteObject(Map.Objects[i - 1], t)
-	end
-	if Editor.SelectionKind == skObject then
-		RemapSelection(OldObjects, Editor.ObjectIds)
 	end
 end
 
@@ -1674,11 +1662,11 @@ end
 local function WriteMonsters(CompileFile)
 	Editor.State.Monsters = Editor.State.Monsters or {}
 	Map.Monsters.Count = 0
-	local OldMonsters = Editor.Monsters
+	local LastIds = Editor.LoadingOldState and Editor.MonsterIds or {}
 	Editor.Monsters = {}
 	Editor.MonsterIds = {}
 	for t, id in pairs(Editor.State.Monsters) do
-		AddToList(Editor.Monsters, Editor.MonsterIds, t, id)
+		AddToList(Editor.Monsters, Editor.MonsterIds, t, LastIds[t] or id)
 	end
 	FinalizeList(Editor.Monsters, Editor.MonsterIds)
 	for i, t in ipairs(Editor.Monsters) do
@@ -1690,9 +1678,6 @@ local function WriteMonsters(CompileFile)
 			assert(n == i - 1)
 			WriteMonster(a, t, CompileFile)
 		end
-	end
-	if Editor.SelectionKind == skMonster then
-		RemapSelection(OldMonsters, Editor.MonsterIds)
 	end
 end
 
@@ -1735,6 +1720,9 @@ local function NewEntityList()
 end
 
 local function PrepareLists(compile)
+	local LastFacetIds = Editor.LoadingOldState and Editor.FacetIds or {}
+	local LastSpriteIds = Editor.LoadingOldState and Editor.SpriteIds or {}
+	local LastLightIds = Editor.LoadingOldState and Editor.LightIds or {}
 	FacetData = {{}}
 	DeanimateFacets = {}
 	Vertexes = {}
@@ -1785,7 +1773,7 @@ local function PrepareLists(compile)
 				doors[a.Door] = true
 			end
 			if not a.IsPortal or not a.Room or a.Room == i - 1 or a.RoomBehind ~= i - 1 then
-				AddToList(Facets, FacetIds, a, r.Facets[a])
+				AddToList(Facets, FacetIds, a, LastFacetIds[a] or r.Facets[a])
 			end
 		end
 	end
@@ -1812,7 +1800,7 @@ local function PrepareLists(compile)
 	RoomSprites = state.ExactRoomSprites or NewEntityList()
 	state.Sprites = state.Sprites or {}
 	for a, id in pairs(state.Sprites) do
-		AddToList(Editor.Sprites, Editor.SpriteIds, a, id)
+		AddToList(Editor.Sprites, Editor.SpriteIds, a, LastSpriteIds[a] or id)
 		if compile and not state.ExactRoomSprites then
 			AssignSpriteToRooms(a)
 		end
@@ -1823,7 +1811,7 @@ local function PrepareLists(compile)
 	RoomLights = state.ExactRoomLights or NewEntityList()
 	state.Lights = state.Lights or {}
 	for a, id in pairs(state.Lights) do
-		AddToList(Lights, LightIds, a, id)
+		AddToList(Lights, LightIds, a, LastLightIds[a] or id)
 		if compile and not state.ExactRoomLights then
 			AssignLightToRooms(a)
 		end
