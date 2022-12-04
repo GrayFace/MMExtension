@@ -733,11 +733,11 @@ function Commands.NewDoor()
 	local f = Editor.Facets[next(Editor.Selection) + 1]
 	for id in pairs(Editor.Selection) do
 		local f1 = Editor.Facets[id + 1]
-		if f1.MovedByDoor then
+		local mov = (f1.MovedByDoor and 1 or 0) - (FoundMoving or 0)
+		if mov > 0 then
 			f = f1
-			FoundMoving = true
-			break
-		elseif weight(f1) > weight(f) then
+			FoundMoving = 1
+		elseif mov == 0 and weight(f1) > weight(f) then
 			f = f1
 		end
 	end
