@@ -262,7 +262,7 @@ WorkModeHooks.hook(mmv(0x453B5E, 0x463471, 0x461451), function(data)
 	if Keys.IsPressed(const.Keys.CTRL) then
 		d = 0
 	elseif Keys.IsPressed(const.Keys.SHIFT) then
-		d = d*2
+		d = d*3
 	end
 	local x, y, z = deltaX, deltaY, deltaZ
 	do
@@ -301,6 +301,9 @@ function Editor.CopyPartyPos(to, from)
 end
 
 function WorkEvents.Tick()
+	if not Editor.LoadBlvTime then
+		Game.Time = Editor.Time
+	end
 	if Editor.StateSync and Game.CurrentScreen == 0 and not Game.MoveToMap.Defined then
 		Editor.State.Party = Editor.State.Party or {}
 		Editor.CopyPartyPos(Editor.State.Party, Party)
@@ -426,16 +429,6 @@ end)
 		-- end
 	-- end
 -- end
-
------------------------------------------------------
--- Tick - Keep game time
------------------------------------------------------
-
-function WorkEvents.Tick()
-	if not Editor.LoadBlvTime then
-		Game.Time = Editor.Time
-	end
-end
 
 -----------------------------------------------------
 -- Left Click - Select facets and objects

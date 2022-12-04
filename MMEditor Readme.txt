@@ -11,10 +11,10 @@ Ctrl+S      	Save
 Ctrl+O      	Open
 Ctrl+Z      	Undo (note that whole map .obj import can't be undone)
 Ctrl+Shift+Z	Redo (also Ctrl+Y)
-WASD        	Movement (hold Shift to move twice as fast, Double Speed mode of the patch also works)
+WASD        	Movement (hold Shift to move 3 times as fast, Double Speed mode of the patch also works)
 Mouse Wheel 	Move up/down
 M           	Map
-X           	Unselect
+X           	Unselect all
 E           	Edit properties
 Space       	Indoor: Switch door state (same as double-clicking the Door State button)
             	Outdoor: Switch between facet mode and model mode.
@@ -25,9 +25,10 @@ C           	Create / Clone object
 Delete      	Delete object / chest
 P           	Move object to party position (and set its direction to direction of the party)
 L           	Land object on the ground
-Arrows      	Move object (hold Alt to do it in smaller steps or Ctrl for larger steps)
+Arrows      	Move object / Move texture cordinates (hold Alt to do it in smaller steps or Ctrl for larger steps)
 Page Up/Down	Move object up/down
-Ctrl        	If you hold Ctrl while clicking Select Same Texture or Select Same Object outdoors, facets of all models would be selected rather than just the current one. Ctrl and Shift affect selecting things with the mouse in standard way.
+Ctrl        	If you hold Ctrl while clicking Select Same Texture or Select Same Object outdoors, facets of all models would be selected rather than just the current one.
+Shift+Click 	Add to selection or remove from selection.
 
 Import:
 Import As Objects - every object or group in .obj is marked as a separate object. Only done for Select Object button.
@@ -77,5 +78,5 @@ nil          - All vertexes of facets with MovedByDoor attribute would be moving
 "Grow" and "Shrink" filters also support VertexFilterParam1 and VertexFilterParam2 parameters. When you use "Grow" filter, VertexFilterParam1 is 0.5 by default, which means everything further than half of door's length will move. Lowering it would make more vertexes move. VertexFilterParam2 is the upper limit, unset by default. It can be useful in some scenarios. With "Shrink" filter it's the same logic, but door movement is in reverse direction.
 
 Models:
-When you select a facet, Space switches to model selection mode.
-Besides exporting and importing whole outdoor map, you can also save/load individual models, which would also copy facet bits like water flowing in a fountain. The Save button is visible when you select a model. To load a saved model, when nothing is selected choose Model and then click Type and choose it, then press Create.
+When you select a facet on an outdoor map, pressing Space switches to/from model manipulation mode. You can move, land or save models in special format by pressing Save button.
+Besides exporting and importing whole outdoor map, you can also import individual models. To do so, when nothing is selected choose Model and then click Type and choose the model file, then press Create. Besides standard OBJ import this allows you to load previously saved models in MDT format, which retains all setup, such as facet bits indicating water flowing in a fountain, event numbers etc. Which workflow to choose is up to you.
