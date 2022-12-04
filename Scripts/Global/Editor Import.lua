@@ -351,6 +351,7 @@ local function LoadOdmObj(file)
 	NewFacets, OldFacets = {}, {}
 	local OldModels = state.ModelByName or {}
 	local models = {}
+	local duplicates = {}
 	state.ModelByName = models
 	local obj
 	local ObjName
@@ -412,6 +413,8 @@ local function LoadOdmObj(file)
 			obj = {}
 			if s == GroundStr then
 				return
+			elseif models[s] then
+				duplicates[#duplicates + 1] = s
 			end
 			UniqueVertex, UniqueFacet = Editor.AddUnique(state, OldModels[s])
 			local model = OldModels[s] or {Name = s}
@@ -463,6 +466,11 @@ local function LoadOdmObj(file)
 				Editor.AddDeleteModelUndo(m, state)
 			end
 		end
+	end
+	
+	if duplicates[1] then
+		Editor.LastError = "Duplicated models found:\n"..table.concat(duplicates)
+		Editor.LastErrorFacets = {}
 	end
 end
 
