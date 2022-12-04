@@ -729,6 +729,7 @@ end
 function Commands.NewDoor()
 	-- find the 'main' facet that would define door direction
 	local FoundMoving
+	local weight = |f| max(max(abs(f.nx), abs(f.ny)), abs(f.nz)) + (f.nx == 0 and 1 or 0) + (f.ny == 0 and 1 or 0) + (f.nz == 0 and 1 or 0)
 	local f = Editor.Facets[next(Editor.Selection) + 1]
 	for id in pairs(Editor.Selection) do
 		local f1 = Editor.Facets[id + 1]
@@ -736,6 +737,8 @@ function Commands.NewDoor()
 			f = f1
 			FoundMoving = true
 			break
+		elseif weight(f1) > weight(f) then
+			f = f1
 		end
 	end
 	-- create door
