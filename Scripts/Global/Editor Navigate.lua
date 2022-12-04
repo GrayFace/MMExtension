@@ -120,6 +120,7 @@ PatchOption("BaseMouseLookTempKey")
 PatchOption("BaseMouseLookChangeKey")
 PatchOption("BaseInventoryKey", 0)
 PatchOption("BaseCharScreenKey", 0)
+PatchOption("ShooterMode", 0, 280)
 
 local function SwitchableEvents()
 	local t, was = {}, false
