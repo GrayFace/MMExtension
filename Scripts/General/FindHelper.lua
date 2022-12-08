@@ -49,3 +49,15 @@ function FR1(p, p1, start, stop)
 	end	
 	return "Ref{".._G.table.concat(t, ", ").."}", "Ref{".._G.table.concat(t1, ", ").."}"
 end
+
+-- Find all function calls:
+-- local p = 0x402CAE
+-- local str = [[    (p: $%X; old: $402CAE; newp: @FastCosX; t: RShtCall; Querry: hqSmoothMouseLook), // Smooth mouse look]]
+-- local t = {}
+
+-- 	for i = 0x401000, select(Game.Version - 5, 0x4B9000, 0x4D8000, 0x508000) do
+-- 		local n = mem.GetInstructionSize(i)
+-- 		if n == 5 and mem.u1[i] == 0xE8 and mem.i4[i + 1] + i + 5 == p then
+-- 			print(str:format(i))
+-- 		end
+-- 	end

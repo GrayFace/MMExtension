@@ -1,8 +1,6 @@
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
 local i4, i2, i1, u4, u2, u1, r4, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.r4, mem.pchar, mem.call
 
-local mmver = offsets.MMVersion
-
 local function mwrite(p, a, v, ...)
 	if v then
 		a[p] = v
@@ -37,7 +35,7 @@ function DrawScreenEffectD3D(BitmapIndex, u, v, du, dv, x1, y1, x2, y2, cl, cl2,
 	local SetRenderState = u4[vt + 88]
 	local DrawPrimitive = u4[vt + 112]
 	local SetTextureStageState = u4[vt + 0xA0]
-	call(SetTextureStageState, 0, dev, 0, 12, 1)  -- D3DTSS_ADDRESS
+	call(SetTextureStageState, 0, dev, 0, 12, 1)  -- D3DTSS_ADDRESS = D3DTADDRESS_WRAP
 	call(SetTexture, 0, dev, 0, Game.BitmapsLod.D3D_Textures[BitmapIndex])
 	
 	call(SetRenderState, 0, dev, 28, 0)  -- D3DRENDERSTATE_FOGENABLE

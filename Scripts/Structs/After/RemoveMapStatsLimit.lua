@@ -141,10 +141,7 @@ mem.autohook(mmv(0x4466F7, 0x453FD1, 0x45173B), function(d)
 	if mmver > 6 then
 		Game.MapFogChances.Resize(n)
 	end
-	if patch then
-		patch()
-		patch = nil
-	end
+	patch = patch and patch()
 	
 	-- update address
 	d[mmv('ebx', 'esi', 'esi')] = Game.MapStats['?ptr']

@@ -151,7 +151,7 @@ function Sleep(time, realtime, screens, NoYield)
 	if c then
 		DoSleep(c, time, realtime, screens)
 		if not NoYield then
-			return coroutine.yield(c)
+			return coroutine.yield()
 		end
 	elseif realtime then
 		mem.dll.kernel32.Sleep(time)

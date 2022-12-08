@@ -593,8 +593,7 @@ local DoorProps = MakeProps{
 		local t = Editor.Facets[id + 1].Door
 		if not t then
 			return
-		end
-		if prop == 'MoveLength' and not val then
+		elseif prop == 'MoveLength' and not val then
 			val = CalcMoveLength(t) or t.MoveLength or 128
 		end
 		if t[prop] == val then

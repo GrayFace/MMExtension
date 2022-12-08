@@ -1399,9 +1399,14 @@ end
 -- QCheck
 -----------------------------------------------------
 
--- Mostly for backward compatibility.
--- A function to show a topic only when the <name> quest is in <state> state.
--- <name> defaults to current quest name.
+--!(name, state) Mostly for backward compatibility.
+-- A function to show a topic only when the 'name' quest is in 'state' state.
+-- 'name' defaults to current quest name.
+-- Examples:
+-- !Lua[[QCheck('MyQuest') = || vars.Quests.MyQuest == nil]]
+-- !Lua[[QCheck('MyQuest', 'Done') = || vars.Quests.MyQuest == 'Done']]
+-- !Lua[[QCheck() = |t| vars.Quests[t.BaseName] == nil]]
+-- !Lua[[QCheck(nil, 'Done') = |t| vars.Quests[t.BaseName] == 'Done']]
 function QCheck(name, ...)
 	local state = ...
 	if select('#', ...) == 0 then

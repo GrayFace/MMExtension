@@ -161,14 +161,14 @@ function Editor.SetWorkMode(mode)
 		Party.WaterWalkingBit = false
 		Party.InJumpSpell = true
 		Party.InLava = false
-		if Editor.SelectionKind == skFacet then
+		if Editor.SelectionKind == skFacet and Editor.StateSync then
 			local sel = Editor.Selection
 			Editor.Selection = {}
 			for id in pairs(sel) do
 				Editor.SelectSingleFacet(id)
 			end
 		end
-	elseif Editor.SelectionKind == skFacet then
+	elseif Editor.SelectionKind == skFacet and Editor.StateSync then
 		local sel = Editor.Selection  -- table.copy(Editor.Selection)
 		Editor.ClearSelection()
 		Editor.Selection = sel
