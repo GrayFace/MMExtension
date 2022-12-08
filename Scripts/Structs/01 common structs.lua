@@ -1404,7 +1404,7 @@ function structs.f.ItemsTxtItem(define)
 		o = 0xE
 	end
 	define
-	[0x1B+o].array(1, 6).u1  'ChanceByLevel'
+	[0x1A+o].array(1, 6).u1  'ChanceByLevel'
 	[0x20+o].i1  'IdRepSt' -- ID/Rep/St
 	if mmver == 6 then
 		define
