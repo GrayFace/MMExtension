@@ -580,6 +580,10 @@ end]=]
 	[mmv(0x610830, 0x6A06A0, 0x6CE5F8)].struct(structs.Lod)  'SaveGameLod'
 	if mmver == 7 then
 		define[0x6BE8D8].struct(structs.Lod)  'EventsLod'
+	elseif mmver == 8 then
+		define
+		[0x6F30D0].struct(structs.LanguageLod)  'EnglishTLod'
+		[0x6F330C].struct(structs.LanguageLod)  'EnglishDLod'
 	end
 	define.Info{Name = "IsD3D", new = true}
 	if mmver > 6 then
@@ -654,6 +658,12 @@ end]=]
 		 .Info{Sig = "Id, Kind:const.MonsterKind"}
 	end
 	define
+	.func{name = "FileRead", p = offsets.fread, cc = 0; 0, 1, 0, 0}
+	 .Info{Sig = "pTarget, Size, Count, FileStream"; "Reads 'Size'*'Count' bytes from 'FileStream' into 'pTarget' buffer."}
+	.func{name = "FileSeek", p = mmv(0x4AE5B0, 0x4CB7EC, 0x4DA588), cc = 0; 0, 0, 0}
+	 .Info{Sig = "FileStream, Offset, Origin = 0"; "Sets current position of 'FileStream'.\n\t'Origin' = '0' sets absolute position to 'Offset'.\n\t'Origin' = '1' adds 'Offset' to current position.\n\t'Origin' = '2' sets position to end of file plus 'Offset'."}
+	.func{name = "FileTell", p = mmv(0x4AE458, 0x4CB669, 0x4DA405), cc = 0; 0}
+	 .Info{Sig = "FileStream"; "Returns current position of 'FileStream'."}
 	.func{name = "Uncompress", p = mmv(0x4A7AA0, 0x4C2F60, 0x4D1EC0), cc = 2, must = 4}
 	 .Info{Sig = "pTarget, pTargetSize, pSrc, SrcSize"; "'pTargetSize' must point to a 4-byte buffer specifying unpacked size."}
 	.func{name = "Compress", p = mmv(0x4A7B20, 0x4C2FF0, 0x4D1F50), cc = 2, must = 4, ret = 'u1'; 0,0,0,0, -1}
@@ -727,7 +737,7 @@ end]=]
 	end
 	define.Info{Sig = "PalNum"}
 	function define.f.LoadDataFileFromLod(name, UseMalloc)
-		local p = call(mmv(0x40C1A0, 0x410897, 0x411C9B), 1, mmv(0x4CB6D0, 0x6BE8D8, 0x6FB828), name, UseMalloc)
+		local p = call(mmv(0x40C1A0, 0x410897, 0x411C9B), 1, mmv(0x4CB6D0, 0x6BE8D8, 0x6FB828), name, UseMalloc or 0)
 		return p ~= 0 and p, Game.PatchOptions.LastLoadedFileSize
 	end
 	define.Info{Sig = "Name, UseMalloc"}
@@ -740,6 +750,15 @@ end]=]
 		end
 	end
 	define.Info{Sig = "Name"}
+	local checkLods = mmv({'IconsLod'}, {'EventsLod'}, {'EnglishDLod', 'EnglishTLod'})
+	function define.f.CanLoadFileFromLod(name)
+		for _, s in ipairs(checkLods) do
+			if Game[s]:FindFile(name) ~= 0 then
+				return true
+			end
+		end
+	end
+	define.Info{Sig = "Name"; "Returns 'true' if specified file exists in LOD archives that 'LoadTextFileFromLod' and 'LoadTextFileFromLod' functions use.\nThe archives are: !b[[icons.lod]] in MM6, !b[[events.lod]] in MM7, !b[[EnglishD.lod]] and !b[[EnglishT.lod]] in MM8."}
 	function define.f.GetCurrentHouse()
 		local p = u4[mmv(0x4D50C4, 0x507A40, 0x519328)]
 		if p ~= 0 then
@@ -1654,6 +1673,10 @@ function structs.f.PatchOptions(define)
 	int  'SubDirection'
 	int  'SubLookAngle'
 	int  'TownPortalCost'  Info "Gets set before opening Town Portal dialog, retrieved when the town is chosen."
+	int  'MouseFlyKey'
+	bool  'ModernStrafe'
+	single  'CorrectSMulD3D'  Info "[MM7+]"
+	single  'CorrectVMulD3D'  Info "[MM7+]"
 	
 	function define.f.Present(name)
 		return not not addr[name]

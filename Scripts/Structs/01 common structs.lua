@@ -2464,8 +2464,8 @@ function internal.EventLines_RemoveEvent(t, id)
 	t.high = n
 end
 
-function structs.f.Lod(define)
-	define
+local function DefineLod(define, FileStruct)
+	return define
 	[0x0].u4  'File'  
 	[0x4].string(256)  'FileName'
 	[0x104].b4  'Loaded'
@@ -2478,10 +2478,23 @@ function structs.f.Lod(define)
 	[0x214].string(16)  'Type'
 	[0x224].u4  'ChapterHandle'
 	[0x228].u4  'ChapterSize'
-	[0x230].parray{lenA = i4, lenP = 0x22C}.struct(structs.LodFile)  'Files'
+	[0x230].parray{lenA = i4, lenP = 0x22C}.struct(FileStruct)  'Files'
 	[0x234].u4  'FilesOffset'
 	[0x238].skip(4)
+end
+
+function structs.f.Lod(define)
+	DefineLod(define, structs.LodFile)
 	.method{p = mmv(0x44CCA0, 0x461659, 0x45F09B), name = "HasFile", ret = true, must = 1;  ""}
+	 .Info{Sig = "name"; "Does a slow search for a file. For sorted LOD archives 'FindFile' works faster."}
+	.method{p = offsets.FindFileInLod, name = "FindFile", ret = "u4", must = 1;  "", false}
+	 .Info{Sig = "name, unsorted = false"; "Finds a file and returns file stream address or '0' if file isn't found. By default performs fast binary search. Pass 'unsorted' = 'true' when searching in #Game.GamesLod:structs.GameStructure.GamesLod# and #Game.SaveGameLod:structs.GameStructure.SaveGameLod#, because these archives aren't sorted lexicographically and thus binary search can't be used for them.\nReturned file stream can be used in #Game.FileRead:structs.GameStructure.FileRead#, #Game.FileSeek:structs.GameStructure.FileSeek# and #Game.FileTell:structs.GameStructure.FileTell# functions. Its position is set to the beginning of specified file."}
+end
+
+function structs.f.LanguageLod(define)
+	DefineLod(define, structs.LanguageLodFile)
+	.method{p = 0x45FCA6, name = "FindFile", ret = "u4", must = 1;  "", false}
+	 .Info{Sig = "name, unsorted = false"; "Finds a file and returns file stream address or '0' if file isn't found. Performs fast binary search (unless 'unsorted' is set to 'true', which you shouldn't do for language LODs).\nReturned file stream can be used in #Game.FileRead:structs.GameStructure.FileRead#, #Game.FileSeek:structs.GameStructure.FileSeek# and #Game.FileTell:structs.GameStructure.FileTell# functions. Its position is set to the beginning of specified file."}
 end
 
 local bmpbuf = mem.StaticAlloc(64)
@@ -2553,6 +2566,14 @@ function structs.f.LodFile(define)
 	.i4  'Offset'
 	.i4  'Size'
 	.skip(8)
+end
+
+function structs.f.LanguageLodFile(define)
+	define
+	.string(64)  'Name'
+	.i4  'Offset'
+	.i4  'Size'
+	.skip(4)
 end
 
 function structs.f.LodBitmap(define)

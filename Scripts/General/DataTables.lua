@@ -29,12 +29,12 @@ local function FixFileTimes()
 end
 
 local function DataTable(name, f, checkBin, VeryLazy)
-	local nameTxt = DataTables.Files[name] or "Data/Tables/"..name..'.txt'
+	local nameTxt = DataTables.Files[name] or AppPath.."Data/Tables/"..name..'.txt'
 	local nameBin = BinFolder.."d"..name..'.bin'
 	local dir, old = path.dir(nameTxt), errorinfo()
 	errorinfo('file "'..nameTxt..'"')
 	if dir == '' then
-		if nameTxt ~= '' then
+		if nameTxt ~= '' and Game.CanLoadFileFromLod(nameTxt) then
 			f(Game.LoadTextFileFromLod(nameTxt))
 		end
 		errorinfo(old)
@@ -55,7 +55,7 @@ local function DataTable(name, f, checkBin, VeryLazy)
 		os.mkdir(dir)
 		if name == 'SFT' then
 			mem.dll.user32.ClipCursor(0)
-			MessageBox("MMExtension is about to generate text tables for binary files. This will take a few minutes. On the next run of the game you will also experience a small delay.")
+			MessageBox("MMExtension is about to generate text tables for binary files. This may take up to a minute or two. On the next run of the game you will also experience a small delay.")
 		end
 		io.save(nameTxt, f())
 	else
