@@ -477,6 +477,15 @@ local function SetFacetDoorsProp(doors, prop, v)
 	end
 end
 
+local function FindMinOrMax(a, sign, mu)
+	for _, u in a do
+		if not mu or (u - mu)*sign > 0 then
+			mu = u
+		end
+	end
+	return mu
+end
+
 local function UpdateBitmapCoord(t, prop, Left, Right, UList)
 	local id = Editor.FacetIds[t]
 	local a = Map.GetFacet(id)
@@ -489,10 +498,17 @@ local function UpdateBitmapCoord(t, prop, Left, Right, UList)
 	
 	if t[Left] or t[Right] then
 		local sign = t[Left] and -1 or 1
-		local mu
-		for _, u in a[UList] do
-			if not mu or (u - mu)*sign > 0 then
-				mu = u
+		local mu = FindMinOrMax(a[UList], sign)
+		if t ~= t.PartOf then
+			local mu0, base = mu, t.PartOf
+			for t1, id in pairs(Editor.FacetIds) do
+				if t1.PartOf == base and t1 ~= t then
+				 	mu = FindMinOrMax(Map.GetFacet(id)[UList], sign, mu)
+				end
+			end
+			if mu ~= mu0 then
+				a[Left] = false
+				a[Right] = false
 			end
 		end
 		d[prop] = -mu
