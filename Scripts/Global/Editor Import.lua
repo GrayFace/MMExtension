@@ -12,6 +12,8 @@ local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.
 local MessageBox = MessageBox or Message
 local insert = table.insert
 
+local state
+
 -----------------------------------------------------
 -- LoadMtl
 -----------------------------------------------------
@@ -56,7 +58,7 @@ local function ParseObjString(str)
 end
 
 local function ParseObj(file, AddVertex, AddFacet, NewObject)
-	local scale = (Editor.ImportScale or 1)
+	local scale = (state.ImportScale or Editor.ImportScale or 1)
 	local mtl = {}
 	local mtlInv = {}
 	--local mtl = LoadMtl(path.setext(file, ".mtl"), {})
@@ -80,7 +82,7 @@ local function ParseObj(file, AddVertex, AddFacet, NewObject)
 			end
 		elseif s == "v" then
 			local t = ParseObjString(line)
-			if not Editor.NoExportRotation then
+			if not (state.NoExportRotation or state.NoExportRotation == nil and Editor.NoExportRotation) then
 				t[3], t[2] = t[2], -t[3]
 			end
 			t[1], t[2], t[3] = t[1]*scale, t[2]*scale, t[3]*scale
@@ -111,7 +113,6 @@ end
 
 -----------------------------------------------------
 
-local state
 local UniqueVertex, UniqueFacet
 -- local NewVertexes, OldVertexes
 local NewFacets, OldFacets
@@ -192,7 +193,7 @@ local function LoadBlvObj(file, AsObjects)
 				t.Invisible = invis
 				t.Bitmap = texture
 			end
-			if u and v then
+			if u and v and not state.ImportIgnoreUV then
 				t.ImportVertex, t.ImportU, t.ImportV = t.Vertexes[1], u % 1, v % 1
 			end
 			if AsObjects then

@@ -40,9 +40,6 @@ Rooms improve performance significantly, but more importantly the minimap is ope
 Import can't be undone with Undo button. However, when importing models to an outdoor map and choosing to delete models not present in the .obj, you can then undo the deletion.
 
 
-Map Setup:
-OutlineFlatSkip - from 0 to 1 (default is 0.9, game default is 1). Set lower value to ignore more outlines between almost flat facets.
-
 Spawns:
 "m1" / "m2" / "m3" - a group of monsters of type 1 / 2 / 3 (see MapStats.txt)
 "m1a" / "m1b" / "m1c" - a single weak / average / strong monster of type 1
@@ -51,7 +48,7 @@ Similar with "m2a", "m3a" etc.
 
 Chests:
 Info example:
-1/2/3/4/5/6 A7 C8 - means 1 level 1 item, ..., 6 level 6 items, 7 artifacts, 8 custom items. See "Treasure Levels" section.
+1/2/3/4/5/6 A7 C8 - this means 1 level 1 item, ..., 6 level 6 items, 7 artifacts, 8 custom items. See "Treasure Levels" section.
 
 Treasure Levels:
 Treasure levels you specify for chest items or item spawns are modified according to location level in MapStats.txt (the "Tres" column). The following table is used with M# meaning map level and T# meaning treasure level of the item:

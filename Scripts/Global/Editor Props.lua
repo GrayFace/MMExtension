@@ -1620,7 +1620,11 @@ local IndoorProps = {
 	"DefaultDarkness",
 
 	get = function(id, prop)
-		return Editor.State[prop]
+		local v, comment = Editor.State[prop], nil
+		if prop == "OutlineFlatSkip" then
+			comment = "set lower value to ignore more outlines between almost flat facets (from 0 to 1, default is 0.9, game default is 1)"
+		end
+		return v, comment and ('%s%s %s'):format(tostring2(v), COMMENT, comment)
 	end,
 	
 	set = function(id, prop, val)
@@ -1654,15 +1658,18 @@ local OutdoorProps = {
 	"FogRange2",
 	
 	get = function(id, prop)
-		local v = Editor.State.Header[prop]
-		if prop == "Ceiling" and not v or v == 0 then
-			return 4000
+		local v, comment = Editor.State.Header[prop], nil
+		if prop == "Ceiling" then
+			v = v ~= 0 and v or 4000
+			comment = "maximum flight height"
 		elseif prop == "FogRange1" then
-			return v or 0, (v or 0)..COMMENT.."4096 for light fog, 0 for middle or thick"
+			v = v or 0
+			comment = "4096 for light fog, 0 for middle or thick"
 		elseif prop == "FogRange2" then
-			return v or 4096, (v or 4096)..COMMENT.."8192 for light fog, 4096 for middle, 2048 for thick, must be bigger than FogRange1"
+			v = v or 4096
+			comment = "8192 for light fog, 4096 for middle, 2048 for thick, must be bigger than FogRange1"
 		end
-		return v
+		return v, comment and ('%s%s %s'):format(tostring2(v), COMMENT, comment)
 	end,
 	
 	set = function(id, prop, val)
@@ -1682,9 +1689,24 @@ local OutdoorProps = {
 
 local CommonMapProps = {
 	"TestWithLivingMonsters",
+	"ImportIgnoreUV",
+	"ImportScale",
+	"NoExportRotation",
 	
 	get = function(id, prop)
-		return Editor.State[prop] or false
+		local ret, comment = Editor.State[prop], nil
+		if ret == nil and prop ~= "ImportIgnoreUV" then
+			ret = Editor[prop] or false
+		end
+		if prop == "ImportIgnoreUV" then
+			comment = "set to 'true' if you want to assign texture coordinates only inside the Editor"
+		elseif prop == "ImportScale" then
+			ret = ret or Editor[prop] or 1
+			comment = "all coordinates are multiplied by this number on import and divided by it on export"
+		elseif prop == "NoExportRotation" then
+			comment = "set to 'true' to keep Z coordinate the vertical one on export and import"
+		end
+		return ret, comment and ('%s%s %s'):format(tostring2(ret), COMMENT, comment)
 	end,
 	
 	set = function(id, prop, val)

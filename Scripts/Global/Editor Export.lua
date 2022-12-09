@@ -48,8 +48,8 @@ newmtl %s
 
 function Editor.ExportObj(file, models, withGround, CenterPoint)
 	Editor.CheckLazyModels()
-	local scale = 1/(Editor.ImportScale or 1)
 	local state = Editor.State
+	local scale = 1/(state.ImportScale or Editor.ImportScale or 1)
 	models = models or state.RoomObj
 	if not models then
 		models, withGround, CenterPoint = state.ModelByName, true, nil
@@ -77,7 +77,7 @@ function Editor.ExportObj(file, models, withGround, CenterPoint)
 	
 	-- vertex output
 	local function VertexStr(x, y, z)
-		if not Editor.NoExportRotation then
+		if not (state.NoExportRotation or state.NoExportRotation == nil and Editor.NoExportRotation) then
 			y, z = z, -y
 		end
 		return concat({"v", x*scale, y*scale, z*scale}, " ")
