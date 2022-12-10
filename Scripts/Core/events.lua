@@ -1108,8 +1108,8 @@ end
 -- restore AnimatedTFT and HasData bits from Blv rather than Dlv in case patch is below 2.6
 if mmver > 6 and PatchOptionsSize < 400 then
 	local s = [[
-		mov eax, [esp+4]
-		mov edx, [esp+8]
+		mov eax, [esp]
+		mov edx, [esp+4]
 		mov edx, [edx]
 		mov ecx, [eax]
 		and ecx, 0x80004000  ; AnimatedTFT + HasData
