@@ -530,11 +530,11 @@ function Editor.MatchesOrientation(p, rfacets)
 end
 
 -----------------------------------------------------
--- Editor.EdgeFacets
+-- Editor.PrepareEdgeFacets
 -----------------------------------------------------
 
-function Editor.EdgeFacets(rooms)
-	local t = setmetatable({}, {__index = function(t, k)
+function Editor.PrepareEdgeFacets(rooms)
+	local list = setmetatable({}, {__index = function(t, k)
 		local q = {}
 		t[k] = q
 		return q
@@ -547,34 +547,47 @@ function Editor.EdgeFacets(rooms)
 		return n
 	end})
 	
-	local function get(v, v2, f)
-		local i, j = ids[v], ids[v2]
-		if i > j then
-			i, j = j, i
+	local get = |v, v2| list[ids[v]*0x100000 + ids[v2]]
+	
+	local MakeEnumer = |rev||t, i| do
+		i = i + 1
+		local v = t[i]
+		local v2 = v and t[i % #t + 1]
+		if v2 == v then
+			return
+		elseif rev then
+			return i, get(v, v2)
+		else
+			return i, get(v2, v)
 		end
-		if not f then
-			return t[i*0x100000 + j]
+	end
+	local enumer = MakeEnumer()
+	local enumerR = MakeEnumer(true)
+	
+	local function enum(f, reverse)
+		return reverse and enumerR or enumer, f.Vertexes, 0
+	end
+	
+	local add = |f| for _, t in enum(f, true) do
+		t[#t + 1] = f
+	end
+	
+	local O = {get = get, enum = enum, add = add}
+	
+	O.remove = |f| for _, t in enum(f, true) do
+		local i = table.find(t, f)
+		if i then
+			table.remove(t, i)
 		end
-		local r, n = nil, 0
-		for a in pairs(t[i*0x100000 + j]) do
-			n = n + 1
-			if a ~= f then
-				r = a
-			end
-		end
-		return r, n
 	end
 	
 	for _, r in ipairs(rooms or Editor.State.Rooms) do
-		for a in pairs(r.Facets) do
-			local vert = a.Vertexes
-			local n = #vert
-			for i, v in ipairs(vert) do
-				get(v, vert[i % n + 1])[a] = true
-			end
+		for f in pairs(r.Facets) do
+			add(f)
 		end
 	end
-	return get
+	
+	return O
 end
 
 -----------------------------------------------------
