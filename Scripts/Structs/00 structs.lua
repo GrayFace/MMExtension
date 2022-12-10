@@ -757,6 +757,13 @@ end]=]
 				return true
 			end
 		end
+		if Game.PatchOptions.DataFiles ~= false then
+			local f = io.open('DataFiles\\'..name, "rb")
+			if f then
+				f:close()
+				return true
+			end
+		end
 	end
 	define.Info{Sig = "Name"; "Returns 'true' if specified file exists in LOD archives that 'LoadTextFileFromLod' and 'LoadTextFileFromLod' functions use.\nThe archives are: !b[[icons.lod]] in MM6, !b[[events.lod]] in MM7, !b[[EnglishD.lod]] and !b[[EnglishT.lod]] in MM8."}
 	function define.f.GetCurrentHouse()
