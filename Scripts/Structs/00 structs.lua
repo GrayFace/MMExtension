@@ -1259,8 +1259,8 @@ function structs.f.Player(define)
 		[mmv(0x1576, 0x1A96)].i1  'RangedDamageBonus'
 		[mmv(0x1578, 0x1A98)].i1  'FullHPBonus'
 		[mmv(0x1578, 0x1A98)].i1  'FullHitPointsBonus'
-		[mmv(0x157A, 0x159A)].i1  'FullSPBonus'
-		[mmv(0x157A, 0x159A)].i1  'FullSpellPointsBonus'
+		[mmv(0x157A, 0x1A9A)].i1  'FullSPBonus'
+		[mmv(0x157A, 0x1A9A)].i1  'FullSpellPointsBonus'
 	else
 		define[0x1BF0].i2  'RosterBitIndex'
 	end
