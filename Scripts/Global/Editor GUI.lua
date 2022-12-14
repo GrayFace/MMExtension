@@ -690,7 +690,7 @@ local function FreeDoorId()
 	return id + 1
 end
 
-local function DoorFromSelection(door)
+local function DoorFromSelection(door, MakeMoving)
 	local ver = door.VertexFilter and {}
 	local props = Editor.GetProps()
 	for id in pairs(Editor.Selection) do
@@ -699,6 +699,8 @@ local function DoorFromSelection(door)
 			for _, v in ipairs(f.Vertexes) do
 				ver[v] = true
 			end
+		elseif MakeMoving then
+			props.set(id, "MovedByDoor", true)
 		end
 		props.set(id, "Door", door)
 	end
@@ -713,13 +715,19 @@ local function DoorFromSelection(door)
 	end
 
 	-- add all facets containing these vertexes
+	local inc = {}
 	for f, id in pairs(Editor.FacetIds) do
 		if f.Door ~= door and check(f) then
-			if f.Door then
-				props.set(id, "MultiDoor", true)
-			else
-				props.set(id, "Door", door)
-			end
+			inc[f.PartOf] = true
+		end
+	end
+	for f, id in pairs(Editor.FacetIds) do
+		if not inc[f.PartOf] then
+			--
+		elseif f.Door then
+			props.set(id, "MultiDoor", true)
+		else
+			props.set(id, "Door", door)
 		end
 	end
 	props.done()
@@ -745,11 +753,11 @@ function Commands.NewDoor()
 	local door = {
 		DirectionX = f.nx, DirectionY = f.ny, DirectionZ = f.nz,
 		MoveLength = 128, Speed1 = 50, Speed2 = 50,
-		VertexFilter = not FoundMoving and "Free" or nil,
+		VertexFilter = not FoundMoving and not Keys.IsPressed(const.Keys.CTRL) and "Free" or nil,
 		Id = FreeDoorId(),
 	}
 	Editor.BeginUndoState()
-	DoorFromSelection(door)
+	DoorFromSelection(door, not FoundMoving)
 	local props = Editor.GetNewProps("Door")
 	props.set(next(Editor.Selection), "MoveLength", nil)
 	Editor.EndUndoState()

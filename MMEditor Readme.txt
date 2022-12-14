@@ -27,7 +27,7 @@ P           	Move object to party position (and set its direction to direction o
 L           	Land object on the ground
 Arrows      	Move object / Move texture cordinates (hold Alt to do it in smaller steps or Ctrl for larger steps)
 Page Up/Down	Move object up/down
-Ctrl        	If you hold Ctrl while clicking Select Same Texture or Select Same Object outdoors, facets of all models would be selected rather than just the current one.
+Ctrl        	If you hold Ctrl while clicking Select Same Texture or Select Same Object outdoors, facets of all models would be selected rather than just the current one. If you hold Ctrl while clicking New Door indoors, only selected facets would be included in it.
 Shift+Click 	Add to selection or remove from selection.
 
 Import:
@@ -62,7 +62,7 @@ T6 [ 2 ][ 2 ][ 4 ][4-5][ 5 ][5-6][ 6 ]
 T7 [ 2 ][ 2 ][ 7 ][ 7 ][ 7 ][ 7 ][ 7 ]
 
 Doors:
-When modelling a door, think of how it will look on the minimap. If it move into a wall of a hall, this would be visible to the player. That's why in all standard maps doors are continuations of walls.
+When modelling a door, think of how it will look on the minimap. If it moves into a wall of a hall, this would be visible to the player. That's why in all standard maps doors are continuations of walls.
 When making the door interactive in the editor, it would be easier to first select its side that's perpendicular to its future movement direction and press New Door. The direction of the door would be set accordingly, but you may need to change its sign. Then select other sides and press Door Shape.
 In D3D UV coordinates of moving parts of doors get reset, it's a limitation of the engine. Use Align* properties of such facets, as they are respected.
 VertexFilter parameter determines how moving vertexes are chosen for the door:
