@@ -240,6 +240,15 @@ function structs.f.GameMap(define)
 		define[base + 716].i4  'IndoorReputation'
 		define[base + 724].i4  'IndoorSanityFacetsCount'
 		define[base + 728].i4  'IndoorSanitySpritesCount'
+		define[base + 732].CustomType('SanityDoorDataSize', 4, function(o, obj, name, val)
+			o = obj['?ptr'] + o
+			if val == nil then
+				return u4[o] % 0x10000000
+			else
+				u4[o] = u4[o]:And(0xf0000000) + val % 0x10000000
+			end
+		end)
+		
 		define[base + 732].i4  'SanityDoorDataSize'
 		 .Info "Added in MMExtension. Instead of being checked against, it actually replaces #Map.IndoorHeader.DoorDataSize:structs.BlvHeader.DoorDataSize# when loading the .dlv, if it's non-zero."
 	end

@@ -1453,7 +1453,7 @@ if mmver > 6 then
 		]])
 		hooks.asmhook(mm78(0x49A92E, 0x497E28), [[
 			mov eax, [%sanity%]
-			test eax, eax
+			and eax, 0xfffFFFF
 			jz @f
 			mov [%size%], eax
 		@@:
