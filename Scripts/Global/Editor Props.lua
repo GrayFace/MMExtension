@@ -1295,6 +1295,8 @@ local function MonSpecialDef(special)
 	return {A = (special == 2 and 1 or 0), B = 0, C = 0, D = (special == 3 and const.Damage.Fire or 0)}
 end
 
+local MoveTypes = {[0] = "Short", "Medium", "Long", "Stand Still when friendly", "Very Long", "Stand Still always"}
+
 local MonsterProps = MakeProps{
 	"Id",
 	"X",
@@ -1446,6 +1448,8 @@ local MonsterProps = MakeProps{
 			elseif (prop == "SpellSkill" or prop == "Spell2Skill") and ret >= 0x40 and ret < mmv(0xC0, 0x140, 0x140) then
 				local n, mast = SplitSkill(ret)
 				retVal = ("JoinSkill(%s, %s)"):format(n, "const."..table.find(const, mast))
+			elseif prop == "MoveType" then
+				comment = MoveTypes[ret]
 			end
 		end
 		comment = (def and " default" or "")..(comment and " ("..comment..")" or "")
