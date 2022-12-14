@@ -1662,6 +1662,7 @@ local function WriteMonster(a, t, CompileFile)
 	a["?ptr"] = a["?ptr"]  -- speed up
 	WriteMonProps(a, t, Editor.MonsterProps, "")
 	a.HP = a.FullHitPoints
+	a.Velocity = a.MoveSpeed
 	a.AIState = t.Invisible and const.AIState.Invisible or nil
 	mem.u8[a["?ptr"] + 0x2C] = 0  -- StandardName, Picture pointers
 	a["?ptr"] = nil
