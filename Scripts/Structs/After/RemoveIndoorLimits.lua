@@ -2,7 +2,7 @@ local fcount = FacetRefsLimit or 8192
 
 -- new limits:
 IndoorLimits = {
-	Vertexes = fcount*3,
+	Vertexes = fcount*5,  -- suport 4 vertices for each facet plus some extra
 	Facets = fcount,
 	FacetData = fcount,
 	VisibleFacets = fcount,
