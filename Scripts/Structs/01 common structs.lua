@@ -248,8 +248,6 @@ function structs.f.GameMap(define)
 				u4[o] = u4[o]:And(0xf0000000) + val % 0x10000000
 			end
 		end)
-		
-		define[base + 732].i4  'SanityDoorDataSize'
 		 .Info "Added in MMExtension. Instead of being checked against, it actually replaces #Map.IndoorHeader.DoorDataSize:structs.BlvHeader.DoorDataSize# when loading the .dlv, if it's non-zero."
 	end
 	
