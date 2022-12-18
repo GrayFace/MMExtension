@@ -528,24 +528,10 @@ local IsDoorBit = {
 	ClosePortal = true,
 }
 
-local FirstSelDoor
-local DoorsNeedBounds = {}
-local DoorsNeedUpdate = {}
-
-local function CalcMoveLength(t)
-	local MaxLen = 64000
-	local move = MaxLen
+local function EnumStretchedEdges(t, chk)
 	local ver = Editor.GetDoorVertexLists(t)
-	local function check(f, v1, v2)
-		if not ver[v2] then
-			for X in XYZ do
-				local x = v1[X] - v2[X]
-				if (x + t['Direction'..X]*move)*x < 0 then
-					move = abs(x/t['Direction'..X])
-				end
-			end
-		end
-	end
+	local check = |f, v1, v2| not ver[v2] and chk(f, v1, v2)
+	
 	for f, id in pairs(Editor.FacetIds) do
 		if f.Door == t or f.MultiDoor then
 			for i, v in ipairs(f.Vertexes) do
@@ -556,8 +542,51 @@ local function CalcMoveLength(t)
 			end
 		end
 	end
+end
+
+local function CalcMoveLength(t)
+	local MaxLen = 64000
+	local move = MaxLen
+	local function check(f, v1, v2)
+		for X in XYZ do
+			local x = v1[X] - v2[X]
+			if (x + t['Direction'..X]*move)*x < 0 then
+				move = abs(x/t['Direction'..X])
+			end
+		end
+	end
+	EnumStretchedEdges(t, check)
 	return move ~= MaxLen and move
 end
+
+local function inorm(x, y, z)
+	local n = x*x + y*y + z*z
+	return (n ~= 0) and n^(-0.5) or 0
+end
+
+local function normalize(x, y, z, mul)
+	local n = inorm(x, y, z)*(mul or 1)
+	return x*n, y*n, z*n
+end
+
+local function CalcDoorDirection(d)
+	local x, y, z = 0, 0, 0
+	local dx, dy, dz = d.DirectionX or 0, d.DirectionY or 0, d.DirectionZ or 0
+	local function check(f, v1, v2)
+		local a, b, c = v2.X - v1.X, v2.Y - v1.Y, v2.Z - v1.Z
+		a, b, c = normalize(a, b, c, a*dx + b*dy + c*dz >= 0 and 1 or -1)
+		x, y, z = x + a, y + b, z + c
+	end
+	EnumStretchedEdges(d, check)
+	if x*x + y*y + z*z ~= 0 then
+		return normalize(x, y, z)
+	end
+end
+
+local FirstSelDoor
+local DoorsNeedBounds = {}
+local DoorsNeedUpdate = {}
+local DoorsNeedDirection = {}
 
 local DoorProps = MakeProps{
 	"Id",
@@ -593,8 +622,11 @@ local DoorProps = MakeProps{
 		local t = Editor.Facets[id + 1].Door
 		if not t then
 			return
-		elseif prop == 'MoveLength' and not val then
+		elseif not val and prop == "MoveLength" then
 			val = CalcMoveLength(t) or t.MoveLength or 128
+		elseif not val and (prop == "DirectionX" or prop == "DirectionY" or prop == "DirectionZ") then
+			DoorsNeedDirection[t] = id
+			return
 		end
 		if t[prop] == val then
 			return
@@ -623,6 +655,15 @@ local DoorProps = MakeProps{
 	end,
 	
 	done = function()
+		for t, id in pairs(DoorsNeedDirection) do
+			local x, y, z = CalcDoorDirection(t)
+			if x then
+				CurrentProps.set(id, "DirectionX", x)
+				CurrentProps.set(id, "DirectionY", y)
+				CurrentProps.set(id, "DirectionZ", z)
+			end
+		end
+		DoorsNeedDirection = {}
 		Editor.RecreateDoors(DoorsNeedUpdate)
 		DoorsNeedUpdate = {}
 		FirstSelDoor = nil

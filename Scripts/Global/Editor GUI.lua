@@ -760,6 +760,7 @@ function Commands.NewDoor()
 	DoorFromSelection(door, not FoundMoving)
 	local props = Editor.GetNewProps("Door")
 	props.set(next(Editor.Selection), "MoveLength", nil)
+	props.done()
 	Editor.EndUndoState()
 end
 
