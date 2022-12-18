@@ -20,11 +20,17 @@ function Editor.AddUnique(state, SingleModel)
 	local facs = {}
 	local starting = true
 	
+	-- Blender doesn't preserve exact coordinates
+	local function R(x)
+		x = x + 1/16
+		return x - x%(1/8)
+	end
+	
 	local function UniqueVertex(x, y, z, v)
-		local list = verts[x]
+		local list = verts[R(x)]
 		if list then
 			for v1 in pairs(list) do
-				if y == v1.Y and z == v1.Z and (not v or v1.Shift == v.Shift) then
+				if R(y - v1.Y) == 0 and R(z - v1.Z) == 0 and (not v or v1.Shift == v.Shift) then
 					if starting then
 						ids[v] = ids[v1]
 					end

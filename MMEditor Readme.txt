@@ -27,7 +27,7 @@ P           	Move object to party position (and set its direction to direction o
 L           	Land object on the ground
 Arrows      	Move object / Move texture cordinates (hold Alt to do it in smaller steps or Ctrl for larger steps)
 Page Up/Down	Move object up/down
-Ctrl        	If you hold Ctrl while clicking Select Same Texture or Select Same Object outdoors, facets of all models would be selected rather than just the current one. If you hold Ctrl while clicking New Door indoors, only selected facets would be included in it.
+Ctrl        	If you hold Ctrl while clicking Select Same Texture or Select Same Object outdoors, facets of all models would be selected rather than just the current one. If you hold Ctrl while clicking New Door indoors, only selected facets would be included in it, no VertexFilter would be set and MovedByDoor=true would be set for these facets.
 Shift+Click 	Add to selection or remove from selection.
 
 Import:
