@@ -24,6 +24,7 @@ local function nullproc()
 end
 
 local DLL = mem.dll[DevPath.."ExeMods\\MMExtension\\MMEditorDlg.dll"]
+local pCGame = mmv(nil, 0x71FE94, 0x75CE00)
 
 local HookManager = HookManager
 local TmpHooks = HookManager()
@@ -574,6 +575,9 @@ local hooks = TmpHookManager{
 	ModelFacetOff = 0x128,  -- use 1 of 2 unused bytes
 	IndoorDarkness = mmv(0x9DDAA4, 0xF8ABD4, 0xFFCFDC),
 	FacetPtrBuf = TmpAlloc(4),
+	DrawFacetOutlineD3D = mmv(nil, 0x4378F5, 0x435286),
+	pCGame = pCGame,
+	RenderIndoorFlags = mmv(nil, 0x51B564, 0x52CE4C),
 }
 
 if Game.IsD3D then
@@ -586,6 +590,26 @@ if Game.IsD3D then
 		jz @f
 		mov eax, [%TintColor%]
 		mov [ebp - 4], eax
+	@@:
+	]])
+	
+	-- indoor outline (only when Portals is on)
+	hooks.asmhook(mmv(nil, 0x4B0E31, 0x4AF20F), [[
+		cmp byte [eax + %MapFacetOff%], 0
+		jz @f
+		test byte [%RenderIndoorFlags%], 1
+		jz @f
+		push eax
+		push edx
+		push ecx
+		mov ecx, [%pCGame%]
+		mov ecx, [ecx + 0xE54]
+		push 0xFF4400
+		push eax
+		call absolute %DrawFacetOutlineD3D%
+		pop ecx
+		pop edx
+		pop eax
 	@@:
 	]])
 
@@ -759,7 +783,7 @@ function events.EditorSelectionChanged()
 	hooks.Switch(on)
 	mem.i4[SelectionColorBuf] = Editor.SelectionColor
 	if mmver > 6 then
-		local p = 0xE20 + mem.u4[mmv(nil, 0x71FE94, 0x75CE00)]
+		local p = 0xE20 + mem.u4[pCGame]
 		local v = mem.u4[p]
 		local function bit(n, on)
 			v = on and v:Or(n) or v:AndNot(n)
@@ -1158,7 +1182,7 @@ end
 function Editor.UpdateGameBits()
 	local portals = Editor.ShowPortals and Editor.VisibleGUI
 	if Game.Version > 6 then
-		local p = 0xE20 + mem.u4[mmv(nil, 0x71FE94, 0x75CE00)]
+		local p = 0xE20 + mem.u4[pCGame]
 		local v = mem.u4[p]
 		local function bit(n, on)
 			v = on and v:Or(n) or v:AndNot(n)
