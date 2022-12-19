@@ -212,6 +212,18 @@ local function Remapper(name)
 	end
 end
 
+local function SetDataProp(a, prop, val)
+	if val == nil then
+		local tp = type(a[prop])
+		if tp == "number" then
+			val = 0
+		elseif tp == "boolean" then
+			val = false
+		end
+	end
+	a[prop] = val
+end
+
 -----------------------------------------------------
 -- FacetProps
 -----------------------------------------------------
@@ -461,7 +473,7 @@ local FacetProps = MakeProps{
 		elseif prop == "ScrollDown" and mmver == 6 then
 			a.IsSky = val or false
 		elseif not IsFacetDataProp[prop] then
-			a[prop] = val or not FacetBits[prop] or 0
+			SetDataProp(a, prop, val)
 		else
 			local d = NeedFacetData(a, id)
 			if prop == "BitmapU" or prop == "BitmapV" then
@@ -470,7 +482,7 @@ local FacetProps = MakeProps{
 				a[prop] = val or false
 				Editor["Update"..IsFacetAlignProp[prop]](t)
 			else
-				d[prop] = val
+				SetDataProp(d, prop, val)
 			end
 		end
 	end,
@@ -638,7 +650,7 @@ local DoorProps = MakeProps{
 			-- a[prop] = (val*0x10000):round()
 			DoorsNeedUpdate[t] = true
 		else
-			a[prop] = val
+			SetDataProp(a, prop, val)
 		end
 		if IsDoorUpdateProp[prop] then
 			Editor.NeedDoorsUpdate = true
@@ -918,7 +930,7 @@ local RoomProps = MakeProps{
 		local a, t = Map.Rooms[id], Editor.State.Rooms[id + 1]
 		AddUndoProp(id, prop, t[prop])
 		t[prop] = val
-		a[prop] = val
+		SetDataProp(a, prop, val)
 		Editor.Update(Editor.UpdateNoDark)
 	end,
 	
@@ -985,7 +997,7 @@ local SpriteProps = MakeProps{
 		AddUndoProp(id, prop, t[prop])
 		t[prop] = val
 		if prop ~= "Event" and (prop ~= "Invisible" or Editor.ShowInvisible) then
-			a[prop] = val
+			SetDataProp(a, prop, val)
 		end
 		if prop == "DecName" then
 			Editor.NormalSpriteDec(a)
@@ -1014,6 +1026,12 @@ local IsPosProp = {
 	X = true,
 	Y = true,
 	Z = true,
+}
+
+local LightPropDef = {
+	R = 255,
+	G = 255,
+	B = 255,
 }
 
 local LightProps = MakeProps{
@@ -1052,7 +1070,10 @@ local LightProps = MakeProps{
 		end
 		AddUndoProp(id, prop, t[prop])
 		t[prop] = val
-		Map.Lights[id][prop] = val
+		if val == nil then
+			val = LightPropDef[prop]
+		end
+		SetDataProp(Map.Lights[id], prop, val)
 	end,
 
 	create = function(t)
