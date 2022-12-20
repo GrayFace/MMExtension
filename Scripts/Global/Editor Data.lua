@@ -416,6 +416,9 @@ local function WriteFacet(a, t)
 	if t.IsPortal then
 		a.Room = t.Room or 0
 		a.RoomBehind = t.RoomBehind or 0
+		if a.PolygonType % 2 == 0 then  -- angled portal can't be displayed in D3D mode
+			a.PolygonType = abs(a.NormalZ) >= 0xB569 and a.PolygonType - 1 or 1  -- doesn't work well in either case
+		end
 	else
 		a.Room = FacetRooms[t]
 	end
@@ -1007,19 +1010,25 @@ end
 -- WriteLights
 -----------------------------------------------------
 
+local function WriteLight(t, a)
+	rawset(a, "?ptr", nil)
+	a["?ptr"] = a["?ptr"]  -- speed up
+	a.Brightness = 31
+	if mmver ~= 6 then
+		a.Type = 5
+		a.R = 255
+		a.G = 255
+		a.B = 255
+	end
+	table.copy(t, a, true)
+	a["?ptr"] = nil
+end
+
 local function WriteLights()
 	new(Map.Lights, 3000)
 	Map.Lights.Count = #Lights
 	for t, i in pairs(LightIds) do
-		local a = Map.Lights[i]
-		rawset(a, "?ptr", nil)
-		a["?ptr"] = a["?ptr"]  -- speed up
-		a.Brightness = 31
-		if mmver ~= 6 then
-			a.Type = 5
-		end
-		table.copy(t, a, true)
-		a["?ptr"] = nil
+		WriteLight(t, Map.Lights[i])
 	end
 	Editor.Lights = Lights
 	Editor.LightIds = LightIds
@@ -1028,14 +1037,7 @@ end
 function Editor.CreateLight(t)
 	Editor.State.Lights[t] = true
 	local a = InsertEntity(t, "Light", 3000)
-	rawset(a, "?ptr", nil)
-	a["?ptr"] = a["?ptr"]  -- speed up
-	if mmver ~= 6 then
-		a.Type = 5
-		a.Brightness = 31
-	end
-	table.copy(t, a, true)
-	a["?ptr"] = nil
+	WriteLight(t, a)
 	Editor.Update(Editor.UpdateLightsList)
 	return Editor.LightIds[t]
 end
