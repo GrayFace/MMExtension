@@ -586,7 +586,11 @@ local function CalcDoorDirection(d)
 	local dx, dy, dz = d.DirectionX or 0, d.DirectionY or 0, d.DirectionZ or 0
 	local function check(f, v1, v2)
 		local a, b, c = v2.X - v1.X, v2.Y - v1.Y, v2.Z - v1.Z
-		a, b, c = normalize(a, b, c, a*dx + b*dy + c*dz >= 0 and 1 or -1)
+		local dir = a*dx + b*dy + c*dz
+		if dir == 0 then
+			dir = a*x + b*y + c*z
+		end
+		a, b, c = normalize(a, b, c, dir >= 0 and 1 or -1)
 		x, y, z = x + a, y + b, z + c
 	end
 	EnumStretchedEdges(d, check)
