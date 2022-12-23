@@ -35,7 +35,7 @@ local function SetLenRealloc(obj, v, ps, lenA, size, o)
 	end
 end
 
-local MissileLim = mmv(0, 9120, 12120)
+local MissileLim = mmv(0, 9110, 12110)
 
 local SetLenReallocMissile = mmver == 6 and SetLenRealloc or function(obj, v, ps, lenA, size, o)
 	local old = lenA[ps]

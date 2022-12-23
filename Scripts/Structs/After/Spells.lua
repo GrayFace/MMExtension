@@ -274,7 +274,7 @@ if mmver > 6 then
 		and eax, 1
 		ret 4
 	@std_chk:
-		cmp edx, mm7*9120 + mm8*12120
+		cmp edx, mm7*9110 + mm8*12110
 		jnb @show
 	@std:
 	]])
