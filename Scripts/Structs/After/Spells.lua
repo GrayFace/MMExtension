@@ -262,13 +262,14 @@ if mmver > 6 then
 		test al, 3  ; is changed?
 		jz @std
 		test al, 2  ; hide spc effect?
-		jnz @show
+		jnz @cond
 	;spc effect with SW over it:
 		push dword [esp+4]
 		call @std
+	@show:
 		mov eax, 1
 		ret 4
-	@show:
+	@cond:
 	;no spc effect:
 		and eax, 1
 		ret 4
