@@ -35,6 +35,21 @@ local function SetLenRealloc(obj, v, ps, lenA, size, o)
 	end
 end
 
+local MissileLim = mmv(0, 9120, 12120)
+
+local SetLenReallocMissile = mmver == 6 and SetLenRealloc or function(obj, v, ps, lenA, size, o)
+	local old = lenA[ps]
+	SetLenRealloc(obj, v, ps, lenA, size, o)
+	if old < MissileLim then
+		old = MissileLim
+	end
+	if v > old then
+		assert(size == 1)
+		local p = obj['?ptr'] + o
+		mem.fill(u4[p] + old, v - old, 3)
+	end
+end
+
 function structs.f.GameStructure(define)
 	define
 	 .Info{Name = "Game"}
@@ -481,7 +496,7 @@ end]=]
 	
 	local pmis = mem.StaticAlloc(8)
 	mem.fill(pmis, 8)
-	define[pmis].parray{lenA = i4, lenP = pmis + 4, lenSet = SetLenRealloc}.struct(structs.MissileSetup)  'MissileSetup'
+	define[pmis].parray{lenA = i4, lenP = pmis + 4, lenSet = SetLenReallocMissile}.struct(structs.MissileSetup)  'MissileSetup'
 	if mmver > 6 then
 		define
 		[mm78(0x44FA9D, 0x44D1FB)].EditConstPChar  'SummonElementalA'

@@ -256,7 +256,7 @@ if mmver > 6 then
 		mov edx, [esp+4]
 		movsx edx, word [edx]
 		cmp edx, [%sz%]
-		jnb @std
+		jnb @std_chk
 		mov eax, [%p%]
 		mov al, [eax + edx*%elSz%]
 		test al, 3  ; is changed?
@@ -273,9 +273,10 @@ if mmver > 6 then
 	;no spc effect:
 		and eax, 1
 		ret 4
-	@std:
+	@std_chk:
 		cmp edx, mm7*9120 + mm8*12120
 		jnb @show
+	@std:
 	]])
 end
 
