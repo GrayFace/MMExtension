@@ -243,31 +243,6 @@ end
 	Y XY YY  ZY
 ]]
 
-local function NoInf(v)  -- replaces Inf and NaN with 0
-	if v*0 ~= 0 then
-		return 0
-	end
-	return v
-end
-
-local function Solve3x4(m)
-	local function sub(y, base, x)
-		local d = (base - y)*4
-		y = y*4 + 1
-		local mul = NoInf(m[y + x]/m[y + d + x])
-		for i = y, y + 3 do
-			m[i] = m[i] - mul*m[i + d]
-		end
-	end
-	sub(1, 0, 0)
-	sub(2, 0, 0)
-	sub(2, 1, 1)
-	sub(1, 2, 2)
-	sub(0, 2, 2)
-	sub(0, 1, 1)
-	return NoInf(m[4]/m[1]), NoInf(m[8]/m[6]), NoInf(m[12]/m[11])
-end
-
 local function GridSmooth(dz)
 	local mid = 1/2
 	local a = 1/mid
@@ -304,7 +279,7 @@ local function GridSmooth(dz)
 	m[5] = m[2]
 	m[9] = m[3]   m[10] = m[7]
 	
-	local c, a, b = Solve3x4(m)
+	local c, a, b = Editor.Solve3x4(m)
 	
 	-- apply
 	for k in pairs(Editor.SelectedGrid) do

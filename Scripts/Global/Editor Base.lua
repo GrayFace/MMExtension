@@ -29,8 +29,9 @@ function Editor.AddUnique(state, SingleModel)
 	local function UniqueVertex(x, y, z, v)
 		local list = verts[R(x)]
 		if list then
+			local y1, z1 = R(y), R(z)
 			for v1 in pairs(list) do
-				if R(y - v1.Y) == 0 and R(z - v1.Z) == 0 and (not v or v1.Shift == v.Shift) then
+				if R(v1.Y) == y1 and R(v1.Z) == z1 and (not v or v1.Shift == v.Shift) then
 					if starting then
 						ids[v] = ids[v1]
 					end
@@ -594,6 +595,47 @@ function Editor.PrepareEdgeFacets(rooms)
 	end
 	
 	return O
+end
+
+-----------------------------------------------------
+-- Editor.Solve3x4
+-----------------------------------------------------
+
+local WasInf
+
+local function DivNoInf(v1, v2)  -- replaces Inf and NaN with 0
+	local v = v1/v2
+	if v*0 ~= 0 then
+		WasInf = WasInf or v1 ~= 0
+		return 0
+	end
+	return v
+end
+
+-- Example: (4th column is right side)
+-- local m = {
+-- 	0, 0, 0, 0,
+-- 	0, 0, 0, 0,
+-- 	0, 0, 0, 0,
+-- }
+function Editor.Solve3x4(m)
+	WasInf = false
+	local function sub(y, base, x)
+		local d = (base - y)*4
+		y = y*4 + 1
+		local mul = DivNoInf(m[y + x], m[y + d + x])
+		for i = y, y + 3 do
+			m[i] = m[i] - mul*m[i + d]
+		end
+	end
+	sub(1, 0, 0)
+	sub(2, 0, 0)
+	sub(2, 1, 1)
+	sub(1, 2, 2)
+	sub(0, 2, 2)
+	sub(0, 1, 1)
+	local a, b, c = DivNoInf(m[4], m[1]), DivNoInf(m[8], m[6]), DivNoInf(m[12], m[11])
+	return a, b, c, WasInf
 end
 
 -----------------------------------------------------
