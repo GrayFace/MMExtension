@@ -256,7 +256,12 @@ function Editor.ReadFacet(a, _, Verts)
 	t.MoveByDoor = a.MoveByDoor
 	
 	local okMul = 0.99
-	local nx, ny, nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
+	local nx, ny, nz
+	if mmver == 6 then
+	  nx, ny, nz = normalize(a.NormalX, a.NormalY, a.NormalZ)
+	else
+	  nx, ny, nz = normalize(a.NormalFX, a.NormalFY, a.NormalFZ)
+	end
 	Editor.FindNormal(t, true)
 	local mulBefore = t.ndist and t.nx*nx + t.ny*ny + t.nz*nz or -2
 	ShiftVertexes(true, t, {})
