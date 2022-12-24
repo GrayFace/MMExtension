@@ -964,17 +964,11 @@ do -- mem.struct
 				local n = size + start
 				local v
 				if val then
-					if int then
-						while val < 0 do
-							val = val + sizePow
-						end
-					end
-					start = 2^start
-					val = math_floor(val)*start
-					if start > 1 then
+					val = (val - val % 1) % sizePow
+					if start > 0 then
+						start = 2^start
+						val = val*start
 						start = u1[p] % start
-					else
-						start = 0
 					end
 					while n > 8 do
 						v = val % 256
