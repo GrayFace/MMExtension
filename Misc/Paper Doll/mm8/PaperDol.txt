@@ -35,26 +35,26 @@ Troll	:BackDoll	backdol4	0	0
 28	:Player	pc28bod	61	45
 MBase	:Player	pc%.2dLHu	138	150	hand2		dual-wielding hand
 MBase	:Player	pc%.2dLHu	138	150	shield		arm drawn behind armor when holding shield
-MBase	:Player	pc%.2dLHo	132	150	arm2f		arm drawn behind armor when not holding anything
+MBase	:Player	pc%.2dLHo	132	150	arm2fb		arm drawn behind armor when not holding anything
 MBase	:Player	pc%.2dLHu	138	150	arm2hb		arm drawn behind armor when holding 2-handed weapon
 MBase	:Player	pc%.2dRHb	27	118	hand1		hand1 drawn only when holding weapon
 MBase	:Player	pc%.2dRHd	29	110	arm1f		arm1 when not holding weapon
 MBase	:Player	pc%.2dRHu	27	117	arm1		arm1 drawn only when holding weapon
-FBase	:Player	pc%.2dLHd	129	148	arm2f
+FBase	:Player	pc%.2dLHd	129	148	arm2fb
 FBase	:Player	pc%.2dLHo	117	148	arm2hb
 FBase	:Player	pc%.2dLHu	129	148	hand2
 FBase	:Player	pc%.2dLHu	129	148	shield
 FBase	:Player	pc%.2dRHb	43	142	hand1
 FBase	:Player	pc%.2dRHd	25	132	arm1f
 FBase	:Player	pc%.2dRHu	43	142	arm1
-Minotaur	:Player	pc%.2dLHd	122	162	arm2f
+Minotaur	:Player	pc%.2dLHd	122	162	arm2fb
 Minotaur	:Player	pc%.2dLHo	119	161	arm2hb
 Minotaur	:Player	pc%.2dLHu	122	162	hand2
 Minotaur	:Player	pc%.2dLHu	122	162	shield
 Minotaur	:Player	pc%.2dRHb	12	170	hand1
 Minotaur	:Player	pc%.2dRHd	14	168	arm1f
 Minotaur	:Player	pc%.2dRHu	12	166	arm1
-Troll	:Player	pc%.2dLHd	131	159	arm2f
+Troll	:Player	pc%.2dLHd	131	159	arm2fb
 Troll	:Player	pc%.2dLHo	131	159	arm2hb
 Troll	:Player	pc%.2dLHu	131	159	hand2
 Troll	:Player	pc%.2dLHu	131	159	shield

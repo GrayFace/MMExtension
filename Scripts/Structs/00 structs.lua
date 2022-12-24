@@ -201,6 +201,9 @@ function structs.f.GameStructure(define)
 
 	local i, j = mmv(160, 222, 222), mmv(188, 271, 271)
 	define[mmv(0x56A780, 0x5E17C4, 0x5FEC10)].array(i, j).array(i, j)[mmv('u1','i2','i2')]  'PotionTxt'
+	if mmver > 6 then
+		define.array(i, j).array(i, j).i2  'PotNotesTxt'
+	end
 	
 	if mmver == 6 then
 		define[0x56C188].array{174, lenA = i4, lenP = 0x56C188 + structs.MonstersTxtItem["?size"]*174}.struct(structs.MonstersTxtItem)  'MonstersTxt'
@@ -1118,7 +1121,6 @@ end
 
 --[[
 	const.BonusStat
-	-- stditems, spcitems
 	
 Character_FindFreeItemSlot
 SimpleEquipItem

@@ -176,29 +176,31 @@ local mm6 = (PaperDollMode == 6)
 -- !Lua[[{'BackDoll', 'BackDoll.menu', 'BackDoll.game',
 -- 	'Bow', 'Cloak',
 -- 	'Armor.back', 'Belt.back',
--- 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2hb', 'Player.arm2f', 'Player.shield', 'Player.hair2', 'Player.hair',
+-- 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2b', 'Player.arm2hb', 'Player.arm2fb', 'Player.shield', 'Player.hair2', 'Player.hair',
 -- 	'Armor.back2',
 -- 	mm6 and 'Helm' or 'Helm.back', mm6 and 'Boots' or 'Boots.back',
 -- 	'Armor', 'Armor.arm1', 'Armor.arm1f',
 -- 	mm6 and 'Boots.front' or 'Boots',
 -- 	'Belt',
--- 	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h',
+-- 	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h', 'Player.arm2f',
 -- 	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
 -- 	'MainHand',
 -- 	'Player.hand1a', 'Player.hand1', 'Player.hand1f', 'Armor.hand1a', 'Armor.hand1', 'Armor.hand1f',
 -- 	'ExtraHand.hand2', 'ExtraHand.shield',
 -- 	'Player.hand2', 'Player.hand2f', 'Player.hand2h', 'Armor.hand2', 'Armor.hand2f', 'Armor.hand2h',
 -- }]]
+--
+-- See #PaperDollHiddenPieces:events.PaperDollHiddenPieces# event for conditions under which each piece is visible.
 PaperDollDrawOrder = {'BackDoll', 'BackDoll.menu', 'BackDoll.game',
 	'Bow', 'Cloak',
 	'Armor.back', 'Belt.back',
-	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2hb', 'Player.arm2f', 'Player.shield', 'Player.hair2', 'Player.hair',
+	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2b', 'Player.arm2hb', 'Player.arm2fb', 'Player.shield', 'Player.hair2', 'Player.hair',
 	'Armor.back2',
 	mm6 and 'Helm' or 'Helm.back', mm6 and 'Boots' or 'Boots.back',
 	'Armor', 'Armor.arm1', 'Armor.arm1f',
 	mm6 and 'Boots.front' or 'Boots',
 	'Belt',
-	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h',
+	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h', 'Player.arm2f',
 	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
 	'MainHand',
 	'Player.hand1a', 'Player.hand1', 'Player.hand1f', 'Armor.hand1a', 'Armor.hand1', 'Armor.hand1f',
@@ -282,7 +284,7 @@ local function GetHiddenPieces(pl)
 			-- 2nd arm without 2-handed weapon
 			hide.arm2 = true
 			hide.arm2h = nil
-			-- 2nd arm when not holding anything, drawn behind armor
+			-- 2nd arm when not holding anything
 			hide.arm2f = true  -- no free hand
 		end
 	else
@@ -291,6 +293,10 @@ local function GetHiddenPieces(pl)
 		hide.shield = not hide.hand2  -- hand under shield
 	end
 	hide[InMenu and 'game' or 'menu'] = true
+	-- 2nd arm without 2-handed weapon, drawn behind armor
+	hide.arm2b = hide.arm2
+	-- 2nd arm when not holding anything, drawn behind armor
+	hide.arm2fb = hide.arm2f
 	-- 2nd hand when not holding anything
 	hide.hand2f = hide.arm2f
 	-- 2nd hand for 2-handed weapon

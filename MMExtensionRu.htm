@@ -2592,7 +2592,7 @@ Id
 <td class="def-left">
 <a id="events.MonsterAttacked" class="abs"></a><h4 class="def-h4">MonsterAttacked</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitMonster">WhoHitMonster</a><br><span class="def-nbsp">  </span>Handled<br><span class="def-nbsp">  </span><a href="#structs.MapMonster">Monster</a><br><span class="def-nbsp">  </span>MonsterIndex<br>}, attacker<b class="def-rargs">)</b>
 </td><td class="def-right">
- Called when a player or a projectile tries to hit a monster. Can be used to completely replace what happens.
+ Called when a player or a projectile tries to hit a monster. Can be used to completely replace what happens.<br>Doesn't get triggered when using Armageddon or Finger of Death.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -2604,7 +2604,7 @@ Id
 <td class="def-left">
 <a id="events.PlayerAttacked" class="abs"></a><h4 class="def-h4">PlayerAttacked</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>Attacker = table returned by <a href="#WhoHitPlayer">WhoHitPlayer</a><br><span class="def-nbsp">  </span>Handled<br><span class="def-nbsp">  </span><a href="#structs.Player">Player</a><br><span class="def-nbsp">  </span>PlayerSlot<br>}, attacker<b class="def-rargs">)</b>
 </td><td class="def-right">
- Called when a monster or a projectile tries to hit a player. Can be used to completely replace what happens.
+ Called when a monster or a projectile tries to hit a player. Can be used to completely replace what happens.<br>Doesn't get triggered when using Armageddon.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -2998,7 +2998,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="events.PaperDollHiddenPieces" class="abs"></a><h4 class="def-h4">PaperDollHiddenPieces</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>arm1 = 1st arm when holding a weapon<br><span class="def-nbsp">  </span>arm1f = 1st arm without a weapon<br><span class="def-nbsp">  </span>arm2 = 2nd arm without 2-handed weapon<br><span class="def-nbsp">  </span>arm2f = 2nd arm when not holding anything, drawn behind armor<br><span class="def-nbsp">  </span>arm2h = 2nd arm for 2-handed weapon<br><span class="def-nbsp">  </span>arm2hb = 2nd arm for 2-handed weapon, drawn behind armor<br><span class="def-nbsp">  </span>game = in game (for BackDoll in MM8)<br><span class="def-nbsp">  </span>hand1 = 1st hand when holding a weapon<br><span class="def-nbsp">  </span>hand1a = 1st hand (always drawn)<br><span class="def-nbsp">  </span>hand1f = 1st hand when not holding a weapon<br><span class="def-nbsp">  </span>hand2 = 2nd hand for dual-wielding<br><span class="def-nbsp">  </span>hand2f = 2nd hand when not holding anything<br><span class="def-nbsp">  </span>hand2h = 2nd hand for 2-handed weapon<br><span class="def-nbsp">  </span>menu = in new game menu (for BackDoll in MM8)<br><span class="def-nbsp">  </span>shield = drawn when holding a shield<br>}, player<b class="def-rargs">)</b>
+<a id="events.PaperDollHiddenPieces" class="abs"></a><h4 class="def-h4">PaperDollHiddenPieces</h4><b class="def-largs">(</b>{<br><span class="def-nbsp">  </span>arm1 = 1st arm when holding a weapon<br><span class="def-nbsp">  </span>arm1f = 1st arm without a weapon<br><span class="def-nbsp">  </span>arm2 = 2nd arm without 2-handed weapon<br><span class="def-nbsp">  </span>arm2b = 2nd arm without 2-handed weapon, drawn behind armor<br><span class="def-nbsp">  </span>arm2f = 2nd arm when not holding anything<br><span class="def-nbsp">  </span>arm2fb = 2nd arm when not holding anything, drawn behind armor<br><span class="def-nbsp">  </span>arm2h = 2nd arm for 2-handed weapon<br><span class="def-nbsp">  </span>arm2hb = 2nd arm for 2-handed weapon, drawn behind armor<br><span class="def-nbsp">  </span>game = in game (for BackDoll in MM8)<br><span class="def-nbsp">  </span>hand1 = 1st hand when holding a weapon<br><span class="def-nbsp">  </span>hand1a = 1st hand (always drawn)<br><span class="def-nbsp">  </span>hand1f = 1st hand when not holding a weapon<br><span class="def-nbsp">  </span>hand2 = 2nd hand for dual-wielding<br><span class="def-nbsp">  </span>hand2f = 2nd hand when not holding anything<br><span class="def-nbsp">  </span>hand2h = 2nd hand for 2-handed weapon<br><span class="def-nbsp">  </span>menu = in new game menu (for BackDoll in MM8)<br><span class="def-nbsp">  </span>shield = drawn when holding a shield<br>}, player<b class="def-rargs">)</b>
 </td><td class="def-right">
  Here I've described pieces that <b class="def-param">PaperDoll</b> module handles automatically. You can define your own pieces through <a href="#PaperDollDrawOrder">PaperDollDrawOrder</a> array and hide them conditionally here.
 </td>
@@ -4818,7 +4818,7 @@ Id
 <td class="def-left">
 <a id="PaperDollDrawOrder" class="abs"></a><h5 class="def-h5">PaperDollDrawOrder</h5>
 </td><td class="def-right">
- Default (depending on <a href="#PaperDollMode">PaperDollMode</a>):<br><span class="def-code"><span class="lua5-ctrl">{</span><span class="lua5-str">'BackDoll'</span>, <span class="lua5-str">'BackDoll.menu'</span>, <span class="lua5-str">'BackDoll.game'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Bow'</span>, <span class="lua5-str">'Cloak'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Armor.back'</span>, <span class="lua5-str">'Belt.back'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Player'</span>, <span class="lua5-str">'Player.arm1'</span>, <span class="lua5-str">'Player.arm1f'</span>, <span class="lua5-str">'Player.arm2hb'</span>, <span class="lua5-str">'Player.arm2f'</span>, <span class="lua5-str">'Player.shield'</span>, <span class="lua5-str">'Player.hair2'</span>, <span class="lua5-str">'Player.hair'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Armor.back2'</span>,<br><span class="lua5-tab">&#9;</span>mm6 <span class="lua5-ctrl">and</span> <span class="lua5-str">'Helm'</span> <span class="lua5-ctrl">or</span> <span class="lua5-str">'Helm.back'</span>, mm6 <span class="lua5-ctrl">and</span> <span class="lua5-str">'Boots'</span> <span class="lua5-ctrl">or</span> <span class="lua5-str">'Boots.back'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Armor'</span>, <span class="lua5-str">'Armor.arm1'</span>, <span class="lua5-str">'Armor.arm1f'</span>,<br><span class="lua5-tab">&#9;</span>mm6 <span class="lua5-ctrl">and</span> <span class="lua5-str">'Boots.front'</span> <span class="lua5-ctrl">or</span> <span class="lua5-str">'Boots'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Belt'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Player.arm2'</span>, <span class="lua5-str">'Player.arm2h'</span>, <span class="lua5-str">'Armor.arm2'</span>, <span class="lua5-str">'Armor.arm2h'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Cloak.scarf'</span>, <span class="lua5-str">'Player.scarf'</span>, mm6 <span class="lua5-ctrl">and</span> <span class="lua5-str">'Helm.scarf'</span> <span class="lua5-ctrl">or</span> <span class="lua5-str">'Helm'</span>, <span class="lua5-str">'Cloak.scarf2'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'MainHand'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Player.hand1a'</span>, <span class="lua5-str">'Player.hand1'</span>, <span class="lua5-str">'Player.hand1f'</span>, <span class="lua5-str">'Armor.hand1a'</span>, <span class="lua5-str">'Armor.hand1'</span>, <span class="lua5-str">'Armor.hand1f'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'ExtraHand.hand2'</span>, <span class="lua5-str">'ExtraHand.shield'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Player.hand2'</span>, <span class="lua5-str">'Player.hand2f'</span>, <span class="lua5-str">'Player.hand2h'</span>, <span class="lua5-str">'Armor.hand2'</span>, <span class="lua5-str">'Armor.hand2f'</span>, <span class="lua5-str">'Armor.hand2h'</span>,<br><span class="lua5-ctrl">}</span></span>
+ Default (depending on <a href="#PaperDollMode">PaperDollMode</a>):<br><span class="def-code"><span class="lua5-ctrl">{</span><span class="lua5-str">'BackDoll'</span>, <span class="lua5-str">'BackDoll.menu'</span>, <span class="lua5-str">'BackDoll.game'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Bow'</span>, <span class="lua5-str">'Cloak'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Armor.back'</span>, <span class="lua5-str">'Belt.back'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Player'</span>, <span class="lua5-str">'Player.arm1'</span>, <span class="lua5-str">'Player.arm1f'</span>, <span class="lua5-str">'Player.arm2b'</span>, <span class="lua5-str">'Player.arm2hb'</span>, <span class="lua5-str">'Player.arm2fb'</span>, <span class="lua5-str">'Player.shield'</span>, <span class="lua5-str">'Player.hair2'</span>, <span class="lua5-str">'Player.hair'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Armor.back2'</span>,<br><span class="lua5-tab">&#9;</span>mm6 <span class="lua5-ctrl">and</span> <span class="lua5-str">'Helm'</span> <span class="lua5-ctrl">or</span> <span class="lua5-str">'Helm.back'</span>, mm6 <span class="lua5-ctrl">and</span> <span class="lua5-str">'Boots'</span> <span class="lua5-ctrl">or</span> <span class="lua5-str">'Boots.back'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Armor'</span>, <span class="lua5-str">'Armor.arm1'</span>, <span class="lua5-str">'Armor.arm1f'</span>,<br><span class="lua5-tab">&#9;</span>mm6 <span class="lua5-ctrl">and</span> <span class="lua5-str">'Boots.front'</span> <span class="lua5-ctrl">or</span> <span class="lua5-str">'Boots'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Belt'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Player.arm2'</span>, <span class="lua5-str">'Player.arm2h'</span>, <span class="lua5-str">'Armor.arm2'</span>, <span class="lua5-str">'Armor.arm2h'</span>, <span class="lua5-str">'Player.arm2f'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Cloak.scarf'</span>, <span class="lua5-str">'Player.scarf'</span>, mm6 <span class="lua5-ctrl">and</span> <span class="lua5-str">'Helm.scarf'</span> <span class="lua5-ctrl">or</span> <span class="lua5-str">'Helm'</span>, <span class="lua5-str">'Cloak.scarf2'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'MainHand'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Player.hand1a'</span>, <span class="lua5-str">'Player.hand1'</span>, <span class="lua5-str">'Player.hand1f'</span>, <span class="lua5-str">'Armor.hand1a'</span>, <span class="lua5-str">'Armor.hand1'</span>, <span class="lua5-str">'Armor.hand1f'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'ExtraHand.hand2'</span>, <span class="lua5-str">'ExtraHand.shield'</span>,<br><span class="lua5-tab">&#9;</span><span class="lua5-str">'Player.hand2'</span>, <span class="lua5-str">'Player.hand2f'</span>, <span class="lua5-str">'Player.hand2h'</span>, <span class="lua5-str">'Armor.hand2'</span>, <span class="lua5-str">'Armor.hand2f'</span>, <span class="lua5-str">'Armor.hand2h'</span>,<br><span class="lua5-ctrl">}</span></span><br><br>See <a href="#events.PaperDollHiddenPieces">PaperDollHiddenPieces</a> event for conditions under which each piece is visible.
 </td>
 </tr><tr>
 <td colspan="2" class="def-functions"><br>
@@ -5283,6 +5283,12 @@ Id
 <a id="structs.GameStructure.PotionTxt" class="abs"></a>PotionTxt[][]
 </td><td class="def-right">
  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.GameStructure.PotNotesTxt" class="abs"></a>PotNotesTxt[][]
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11082,6 +11088,66 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.MapFacet.TriggerByClick" class="abs"></a>TriggerByClick
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.EventDisabledByCtrlClick" class="abs"></a>EventDisabledByCtrlClick
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.TriggerByStep" class="abs"></a>TriggerByStep
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.Untouchable" class="abs"></a>Untouchable
+</td><td class="def-right">
+ great for vertical facets of stairs. <span class="def-ver">[MM7+]</span> Shouldn't be used for sloped floor, like it's used in MM6.
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.IsPortal" class="abs"></a>IsPortal
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.IsWater" class="abs"></a>IsWater
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.DisableEventByCtrlClick" class="abs"></a>DisableEventByCtrlClick
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  indoor only: click event gets disabled by Ctrl+Click
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.ProjectToXY" class="abs"></a>ProjectToXY
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.ProjectToXZ" class="abs"></a>ProjectToXZ
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.ProjectToYZ" class="abs"></a>ProjectToYZ
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.MapFacet.Invisible" class="abs"></a>Invisible
 </td><td class="def-right">
  
@@ -11112,87 +11178,15 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.IsSky" class="abs"></a>IsSky
-</td><td class="def-right">
- outdoor in software mode: horizontal flow
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.FlipU" class="abs"></a>FlipU
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.FlipV" class="abs"></a>FlipV
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.IsPortal" class="abs"></a>IsPortal
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.TriggerByClick" class="abs"></a>TriggerByClick
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.TriggerByStep" class="abs"></a>TriggerByStep
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.Untouchable" class="abs"></a>Untouchable
-</td><td class="def-right">
- great for vertical facets of stairs. <span class="def-ver">[MM7+]</span> Shouldn't be used for sloped floor, like it's used in MM6.
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.IsWater" class="abs"></a>IsWater
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.IsLava" class="abs"></a>IsLava
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.HasData" class="abs"></a>HasData
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.ProjectToXY" class="abs"></a>ProjectToXY
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.ProjectToXZ" class="abs"></a>ProjectToXZ
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
 <a id="structs.MapFacet.TriggerByObject" class="abs"></a>TriggerByObject
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  happens even if there's no event assigned
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.ProjectToYZ" class="abs"></a>ProjectToYZ
+<a id="structs.MapFacet.IsSky" class="abs"></a>IsSky
 </td><td class="def-right">
- 
+ outdoor in software mode: horizontal flow
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11217,18 +11211,6 @@ Id
 <a id="structs.MapFacet.ScrollDown" class="abs"></a>ScrollDown
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.DisableEventByCtrlClick" class="abs"></a>DisableEventByCtrlClick
-</td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  indoor only: click event gets disabled by Ctrl+Click
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.EventDisabledByCtrlClick" class="abs"></a>EventDisabledByCtrlClick
-</td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11265,6 +11247,30 @@ Id
 <a id="structs.MapFacet.ScrollLeft" class="abs"></a>ScrollLeft
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.FlipU" class="abs"></a>FlipU
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.HasData" class="abs"></a>HasData
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.FlipV" class="abs"></a>FlipV
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.IsLava" class="abs"></a>IsLava
+</td><td class="def-right">
+ 
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11711,15 +11717,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapMonster.Invisible" class="abs"></a>Invisible
+<a id="structs.MapMonster.ShowOnMap" class="abs"></a>ShowOnMap
 </td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.OnAlertMap" class="abs"></a>OnAlertMap
-</td><td class="def-right">
- 
+ monster was once seen by party
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11741,9 +11741,15 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapMonster.ShowOnMap" class="abs"></a>ShowOnMap
+<a id="structs.MapMonster.OnAlertMap" class="abs"></a>OnAlertMap
 </td><td class="def-right">
- monster was once seen by party
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.IsObeliskChest" class="abs"></a>IsObeliskChest
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11759,9 +11765,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapMonster.IsObeliskChest" class="abs"></a>IsObeliskChest
+<a id="structs.MapMonster.Invisible" class="abs"></a>Invisible
 </td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
+ 
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11846,24 +11852,6 @@ Id
 <a id="structs.MapMonster.HostileType" class="abs"></a>HostileType
 </td><td class="def-right">
  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.Prefers.Druid" class="abs"></a>Prefers.Druid
-</td><td class="def-right">
-<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.Prefers.Cleric" class="abs"></a>Prefers.Cleric
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.Prefers.Sorcerer" class="abs"></a>Prefers.Sorcerer
-</td><td class="def-right">
-<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11970,6 +11958,24 @@ Id
 </tr><tr>
 <td class="def-left">
 <a id="structs.MapMonster.Prefers.Archer" class="abs"></a>Prefers.Archer
+</td><td class="def-right">
+<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.Prefers.Druid" class="abs"></a>Prefers.Druid
+</td><td class="def-right">
+<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.Prefers.Cleric" class="abs"></a>Prefers.Cleric
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.Prefers.Sorcerer" class="abs"></a>Prefers.Sorcerer
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
 </td>
@@ -13650,6 +13656,66 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.ModelFacet.TriggerByClick" class="abs"></a>TriggerByClick
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.EventDisabledByCtrlClick" class="abs"></a>EventDisabledByCtrlClick
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.TriggerByStep" class="abs"></a>TriggerByStep
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.Untouchable" class="abs"></a>Untouchable
+</td><td class="def-right">
+ great for vertical facets of stairs. <span class="def-ver">[MM7+]</span> Shouldn't be used for sloped floor, like it's used in MM6.
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.IsPortal" class="abs"></a>IsPortal
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.IsWater" class="abs"></a>IsWater
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.DisableEventByCtrlClick" class="abs"></a>DisableEventByCtrlClick
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  indoor only: click event gets disabled by Ctrl+Click
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.ProjectToXY" class="abs"></a>ProjectToXY
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.ProjectToXZ" class="abs"></a>ProjectToXZ
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.ProjectToYZ" class="abs"></a>ProjectToYZ
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.ModelFacet.Invisible" class="abs"></a>Invisible
 </td><td class="def-right">
  
@@ -13680,87 +13746,15 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.IsSky" class="abs"></a>IsSky
-</td><td class="def-right">
- outdoor in software mode: horizontal flow
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.FlipU" class="abs"></a>FlipU
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.FlipV" class="abs"></a>FlipV
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.IsPortal" class="abs"></a>IsPortal
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.TriggerByClick" class="abs"></a>TriggerByClick
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.TriggerByStep" class="abs"></a>TriggerByStep
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.Untouchable" class="abs"></a>Untouchable
-</td><td class="def-right">
- great for vertical facets of stairs. <span class="def-ver">[MM7+]</span> Shouldn't be used for sloped floor, like it's used in MM6.
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.IsWater" class="abs"></a>IsWater
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.IsLava" class="abs"></a>IsLava
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.HasData" class="abs"></a>HasData
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.ProjectToXY" class="abs"></a>ProjectToXY
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.ProjectToXZ" class="abs"></a>ProjectToXZ
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
 <a id="structs.ModelFacet.TriggerByObject" class="abs"></a>TriggerByObject
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  happens even if there's no event assigned
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.ProjectToYZ" class="abs"></a>ProjectToYZ
+<a id="structs.ModelFacet.IsSky" class="abs"></a>IsSky
 </td><td class="def-right">
- 
+ outdoor in software mode: horizontal flow
 </td>
 </tr><tr>
 <td class="def-left">
@@ -13785,18 +13779,6 @@ Id
 <a id="structs.ModelFacet.ScrollDown" class="abs"></a>ScrollDown
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.DisableEventByCtrlClick" class="abs"></a>DisableEventByCtrlClick
-</td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  indoor only: click event gets disabled by Ctrl+Click
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.EventDisabledByCtrlClick" class="abs"></a>EventDisabledByCtrlClick
-</td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -13833,6 +13815,30 @@ Id
 <a id="structs.ModelFacet.ScrollLeft" class="abs"></a>ScrollLeft
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.FlipU" class="abs"></a>FlipU
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.HasData" class="abs"></a>HasData
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.FlipV" class="abs"></a>FlipV
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.IsLava" class="abs"></a>IsLava
+</td><td class="def-right">
+ 
 </td>
 </tr><tr>
 <td class="def-left">
@@ -14454,24 +14460,6 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Druid" class="abs"></a>Prefers.Druid
-</td><td class="def-right">
-<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Cleric" class="abs"></a>Prefers.Cleric
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Sorcerer" class="abs"></a>Prefers.Sorcerer
-</td><td class="def-right">
-<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
 <a id="structs.MonstersTxtItem.Prefers.Male" class="abs"></a>Prefers.Male
 </td><td class="def-right">
  
@@ -14575,6 +14563,24 @@ Id
 </tr><tr>
 <td class="def-left">
 <a id="structs.MonstersTxtItem.Prefers.Archer" class="abs"></a>Prefers.Archer
+</td><td class="def-right">
+<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MonstersTxtItem.Prefers.Druid" class="abs"></a>Prefers.Druid
+</td><td class="def-right">
+<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MonstersTxtItem.Prefers.Cleric" class="abs"></a>Prefers.Cleric
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MonstersTxtItem.Prefers.Sorcerer" class="abs"></a>Prefers.Sorcerer
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
 </td>
@@ -16213,19 +16219,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Paralyzed" class="abs"></a>Paralyzed
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Afraid" class="abs"></a>Afraid
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Good" class="abs"></a>Good
+<a id="structs.Player.Unconscious" class="abs"></a>Unconscious
 </td><td class="def-right">
  
 </td>
@@ -16237,19 +16231,25 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.Player.Good" class="abs"></a>Good
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Stoned" class="abs"></a>Stoned
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Afraid" class="abs"></a>Afraid
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.Player.Weak" class="abs"></a>Weak
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Poison2" class="abs"></a>Poison2
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Dead" class="abs"></a>Dead
 </td><td class="def-right">
  
 </td>
@@ -16279,7 +16279,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Unconscious" class="abs"></a>Unconscious
+<a id="structs.Player.Poison2" class="abs"></a>Poison2
 </td><td class="def-right">
  
 </td>
@@ -16309,19 +16309,25 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Cursed" class="abs"></a>Cursed
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
 <a id="structs.Player.Zombie" class="abs"></a>Zombie
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Stoned" class="abs"></a>Stoned
+<a id="structs.Player.Dead" class="abs"></a>Dead
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Paralyzed" class="abs"></a>Paralyzed
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Cursed" class="abs"></a>Cursed
 </td><td class="def-right">
  
 </td>

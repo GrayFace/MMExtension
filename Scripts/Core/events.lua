@@ -2368,6 +2368,7 @@ do
 		}
 		
 		-- Called when a monster or a projectile tries to hit a player. Can be used to completely replace what happens.
+		-- Doesn't get triggered when using Armageddon.
 		events.cocalls("PlayerAttacked", t, attacker)
 		Pl_Slot = t.PlayerSlot or slot
 		if not t.Handled then
