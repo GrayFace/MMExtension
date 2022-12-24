@@ -1692,6 +1692,103 @@ if mmver > 6 then
 	]])
 end
 
+-- fix iregular wall/floor portals drawing in D3D
+-- (even if I fully fix polygon shape, there's still screen blinking when you go through them)
+-- if mmver > 6 then
+-- 	-- mem.asmhook(mm78(0x49C99A, 0), [[
+-- 	-- 	jz @ok
+-- 	-- 	cmp al, 4
+-- 	-- 	jz @ok
+-- 	-- 	cmp al, 6
+-- 	-- @ok:
+-- 	-- ]])
+	
+-- 	local p = mem.StaticAlloc(12)
+-- 	mem.r8[p] = -1
+-- 	u4[mm78(0x49CB41, 0x49A023)] = p + 8
+	
+-- 	local hooks = HookManager{
+-- 		buf = p + 8,
+-- 		minus1 = p,
+-- 	}
+	
+-- 	hooks.asmhook(mm78(0x49C99A, 0x499E6F), [[
+-- 		mov dword [%buf%], 0
+-- 	]])
+
+-- 	-- z1 = (xx + yy)^0.5
+-- 	-- x1 = -z*x/(xx + yy)^0.5
+-- 	-- y1 = -z*y/(xx + yy)^0.5
+-- 	hooks.asmpatch(mm78(0x49C9C6, 0x499EA5), [[
+-- 		fld dword [esi]         ; x
+-- 		fmul st, st
+-- 		fld dword [esi+4]       ; y
+-- 		fmul st, st
+-- 		faddp st1, st
+		
+-- 		fsqrt                   ; (xx + yy)^0.5
+ 		
+--  		fld st
+-- 		fdivr qword [%minus1%]  ; -1/(xx + yy)^0.5
+-- 		fmul dword [esi+8]      ; -z/(xx + yy)^0.5
+--  		fld st
+-- 		fmul dword [esi]        ; -z*x/(xx + yy)^0.5
+-- 		fstp dword [%buf%]
+-- 		fmul dword [esi + 4]    ; -z*y/(xx + yy)^0.5
+-- 		fstp dword [ebp - 0x28]
+-- 	]], 7)
+	
+-- 	-- move the polygon to proper plane
+-- 	hooks.asmhook(mm78(0x49CC00, 0x49A0DF), [[
+-- 		; x*nx + y*ny + z*nz,  nx,  ny,  nz
+-- 		fld dword [esi+8]
+-- 		fld dword [esi+4]
+-- 		fld dword [esi]
+-- 		fld dword [ebx]
+-- 		fmul st, st1
+-- 		fld dword [ebx+4]
+-- 		fmul st, st3
+-- 		faddp st1, st
+-- 		fld dword [ebx+8]
+-- 		fmul st, st4
+-- 		faddp st1, st
+		
+-- 		; d = x*nx + y*ny + z*nz - NormalFDist,  nx,  ny,  nz
+-- 		fld dword [esi+12]
+-- 		faddp st1, st
+-- 		fchs
+		
+-- 		; d*nx,  d*ny,  d*nz
+-- 		fmul st1, st
+-- 		fmul st2, st
+-- 		fmulp st3, st
+		
+-- 		; add to all polygon vertices
+-- 		macro add_to off
+-- 		{
+-- 			fld dword [ebx + off + 8]
+-- 			fld dword [ebx + off + 4]
+-- 			fld dword [ebx + off]
+-- 			fadd st, st3
+-- 			fstp dword [ebx + off]
+-- 			fadd st, st3
+-- 			fstp dword [ebx + off + 4]
+-- 			fadd st, st3
+-- 			fstp dword [ebx + off + 8]
+-- 		}
+		
+-- 		add_to 0
+-- 		add_to 48
+-- 		add_to 48*2
+-- 		add_to 48*3
+		
+-- 		; pop,3
+-- 		faddp st, st
+-- 		faddp st, st
+-- 		faddp st, st
+-- 	]])
+-- end
+
 ---- Player hooks
 
 -- CalcStatBonusByItems
@@ -2310,6 +2407,7 @@ do
 		}
 		
 		-- Called when a player or a projectile tries to hit a monster. Can be used to completely replace what happens.
+		-- Doesn't get triggered when using Armageddon or Finger of Death.
 		events.cocalls("MonsterAttacked", t, attacker)
 		if not t.Handled then
 			def(attackerID, monIndex, speed, attacker.MonsterAction or action)
