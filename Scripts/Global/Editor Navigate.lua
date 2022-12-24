@@ -24,7 +24,7 @@ local function nullproc()
 end
 
 local DLL = mem.dll[DevPath.."ExeMods\\MMExtension\\MMEditorDlg.dll"]
-local pCGame = mmv(nil, 0x71FE94, 0x75CE00)
+local pCGame = mmv(0, 0x71FE94, 0x75CE00)
 
 local HookManager = HookManager
 local TmpHooks = HookManager()
@@ -575,9 +575,9 @@ local hooks = TmpHookManager{
 	ModelFacetOff = 0x128,  -- use 1 of 2 unused bytes
 	IndoorDarkness = mmv(0x9DDAA4, 0xF8ABD4, 0xFFCFDC),
 	FacetPtrBuf = TmpAlloc(4),
-	DrawFacetOutlineD3D = mmv(nil, 0x4378F5, 0x435286),
+	DrawFacetOutlineD3D = mmv(0, 0x4378F5, 0x435286),
 	pCGame = pCGame,
-	RenderIndoorFlags = mmv(nil, 0x51B564, 0x52CE4C),
+	RenderIndoorFlags = mmv(0, 0x51B564, 0x52CE4C),
 }
 
 if Game.IsD3D then
@@ -1083,7 +1083,7 @@ end
 -- Change texture of selected tiles
 -----------------------------------------------------
 
-if not Editor.GroundHooked then
+if not Editor.UpdateTileSelectState then
 	local addr = mmv(0x47BA92, 0x488F05, 0x488805)
 	local addr2 = (mmver == 8 and 0x486E5D or nil)
 	local CodeStd = mem.string(addr, 5, true)
@@ -1181,7 +1181,7 @@ end
 
 function Editor.UpdateGameBits()
 	local portals = Editor.ShowPortals and Editor.VisibleGUI
-	if Game.Version > 6 then
+	if mmver > 6 then
 		local p = 0xE20 + mem.u4[pCGame]
 		local v = mem.u4[p]
 		local function bit(n, on)
@@ -1220,6 +1220,29 @@ function events.LoadSavedMap(t)
 	if Editor.LoadBlvTime then
 		Map.LastRefillDay = 0
 	end
+end
+
+-----------------------------------------------------
+-- Max Perception and Id Mon
+-----------------------------------------------------
+
+if mmver > 6 then
+	local StateSyncEvents, SwitchStateSyncEvents = SwitchableEvents()
+
+	local MaxSkills = {
+		[const.Skills.Perception] = true,
+		[const.Skills.IdentifyMonster] = true,
+	}
+
+	StateSyncEvents.GetSkill = |t| if MaxSkills[t.Skill] then
+		t.Result = JoinSkill(60, const.GM)
+	end
+
+	function events.EditorMapUpdated()
+		SwitchStateSyncEvents(true)
+	end
+
+	events.LeaveMap = || SwitchStateSyncEvents(false)
 end
 
 -----------------------------------------------------

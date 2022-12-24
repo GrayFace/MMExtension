@@ -534,22 +534,17 @@ function Editor.MapUpdated()
 	Game.MapEvtLines.Count = 0
 	Editor.UpdateShowInvisible()
 	Editor.UpdateNoDark()
-	if mmver > 6 then
-		Party[0].Skills[const.Skills.Perception] = JoinSkill(60, const.GM)
-		Party[0].Skills[const.Skills.IdentifyMonster] = JoinSkill(60, const.GM)
-	end
 	-- once had an AV due to corrupt ObjectByPixel
 	if mmver == 6 or Game.RendererD3D == 0 then
 		for i, a in Game.ObjectByPixel do
-			for i in a do
-				a[i].Value = 0
-			end
+			mem.fill(a)
 		end
 	end
 	if Editor.State.Party then
 		Editor.CopyPartyPos(Party, Editor.State.Party)
 	end
 	Party.NeedRender = true
+	events.EditorMapUpdated()
 end
 
 local PauseState
