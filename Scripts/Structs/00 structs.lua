@@ -357,6 +357,8 @@ function structs.f.GameStructure(define)
 	 .Info "pauses updating view"
 	[mmv(0x4D519C, 0x50BA7C, 0x51D354)].i4  'TimeDelta'
 	 .Info "Time since last tick"
+	[mmv(0x4D51C4, 0x50BA54, 0x51D32C)].i4  'TimeDelta2'
+	 .Info "Time since last tick of updating view"
 	-- MM6: 4C4468 - something related to shop items generation
 	[mmv(0x90EADC, 0xAD45B4, 0xB7CA8C)].array(0, mmv(47, 52, 52)).array(12).struct(structs.Item)  'ShopItems'
 	 .Info{Sig = "[house][slot]"}
@@ -668,6 +670,8 @@ end]=]
 	 .Info{Sig = "Text, Unk = 0"}
 	.func{name = "SummonMonster", p = mmv(0x4A35F0, 0x4BBEC4, 0x4BA076), cc = 2, must = 4}
 	 .Info{Sig = "Id, X, Y, Z"}
+	.func{name = "SummonObjects", p = mmv(0x42AA10, 0x42F7C7, 0x42E245), cc = 2, must = 4; 0, 0,0,0, 0,1,false, 0, 0}
+	 .Info{Sig = "Type, X, Y, Z, Speed, Count = 1, RandomAngle = false, Bits = 0, pItem:structs.Item [MM7+]"; "This function is called by #evt.SummonObject:# internally. If you specify the 'pItem' parameter, it will only work properly in MM8."}
 	.func{name = "GenerateChests", p = mmv(0x456300, 0x450244, 0x44D96C), cc = 0}
 	 .Info "You can add random items (Number = -1 to -6 for different power or -7 for artifact) to some chests and then call this function to generate them"
 	if mmver > 6 then

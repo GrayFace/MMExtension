@@ -11,7 +11,7 @@ end
 
 local GetPlayer, GetMonster = internal.GetPlayer, internal.GetMonster
 
-local _KNOWNGLOBALS
+local _KNOWNGLOBALS_F
 
 local changeSnd
 
@@ -27,7 +27,6 @@ i4[grab] = grabEnd
 
 HookManager{
 	wreg = mmv('dx', 'ax', 'ax'),
-	reg = mmv('edx', 'eax', 'eax'),
 	p = grab,
 	p2 = grabEnd,
 }['asmhook'..mmv('',2,2)](mmv(0x42A9DD, 0x42F7A8, 0x42E226), [[
@@ -50,6 +49,12 @@ else
 	lastSpell = nil
 end
 
+-- Starts recording all spawned objects. You can call it prior to calling #evt.SummonObject:# or #Game.SummonObjects:# and then call #GrabObjects:# afterwards to get all created objects.
+function BeginGrabObjects()
+	i4[grab] = grabStart
+end
+local BeginGrabObjects = BeginGrabObjects
+
 local function ReplaceProj(sp, sp0, otype, snd)
 	if sp then
 		if otype == nil then
@@ -67,7 +72,7 @@ local function ReplaceProj(sp, sp0, otype, snd)
 	end
 	DoReplace(lastSpell, lastType)  -- safeguard
 	DoReplace(sp, otype)
-	i4[grab] = grabStart
+	BeginGrabObjects()
 end
 
 local function DoGrab(p, p2, sp, sk, mas)
@@ -97,6 +102,11 @@ local function CollectProj(done, spell, skill, mas)
 	local p2 = done and grabStart or i4[grab]
 	i4[grab] = grabEnd
 	return DoGrab(grabStart, p2, spell, skill, mas)
+end
+
+-- Returns all (up to 1000) objects spawned since last call to #BeginGrabObjects:#
+function GrabObjects()
+	return DoGrab(grabStart, i4[grab])
 end
 
 
