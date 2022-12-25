@@ -33,6 +33,7 @@ end
 const.MapLimit = 22528
 
 const.Minute = 256  -- each in-game minute amounts to 2 seconds of real time
+const.RTSecond = 128  -- second in real time
 const.Second = const.Minute/60
 const.Hour = const.Minute*60
 const.Day = const.Hour*24
