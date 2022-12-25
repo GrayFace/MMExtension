@@ -1096,7 +1096,7 @@ function structs.f.MapMonster(define)
 	end
 	define
 	[0x20].i2  'NPC_ID'
-	 .Info "[MM6] Index in #Game.StreetNPC:structs.GameStructure.StreetNPC# + 1\n[MM7+] Index in #Game.NPC:structs.GameStructure.NPC# or index in #Game.StreetNPC:structs.GameStructure.StreetNPC# + 5000"
+	 .Info "[MM6] Index in #Game.StreetNPC:# + 1\n[MM7+] Index in #Game.NPC:# or index in #Game.StreetNPC:# + 5000"
 	.skip(2)
 	.goto(0x24)  internal.MonsterBits(define)
 	[0x24].u4  'Bits'
@@ -2495,13 +2495,13 @@ function structs.f.Lod(define)
 	.method{p = mmv(0x44CCA0, 0x461659, 0x45F09B), name = "HasFile", ret = true, must = 1;  ""}
 	 .Info{Sig = "name"; "Does a slow search for a file. For sorted LOD archives 'FindFile' works faster."}
 	.method{p = offsets.FindFileInLod, name = "FindFile", ret = "u4", must = 1;  "", false}
-	 .Info{Sig = "name, unsorted = false"; "Finds a file and returns file stream address or '0' if file isn't found. By default performs fast binary search. Pass 'unsorted' = 'true' when searching in #Game.GamesLod:structs.GameStructure.GamesLod# and #Game.SaveGameLod:structs.GameStructure.SaveGameLod#, because these archives aren't sorted lexicographically and thus binary search can't be used for them.\nReturned file stream can be used in #Game.FileRead:structs.GameStructure.FileRead#, #Game.FileSeek:structs.GameStructure.FileSeek# and #Game.FileTell:structs.GameStructure.FileTell# functions. Its position is set to the beginning of specified file."}
+	 .Info{Sig = "name, unsorted = false"; "Finds a file and returns file stream address or '0' if file isn't found. By default performs fast binary search. Pass 'unsorted' = 'true' when searching in #Game.GamesLod:# and #Game.SaveGameLod:#, because these archives aren't sorted lexicographically and thus binary search can't be used for them.\nReturned file stream can be used in #Game.FileRead:#, #Game.FileSeek:# and #Game.FileTell:# functions. Its position is set to the beginning of specified file."}
 end
 
 function structs.f.LanguageLod(define)
 	DefineLod(define, structs.LanguageLodFile)
 	.method{p = 0x45FCA6, name = "FindFile", ret = "u4", must = 1;  "", false}
-	 .Info{Sig = "name, unsorted = false"; "Finds a file and returns file stream address or '0' if file isn't found. Performs fast binary search (unless 'unsorted' is set to 'true', which you shouldn't do for language LODs).\nReturned file stream can be used in #Game.FileRead:structs.GameStructure.FileRead#, #Game.FileSeek:structs.GameStructure.FileSeek# and #Game.FileTell:structs.GameStructure.FileTell# functions. Its position is set to the beginning of specified file."}
+	 .Info{Sig = "name, unsorted = false"; "Finds a file and returns file stream address or '0' if file isn't found. Performs fast binary search (unless 'unsorted' is set to 'true', which you shouldn't do for language LODs).\nReturned file stream can be used in #Game.FileRead:#, #Game.FileSeek:# and #Game.FileTell:# functions. Its position is set to the beginning of specified file."}
 end
 
 local bmpbuf = mem.StaticAlloc(64)

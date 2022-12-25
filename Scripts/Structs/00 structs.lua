@@ -109,7 +109,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x54D040, 0x590F0C, 0x5A5378)].i4  'NPCCommand'
 	[mmv(0x9DDD8C, 0xF8B01C, 0xFFD408)].i4  'HouseScreen'
 	[mmv(0x551F94, 0x591270, 0x5A56E0)].i4  'HouseNPCSlot'
-	 .Info "If #HouseOwnerPic:structs.GameStructure.HouseOwnerPic# isn't '0', the value of '1' refers to the shop keeper and higher value needs to be reduce by 1 before accessing .\nIf #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter icon."
+	 .Info "If #Game.HouseOwnerPic:# isn't '0', the value of '1' refers to the shop keeper and higher value needs to be reduced by 1 before accessing .\nIf #Game.HouseExitMap:# isn't '0', last slot is occupied by map enter icon."
 	[mmv(0x53CB60, 0x5912A4, 0x5A5714)].i4  'HouseNPCSlotsCount'
 	[mmv(0x9DDD9C, 0xF8B034, 0xFFD420)].i4  'HouseCost'
 	[mmv(0x9DDD70, 0xF8B028, 0xFFD414)].i4  'HouseAllowAction'
@@ -119,10 +119,10 @@ function structs.f.GameStructure(define)
 	[mmv(0x552F48, 0x590F00, 0x5A5384)].i4  'HouseOwnerPic'
 	[mmv(0x55BDA4, 0x5C3450, 0x5DB8FC)].i4  'HouseExitMap'
 	[mmv(0x54D020, 0x591258, 0x5A56C8)].array(1, 6).i4  'HouseNPCs'
+	 .Info "If #Game.HouseExitMap:# isn't '0', last slot is occupied by map enter pseudo-NPC."
 	[mmv(0x9DDDFC, 0xF8B060, 0xFFD450)].i4  'HouseItemsCount'
 	 .Info "Number of interactive items of the dialog. Items count of the dialog object gets changed to this or 0 depending on selected player being concious."
 	[mmv(0x4D50C0, 0x507A3C, 0x519324)].pstruct(structs.Dlg)  'CurrentNPCDialog'
-	 .Info "If #HouseExitMap:structs.GameStructure.HouseExitMap# isn't '0', last slot is occupied by map enter pseudo-NPC."
 	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), ret = true}
 	if mmver == 8 then
 		define
@@ -681,7 +681,7 @@ end]=]
 	end
 	define
 	.func{name = "FileRead", p = offsets.fread, cc = 0; 0, 1, 0, 0}
-	 .Info{Sig = "pTarget, Size, Count, FileStream"; "Reads 'Size'*'Count' bytes from 'FileStream' into 'pTarget' buffer."}
+	 .Info{Sig = "pTarget, Size, Count, FileStream"; "Reads 'Size'*'Count' bytes from 'FileStream' into 'pTarget' buffer. The 'FileStream' can be obtained by calling #FindFile:structs.Lod.FindFile# method of a Lod archive."}
 	.func{name = "FileSeek", p = mmv(0x4AE5B0, 0x4CB7EC, 0x4DA588), cc = 0; 0, 0, 0}
 	 .Info{Sig = "FileStream, Offset, Origin = 0"; "Sets current position of 'FileStream'.\n\t'Origin' = '0' sets absolute position to 'Offset'.\n\t'Origin' = '1' adds 'Offset' to current position.\n\t'Origin' = '2' sets position to end of file plus 'Offset'."}
 	.func{name = "FileTell", p = mmv(0x4AE458, 0x4CB669, 0x4DA405), cc = 0; 0}

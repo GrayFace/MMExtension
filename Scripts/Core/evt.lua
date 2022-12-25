@@ -1016,6 +1016,8 @@ Message("Hi!")]]]=]
 
 	---------------------------
 	MakeCmd("SummonObject", 0x22, function(define)
+		define
+		 .Info "To make your script compatible with all MM versions, instead of calling this function you can call #SummonItem:# to create an item and #Game.SummonObjects:# to create an object."
 		if mmver == 8 then
 			define.i4  'Item'
 			 .Info "Item index. Index over 1000 means random item of the same kind as 'Item' % 1000 of strength 'Item' div 1000. For backward compatibility, this parameter can also be called 'Type'."

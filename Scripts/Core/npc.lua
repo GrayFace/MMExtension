@@ -26,7 +26,7 @@ if mmver == 7 and mem.u1[0x445F76] == 4 then
 	mem.u1[0x445F76] = 3
 end
 
---!(NPC:structs.NPC) Finds the prototype NPC in Game.NPC array for the supplied hired NPC. Returns 'nil' if it's a street NPC.
+--!(NPC:structs.NPC) Finds the prototype NPC in #Game.NPC:# array for the supplied hired NPC. Returns 'nil' if it's a street NPC.
 function FindHiredNPC(npc)
 	local s = npc.Name
 	for i, a in Game.NPC do
@@ -59,7 +59,7 @@ local function NPCTopicsHook(p)
 		CurrentNPC = i
 		if FirstEnterNPC then
 			FirstEnterNPC = nil
-			--!(Index) Only called for NPCs from Game.NPC array, not for street or hired NPCs
+			--!(Index) Only called for NPCs from #Game.NPC:# array, not for street or hired NPCs
 			events.cocalls("EnterNPC", i)
 		end
 		--!(Index) NPC topics are about to be shown and you can update them here
@@ -67,7 +67,7 @@ local function NPCTopicsHook(p)
 	elseif kind == 'HiredNPC' then
 		--!(Index, RealNPC) Happens only in MM6 when you talk to a hired NPC.
 		-- 'Index' is the index in Party.HiredNPC array.
-		-- 'RealNPC' is the index of the prototype NPC in Game.NPC array or 'nil'.
+		-- 'RealNPC' is the index of the prototype NPC in #Game.NPC:# array or 'nil'.
 		events.cocalls("ShowHiredNPCTopics", i, FindHiredNPC(npc))
 	end
 end
@@ -170,7 +170,7 @@ internal.OnActionNPC = |t| if CurrentAnyNPC and (t.Action == 113 and screensNPC[
 			events.cocalls("CanExitStreetNPC", t)
 		else
 			t.RealNPC = FindHiredNPC(t.NPC)
-			--!k{NPC :structs.NPC} 'RealNPC' is the index of the prototype NPC in Game.NPC array or 'nil'.
+			--!k{NPC :structs.NPC} 'RealNPC' is the index of the prototype NPC in #Game.NPC:# array or 'nil'.
 			events.cocalls("CanExitHiredNPC", t)
 		end
 		allow = t.Allow

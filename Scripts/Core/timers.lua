@@ -66,7 +66,7 @@ end
 --!(f, Period = const.Minute, [Start,] [PastAware,] [Exact])
 -- 'f' = !LUA[[function(TriggerTime, Period, LastTick, Tick)]]:
 --   Function to call when the timer is triggered.
--- 'Start' defaults to !LUA[[Game.Time + Period]] if not specified (unless 'PastAware' = 'true', in which case it deafults to !LUA[[Game.Time]]).
+-- 'Start' defaults to !LUA[[Game.Time + Period]] if not specified (unless 'PastAware' = 'true', in which case it deafults to #Game.Time:#).
 -- 'PastAware' = remember last visit time and fire right away if timer condition was met in the period of your absence.
 --   Defaults to 'true' if 'Start' is specified and 'false' otherwise.
 -- Possible 'Exact' values:
