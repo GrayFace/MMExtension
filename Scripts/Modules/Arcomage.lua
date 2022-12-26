@@ -8,7 +8,7 @@ end
 
 assert(mmver > 6)
 
-local P = {LazyMode = true}
+local P = {}
 
 local NeedStarting = table.invert{'Tower', 'Wall', 'IncomeBricks', 'IncomeGems', 'IncomeBeasts', 'Bricks', 'Gems', 'Beasts'}
 
@@ -68,7 +68,9 @@ function P.SaveLoad(txt)
 end
 
 function events.DataTablesUpdate2(DataTable)
-	DataTable('Arcomage', P.SaveLoad, nil, P.LazyMode)
+	if P.Enabled then
+		DataTable('Arcomage', P.SaveLoad, nil, P.LazyMode)
+	end
 	if not P.Text then
 		P.SaveLoad()
 	end
@@ -76,6 +78,11 @@ end
 
 if GameInitialized2 then
 	P.SaveLoad()
+end
+
+function P.Enable(lazy)
+	P.LazyMode = lazy
+	P.Enabled = true
 end
 
 function events.ArcomageSetup(t, house)
