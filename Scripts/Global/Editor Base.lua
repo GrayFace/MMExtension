@@ -601,17 +601,6 @@ end
 -- Editor.Solve3x4
 -----------------------------------------------------
 
-local WasInf
-
-local function DivNoInf(v1, v2)  -- replaces Inf and NaN with 0
-	local v = v1/v2
-	if v*0 ~= 0 then
-		WasInf = WasInf or v1 ~= 0
-		return 0
-	end
-	return v
-end
-
 -- Example: (4th column is right side)
 -- local m = {
 -- 	0, 0, 0, 0,
@@ -619,8 +608,23 @@ end
 -- 	0, 0, 0, 0,
 -- }
 function Editor.Solve3x4(m)
-	WasInf = false
+	local WasInf = false
+	local function DivNoInf(v1, v2)  -- replaces Inf and NaN with 0
+		local v = v1/v2
+		if v*0 ~= 0 then
+			WasInf = WasInf or v1 ~= 0
+			return 0
+		end
+		return v
+	end
+	local q = {[0] = 0, 1, 2}
+	local function order(x, y)
+		if abs(m[q[x]*4 + x + 1]) < abs(m[q[y]*4 + x + 1]) then
+			q[x], q[y] = q[y], q[x]
+		end
+	end
 	local function sub(y, base, x)
+		y, base = q[y], q[base]
 		local d = (base - y)*4
 		y = y*4 + 1
 		local mul = DivNoInf(m[y + x], m[y + d + x])
@@ -628,13 +632,20 @@ function Editor.Solve3x4(m)
 			m[i] = m[i] - mul*m[i + d]
 		end
 	end
+	local function res(x)
+		local y = q[x]*4 + 1
+		return DivNoInf(m[y + 3], m[y + x])
+	end
+	order(0, 1)
+	order(0, 2)
 	sub(1, 0, 0)
 	sub(2, 0, 0)
+	order(1, 2)
 	sub(2, 1, 1)
 	sub(1, 2, 2)
 	sub(0, 2, 2)
 	sub(0, 1, 1)
-	local a, b, c = DivNoInf(m[4], m[1]), DivNoInf(m[8], m[6]), DivNoInf(m[12], m[11])
+	local a, b, c = res(0), res(1), res(2)
 	return a, b, c, WasInf
 end
 
