@@ -1165,7 +1165,7 @@ function Quest(t)
 			end
 		elseif state == nil or t:IsGiven() then
 			if ((t.CheckDone == nil) or t.CheckDone and t.CheckDone(t)) and
-					Party.Gold >= (t.QuestGold or 0) and
+					Party.Gold >= (t.QuestGold or -1/0) and
 					(t.QuestItem == nil or TakeItemFromParty(t.QuestItem, t.KeepQuestItem)) then
 				AddGoldExp((t.Gold or 0) - (t.QuestGold or 0), t.Experience or t.Exp)
 				t:AddAward(t)

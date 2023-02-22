@@ -803,6 +803,7 @@ do -- mem.struct
 		define.members[name] = f
 		if define.isro then
 			define.rofields[name] = true
+			define.isro = nil
 		end
 		define.LastDefinedMemberName = name
 		return define

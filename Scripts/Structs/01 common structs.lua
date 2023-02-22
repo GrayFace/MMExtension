@@ -11,7 +11,7 @@ local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
 
-local _KNOWNGLOBALS = BinarySearch, Game, Party, Map, Mouse
+local _KNOWNGLOBALS = BinarySearch, Game, Party, Map, Mouse, HelpStructs
 
 local TmpBuf = mem.StaticAlloc(12)
 
@@ -830,6 +830,18 @@ function structs.f.TravelInfo(define)
 	define[0x0].CustomType('Map', 1, MapType)
 end
 
+local EnumDlg = |field| function(it, last)
+	if not last then
+		return it
+	end
+	local v = it[field]
+	if v ~= 0 then
+		it['?ptr'] = v
+		return it
+	end
+end
+EnumDlg = {[true] = EnumDlg'PrevItemPtr', [false] = EnumDlg'NextItemPtr'}
+
 function structs.f.Dlg(define)
 	define
 	[0x0].i4  'Left'
@@ -839,6 +851,7 @@ function structs.f.Dlg(define)
 	[0x10].i4  'Right_'
 	[0x14].i4  'Bottom_'
 	[0x18].i4  'DlgID'
+	 .Info{Type = "const.DlgID"}
 	[0x1C][mmver == 6 and 'i2' or 'i4']  'Param'
 	 .Info "2D Events Id / Chest Id / ..."
 	[0x20].i4  'ItemsCount'
@@ -874,10 +887,17 @@ function structs.f.Dlg(define)
 			u4[p] = old
 		end
 	end
+	define.Info{Sig = "KeepMonsterPicture [MM8]"}
+	function define.m:Enum(back)
+		local v = self[back and 'LastItemPtr' or 'FirstItemPtr']
+		return EnumDlg[not not back], v ~= 0 and structs.Button:new(v) or nil
+	end
+	define.Info{Sig = "Backwards"; "To be used in a 'for' statement. Enumerates dialog items returning only the #dialog item:structs.Button# each time. Does not return item index. If 'Backwards' is 'true', enumeration goes in reverse order."}
 end
 
 function structs.f.Button(define)
 	define
+	 .Info{Ignore = false}
 	[0x0].i4  'Left'
 	[0x4].i4  'Top'
 	[0x8].i4  'Width'
@@ -899,7 +919,8 @@ function structs.f.Button(define)
 	[0x2C+o].u4  'PrevItemPtr'
 	-- [0x30+o].alt.pstruct(structs.Button)  'NextItem'
 	[0x30+o].u4  'NextItemPtr'
-	[0x34+o].alt.pstruct(structs.Dlg)  'Parent'
+	[0x34+o].alt.CustomType('Parent', 4, structs.aux.PDialog)
+	 .Info{Type = 'structs.Dlg'}
 	[0x34+o].u4  'ParentPtr'
 	[0x38+o].array{5, lenA = i4, lenP = 0x4C+o}.i4  'Sprites'
 	[0x50+o].u1  'ShortCut'
@@ -920,6 +941,10 @@ function structs.f.Button(define)
 		mem.freeMM(p)
 	end
 	define.Info "Make sure to update Parent.KeyboardItemsCount on your own if you delete one of them"
+end
+
+if HelpStructs then
+	local _ = structs.Button
 end
 
 function structs.f.MonsterAttackInfo(define)
@@ -1384,13 +1409,7 @@ function structs.f.ItemsTxtItem(define)
 	if mmver > 6 then
 		define.u1  'Skill'
 	else
-		define.CustomType('Skill', 1, function(o, obj, name, val)
-			if val == nil then
-				return u1[obj['?ptr'] + o] - 1
-			else
-				u1[obj['?ptr'] + o] = val + 1
-			end
-		end)
+		define.CustomType('Skill', 1, structs.aux.i4_plus(-1, u1))
 	end
 	define
 	 .Info {Type = "const.Skill"}
@@ -2735,15 +2754,6 @@ function structs.f.NPCProfTxtItem(define)
 	end
 end
 
-local function i4_AddOne(o, obj, name, val)
-	o = obj["?ptr"] + o
-	if val == nil then
-		return i4[o] + 1
-	else
-		i4[o] = val - 1
-	end
-end
-
 local function ArcStartIncome(o, obj, name, val)
 	local p = obj['?ptr'] + o
 	local d = i4[p + 16]
@@ -2763,7 +2773,7 @@ function structs.f.Arcomage(define)
 	.CustomType('StartingIncomeBricks', 4, ArcStartIncome)
 	.CustomType('StartingIncomeGems', 4, ArcStartIncome)
 	.CustomType('StartingIncomeBeasts', 4, ArcStartIncome)
-	.CustomType('CardsCount', 4, i4_AddOne)
+	.CustomType('CardsCount', 4, structs.aux.i4_plus(1))
 	 .Info "Internally up to 10 cards are supported."
 	.array(3).i4  'MinIncome'
 	 .Info{Sig = "[3]", "If you change these values, #StartingIncome:structs.Arcomage.StartingIncome# and #player income:structs.ArcomagePlayer.Income# would also change."}

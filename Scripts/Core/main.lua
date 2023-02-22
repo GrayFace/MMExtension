@@ -372,6 +372,7 @@ local structs = _G.structs
 structs.f = structs.f or {}  -- definition functions
 structs.o = structs.o or {}  -- offsets
 structs.m = structs.m or {}  -- members
+structs.aux = structs.aux or {}  -- various functions useful for structs
 
 function structs.class(t)
 	local mt = getmetatable(t)

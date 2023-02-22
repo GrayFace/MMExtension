@@ -414,7 +414,7 @@ function longstring(code, e)
   local count = 0
   local b
   b,e = strfind(code, '^%[(=*)%[.-%]%1%]', e)
-  print(code:sub(b, e))
+  -- print(code:sub(b, e))
   if not b then error'bad long comment or string' end
   return e
 end

@@ -21,6 +21,8 @@ function events.StructsLoaded()
 	Map = Game.Map
 	Mouse = Game.Mouse
 	Screen = Game.Screen
+	rawset(Party, '?ptr', Party['?ptr'])
+	rawset(Map, '?ptr', Map['?ptr'])
 	Game.Dll = PatchDll
 end
 
@@ -34,6 +36,7 @@ local function SetLenRealloc(obj, v, ps, lenA, size, o)
 		lenA[ps] = v
 	end
 end
+structs.aux.SetLenRealloc = SetLenRealloc
 
 local MissileLim = mmv(0, 9110, 12110)
 
@@ -47,6 +50,38 @@ local SetLenReallocMissile = mmver == 6 and SetLenRealloc or function(obj, v, ps
 		assert(size == 1)
 		local p = obj['?ptr'] + o
 		mem.fill(u4[p] + old, v - old, 3)
+	end
+end
+
+function structs.aux.i4_plus(d, a)
+	a = a or i4
+	return function(o, obj, name, val)
+		o = obj["?ptr"] + o
+		if val == nil then
+			return a[o] + d
+		else
+			a[o] = val - d
+		end
+	end
+end
+
+local function i4_CurrentPlayer(o, obj, name, val)
+	if val == nil then
+		return u4[o] - 1
+	else
+		u4[o] = val + 1
+	end
+end
+
+function structs.aux.PDialog(o, obj, name, val)
+	if val == nil then
+		local v = u4[obj["?ptr"] + o]
+		if v ~= 0 then
+			local a = Game.DialogsArray
+			return a[(v - a["?ptr"])/0x54]
+		end
+	else
+		i4[obj["?ptr"] + o] = val["?ptr"]
 	end
 end
 
@@ -76,13 +111,7 @@ function structs.f.GameStructure(define)
 	define
 	[offsets.MainWindow].u4  'WindowHandle'
 	[offsets.Windowed].u4  'Windowed'
-	[offsets.CurrentPlayer].CustomType('CurrentPlayer', 4, function(o, obj, name, val)
-		if val == nil then
-			return u4[o] - 1
-		else
-			u4[o] = val + 1
-		end
-	end)
+	[offsets.CurrentPlayer].CustomType('CurrentPlayer', 4, i4_CurrentPlayer)
 	[mmv(0x4C2750, 0x4EDD80, 0x4FDF88)].array(13).i2  'SkillRecoveryTimes'
 	 .Info{Sig = "[skill:const.Skills]"}
 	[mmv(0x42A239, 0x42EFC9, 0x42DA52)].CustomType('MinMeleeRecoveryTime', 1, function(o, obj, name, val)
@@ -104,7 +133,6 @@ function structs.f.GameStructure(define)
 	 .Info "-1 = in game, 1 = show new game, 6 = in new game, 3 = load menu, 4 = exit, 2 = show credits, 8 = in credits, 9 = load game"
 	-- 465012(MM8) SetMainMenuCode
 	[mmv(0x52D0E4, 0x576CEC, 0x587914)].b4  'LoadingScreen'
-	--[mmv(0x4D48F8, nil, nil)].array{20, lenA = i4, lenP = mmv(0x4D46BC, nil, nil)}.struct(structs.Dlg)  'DialogsStack'
 	[mmv(0x533EB8, 0x590F10, 0x5A537C)].i4  'DialogNPC'
 	[mmv(0x54D040, 0x590F0C, 0x5A5378)].i4  'NPCCommand'
 	[mmv(0x9DDD8C, 0xF8B01C, 0xFFD408)].i4  'HouseScreen'
@@ -122,18 +150,43 @@ function structs.f.GameStructure(define)
 	 .Info "If #Game.HouseExitMap:# isn't '0', last slot is occupied by map enter pseudo-NPC."
 	[mmv(0x9DDDFC, 0xF8B060, 0xFFD450)].i4  'HouseItemsCount'
 	 .Info "Number of interactive items of the dialog. Items count of the dialog object gets changed to this or 0 depending on selected player being concious."
-	[mmv(0x4D50C0, 0x507A3C, 0x519324)].pstruct(structs.Dlg)  'CurrentNPCDialog'
+	
+	local function DialogByIndex(o, obj, name, val)
+		local a = Game.DialogsArray
+		if val == nil then
+			return a[u4[obj["?ptr"] + o] - 1]
+		else
+			i4[obj["?ptr"] + o] = (val["?ptr"] - a["?ptr"])/0x54 + 1
+		end
+	end
+	define[mmv(0x4D48F8, 0x506DD0, 0x518608)].array(20).struct(structs.Dlg)  'DialogsArray'
+	[mmv(0x4CB5F8, 0x507460, 0x518C98)].alt.array(20).CustomType('DialogIndexes', 4, structs.aux.i4_plus(-1))
+	.CustomType('Dialog0', 4, DialogByIndex)
+	 .Info{"Contains adventure interface that you see when no dialog is open. Even when you're in the main menu, this dialog is present.", Type = "structs.Dlg"}
+	.array{1, 19, lenA = i4, lenP = mmv(0x4D46BC, 0x5074B0, 0x518CE8)}.CustomType('Dialogs', 4, DialogByIndex)
+	 .Info{"List of open dialogs. Doesn't include object-oriented dialogs in MM8.", Type = "structs.Dlg"}
+	
+	[mmv(0x4D50C0, 0x507A3C, 0x519324)].CustomType('CurrentNPCDialog', 4, structs.aux.PDialog)
+	 .Info{Type = "structs.Dlg"}
 	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), ret = true}
 	if mmver == 8 then
 		define
 		[0x5CCCE4].b1  'InQuestionDialog'
-		[0x100614C].b4  'InOODialog'
+		[0x100614C].ro.b4  'InOODialog'
 		local function d(v, std)
 			return v == nil and (std or 0) or v
 		end
 		function define.f.OODialogProcessKey(key, _1, _2, _3, _4)
 			call(0x4D1D6A, 1, 0x1006148, key or 27, d(_1, 1), d(_2), d(_3), d(_4))
 		end
+		function define.f.GetAdventureInnInfo()
+			local p = u4[0x100614C]
+			if p ~= 0 and Game.CurrentScreen == 29 then
+				local inv = i4[p + 0xC] == 1
+				return i4[p + (inv and 0x130 or 0x128)], inv
+			end
+		end
+		define.Info "Returns 'PlayerIndex', 'InInventory' or nothing if Adventure Inn dialog isn't active.\n'PlayerIndex' is the index of currently selected player in #Party.PlayersArray:#. Compare it against !Lua[=[Party.PlayersIndexes[Party.CurrentPlayer]]=] to see if selected player is part of the party.\n'InInventory' is 'true' if player inventory (or Stats, Skills, Awards) screen is open."
 	end
 	define
 	[mmv(0x4C3E10, 0x4F076C, 0x500D30)].array(mmv(17, 11, 11)).i4  'GuildJoinCost'
@@ -780,7 +833,7 @@ end]=]
 			end
 		end
 		if Game.PatchOptions.DataFiles ~= false then
-			local f = io.open('DataFiles\\'..name, "rb")
+			local f = io.open((Game.PatchOptions.DataFilesDir or 'DataFiles\\')..name, "rb")
 			if f then
 				f:close()
 				return true
@@ -1059,13 +1112,7 @@ function structs.f.GameParty(define)
 		 .Info 'E.g. set date 1:!Lua[[\nevt.Add("SpecialDate1", 0)]]\nUse date 1: "%51" in any NPC message'
 		[mm78(0xACD5DD, 0xB2164F)].array(mm78(108, 107), mm78(108, 107) + 15).b1  'ArcomageWins'
 	end
-	define[offsets.CurrentPlayer].CustomType('CurrentPlayer', 4, function(o, obj, name, val)
-		if val == nil then
-			return u4[o] - 1
-		else
-			u4[o] = val + 1
-		end
-	end)	
+	define[offsets.CurrentPlayer].CustomType('CurrentPlayer', 4, i4_CurrentPlayer)	
 	[mmv(0x90E838, 0xAD45B0, 0xB7CA88)].alt.i4  'StateBits'
 	.bit ('NeedRender', 2)
 	.bit ('Drowning', 4)
@@ -1705,6 +1752,7 @@ function structs.f.PatchOptions(define)
 	bool  'ModernStrafe'
 	single  'CorrectSMulD3D'  Info "[MM7+]"
 	single  'CorrectVMulD3D'  Info "[MM7+]"
+	pchar  'DataFilesDir'
 	
 	function define.f.Present(name)
 		return not not addr[name]

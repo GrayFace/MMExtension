@@ -404,6 +404,7 @@ local function ProcessStructs(ver)
 	structs.f = {}  -- definition functions
 	structs.o = {}  -- offsets
 	structs.m = {}  -- members
+	structs.aux = {}  -- various functions useful for structs
 	const = {}
 	-- dofile(DevPath..'Scripts/Core/ConstAndBits.lua')
 	loadstring(ConstAndBits)()
@@ -507,7 +508,7 @@ for k, t in pairs(HelpStructs) do
 	CheckUsedStructs(t)
 end
 for k, t in pairs(HelpStructs) do
-	if t[1].Ignore or not UsedStruct[k] and t[1].Kind == "struct" then
+	if t[1].Ignore or t[1].Ignore == nil and not UsedStruct[k] and t[1].Kind == "struct" then
 		HelpStructs[k] = nil
 	end
 end

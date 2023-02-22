@@ -43,7 +43,7 @@ const.Year = const.Month*12
 
 local function MakeBitsDefiner(name)
 	internal[name] = function(define)
-		for n, b in pairs(const[name]) do
+		for n, b in sortpairs(const[name]) do
 			define.bit(n, b)
 		end
 		return define
@@ -207,7 +207,7 @@ elseif mmver == 7 then
 		Ranger = 0x0040,
 		Thief = 0x0080,
 		Monk = 0x0100,
-		Male = 0x0200,
+		Male = 0x0200,  -- in monsters.txt it's "M" in MM6 and "X" in MM7 and MM8
 		Female = 0x0400,
 		Human = 0x0800,
 		Elf = 0x1000,
@@ -874,11 +874,11 @@ const.Screens = {
 	Game = 0,
 	Menu = 1,
 	Controls = 2,
-	Info = 3,  -- quests, map, autonotes
+	Info = 3,  -- quests, map, autonotes, history
 	NPC = 4,
 	Rest = 5,
 	Query = 6,  -- like with hotkeys in Chinese debug MM6
-	Inventory = 7,
+	Inventory = 7,  -- character screen, not necessarily Inventory
 	SpellBook = 8,
 	NewGameBreefing = 9,
 	Chest = 10,
@@ -900,6 +900,45 @@ const.Screens = {
 	AdventurersInn = 29,
 	ItemSpellMM6 = 103,
 	QuickReference = 104,
+}
+
+const.DlgID = {
+	Generic = 1,  -- a lot of dialogs use this Id
+	Menu = 3,
+	Inventory = 4,  -- character screen, not necessarily Inventory
+	Controls = 6,
+	-- ControlsUnk = 8,
+	Info = 9,  -- quests, map, autonotes, history
+	NPC = 10,
+	QuickReference = 12,
+	Rest = 16,
+	WalkToMap = 17,
+	SpellBook = 18,
+	SimpleMessage = 19,
+	Chest = 20,
+	SaveGame = 23,
+	LoadGame = 24,
+	House = 25,
+	MapEntrance = 26,
+	SelectTarget = 27,  -- Heal and other such spells
+	Scroll = 30,  -- When reading a message scroll
+	ItemSpell = 31,
+	EscMessage = 70,
+	Query = 80,
+	CheatCreateItem = 89,
+	Button = 90,  -- shown for 1 frame when clicking most buttons
+	ButtonImg2 = 91,
+	ButtonTransparent = 92,
+	ButtonTransparentImg2 = 93,
+	ButtonSaveLoad = 94,  -- clicking Save/Load button in corresponding dialog
+	ButtonEscTransparent = 95,
+	ButtonEsc = 96,
+	ButtonEscImg2 = 97,
+	ButtonRestAndHeal = 98,
+	DrawImage = 99,  -- used in Info screen to draw the currently selected book
+	CheatCreateMonster = 103,
+	ConfigureKeyboard = 105,
+	VideoOptions = 106,
 }
 
 const.CharScreens = {
