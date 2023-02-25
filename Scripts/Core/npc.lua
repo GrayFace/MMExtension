@@ -739,4 +739,125 @@ if mmver > 6 then
 	end)
 end
 
+-- Draw dialogs
+
+do
+	local p = mem.StaticAlloc(1)
+	u1[p] = 0
+	local hooks = HookManager{p = p, CurScreen = 0x4F37D8, MenuCode = 0x6CEB24}
+	local LastDialog, LastDialogID
+	local DrawnCount = 0
+	local AfterDraw
+	
+	-- before each dialog
+	hooks.autohook(mmv(0x40FCA3, 0x415735, 0x414C3C), function(d)
+		LastDialog = LastDialog and AfterDraw() or false
+		u1[p] = 1
+		local dialogs = Game.Dialogs
+		local reg = mmver == 6 and 'ecx' or 'eax'
+		local i = d[reg]
+		local dlg = dialogs[i]
+		local t = {
+			Index = i,
+			-- :structs.Dlg
+			Dialog = dlg,
+			-- :const.DlgID
+			DlgID = dlg.DlgID,
+			DrawnCount = DrawnCount,
+		}
+		-- Called when a dialog is just about to be drawn. 'Index' goes from 1 to #Game.Dialogs.Count:Game.Dialogs# and you can change if you have to.
+		events.cocalls("BeforeDrawDialog", t)
+		
+		-- update index
+		if i ~= t.Index then
+			i = tonumber(t.Index) or i
+			d[reg] = i
+			i4[d.esp + mmv(0x14, 0x10, 0x10)] = i
+		end
+		-- check index limit
+		if i < 0 or i > dialogs.Count then
+			d:push(mmv(0x410801, 0x4160B7, 0x415580))
+			return true
+		end
+		
+		LastDialog = i
+		LastDialogID = dialogs[i].DlgID
+		DrawnCount = DrawnCount + 1
+	end)
+	
+	-- after drawing each dialog
+	AfterDraw = function()
+		local t = {
+			Index = LastDialog,
+			-- :const.DlgID
+			DlgID = LastDialogID,
+			DrawnCount = DrawnCount,
+		}
+		-- Note that some dialogs get destroyed once they are drawn, therefore dialog reference isn't provided, because it may be inaccessible at this point.
+		events.cocalls("DrawDialog", t)
+	end
+	
+	-- after all dialogs are drawn
+	local pAfter = mmv(0x410808, 0x4160BB, 0x415584)
+	local code = hooks.asmhook(pAfter, [[
+	if mm8
+		mov eax, dword[%MenuCode%]
+		inc eax
+		or al, byte [%p%]
+		or eax, dword [%CurScreen%]
+	else
+		cmp byte [%p%], 0
+	end if
+		jz @f
+		call absolute 0
+	@@:
+	]])
+	local callPtr = mem.findcall(code)
+
+	mem.hook(callPtr, function(d)
+		if LastDialog ~= nil or mmver == 8 and not d.ZF then
+			u1[p] = 0
+			LastDialog = LastDialog and AfterDraw() or nil
+			-- Called after drawing dialogs
+			events.cocalls("AfterDrawDialogs", DrawnCount)
+		else
+			-- Called in place of drawing dialogs when no dialog is active. The reason it's separated from 'AfterDrawDialogs' event is to improve performance, because this event would usually stay unused.
+			events.cocalls("AfterDrawNoDialogs", 0)
+		end
+		DrawnCount = 0
+	end)
+	
+	-- if AfterDrawNoDialogs hook is set, always call After* hook
+	local hooks2 = HookManager{ptr = callPtr}
+	if mmver == 8 then
+		hooks2.nop(callPtr - 2)  -- remove 'jz'
+	else
+		hooks2.asmpatch(pAfter, [[jmp absolute %ptr%]])
+	end
+	Conditional(hooks2, "AfterDrawNoDialogs")
+end
+
+-- Create/destroy dialogs
+mem.hookfunction(mmv(0x419320, 0x41C3DB, 0x41BAF1), 2, 5, function(d, def, x, y, w, h, id, ...)
+	local p = def(x, y, w, h, id, ...)
+	local dlg = Game.DialogsArray:Find(p)
+	-- This function is called once a new dialog finishes creation. Note that in case of house dialogs, they internally create an extra dialog with 'DlgID' = '1' for dialog topics, this leads to 'NewDialog' event getting triggered for that extra dialog before the one for the base dialog, however both dialogs are already created and added to #Game.Dialogs:# when either event fires.
+	events.cocalls("NewDialog", dlg, id)
+	return p
+end)
+
+-- Create/destroy dialogs
+mem.hookfunction(mmv(0x4190D0, 0x41C213, 0x41B923), 1, 0, function(d, def, p)
+	local dlg, id = Game.DialogsArray:Find(p), nil
+	if dlg then
+		id = dlg.DlgID
+		events.cocalls("DestroyDialog", dlg, id)
+	end
+	local r = def(p)
+	if dlg then
+		events.cocalls("AfterDestroyDialog", id)
+	end
+	return r
+end)
+
 mem.IgnoreProtection(false)
