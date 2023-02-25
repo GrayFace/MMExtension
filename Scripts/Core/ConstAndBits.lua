@@ -874,7 +874,7 @@ const.Screens = {
 	Game = 0,
 	Menu = 1,
 	Controls = 2,
-	Info = 3,  -- quests, map, autonotes, history
+	Info = 3,  -- Quests, Autonotes, Map, Calendar, History, Town Portal, Lloyd Beacon
 	NPC = 4,
 	Rest = 5,
 	Query = 6,  -- like with hotkeys in Chinese debug MM6
@@ -908,8 +908,8 @@ const.DlgID = {
 	Inventory = 4,  -- character screen, not necessarily Inventory
 	Controls = 6,
 	-- ControlsUnk = 8,
-	Info = 9,  -- quests, map, autonotes, history
-	NPC = 10,
+	Info = 9,  -- Quests, Autonotes, Map, Calendar, History, Town Portal, Lloyd Beacon (see #const.InfoDialog:# for values of 'Param' that define the dialog type)
+	NPC = 10,  -- 'Param' is NPC index
 	QuickReference = 12,
 	Rest = 16,
 	WalkToMap = 17,
@@ -918,7 +918,7 @@ const.DlgID = {
 	Chest = 20,
 	SaveGame = 23,
 	LoadGame = 24,
-	House = 25,
+	House = 25,  -- 'Param' is the #house:Game.Houses# index
 	MapEntrance = 26,
 	SelectTarget = 27,  -- Heal and other such spells
 	Scroll = 30,  -- When reading a message scroll
@@ -939,6 +939,16 @@ const.DlgID = {
 	CheatCreateMonster = 103,
 	ConfigureKeyboard = 105,
 	VideoOptions = 106,
+}
+
+const.InfoDialog = {
+	Quests = 200,
+	Autonotes = 201,
+	Map = 202,
+	Calendar = 203,
+	History = 224,
+	TownPortal = 195,
+	LloydBeacon = 177,
 }
 
 const.CharScreens = {
