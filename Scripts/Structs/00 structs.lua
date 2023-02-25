@@ -15,15 +15,23 @@ local PatchDll = offsets.PatchDll
 local PatchOptionsPtr = PatchDll.GetOptions
 PatchOptionsPtr = PatchOptionsPtr and PatchOptionsPtr()
 
+local function Dialogs_Find(a, p)
+	local i = (p - a["?ptr"])/0x54
+	if i >= 0 and i <= 19 then
+		return a[i]
+	end
+end
+
 function events.StructsLoaded()
 	Game = structs.GameStructure:new(0)
+	Game.Dll = PatchDll
 	Party = Game.Party
 	Map = Game.Map
 	Mouse = Game.Mouse
 	Screen = Game.Screen
 	rawset(Party, '?ptr', Party['?ptr'])
 	rawset(Map, '?ptr', Map['?ptr'])
-	Game.Dll = PatchDll
+	rawset(Game.DialogsArray, "Find", Dialogs_Find)
 end
 
 local _KNOWNGLOBALS, DecListBuf
@@ -77,8 +85,7 @@ function structs.aux.PDialog(o, obj, name, val)
 	if val == nil then
 		local v = u4[obj["?ptr"] + o]
 		if v ~= 0 then
-			local a = Game.DialogsArray
-			return a[(v - a["?ptr"])/0x54]
+			return Game.DialogsArray:Find(v)
 		end
 	else
 		i4[obj["?ptr"] + o] = val["?ptr"]
@@ -151,6 +158,10 @@ function structs.f.GameStructure(define)
 	[mmv(0x9DDDFC, 0xF8B060, 0xFFD450)].i4  'HouseItemsCount'
 	 .Info "Number of interactive items of the dialog. Items count of the dialog object gets changed to this or 0 depending on selected player being concious."
 	
+	local DlgLen = setmetatable({}, {
+		__index = |_, p| i4[p] + 1,
+		__newindex = |_, p, v| i4[p] = v - 1,
+	})
 	local function DialogByIndex(o, obj, name, val)
 		local a = Game.DialogsArray
 		if val == nil then
@@ -161,10 +172,8 @@ function structs.f.GameStructure(define)
 	end
 	define[mmv(0x4D48F8, 0x506DD0, 0x518608)].array(20).struct(structs.Dlg)  'DialogsArray'
 	[mmv(0x4CB5F8, 0x507460, 0x518C98)].alt.array(20).CustomType('DialogIndexes', 4, structs.aux.i4_plus(-1))
-	.CustomType('Dialog0', 4, DialogByIndex)
-	 .Info{"Contains adventure interface that you see when no dialog is open. Even when you're in the main menu, this dialog is present.", Type = "structs.Dlg"}
-	.array{1, 19, lenA = i4, lenP = mmv(0x4D46BC, 0x5074B0, 0x518CE8)}.CustomType('Dialogs', 4, DialogByIndex)
-	 .Info{"List of open dialogs. Doesn't include object-oriented dialogs in MM8.", Type = "structs.Dlg"}
+	.array{20, lenA = DlgLen, lenP = mmv(0x4D46BC, 0x5074B0, 0x518CE8)}.CustomType('Dialogs', 4, DialogByIndex)
+	 .Info{"List of currently open dialogs, from lowest to topmost. Doesn't include object-oriented dialogs in MM8.\nDialog at index '0' contains adventure interface that you see when no dialog is open. Even when you boot into the main menu, this dialog is present.", Type = "structs.Dlg"}
 	
 	[mmv(0x4D50C0, 0x507A3C, 0x519324)].CustomType('CurrentNPCDialog', 4, structs.aux.PDialog)
 	 .Info{Type = "structs.Dlg"}
@@ -172,7 +181,7 @@ function structs.f.GameStructure(define)
 	if mmver == 8 then
 		define
 		[0x5CCCE4].b1  'InQuestionDialog'
-		[0x100614C].ro.b4  'InOODialog'
+		[0x100614C].u4  'OODialogPtr'
 		local function d(v, std)
 			return v == nil and (std or 0) or v
 		end
@@ -292,21 +301,35 @@ function structs.f.GameStructure(define)
 	[mmv(0x551D20, 0x5B6428, 0x5CCCB8)].struct(structs.MoveToMap) 'MoveToMap'
 	[mmv(0x52D0A8, 0x576CB0, 0x5878D8)].struct(structs.ProgressBar)  'ProgressBar'
 	[0].struct(structs.DialogLogic)  'DialogLogic'
-	[mmv(0x55BDB4, 0x5C346C, 0x5DB91C)].i4  'Lucida_fnt'
-	[mmv(0x55BDB8, 0x5C3488, 0x5DB938)].i4  'Smallnum_fnt'
-	[mmv(0x55BDC4, 0x5C3468, 0x5DB918)].i4  'Arrus_fnt'
-	[mmv(0x55BDC8, 0x5C347C, 0x5DB92C)].i4  'Create_fnt'
-	[mmv(0x55BDCC, 0x5C3484, 0x5DB934)].i4  'Comic_fnt'
-	[mmv(0x55BDBC, 0x5C3474, 0x5DB924)].i4  'Book_fnt'
-	[mmv(0x55BDD4, 0x5C3470, 0x5DB920)].i4  'Book2_fnt'
+	[mmv(0x55BDB4, 0x5C346C, 0x5DB91C)].alt.i4  'Lucida_fnt'
+	.pstruct(structs.Fnt)  'FontLucida'
+	[mmv(0x55BDB8, 0x5C3488, 0x5DB938)].alt.i4  'Smallnum_fnt'
+	.pstruct(structs.Fnt)  'FontSmallnum'
+	[mmv(0x55BDC4, 0x5C3468, 0x5DB918)].alt.i4  'Arrus_fnt'
+	.pstruct(structs.Fnt)  'FontArrus'
+	[mmv(0x55BDC8, 0x5C347C, 0x5DB92C)].alt.i4  'Create_fnt'
+	.pstruct(structs.Fnt)  'FontCreate'
+	[mmv(0x55BDCC, 0x5C3484, 0x5DB934)].alt.i4  'Comic_fnt'
+	.pstruct(structs.Fnt)  'FontComic'
+	[mmv(0x55BDBC, 0x5C3474, 0x5DB924)].alt.i4  'Book_fnt'
+	.pstruct(structs.Fnt)  'FontBook'
+	[mmv(0x55BDD4, 0x5C3470, 0x5DB920)].alt.i4  'Book2_fnt'
+	.pstruct(structs.Fnt)  'FontBook2'
 	if mmver < 8 then
-		define[mmv(0x55BDDC, 0x5C3480, nil)].i4  'Cchar_fnt'
+		define[mmv(0x55BDDC, 0x5C3480, nil)].alt.i4  'Cchar_fnt'
+		.pstruct(structs.Fnt)  'FontCchar'
 	end
 	define
-	[mmv(0x55BDD0, 0x5C3460, 0x5DB910)].i4  'Autonote_fnt'
-	[mmv(0x55BDC0, 0x5C3464, 0x5DB914)].i4  'Spell_fnt'  -- Autonote_fnt2
-	[mmv(0x55CDE0, 0x5C5C30, 0x5DF0E0)].string(2000)  'TextBuffer'
-	[mmv(0x55D5B0, 0x5C6400, 0x5E1020)].string(2000)  'TextBuffer2'
+	[mmv(0x55BDD0, 0x5C3460, 0x5DB910)].alt.i4  'Autonote_fnt'
+	.pstruct(structs.Fnt)  'FontAutonote'
+	[mmv(0x55BDC0, 0x5C3464, 0x5DB914)].alt.i4  'Spell_fnt'  -- Autonote_fnt2
+	.pstruct(structs.Fnt)  'FontSpell'
+	[mmv(0x55CDE0, 0x5C5C30, 0x5DF0E0)].alt.string(2000)  'TextBuffer'
+	.array(2000).u1  'TextBufferBytes'
+	[mmv(0x55D5B0, 0x5C6400, 0x5E1020)].alt.string(2000)  'TextBuffer2'
+	.array(2000).u1  'TextBuffer2Bytes'
+	[mmv(0x55BDE0, 0x5C4430, 0x5DC8E0)].alt.string(2048)  'WordWrappedText'
+	.array(2048).u1  'WordWrappedTextBytes'
 	[mmv(0x5F6E0C, 0x69AC8C, 0x6C8BC4)].array(mmv(12, 30, 30)).i4  'KeyCodes'
 	[mmv(0x5F6E3C, 0x69AD04, 0x6C8C3C)].array(mmv(12, 30, 30)).i4  'KeyTypes'
 	[mmv(0x908D08, 0xACCE64, 0xB20EBC)].i8  'Time'
@@ -405,13 +428,13 @@ function structs.f.GameStructure(define)
 	define
 	[mmv(0x4BD10C, 0x4E2B50, 0x4F3A80)].array(mmv(60, 88, 66)).i1  'MonsterClassInfoY'
 	[offsets.TimeStruct1 + 4].b4  'Paused'
-	 .Info "pauses game logic"
+	 .Info "Game logic is paused"
 	[offsets.TimeStruct2 + 4].b4  'Paused2'
-	 .Info "pauses updating view"
-	[mmv(0x4D519C, 0x50BA7C, 0x51D354)].i4  'TimeDelta'
+	 .Info "Updates of 3D view are paused"
+	[offsets.TimeStruct1 + 28].i4  'TimeDelta'
 	 .Info "Time since last tick"
-	[mmv(0x4D51C4, 0x50BA54, 0x51D32C)].i4  'TimeDelta2'
-	 .Info "Time since last tick of updating view"
+	[offsets.TimeStruct2 + 28].i4  'TimeDelta2'
+	 .Info "Time since last tick of updating 3D view"
 	-- MM6: 4C4468 - something related to shop items generation
 	[mmv(0x90EADC, 0xAD45B4, 0xB7CA8C)].array(0, mmv(47, 52, 52)).array(12).struct(structs.Item)  'ShopItems'
 	 .Info{Sig = "[house][slot]"}
@@ -682,7 +705,14 @@ end]=]
 		end
 	end)
 	.func{name = "Rand", p = mmv(0x4AE22B, 0x4CAAC2, 0x4D99F2), cc = 0}
-
+	.func{name = "Pause", p = offsets.PauseTime, cc = 1; offsets.TimeStruct1}
+	 .Info "Pauses game logic"
+	.func{name = "Resume", p = offsets.ResumeTime, cc = 1; offsets.TimeStruct1}
+	 .Info "Resumes game logic"
+	.func{name = "Pause2", p = offsets.PauseTime, cc = 1; offsets.TimeStruct2}
+	 .Info "Pauses updating 3D view (only works if game logic is paused)"
+	.func{name = "Resume2", p = offsets.ResumeTime, cc = 1; offsets.TimeStruct2}
+	 .Info "Resumes updating 3D view"
 	if mmver == 7 then
 		define.func{name = "SetInterfaceColor", p = 0x422698, cc = 2, must = 1; 1, 1}  -- 0 - good, 1 - neutral, 2 - evil
 		 .Info{Sig = "Color, Unk = 1"; "0 = good, 1 = neutral, 2 = evil"}
@@ -802,6 +832,23 @@ end]=]
 			internal.RefillNPCTopics()
 		end
 	end
+	function define.f.NewDialog(x, y, w, h, id, param, str)
+		local dlg
+		for _, a in Game.DialogsArray do
+			if a.DlgID == 0 then
+				dlg = a
+				break
+			end
+		end
+		if not dlg then
+			return
+		elseif str then
+			dlg.StrParam = str
+			str = u4[dlg['?ptr'] + 0x48]
+		end
+		call(mmv(0x419320, 0x41C3DB, 0x41BAF1), 2, x, y, w, h, id, param, str)
+		return dlg
+	end
 	function define.f.ShowStatusText(text, time)
 		call(mmv(0x442BD0, 0x44C1A1, 0x4496C5), 2, tostring(text), time or 2)
 		Game.NeedRedraw = true
@@ -841,6 +888,7 @@ end]=]
 		end
 	end
 	define.Info{Sig = "Name"; "Returns 'true' if specified file exists in LOD archives that 'LoadTextFileFromLod' and 'LoadTextFileFromLod' functions use.\nThe archives are: !b[[icons.lod]] in MM6, !b[[events.lod]] in MM7, !b[[EnglishD.lod]] and !b[[EnglishT.lod]] in MM8."}
+	
 	function define.f.GetCurrentHouse()
 		local p = u4[mmv(0x4D50C4, 0x507A40, 0x519328)]
 		if p ~= 0 then
@@ -1544,6 +1592,10 @@ local DrawStyles = {
 	transparent = mmv(0x40A680, 0x4A6204, 0x4A419B),
 	red = mmv(0x40A760, 0x4A6706, 0x4A4784),
 	green = mmv(0x40A880, 0x4A687F, 0x4A4A1E),
+	popaque = -mmv(0x40B000, 0x4A5E42, 0x4A3CD5),
+	ptransparent = -mmv(0x40B180, 0x4A6204, 0x4A419B),
+	pred = mm78(-0x4A6706, -0x4A4784),
+	pgreen = mm78(-0x4A687F, -0x4A4A1E),
 }
 
 function structs.f.GameScreen(define)
@@ -1576,11 +1628,11 @@ function structs.f.GameScreen(define)
 	
 	function define.m:Draw(x, y, pic, style, rotate, EnglishD)
 		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
-		local f = DrawStyles[style == true and 'opaque' or style or 'transparent']
+		local f = assert(DrawStyles[style == true and 'opaque' or style or 'transparent'], 'unknown draw style')
 		if mmver == 6 then
-			mem.call(f, 2, self.Buffer + (self.Width*y + x)*2, pic, 0)
+			mem.call(abs(f), 2, self.Buffer + (self.Width*y + x)*2, pic, f < 0 and u4[pic + 64] or 0)
 		else
-			mem.call(f, 1, self['?ptr'], x, y, Game.IconsLod.Bitmaps[pic], rotate or 0)
+			mem.call(abs(f), 1, self['?ptr'], x, y, f < 0 and pic or Game.IconsLod.Bitmaps[pic], rotate or 0)
 		end
 	end
 	define.Info{Sig = "x, y, pic, style, rotate, EnglishD"; [[
@@ -1589,6 +1641,7 @@ function structs.f.GameScreen(define)
   "opaque", 'true' - draw without transparency
   "red" - draw broken item
   "green" - draw unidentified item
+	Adding "p" in the beginning of 'style' string signals that 'pic' is a pointer to an image rather than its index. Note that "pred" and "pgreen" aren't supported in MM6.
 ]]}
 
 	function define.m:DrawItemEffect(x, y, shapePic, efPic, palShift, palFrom, palTo, rotate, EnglishD, efEnglishD)
@@ -1608,6 +1661,30 @@ function structs.f.GameScreen(define)
 		end
 	end	
 	define.Info{Sig = "x, y, pic, index, rotate, EnglishD"}
+	
+	local MsgText
+	function define.m:DrawMessageBox(t, text, SnapToViewBox)
+		local p = structs.aux.TableToDlg(t, text)
+		if text then
+			MsgText = tostring(text)
+			text, u4[p + 0x48] = u4[p + 0x48], mem.topointer(MsgText)
+		end
+		call(mmv(0x40FAE0, 0x41555C, 0x414A61), 1, p, SnapToViewBox)
+		if text then
+			u4[p + 0x48], MsgText = text, nil
+		end
+		if table then
+			for i = 0, 3 do
+				t[i + 1] = i4[p + i*3]
+			end
+		end
+	end
+	define.Info{Sig = "Dialog, Text = nil, SnapToViewBox = false"; "Draws a message box border with optional text inside.\nIn place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nThe function modifies the dialog position to make it fit on the screen. If you pass a table with box position and size, it's modified accordingly.\nIf 'Text' is specified or #Dialog.StrParamPtr:structs.Dlg.StrParamPtr# is not '0', the text is drawn in the middle of the dialog and dialog box is drawn with appropriate height, but dialog height is not modified to reflect that."}
+
+	function define.m:DrawMessageBoxBorder(x, y, w, h)
+		call(mmv(0x40F710, 0x4151E4, 0x41468F), 2, x, y, w, h)
+	end
+	define.Info{Sig = "Left, Top, Width, Height"; "Draws a message box border.\nMinimal dimensions for proper display are '64'."}
 end
 
 function structs.f.PatchOptions(define)

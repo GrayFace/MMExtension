@@ -830,17 +830,20 @@ function structs.f.TravelInfo(define)
 	define[0x0].CustomType('Map', 1, MapType)
 end
 
-local EnumDlg = |field| function(it, last)
-	if not last then
-		return it
-	end
-	local v = it[field]
-	if v ~= 0 then
-		it['?ptr'] = v
-		return it
+local ToBtn = |p| structs.Button:new(tonumber(p) or p['?ptr'])
+
+local EnumDlg = |field, dir| function(it, last)
+	if last then
+		local v = it[field]
+		if v ~= 0 then
+			it['?ptr'] = v
+			return last + dir, it, ToBtn
+		end
+	elseif it then
+		return dir == 1 and 0 or it.Parent.ItemsCount - 1, it, ToBtn
 	end
 end
-EnumDlg = {[true] = EnumDlg'PrevItemPtr', [false] = EnumDlg'NextItemPtr'}
+EnumDlg = {[true] = EnumDlg('PrevItemPtr', -1), [false] = EnumDlg('NextItemPtr', 1)}
 
 function structs.f.Dlg(define)
 	define
@@ -864,7 +867,8 @@ function structs.f.Dlg(define)
 	[0x3C].i4  'Index'
 	-- 40
 	[0x44].i4  'UseKeyboadNavigation'
-	--[0x48].i4  '' -- Param2
+	[0x48].alt.EditPChar  'StrParam'
+	.u4  'StrParamPtr'
 	-- [0x4C].alt.pstruct(structs.Button)  'FirstItem'
 	[0x4C].u4  'FirstItemPtr'
 	-- [0x50].alt.pstruct(structs.Button)  'LastItem'
@@ -872,12 +876,46 @@ function structs.f.Dlg(define)
 	.size = 0x54
 
 	define
-	.method{p = mmv(0x41A170, 0x41D0D8, 0x41C513), name = "AddButton", cc = 0, must = 4; 0, 0, 0, 0, 1, 0, 0, 0, 0, "";  0, 0, 0, 0, 0, 0}
-	 .Info{Sig = "X, Y, Width, Height, Shape = 1, HintAction, ActionType, ActionInfo, Key, Hint, Sprites..., 0"}
 	.method{p = mmv(0x41A0E0, 0x41D038, 0x41C473), name = "SetKeyboardNavigation"; 0, 1, 0, 0}
 	 .Info{Sig = "KeyboardItemsCount, KeyboardNavigationTrackMouse, KeyboardLeftRightStep, KeyboardItemsStart"}
 	.method{p = mmv(0x419D50, 0x41CCE4, 0x41C205), name = "GetItemPtrByIndex", must = 1; 0}
 	 .Info{Sig = "Index"}
+	
+	function define.m:AddButton(X, Y, Width, Height, Shape, HintAction, ActionType, ActionInfo, Key, Hint, EnglishD, ...)
+		local spr
+		if type(X) == "table" then
+			local t = X
+			X, Y, Width, Height, Shape, HintAction, ActionType, ActionInfo, Key, Hint, EnglishD, spr = t.Left or t[1], t.Top or t[2], t.Width or t[3], t.Height or t[4], t.Shape or t[5], t.HintAction or t[6], t.ActionType or t[7], t.ActionInfo or t[8], t.Key or t[9], t.Hint or t[10], t.EnglishD ~= false, table.copy(t.Sprites)
+		elseif EnglishD == not not EnglishD then
+			spr = {...}
+		else
+			spr, EnglishD = {EnglishD, ...}, true
+		end
+		for i = 1, 1/0 do
+			if i == 6 or (spr[i] or 0) == 0 then
+				spr[i] = 0
+				break
+			elseif type(spr[i]) == "string" then
+				spr[i] = Game.IconsLod.Bitmaps[Game.IconsLod:LoadBitmap(spr[i], EnglishD)]
+			end
+			if i == 1 and not (Width and Height) then
+				local p = tonumber(spr[i]) or spr[i]['?ptr']
+				Width = Width or i4[p + 0x18]
+				Height = Height or i4[p + 0x1A]
+			end
+		end
+		return call(mmv(0x41A170, 0x41D0D8, 0x41C513), 0, self, X, Y, Width, Height, tonumber(Shape) or 1, HintAction, ActionType, ActionInfo, Key, Hint ~= nil and tostring(Hint) or "", unpack(spr)), ToBtn
+	end
+	define.Info{Sig = "Left, Top, Width, Height, Shape = 1, HintAction, ActionType, ActionInfo, Key, Hint = \"\", [EnglishD] = true, Sprites..."; [=[
+Can also accept a table where some parameters are supplied by their name. In this case 'EnglishD' and 'Sprites' must be supplied by name.
+Returns button address and the 'wrap' function. Pass the returned address to the 'wrap' function to create a #dialog item:structs.Button# structure to access it.
+Example:
+!Lua[[
+-- make area to the left of first player portrait bring up the Maps dialog (note: this would interfere with object-oriented dialogs in MM8 and cause bugs when clicked inside them)
+local p, wrap = Game.Dialogs[0]:AddButton{0, 384, 31, 80, ActionType = 202, Hint = "Another Maps Button", Sprites = {"ib-td3-A"}}
+local btn = wrap(p)
+btn:MoveAfter(0)  -- make it take priority over other buttons
+]]]=]}
 	
 	function define.m:Destroy(KeepMonPic)
 		local p = 0x5A5370
@@ -892,7 +930,25 @@ function structs.f.Dlg(define)
 		local v = self[back and 'LastItemPtr' or 'FirstItemPtr']
 		return EnumDlg[not not back], v ~= 0 and structs.Button:new(v) or nil
 	end
-	define.Info{Sig = "Backwards"; "To be used in a 'for' statement. Enumerates dialog items returning only the #dialog item:structs.Button# each time. Does not return item index. If 'Backwards' is 'true', enumeration goes in reverse order."}
+	define.Info{Sig = "Backwards"; [=[
+To be used in a 'for' statement. Enumerates dialog items returning item index, #dialog item:structs.Button# and the 'wrap' function each time.
+If 'Backwards' is 'true', enumeration goes in reverse order.
+Note that the same Lua table gets reused for the item structure during enumeration. If you want to create separate Lua tables for each item, use the 'Wrap' function. Here's an example:
+!Lua[[
+local t = {}  -- this table will be populated with all dialog items from adventure screen
+for i, it, wrap in Game.Dialogs[0]:Enum() do
+	t[i] = wrap(it)
+end
+]]
+If you're wandering, the 'wrap' function itself simply does the following: !Lua[[structs.Button:new(tonumber(it) or it['?ptr'])]]]=]}
+	function define.m:GetByIndex(idx)
+		for i, it in self:Enum() do
+			if i == idx then
+				return it
+			end
+		end
+	end
+	define.Info{Sig = "Index"; "Returns #dialog item:structs.Button# at specified index in the items list."}
 end
 
 function structs.f.Button(define)
@@ -905,6 +961,7 @@ function structs.f.Button(define)
 	[0x10].i4  'Right'
 	[0x14].i4  'Bottom'
 	[0x18].i4  'Shape'
+	 .Info "1 - Rectangle.\n2 - Ellipse. 'Left' and 'Top' are center coordinates, 'Width' and 'Height' are radii. In MM6 it's always a circle and 'Height' is '0'.\n3 - Skill rectangle."
 	[0x1C].i4  'HintAction'
 	[0x20].i4  'ActionType'
 	[0x24].i4  'ActionParam'
@@ -923,6 +980,7 @@ function structs.f.Button(define)
 	 .Info{Type = 'structs.Dlg'}
 	[0x34+o].u4  'ParentPtr'
 	[0x38+o].array{5, lenA = i4, lenP = 0x4C+o}.i4  'Sprites'
+	 .Info{"A list of pointers to associated icons"}
 	[0x50+o].u1  'ShortCut'
 	[0x51+o].string(103)  'Hint'
 	.size = 0xB8+o
@@ -930,17 +988,42 @@ function structs.f.Button(define)
 	local function GetLink(p, nxt, parent)
 		return p == 0 and parent + 0x4C + (nxt and 0 or 4) or p+o + 0x2C + (nxt and 4 or 0)
 	end
-	function define.m:Destroy()
-		local p = self['?ptr']
+	local function Unlink(p)
+		local parent = u4[p+o + 0x34]
 		local pn = u4[GetLink(p, true)]
 		local pl = u4[GetLink(p, false)]
-		local parent = u4[p+o + 0x34]
 		u4[GetLink(pl, true, parent)] = pn
 		u4[GetLink(pn, false, parent)] = pl
+		return parent
+	end
+	function define.m:Destroy()
+		local p = self['?ptr']
+		local parent = Unlink(p)
 		u4[parent + 0x20] = u4[parent + 0x20] - 1
 		mem.freeMM(p)
 	end
 	define.Info "Make sure to update Parent.KeyboardItemsCount on your own if you delete one of them"
+	local function MoveBetween(self, pn, pl)
+		local p = self['?ptr']
+		if (pn or pl) == p then
+			return
+		end
+		local parent = Unlink(p)
+		pn = pn or u4[GetLink(pl, true, parent)]
+		pl = pl or u4[GetLink(pn, false, parent)]
+		u4[GetLink(pl, true, parent)] = p
+		u4[GetLink(pn, false, parent)] = p
+		u4[GetLink(p, true)] = pn
+		u4[GetLink(p, false)] = pl
+	end
+	function define.m:MoveBefore(pn)
+		return MoveBetween(self, tonumber(pn) or pn['?ptr'] or 0)
+	end
+	define.Info{Sig = "Target", "If 'Target' is '0' or 'nil', moves the item to the end of the items list"}
+	function define.m:MoveAfter(pl)
+		return MoveBetween(self, nil, tonumber(pl) or pl['?ptr'] or 0)
+	end
+	define.Info{Sig = "Target", "If 'Target' is '0' or 'nil', moves the item to the beginning of the items list"}
 end
 
 if HelpStructs then
@@ -2681,6 +2764,75 @@ function structs.f.LodSpriteD3D(define)
 	[0x20].i4  'AreaWidth'
 	[0x24].i4  'AreaHeight'
 	.size = 0x28
+end
+
+do
+	local TmpDlg
+	function structs.aux.TableToDlg(t)
+		t = t or {0, 0, 640, 480}
+		local p = tonumber(t) or t['?ptr']
+		if p then
+			return p
+		elseif not TmpDlg then
+			TmpDlg = mem.StaticAlloc(0x54)
+			mem.fill(TmpDlg, 0x54)
+		end
+		p = TmpDlg
+		for i = 0, 3 do
+			i4[p + i*4] = t[i + 1] or 0
+		end
+		for i = 0, 1 do
+			i4[p + 16 + i*4] = (t[i + 1] or 0) + (t[i + 3] or 0) - 1
+		end
+		return p, true
+	end
+end
+
+function structs.f.Fnt(define)
+	define
+	.u1  'MinChar'
+	.u1  'MaxChar'
+	.skip(3)
+	[5].u1  'Height'
+	[6].skip(2)
+	[8].i4  'PalettesCount'
+	[0xC].array{5, lenA = i4, lenP = 8}.pstruct(structs.LodBitmap)  'Palettes'
+	.array(256).array(3).i4  'ABC'
+	.array(256).i4  'GlyphOffsets'
+	.array(1/0).u1  'GlyphData'
+	.method{p = mmv(0x442DD0, 0x44C54A, 0x449C7B), name = "GetLineWidth", cc = 2, must = 1; ""}
+	
+	local ToDlg = structs.aux.TableToDlg
+
+	function define.m:GetTextHeight(str, dlg, x, IgnoreStrRightSymbol)
+		return call(mmv(0x442E90, 0x44C5C9, 0x449CFC), 2, self, tostring(str), ToDlg(dlg), x, IgnoreStrRightSymbol)
+	end
+	define.Info{Sig = "Text, Dialog = nil, X = 0, IgnoreStrRightSymbol = false [MM7+]";
+		"In place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nCalls 'WordWrap' internally and stores the result in #Game.WordWrappedText:#."}
+
+	function define.m:WordWrap(str, dlg, x, IgnoreStrRightSymbol)
+		return mem.string(call(mmv(0x442F50, 0x44C794, 0x449ECA), 2, tostring(str), self, ToDlg(dlg), x, IgnoreStrRightSymbol))
+	end
+	define.Info{Sig = "Text, Dialog = nil, X = 0, IgnoreStrRightSymbol = false [MM7+]";
+		"Returns text with extra line breaks inserted.\nIn place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]]."}
+
+	function define.m:Draw(str, dlg, x, y, cl, clShadow, bottom, opaque)
+		call(mmv(0x4435F0, 0x44CE34, 0x44A50F), 2, ToDlg(dlg), self, x, y, cl, tostring(str), opaque, bottom, clShadow)
+	end
+	define.Info{Sig = "Text, Dialog = nil, X = 0, Y = 0, Color = 0, ShadowColor [MM7+], Bottom [MM7+], Opaque [MM7+]";
+		"In place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nIf 'X' is '0', in MM6 and MM7 it gets set to '12' by the function.\nPassing '0' as 'Color' would draw text using default color.\nUnless 'Bottom' is specified, it calls 'WordWrap' internally and stores the result in #Game.WordWrappedText:#.\n'Bottom' is specified in absolute coordinates, not relative to dialog. When specified, the text doesn't get word-wrapped, but doesn't get drawn below its value. If not specified, text gets ward-wrapped when it exceeds dialog width horizontally, but is not limited vertically."}
+
+	function define.m:DrawLimited(str, dlg, w, x, y, cl, right)
+		call(mmv(0x443210, 0x44CB7B, 0x44A253), 2, ToDlg(dlg), self, x, y, cl, tostring(str), w, right)
+	end
+	define.Info{Sig = "Text, Dialog = nil, Width, X = 0, Y = 0, Color = 0, TruncateStart = false";
+		"In place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\n'X' should not be '0' in MM6 and MM7, because it then gets set to '12' by the function if text fits and is kept at '0 if it doesn't.\nPassing '0' as 'Color' would draw text using default color.\nIf 'TruncateStart' is 'true', end of the string is kept and beginning is truncated to fit the required size.\nCalls 'WordWrap' internally and stores the result in #Game.WordWrappedText:#."}
+
+	function define.m:DrawCentered(str, dlg, x, y, cl, ReduceLineHeight)
+		call(mmv(0x443B40, 0x44D432, 0x44AAE3), 2, ToDlg(dlg), self, x, y, cl, tostring(str), ReduceLineHeight or 3)
+	end
+	define.Info{Sig = "Text, Dialog = nil, X = 0, Y = 0, Color = 0, ReduceLineHeight = 3";
+		"In place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nPassing '0' as 'Color' would draw text using default color.\nCalls 'WordWrap' internally and stores the result in #Game.WordWrappedText:#."}
 end
 
 function structs.f.MapNote(define)
