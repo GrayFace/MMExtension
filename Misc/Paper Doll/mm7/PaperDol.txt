@@ -71,7 +71,7 @@ MBase	:ExtraHand		128	205	hand2	-1
 FBase	:ExtraHand		131	201	hand2	-1
 MDwarf	:ExtraHand		131	216	hand2	-1
 FDwarf	:ExtraHand		123	216	hand2	-1
-							Arm1:
+							Arm1 weapon:
 MBase	:MainHand		30	144		-1
 FBase	:MainHand		38	158		-1
 MDwarf	:MainHand		29	186		-1

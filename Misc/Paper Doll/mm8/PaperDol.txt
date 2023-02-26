@@ -73,7 +73,7 @@ MBase	:ExtraHand		144	194	hand2	0,-1,1,0
 FBase	:ExtraHand		133	200	hand2	0,-1,1,0
 Minotaur	:ExtraHand		145	232	hand2	0,-1,1,0
 Troll	:ExtraHand		149	209	hand2	0,-1,1,0
-							Arm1:
+							Arm1 weapon:
 MBase	:MainHand		37	125		-1
 FBase	:MainHand		51	149		-1
 Minotaur	:MainHand		20	182		-1
