@@ -5191,6 +5191,12 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.GameStructure.OODialogDisabled" class="abs"></a>OODialogDisabled
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.GameStructure.GuildJoinCost" class="abs"></a>GuildJoinCost[]
 </td><td class="def-right">
  
@@ -8536,9 +8542,39 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.BitmapsLod.RedBits" class="abs"></a>RedBits
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.BitmapsLod.GreenBits" class="abs"></a>GreenBits
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.BitmapsLod.BlueBits" class="abs"></a>BlueBits
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.BitmapsLod.NonTmpCount" class="abs"></a>NonTmpCount
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.BitmapsLod.TmpIndex" class="abs"></a>TmpIndex
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.BitmapsLod.KeepCompressed" class="abs"></a>KeepCompressed
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+ 
 </td>
 </tr><tr>
 <td class="def-left">
@@ -8590,6 +8626,24 @@ Id
 </tr><tr>
 <td class="def-left">
 <a id="structs.BitmapsLod.LoadTFTBitmap" class="abs"></a>LoadTFTBitmap<b class="def-largs">(</b><b class="def-rargs">)</b>
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.BitmapsLod.BeginTmp" class="abs"></a>BeginTmp<b class="def-largs">(</b><b class="def-rargs">)</b>
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.BitmapsLod.EndTmp" class="abs"></a>EndTmp<b class="def-largs">(</b><b class="def-rargs">)</b>
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.BitmapsLod.Cleanup" class="abs"></a>Cleanup<b class="def-largs">(</b><b class="def-rargs">)</b>
 </td><td class="def-right">
  
 </td>
@@ -8780,7 +8834,7 @@ Id
 <td class="def-left">
 <a id="structs.Button.MoveBefore" class="abs"></a>MoveBefore<b class="def-largs">(</b>Target<b class="def-rargs">)</b>
 </td><td class="def-right">
- If <b class="def-param">Target</b> is <b class="def-param">0</b> or <b class="def-param">nil</b>, moves the item to the end of the items list
+ If <b class="def-param">Target</b> is <b class="def-param">0</b> or <b class="def-param">nil</b>, moves the item to the end of the items list<br>Note that first item in the list is topmost and the last one is at the bottom.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -10904,6 +10958,12 @@ Id
 </td><td class="def-right">
  
 </td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.LodBitmap.Destroy" class="abs"></a>Destroy<b class="def-largs">(</b><b class="def-rargs">)</b>
+</td><td class="def-right">
+ 
+</td>
 </tr></tbody>
 </table>
 <br>
@@ -11164,6 +11224,12 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.MapChest.Trapped" class="abs"></a>Trapped
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.MapChest.ItemsPlaced" class="abs"></a>ItemsPlaced
 </td><td class="def-right">
  
@@ -11171,12 +11237,6 @@ Id
 </tr><tr>
 <td class="def-left">
 <a id="structs.MapChest.Identified" class="abs"></a>Identified
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapChest.Trapped" class="abs"></a>Trapped
 </td><td class="def-right">
  
 </td>
@@ -11601,57 +11661,15 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.MoveByDoor" class="abs"></a>MoveByDoor
+<a id="structs.MapFacet.ScrollUp" class="abs"></a>ScrollUp
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.IsEventJustHint" class="abs"></a>IsEventJustHint
+<a id="structs.MapFacet.ScrollLeft" class="abs"></a>ScrollLeft
 </td><td class="def-right">
- <span class="def-ver">[MM7+]</span>
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.AlternativeSound" class="abs"></a>AlternativeSound
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.IsSky" class="abs"></a>IsSky
-</td><td class="def-right">
- outdoor in software mode: horizontal flow
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.FlipU" class="abs"></a>FlipU
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.FlipV" class="abs"></a>FlipV
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.TriggerByClick" class="abs"></a>TriggerByClick
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.TriggerByStep" class="abs"></a>TriggerByStep
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.Untouchable" class="abs"></a>Untouchable
-</td><td class="def-right">
- great for vertical facets of stairs. <span class="def-ver">[MM7+]</span> Shouldn't be used for sloped floor, like it's used in MM6.
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11679,15 +11697,45 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.MapFacet.IsSky" class="abs"></a>IsSky
+</td><td class="def-right">
+ outdoor in software mode: horizontal flow
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.FlipU" class="abs"></a>FlipU
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.AnimatedTFT" class="abs"></a>AnimatedTFT
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.MoveByDoor" class="abs"></a>MoveByDoor
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.TriggerByStep" class="abs"></a>TriggerByStep
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.MapFacet.TriggerByObject" class="abs"></a>TriggerByObject
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  happens even if there's no event assigned
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.ProjectToYZ" class="abs"></a>ProjectToYZ
+<a id="structs.MapFacet.Untouchable" class="abs"></a>Untouchable
 </td><td class="def-right">
- 
+ great for vertical facets of stairs. <span class="def-ver">[MM7+]</span> Shouldn't be used for sloped floor, like it's used in MM6.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11703,39 +11751,45 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.ScrollLeft" class="abs"></a>ScrollLeft
+<a id="structs.MapFacet.IsLava" class="abs"></a>IsLava
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.ScrollUp" class="abs"></a>ScrollUp
+<a id="structs.MapFacet.IsEventJustHint" class="abs"></a>IsEventJustHint
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
+ <span class="def-ver">[MM7+]</span>
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.DisableEventByCtrlClick" class="abs"></a>DisableEventByCtrlClick
+<a id="structs.MapFacet.HasData" class="abs"></a>HasData
 </td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  indoor only: click event gets disabled by Ctrl+Click
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.EventDisabledByCtrlClick" class="abs"></a>EventDisabledByCtrlClick
+<a id="structs.MapFacet.Invisible" class="abs"></a>Invisible
 </td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.ScrollDown" class="abs"></a>ScrollDown
+<a id="structs.MapFacet.AlternativeSound" class="abs"></a>AlternativeSound
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.IsSecret" class="abs"></a>IsSecret
+<a id="structs.MapFacet.ProjectToYZ" class="abs"></a>ProjectToYZ
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  show in red with Perception
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.FlipV" class="abs"></a>FlipV
+</td><td class="def-right">
+ 
 </td>
 </tr><tr>
 <td class="def-left">
@@ -11751,6 +11805,18 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.MapFacet.DisableEventByCtrlClick" class="abs"></a>DisableEventByCtrlClick
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  indoor only: click event gets disabled by Ctrl+Click
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapFacet.EventDisabledByCtrlClick" class="abs"></a>EventDisabledByCtrlClick
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.MapFacet.AlignTop" class="abs"></a>AlignTop
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  align door texture in D3D
@@ -11763,25 +11829,19 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.Invisible" class="abs"></a>Invisible
+<a id="structs.MapFacet.IsSecret" class="abs"></a>IsSecret
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  show in red with Perception
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.HasData" class="abs"></a>HasData
+<a id="structs.MapFacet.ScrollDown" class="abs"></a>ScrollDown
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapFacet.AnimatedTFT" class="abs"></a>AnimatedTFT
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapFacet.IsLava" class="abs"></a>IsLava
+<a id="structs.MapFacet.TriggerByClick" class="abs"></a>TriggerByClick
 </td><td class="def-right">
  
 </td>
@@ -12230,9 +12290,21 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.MapMonster.Hostile" class="abs"></a>Hostile
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.MapMonster.OnAlertMap" class="abs"></a>OnAlertMap
 </td><td class="def-right">
  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.ShowOnMap" class="abs"></a>ShowOnMap
+</td><td class="def-right">
+ monster was once seen by party
 </td>
 </tr><tr>
 <td class="def-left">
@@ -12266,21 +12338,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapMonster.ShowOnMap" class="abs"></a>ShowOnMap
-</td><td class="def-right">
- monster was once seen by party
-</td>
-</tr><tr>
-<td class="def-left">
 <a id="structs.MapMonster.IsObeliskChest" class="abs"></a>IsObeliskChest
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.Hostile" class="abs"></a>Hostile
-</td><td class="def-right">
- 
 </td>
 </tr><tr>
 <td class="def-left">
@@ -12368,6 +12428,30 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.MapMonster.Prefers.Ranger" class="abs"></a>Prefers.Ranger
+</td><td class="def-right">
+<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.Prefers.Female" class="abs"></a>Prefers.Female
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.Prefers.Cleric" class="abs"></a>Prefers.Cleric
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.Prefers.Monk" class="abs"></a>Prefers.Monk
+</td><td class="def-right">
+<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.MapMonster.Prefers.Male" class="abs"></a>Prefers.Male
 </td><td class="def-right">
  in monsters.txt it's "M" in MM6 and "X" in MM7 and MM8
@@ -12410,37 +12494,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapMonster.Prefers.Female" class="abs"></a>Prefers.Female
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.Prefers.Ranger" class="abs"></a>Prefers.Ranger
-</td><td class="def-right">
-<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.Prefers.Thief" class="abs"></a>Prefers.Thief
-</td><td class="def-right">
-<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.Prefers.Monk" class="abs"></a>Prefers.Monk
-</td><td class="def-right">
-<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
 <a id="structs.MapMonster.Prefers.Goblin" class="abs"></a>Prefers.Goblin
-</td><td class="def-right">
-<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.Prefers.Dwarf" class="abs"></a>Prefers.Dwarf
 </td><td class="def-right">
 <span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
 </td>
@@ -12458,9 +12512,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapMonster.Prefers.Knight" class="abs"></a>Prefers.Knight
+<a id="structs.MapMonster.Prefers.Dwarf" class="abs"></a>Prefers.Dwarf
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -12476,13 +12530,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapMonster.Prefers.Druid" class="abs"></a>Prefers.Druid
-</td><td class="def-right">
-<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapMonster.Prefers.Cleric" class="abs"></a>Prefers.Cleric
+<a id="structs.MapMonster.Prefers.Knight" class="abs"></a>Prefers.Knight
 </td><td class="def-right">
  
 </td>
@@ -12491,6 +12539,18 @@ Id
 <a id="structs.MapMonster.Prefers.Sorcerer" class="abs"></a>Prefers.Sorcerer
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.Prefers.Druid" class="abs"></a>Prefers.Druid
+</td><td class="def-right">
+<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapMonster.Prefers.Thief" class="abs"></a>Prefers.Thief
+</td><td class="def-right">
+<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -13723,21 +13783,15 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapSprite.IsChest" class="abs"></a>IsChest
+<a id="structs.MapSprite.TriggerByObject" class="abs"></a>TriggerByObject
+</td><td class="def-right">
+ only for "Event Trigger" sprites &ndash; triggered when an object gets into <b class="def-param">TriggerRadius</b>
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapSprite.ShowOnMap" class="abs"></a>ShowOnMap
 </td><td class="def-right">
  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapSprite.TriggerByTouch" class="abs"></a>TriggerByTouch
-</td><td class="def-right">
- only for "Event Trigger" sprites &ndash; triggered when a player comes into <b class="def-param">TriggerRadius</b>
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MapSprite.IsObeliskChest" class="abs"></a>IsObeliskChest
-</td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -13747,9 +13801,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapSprite.TriggerByObject" class="abs"></a>TriggerByObject
+<a id="structs.MapSprite.IsChest" class="abs"></a>IsChest
 </td><td class="def-right">
- only for "Event Trigger" sprites &ndash; triggered when an object gets into <b class="def-param">TriggerRadius</b>
+ 
 </td>
 </tr><tr>
 <td class="def-left">
@@ -13759,9 +13813,15 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MapSprite.ShowOnMap" class="abs"></a>ShowOnMap
+<a id="structs.MapSprite.IsObeliskChest" class="abs"></a>IsObeliskChest
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MapSprite.TriggerByTouch" class="abs"></a>TriggerByTouch
+</td><td class="def-right">
+ only for "Event Trigger" sprites &ndash; triggered when a player comes into <b class="def-param">TriggerRadius</b>
 </td>
 </tr><tr>
 <td class="def-left">
@@ -14169,57 +14229,15 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.MoveByDoor" class="abs"></a>MoveByDoor
+<a id="structs.ModelFacet.ScrollUp" class="abs"></a>ScrollUp
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.IsEventJustHint" class="abs"></a>IsEventJustHint
+<a id="structs.ModelFacet.ScrollLeft" class="abs"></a>ScrollLeft
 </td><td class="def-right">
- <span class="def-ver">[MM7+]</span>
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.AlternativeSound" class="abs"></a>AlternativeSound
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.IsSky" class="abs"></a>IsSky
-</td><td class="def-right">
- outdoor in software mode: horizontal flow
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.FlipU" class="abs"></a>FlipU
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.FlipV" class="abs"></a>FlipV
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.TriggerByClick" class="abs"></a>TriggerByClick
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.TriggerByStep" class="abs"></a>TriggerByStep
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.Untouchable" class="abs"></a>Untouchable
-</td><td class="def-right">
- great for vertical facets of stairs. <span class="def-ver">[MM7+]</span> Shouldn't be used for sloped floor, like it's used in MM6.
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
 </td>
 </tr><tr>
 <td class="def-left">
@@ -14247,15 +14265,45 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.ModelFacet.IsSky" class="abs"></a>IsSky
+</td><td class="def-right">
+ outdoor in software mode: horizontal flow
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.FlipU" class="abs"></a>FlipU
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.AnimatedTFT" class="abs"></a>AnimatedTFT
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.MoveByDoor" class="abs"></a>MoveByDoor
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.TriggerByStep" class="abs"></a>TriggerByStep
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.ModelFacet.TriggerByObject" class="abs"></a>TriggerByObject
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  happens even if there's no event assigned
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.ProjectToYZ" class="abs"></a>ProjectToYZ
+<a id="structs.ModelFacet.Untouchable" class="abs"></a>Untouchable
 </td><td class="def-right">
- 
+ great for vertical facets of stairs. <span class="def-ver">[MM7+]</span> Shouldn't be used for sloped floor, like it's used in MM6.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -14271,39 +14319,45 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.ScrollLeft" class="abs"></a>ScrollLeft
+<a id="structs.ModelFacet.IsLava" class="abs"></a>IsLava
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.ScrollUp" class="abs"></a>ScrollUp
+<a id="structs.ModelFacet.IsEventJustHint" class="abs"></a>IsEventJustHint
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
+ <span class="def-ver">[MM7+]</span>
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.DisableEventByCtrlClick" class="abs"></a>DisableEventByCtrlClick
+<a id="structs.ModelFacet.HasData" class="abs"></a>HasData
 </td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  indoor only: click event gets disabled by Ctrl+Click
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.EventDisabledByCtrlClick" class="abs"></a>EventDisabledByCtrlClick
+<a id="structs.ModelFacet.Invisible" class="abs"></a>Invisible
 </td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.ScrollDown" class="abs"></a>ScrollDown
+<a id="structs.ModelFacet.AlternativeSound" class="abs"></a>AlternativeSound
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.IsSecret" class="abs"></a>IsSecret
+<a id="structs.ModelFacet.ProjectToYZ" class="abs"></a>ProjectToYZ
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  show in red with Perception
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.FlipV" class="abs"></a>FlipV
+</td><td class="def-right">
+ 
 </td>
 </tr><tr>
 <td class="def-left">
@@ -14319,6 +14373,18 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.ModelFacet.DisableEventByCtrlClick" class="abs"></a>DisableEventByCtrlClick
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  indoor only: click event gets disabled by Ctrl+Click
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.ModelFacet.EventDisabledByCtrlClick" class="abs"></a>EventDisabledByCtrlClick
+</td><td class="def-right">
+<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.ModelFacet.AlignTop" class="abs"></a>AlignTop
 </td><td class="def-right">
 <span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  align door texture in D3D
@@ -14331,25 +14397,19 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.Invisible" class="abs"></a>Invisible
+<a id="structs.ModelFacet.IsSecret" class="abs"></a>IsSecret
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  show in red with Perception
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.HasData" class="abs"></a>HasData
+<a id="structs.ModelFacet.ScrollDown" class="abs"></a>ScrollDown
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  moving texture
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.ModelFacet.AnimatedTFT" class="abs"></a>AnimatedTFT
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.ModelFacet.IsLava" class="abs"></a>IsLava
+<a id="structs.ModelFacet.TriggerByClick" class="abs"></a>TriggerByClick
 </td><td class="def-right">
  
 </td>
@@ -14973,6 +15033,30 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.MonstersTxtItem.Prefers.Ranger" class="abs"></a>Prefers.Ranger
+</td><td class="def-right">
+<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MonstersTxtItem.Prefers.Female" class="abs"></a>Prefers.Female
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MonstersTxtItem.Prefers.Cleric" class="abs"></a>Prefers.Cleric
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MonstersTxtItem.Prefers.Monk" class="abs"></a>Prefers.Monk
+</td><td class="def-right">
+<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.MonstersTxtItem.Prefers.Male" class="abs"></a>Prefers.Male
 </td><td class="def-right">
  in monsters.txt it's "M" in MM6 and "X" in MM7 and MM8
@@ -15015,37 +15099,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Female" class="abs"></a>Prefers.Female
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Ranger" class="abs"></a>Prefers.Ranger
-</td><td class="def-right">
-<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Thief" class="abs"></a>Prefers.Thief
-</td><td class="def-right">
-<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Monk" class="abs"></a>Prefers.Monk
-</td><td class="def-right">
-<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
 <a id="structs.MonstersTxtItem.Prefers.Goblin" class="abs"></a>Prefers.Goblin
-</td><td class="def-right">
-<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Dwarf" class="abs"></a>Prefers.Dwarf
 </td><td class="def-right">
 <span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
 </td>
@@ -15063,9 +15117,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Knight" class="abs"></a>Prefers.Knight
+<a id="structs.MonstersTxtItem.Prefers.Dwarf" class="abs"></a>Prefers.Dwarf
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -15081,13 +15135,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Druid" class="abs"></a>Prefers.Druid
-</td><td class="def-right">
-<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.MonstersTxtItem.Prefers.Cleric" class="abs"></a>Prefers.Cleric
+<a id="structs.MonstersTxtItem.Prefers.Knight" class="abs"></a>Prefers.Knight
 </td><td class="def-right">
  
 </td>
@@ -15096,6 +15144,18 @@ Id
 <a id="structs.MonstersTxtItem.Prefers.Sorcerer" class="abs"></a>Prefers.Sorcerer
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MonstersTxtItem.Prefers.Druid" class="abs"></a>Prefers.Druid
+</td><td class="def-right">
+<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.MonstersTxtItem.Prefers.Thief" class="abs"></a>Prefers.Thief
+</td><td class="def-right">
+<span class="def-ver">[MM7]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -16179,13 +16239,13 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.PatchOptions.PaletteSMul" class="abs"></a>PaletteSMul
+<a id="structs.PatchOptions.RawPaletteSMul" class="abs"></a>RawPaletteSMul
 </td><td class="def-right">
  <span class="def-ver">[MM7+]</span>
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.PatchOptions.PaletteVMul" class="abs"></a>PaletteVMul
+<a id="structs.PatchOptions.RawPaletteVMul" class="abs"></a>RawPaletteVMul
 </td><td class="def-right">
  <span class="def-ver">[MM7+]</span>
 </td>
@@ -16671,13 +16731,13 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.PatchOptions.CorrectSMulD3D" class="abs"></a>CorrectSMulD3D
+<a id="structs.PatchOptions.ExtraSMulD3D" class="abs"></a>ExtraSMulD3D
 </td><td class="def-right">
  <span class="def-ver">[MM7+]</span>
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.PatchOptions.CorrectVMulD3D" class="abs"></a>CorrectVMulD3D
+<a id="structs.PatchOptions.ExtraVMulD3D" class="abs"></a>ExtraVMulD3D
 </td><td class="def-right">
  <span class="def-ver">[MM7+]</span>
 </td>
@@ -16686,6 +16746,18 @@ Id
 <a id="structs.PatchOptions.DataFilesDir" class="abs"></a>DataFilesDir
 </td><td class="def-right">
  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.PatchOptions.PaletteSMul" class="abs"></a>PaletteSMul
+</td><td class="def-right">
+ <span class="def-ver">[MM7+]</span>
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.PatchOptions.PaletteVMul" class="abs"></a>PaletteVMul
+</td><td class="def-right">
+ <span class="def-ver">[MM7+]</span>
 </td>
 </tr><tr>
 <td colspan="2" class="def-functions"><br>
@@ -16738,9 +16810,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Paralyzed" class="abs"></a>Paralyzed
+<a id="structs.Player.Zombie" class="abs"></a>Zombie
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
@@ -16750,13 +16822,13 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Cursed" class="abs"></a>Cursed
+<a id="structs.Player.Asleep" class="abs"></a>Asleep
 </td><td class="def-right">
  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Unconscious" class="abs"></a>Unconscious
+<a id="structs.Player.Drunk" class="abs"></a>Drunk
 </td><td class="def-right">
  
 </td>
@@ -16798,25 +16870,37 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.Player.Dead" class="abs"></a>Dead
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Stoned" class="abs"></a>Stoned
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.Player.Disease3" class="abs"></a>Disease3
 </td><td class="def-right">
  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Afraid" class="abs"></a>Afraid
+<a id="structs.Player.Paralyzed" class="abs"></a>Paralyzed
 </td><td class="def-right">
  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Zombie" class="abs"></a>Zombie
+<a id="structs.Player.Cursed" class="abs"></a>Cursed
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Good" class="abs"></a>Good
+<a id="structs.Player.Unconscious" class="abs"></a>Unconscious
 </td><td class="def-right">
  
 </td>
@@ -16828,25 +16912,13 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Drunk" class="abs"></a>Drunk
+<a id="structs.Player.Good" class="abs"></a>Good
 </td><td class="def-right">
  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Asleep" class="abs"></a>Asleep
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Dead" class="abs"></a>Dead
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Stoned" class="abs"></a>Stoned
+<a id="structs.Player.Afraid" class="abs"></a>Afraid
 </td><td class="def-right">
  
 </td>

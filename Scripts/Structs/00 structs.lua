@@ -1,5 +1,5 @@
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
-local i4, i2, i1, u4, u2, u1, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.pchar, mem.call
+local i4, i2, i1, u4, u2, u1, r4, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1, mem.r4, mem.pchar, mem.call
 local mmver = offsets.MMVersion
 
 local function mmv(...)
@@ -24,7 +24,9 @@ end
 
 function events.StructsLoaded()
 	Game = structs.GameStructure:new(0)
-	Game.Dll = PatchDll
+	rawset(Game, "Dll", PatchDll)
+	rawset(Game, "IsD3D", mmver > 6 and i4[mm78(0xDF1A68, 0xEC1980)] ~= 0)
+	rawset(Game, "Version", offsets.MMVersion)
 	Party = Game.Party
 	Map = Game.Map
 	Mouse = Game.Mouse
@@ -182,6 +184,7 @@ function structs.f.GameStructure(define)
 		define
 		[0x5CCCE4].b1  'InQuestionDialog'
 		[0x100614C].u4  'OODialogPtr'
+		[0x10061B4].b4  'OODialogDisabled'
 		local function d(v, std)
 			return v == nil and (std or 0) or v
 		end
@@ -1745,8 +1748,8 @@ function structs.f.PatchOptions(define)
 	uint  'HDWTRDelay'  Info "[MM7+]"
 	int  'HorsemanSpeakTime'
 	int  'BoatmanSpeakTime'
-	single  'PaletteSMul'  Info "[MM7+]"
-	single  'PaletteVMul'  Info "[MM7+]"
+	single  'RawPaletteSMul'  Info "[MM7+]"
+	single  'RawPaletteVMul'  Info "[MM7+]"
 	bool  'NoBitmapsHwl'  Info "[MM7+]"
 	bool  'PlayMP3'
 	int  'MusicLoopsCount'
@@ -1827,8 +1830,8 @@ function structs.f.PatchOptions(define)
 	int  'TownPortalCost'  Info "Gets set before opening Town Portal dialog, retrieved when the town is chosen."
 	int  'MouseFlyKey'
 	bool  'ModernStrafe'
-	single  'CorrectSMulD3D'  Info "[MM7+]"
-	single  'CorrectVMulD3D'  Info "[MM7+]"
+	single  'ExtraSMulD3D'  Info "[MM7+]"
+	single  'ExtraVMulD3D'  Info "[MM7+]"
 	pchar  'DataFilesDir'
 	
 	function define.f.Present(name)
@@ -1843,6 +1846,32 @@ function structs.f.PatchOptions(define)
 		return (Game.PatchOptions.UILayout or "") ~= "" and Game.Windowed ~= 0
 	end
 	 define.Info{"Returns 'true' if UILayout mode is currently active"}
+	
+	if addr.ExtraVMulD3D then
+		-- remove legacy support multipliers
+		r4[addr.ExtraSMulD3D] = 1
+		r4[addr.ExtraVMulD3D] = 1
+	end
+	if addr.RawPaletteVMul then
+		local function PalField(name, mul)
+			local p = addr["Raw"..name]
+			addr[name] = p
+			if addr.ExtraVMulD3D or mmver == 6 or i4[mm78(0xDF1A68, 0xEC1980)] == 0 then
+				define[p - PatchOptionsPtr].r4(name)
+			else
+				define[p - PatchOptionsPtr].CustomType(name, 4, function(o, obj, name, val)
+					if val == nil then
+						return r4[p]*mul
+					else
+						r4[p] = val/mul
+					end
+				end)
+			end
+			Info "[MM7+]"
+		end
+		PalField("PaletteSMul", 1.025)
+		PalField("PaletteVMul", 246/255)
+	end
 end
 
 if mmver == 7 then

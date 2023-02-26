@@ -95,8 +95,6 @@ function events.StructsLoaded()
 	if mmver ~= 8 then
 		rawset(Game, "CurrentTileBin", Game.TileBin)
 	end
-	rawset(Game, "IsD3D", mmver > 6 and i4[mmv(nil, 0xDF1A68, 0xEC1980)] ~= 0)
-	rawset(Game, "Version", offsets.MMVersion)
 	rawset(Game.MapStats, "Find", FindInMapStats)
 	rawset(Game.ObjListBin, "Find", FindInObjList)
 	rawset(Game.Actions, "Add", AddAction'Actions')
@@ -1019,7 +1017,7 @@ function structs.f.Button(define)
 	function define.m:MoveBefore(pn)
 		return MoveBetween(self, tonumber(pn) or pn['?ptr'] or 0)
 	end
-	define.Info{Sig = "Target", "If 'Target' is '0' or 'nil', moves the item to the end of the items list"}
+	define.Info{Sig = "Target", "If 'Target' is '0' or 'nil', moves the item to the end of the items list\nNote that first item in the list is topmost and the last one is at the bottom."}
 	function define.m:MoveAfter(pl)
 		return MoveBetween(self, nil, tonumber(pl) or pl['?ptr'] or 0)
 	end
@@ -2610,14 +2608,18 @@ local bmpbuf = mem.StaticAlloc(64)
 
 function structs.f.BitmapsLod(define)
 	structs.f.Lod(define)
-	if mmver == 6 then
+	define
+	[0x23C].array{mmv(500, 1000, 1000), lenA = i4, lenP = mmv(0x8EDC, 0x11B7C, 0x11B7C)}.struct(structs.LodBitmap)  'Bitmaps'
+	.skip(16)
+	.i4  'RedBits'
+	.i4  'GreenBits'
+	.i4  'BlueBits'
+	.i4  'NonTmpCount'
+	.i4  'TmpIndex'
+	.skip(4)
+	.b4  'KeepCompressed'
+	if mmver > 6 then
 		define
-		[0x23C].array{500, lenA = i4, lenP = 0x8EDC}.struct(structs.LodBitmap)  'Bitmaps'
-		.size = 0x8EE0  -- not sure
-	else
-		define
-		[0x23C].array{1000, lenA = i4, lenP = 0x11B7C}.struct(structs.LodBitmap)  'Bitmaps'
-		[0x11BA4].b4  'KeepCompressed'
 		.b4  'IsHardware'
 		if mmver == 8 then
 			define.skip(4)
@@ -2626,7 +2628,7 @@ function structs.f.BitmapsLod(define)
 		.parray{lenA = i4, lenP = 0x11B7C}.u4  'D3D_Surfaces'
 		.parray{lenA = i4, lenP = 0x11B7C}.u4  'D3D_Textures'
 		.skip(4)
-		.size = 0x11BB8
+		.size = mm78(0x11BB8, 0x11BBC)
 	end
 	
 	function define.m:LoadBitmap(name, EnglishD)
@@ -2650,6 +2652,30 @@ function structs.f.BitmapsLod(define)
 			return bmp
 		end
 	end
+	function define.m:BeginTmp()
+		local n = self.TmpIndex
+		self.TmpIndex = n + 1
+		if n == 0 then
+			self.NonTmpCount = self.Bitmaps.Count
+		end
+	end
+	if mmver == 6 then
+		function define.m:EndTmp()
+			local n = self.TmpIndex - 1
+			self.TmpIndex = n
+			if n == 0 then
+				local p = self.Bitmaps['?ptr']
+				for i = self.NonTmpCount, self.Bitmaps.High do
+					call(0x40A0C0, 1, p + i*0x48)
+				end
+				self.Bitmaps.Count = self.NonTmpCount
+				self.NonTmpCount = 0
+			end
+		end
+	else
+		define.method{name = "EndTmp", p = mm78(0x4114FE, 0x4122F0)}
+	end
+	define.method{name = "Cleanup", p = mmv(0x40B2F0, 0x40F9D1, 0x410C09)}
 end
 
 function structs.f.SpritesLod(define)
@@ -2711,6 +2737,7 @@ function structs.f.LodBitmap(define)
 	function define.m:LoadBitmapPalette()  -- only for bitmaps.lod
 		self.LoadedPalette = Game.LoadPalette(self.Palette)
 	end
+	define.method{p = mmv(0x40A0C0, 0x40F788, 0x410A10), name = "Destroy"}
 end
 
 function structs.f.LodPcx(define)
