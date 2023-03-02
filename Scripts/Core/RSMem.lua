@@ -1585,11 +1585,13 @@ end
 
 if GetInstructionSize then
 	-- Takes a string to search for. Only checks for a match at the start of a new instruction.
-	function _mem.findcode(p, s)
-		while mem_cmp(p, s, #s) ~= 0 do
+	function _mem.findcode(p, s, p2)
+		while not p2 or p < p2 do
+			if mem_cmp(p, s, #s) == 0 then
+				return p
+			end
 			p = p + GetInstructionSize(p)
 		end
-		return p
 	end
 	
 	-- Finds a call to 'fpts' starting at 'p' and stopping at 'p2' (optional). If 'fptr' isn't specified, searches for any call instruction.
