@@ -7,6 +7,8 @@ local string_byte = string.byte
 local string_sub = string.sub
 local string_gsub = string.gsub
 local string_find = string.find
+local string_lower = string.lower
+local string_upper = string.upper
 
 local next = next
 local pairs = pairs
@@ -282,8 +284,13 @@ do
 end
 
 -- Parameters are treated as plain strings, not patterns
-function string.replace(str, old, new)
+function string.replace(str, old, new, IgnoreCase)
 	old = string_gsub(old, "[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")
+	if IgnoreCase then
+		old = string_gsub(old, "%a", function(c)
+			return format("[%s%s]", string_lower(c), string_upper(c))
+		end)
+	end
 	old = string_gsub(old, "%z", "%%%z")
 	local tp = type(new)
 	if tp == "string" or tp == "number" then
