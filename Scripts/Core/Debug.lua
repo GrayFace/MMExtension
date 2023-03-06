@@ -100,7 +100,7 @@ local function DoDebug(str)
 			str = str..'  '..tostring2(ret[i], nil, true)..'\n'
 		end
 	else
-		str = ret[2].."\n"
+		str = tostring(ret[2]).."\n"
 	end
 	return DoDebug(IncludeLog(str))
 end
