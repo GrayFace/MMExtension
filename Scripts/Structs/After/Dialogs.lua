@@ -18,14 +18,8 @@ local HoverItem, HoverFrame
 local DownItem
 local FocusedDialog
 local ClickedItems, ClickTime = {}, nil
--- local SetUIVar = Game.Dll.UILayoutSetVarInt
--- local GetUIVar = Game.PatchOptions.UILayout ~= "" and Game.Dll.UILayoutGetVar
 local IDCusDlg, IDBlockInteraction, IDBlock, BlockCount, CreatingOO = const.DlgID.CustomDialog, const.DlgID.BlockDialogs, const.DlgID.BlockDialogsNoDraw, 0, nil
 local NoFoodGold, NeedRestore
--- local CustomScreens = {}
--- for i = 0, 19 do
--- 	CustomScreens[i] = const.Screens.CustomDialog + i*2
--- end
 
 local function callback(f, ...)
 	if f then
@@ -64,7 +58,6 @@ local function Apply1(self, t)
 end
 
 local function Apply2(self, t, dlg, new)
-	-- t.Screen = tonumber(t.Screen) or t.Screen and CustomScreens[dlg.Index]
 	t.Screen = tonumber(t.Screen) or (t.Screen or t.MimicScreen) and 22 or nil
 	if t.Screen then
 		Game.CurrentScreen = t.Screen
@@ -76,12 +69,6 @@ local function Apply2(self, t, dlg, new)
 	if t.NoFoodGold == nil and self.NoFoodGold == nil and t.Screen == 22 and t.MimicScreen == 22 then
 		t.NoFoodGold = true
 	end
-	-- t.LastMimicScreen = GetUIVar and (not self.LastMimicScreen or nil) and GetUIVar('Game.MimicScreen', nil)
-	-- if GetUIVar and t.MimicScreen then
-	-- 	SetUIVar('Game.MimicScreen', t.MimicScreen)
-	-- else
-	-- 	t.MimicScreen = nil
-	-- end
 	if self.BlockOO then
 		t.BlockOO = nil
 	elseif t.BlockOO == nil and new and is8 then
@@ -114,7 +101,6 @@ local function InitDlg(dlg, new)
 	if DlgCount == 1 then
 		EnableHandlers(handlers, true)
 	end
-	-- CustomScreens[dlg.Index] = (CustomScreens[dlg.Index] or const.Screens.CustomDialog + 20*2):Xor(1)
 	if not new then
 		Apply1(dummy, t)
 	end
@@ -192,15 +178,6 @@ local function RestoreScreen(t)
 		if i == high or t.MimicScreen and t.MimicScreen == Game.EscMessageLastScreen then
 			Game.EscMessageLastScreen = t.LastMimicScreen
 		end
-	-- else
-	-- 	if i == high or t.Screen and t.Screen == Game.Screen then
-	-- 		Game.CurrentScreen = t.LastScreen
-	-- 	end
-		-- if not GetUIVar then
-		-- 	return
-		-- elseif i == high or t.MimicScreen and t.MimicScreen == GetUIVar('Game.MimicScreen', nil) then
-		-- 	SetUIVar('Game.MimicScreen', t.LastMimicScreen)
-		-- end
 	end
 end
 
@@ -584,7 +561,6 @@ function handlers.Action(t)
 		local o = DownItem
 		t.Action, DownItem = 0, nil
 		callback(o.OnMouseUp, o, t, o == HoverItem)
-		-- UpdateHover()
 		if o == HoverItem and o.TriggerOnUp then
 			HandleClick(o, false, false)
 		end
@@ -733,12 +709,6 @@ end
 local function before()
 	UpdateHover()
 	NeedRestore = NeedRestore and RestoreDialog()
-	-- if is7 then
-	-- 	if NoFoodGold then
-	-- 		Game.NoFoodGold = false
-	-- 	end
-	-- 	NoFoodGold = nil
-	-- end
 	local o = BlockCount == 0 and Game.Dialogs[0].CustomDialog
 	if o and Game.MainMenuCode < 0 then
 		o:Draw()
@@ -762,8 +732,6 @@ end
 
 handlers.BeforeDrawDialogs = before
 handlers.AfterDrawDialogs = after
-
--- local DrawOnScreens = {[const.Screens.ItemSpell] = true, [const.Screens.NPC] = true, [const.Screens.House] = true, [const.Screens.WalkToMap] = true, [const.Screens.MapEntrance] = true, [const.Screens.SimpleMessage] = true}
 
 function handlers.AfterDrawNoDialogs()
 	before()
