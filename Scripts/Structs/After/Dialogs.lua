@@ -62,7 +62,7 @@ local function Apply2(self, t, dlg, new)
 	if t.Screen then
 		Game.CurrentScreen = t.Screen
 	end
-	t.MimicScreen = tonumber(t.MimicScreen) or t.Screen == 22 and self.Screen ~= 22 and 22 or nil
+	t.MimicScreen = tonumber(t.MimicScreen) or t.Screen == 22 and self.Screen ~= 22 and (Game.MainMenuCode < 0 and 22 or t.LastScreen ~= 22 and t.LastScreen or t.LastMimicScreen or 12) or nil
 	if t.MimicScreen then
 		Game.EscMessageLastScreen = t.MimicScreen
 	end

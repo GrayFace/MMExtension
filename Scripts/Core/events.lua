@@ -1031,29 +1031,45 @@ if mmver == 7 then
 	]])
 end
 
--- fix drawing of dialogs under Esc message dialog or custom dialogs that use MimicScreen
-if mmver > 6 and PatchOptionsSize < 400 then
-	for _, p in ipairs(mm78({0x4414BB, 0x42266B, 0x4416E3}, {0x421886, 0x43E53B})) do
-		mem.asmhook2(p, [[
+-- fix drawing of dialogs under Esc message or custom dialogs that use MimicScreen
+if PatchOptionsSize < 400 then
+	local hooks = HookManager{
+		CurrentScreen = mmv(0x4BCDD8, 0x4E28D8, 0x4F37D8),
+		EscMessageLastScreen = mmv(0x4CB6A0, 0x506D8C, 0x51856C),
+	}
+	for _, p in ipairs(mmv({0x45097A}, {0x4414BB, 0x42266B, 0x4416E3}, {0x421886, 0x43E53B, 0x4218B8})) do
+		hooks.asmhook2(p, [[
 			cmp eax, 22
 			jnz @f
-			mov eax, [mm7*0x506D8C + mm8*0x51856C]
+			mov eax, [%EscMessageLastScreen%]
 		@@:
 		]])
 	end
 	if mmver == 7 then
-		mem.asmhook(0x441030, [[
-			mov eax, [0x4E28D8]
+		hooks.asmhook(0x441030, [[
+			mov eax, [%CurrentScreen%]
 			cmp eax, 22
 			jnz @f
 			push eax
-			mov eax, [mm7*0x506D8C + mm8*0x51856C]
-			mov [0x4E28D8], eax
+			mov eax, [%EscMessageLastScreen%]
+			mov [%CurrentScreen%], eax
 			call @f
 			pop edx
-			mov [0x4E28D8], edx
+			mov [%CurrentScreen%], edx
 			ret
 		@@:
+		]])
+	end
+	if mmver > 6 then
+		hooks.asmhook(mm78(0x462A80, 0x460AFA), [[
+		  jz @std
+		  cmp dword [%CurrentScreen%], 22
+		  jz @chk
+		  or al, 12
+		  jmp @std
+		@chk:
+		  cmp dword [%EscMessageLastScreen%], 12
+		@std:
 		]])
 	end
 end
