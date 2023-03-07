@@ -18,11 +18,12 @@ static int ToInteger(lua_State *L, int i)
 	//if (lua_isboolean(L, i))  return lua_toboolean(L, i);
 	//return 0;
 
+	const bool Compat = (-15 != (int)(unsigned int)-15.0);
 	lua_Number num = lua_tonumber(L, i);
-	if (num>=0)
-		return (DWORD)num;
-	else
+	if (Compat && num < 0)
 		return (int)num;
+	else
+		return (unsigned int)num;
 }
 
 //-------- Bits support ---------
@@ -61,7 +62,7 @@ static int BitAndNot(lua_State *L)
 
 //-------- memory ---------
 
-static int ToParam(lua_State *L, int idx, int &param)
+static inline int ToParam(lua_State *L, int idx, int &param, bool RawTable = false)
 {
 	switch(lua_type(L, idx))
 	{
@@ -82,6 +83,10 @@ static int ToParam(lua_State *L, int idx, int &param)
 			param = (int)lua_touserdata(L, idx);
 			break;
 		case LUA_TTABLE:
+			if(RawTable) {
+				param = (int)lua_topointer(L, idx);
+				break;
+			}
 			lua_getfield(L, idx, "?ptr");
 			if (lua_type(L, -1) != LUA_TNUMBER)
 				return 0;
@@ -142,7 +147,7 @@ static int CallPtr(lua_State *L)
 static int Mem_toaddress(lua_State *L)
 {
 	int param;
-	int ret = ToParam(L, 1, param);
+	int ret = ToParam(L, 1, param, lua_gettop(L) > 1 && lua_toboolean(L, 2));
 	lua_settop(L, 0);
 	if (ret)
 		lua_pushnumber(L, param);
@@ -215,6 +220,7 @@ __declspec(naked) static void __stdcall SetLongDouble(int p, double v)
 
 static int Mem_SetNum(lua_State *L)
 {
+	const bool Compat = (-15 != (long long)(unsigned long long)-15.0) || (-15 != (int)(unsigned int)-15.0) || (-15 != (short)(unsigned short)-15.0) || (-15 != (signed char)(unsigned char)-15.0);
 	int t = ToInteger(L, 1);
 	int p = ToInteger(L, 2);
 	lua_Number v = lua_tonumber(L, 3);
@@ -222,16 +228,12 @@ static int Mem_SetNum(lua_State *L)
 	//if (IsBadWritePtr((void*)p, Mem_NumSize(t))) return 0; // checked in the calling code
 	switch(t)
 	{
-		case 8:   *(long long*)p = (v < 0 ? (long long)v : (unsigned long long)v);  break;
-		case 4:   *(int*)p = (v < 0 ? (int)v : (unsigned int)v);                    break;
-		case 2:   *(short*)p = (v < 0 ? (short)v : (unsigned short)v);              break;
-		case 1:   *(signed char*)p = (v < 0 ? (signed char)v : (unsigned char)v);   break;
-		case -8:  *(unsigned long long*)p = (unsigned long long)v;                  break;
-		case -4:  *(unsigned int*)p = (unsigned int)v;                              break;
-		case -2:  *(unsigned short*)p = (unsigned short)v;                          break;
-		case -1:  *(unsigned char*)p = (unsigned char)v;                            break;
-		case 5:   *(float*)p = v;                                                   break;
-		case 6:   *(double*)p = v;                                                  break;
+		case 8: case -8:  *(unsigned long long*)p = ((Compat && v < 0) ? (long long)v : (unsigned long long)v);  break;
+		case 4: case -4:  *(unsigned int*)p = ((Compat && v < 0) ? (int)v : (unsigned int)v);                    break;
+		case 2: case -2:  *(unsigned short*)p = ((Compat && v < 0) ? (short)v : (unsigned short)v);              break;
+		case 1: case -1:  *(unsigned char*)p = ((Compat && v < 0) ? (signed char)v : (unsigned char)v);          break;
+		case 5:   *(float*)p = (float)v;                                                                         break;
+		case 6:   *(double*)p = (double)v;                                                                       break;
 		case 7:
 			if (sizeof(long double) == 10)
 				*(long double*)p = v;
