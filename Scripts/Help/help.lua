@@ -246,6 +246,35 @@ IndexDefiner "newindexmember"
 mem_internal.UpdateCallbacks()
 
 -----------------------------------------------------
+-- const order
+-----------------------------------------------------
+
+local function EnumConst(name, c, Add)
+	local inv = const[name.."Inv"]
+	if inv then
+		for _, a in sortpairs(inv) do
+			Add(a)
+		end
+	else
+		inv = table.invert(c)
+		for n in sortpairs(inv) do
+			if type(n) ~= "table" then
+				for a, v in sortpairs(c) do
+					if v == n then
+						Add(a, v)
+					end
+				end
+			end
+		end
+		for a, v in sortpairs(c) do
+			if type(v) == "table" then
+				Add(a)
+			end
+		end
+	end
+end
+
+-----------------------------------------------------
 -- get const comments
 -----------------------------------------------------
 
@@ -257,28 +286,37 @@ ConstAndBits = ConstAndBits:gsub("function MakeBitsDefiner", "function ___")
 function MakeBitsDefiner(name)
 	internal[name] = function(define)
 		local comment = ConstComments[name] or {}
-		for n, b in pairs(const[name]) do
+		EnumConst(name, const[name], function(n, b)
 			define.bit(n, b)
 			if comment[n] then
 				define.Info(comment[n])
 			end
-		end
+		end)
 		return define
 	end
 end
 
 -- populate ConstComments
 do
-	local ConstName
+	local ConstName, Off
 	for s in ConstAndBits:gmatch("[^\r\n]+") do
-		ConstName = s:match("const%.([%w_]+) *= *{") or ConstName
+		local newName = s:match("const%.([%w_]+) *=")-- *{")
+		ConstName = newName or ConstName
+		if newName and Off then
+			ConstComments[ConstName] = {false}
+		end
 		local name, comment = s:match("\t([%w_]+) *=.-%-%- *(.*)")
 		if name then
 			ConstComments[ConstName] = ConstComments[ConstName] or {}
 			ConstComments[ConstName][name] = comment
 		end
+		comment = s:match('^[1- ]*%-%-(.?.?)')
+		if not comment then
+			Off = nil
+		elseif Off == nil then
+			Off = comment == '!-'
+		end
 	end
-	
 	
 	internal.VarNumComments = {}
 	ConstComments['evt.VarNum'] = internal.VarNumComments
@@ -338,8 +376,10 @@ end
 local function DoProcessConst(name, c, real, full)
 	full = full or name ~= "*" and "const."..name or "const"
 	local t = {{Kind = "const", Name = (name ~= "*" and full or "const.*")}}
-	local inv = const[name.."Inv"]
 	local comment = ConstComments[name] or {}
+	if comment[1] == false then
+		return
+	end
 	
 	local function Add(a)
 		if type(real[a]) ~= "table" then
@@ -349,27 +389,7 @@ local function DoProcessConst(name, c, real, full)
 		end
 	end
 	
-	if inv then
-		for _, a in sortpairs(inv) do
-			Add(a)
-		end
-	else
-		inv = table.invert(c)
-		for n in sortpairs(inv) do
-			if type(n) ~= "table" then
-				for a, v in sortpairs(c) do
-					if v == n then
-						Add(a)
-					end
-				end
-			end
-		end
-		for a, v in sortpairs(c) do
-			if type(v) == "table" then
-				Add(a)
-			end
-		end
-	end
+	EnumConst(name, c, Add)
 	HelpStructs[full] = t
 end
 

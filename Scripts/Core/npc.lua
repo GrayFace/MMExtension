@@ -745,14 +745,17 @@ do
 	local p = mem.StaticAlloc(1)
 	u1[p] = 0
 	local hooks = HookManager{p = p, CurScreen = 0x4F37D8, MenuCode = 0x6CEB24}
-	local LastDialog, LastDialogID
+	local LastIndex, LastID, LastDialog
 	local DrawnCount = 0
 	local AfterDraw
 	
 	-- before each dialog
 	hooks.autohook(mmv(0x40FCA3, 0x415735, 0x414C3C), function(d)
-		LastDialog = LastDialog and AfterDraw() or false
+		LastIndex = LastIndex and AfterDraw() or false
 		u1[p] = 1
+		if DrawnCount == 0 then
+			events.cocalls("BeforeDrawDialogs")
+		end
 		local dialogs = Game.Dialogs
 		local reg = mmver == 6 and 'ecx' or 'eax'
 		local i = d[reg]
@@ -780,21 +783,27 @@ do
 			return true
 		end
 		
-		LastDialog = i
-		LastDialogID = dialogs[i].DlgID
+		LastIndex = i
+		LastDialog = dialogs[i]
+		LastID = LastDialog.DlgID
 		DrawnCount = DrawnCount + 1
 	end)
 	
 	-- after drawing each dialog
 	AfterDraw = function()
+		local dlg, dialogs = LastDialog, Game.Dialogs
+		dlg = LastIndex < dialogs.Count and dialogs[LastIndex] == dlg and dlg.DlgID == LastID and dlg
 		local t = {
-			Index = LastDialog,
+			Index = LastIndex,
+			-- :structs.Dlg
+			Dialog = dlg,
 			-- :const.DlgID
-			DlgID = LastDialogID,
+			DlgID = LastID,
 			DrawnCount = DrawnCount,
 		}
-		-- Note that some dialogs get destroyed once they are drawn, therefore dialog reference isn't provided, because it may be inaccessible at this point.
+		-- Note that some dialogs get destroyed once they are drawn. When that happens, 'Dialog' is 'nil'.
 		events.cocalls("DrawDialog", t)
+		events.cocalls("AfterDrawDialog", t)
 	end
 	
 	-- after all dialogs are drawn
@@ -815,9 +824,13 @@ do
 	local callPtr = mem.findcall(code)
 
 	mem.hook(callPtr, function(d)
-		if LastDialog ~= nil or mmver == 8 and not d.ZF then
+		if LastIndex ~= nil or mmver == 8 and not d.ZF then
 			u1[p] = 0
-			LastDialog = LastDialog and AfterDraw() or nil
+			if LastIndex == nil then
+				events.cocalls("BeforeDrawDialogs")  -- only OO dialogs in MM8 - still must call both before and after
+			else
+				LastIndex = LastIndex and AfterDraw() or nil
+			end
 			-- Called after drawing dialogs
 			events.cocalls("AfterDrawDialogs", DrawnCount)
 		else
@@ -837,27 +850,87 @@ do
 	Conditional(hooks2, "AfterDrawNoDialogs")
 end
 
--- Create/destroy dialogs
+-- Create dialogs
 mem.hookfunction(mmv(0x419320, 0x41C3DB, 0x41BAF1), 2, 5, function(d, def, x, y, w, h, id, ...)
 	local p = def(x, y, w, h, id, ...)
 	local dlg = Game.DialogsArray:Find(p)
+	local init = internal.InitDlg
+	if init then
+		internal.InitDlg = nil
+		init()
+	end
 	-- This function is called once a new dialog finishes creation. Note that in case of house dialogs, they internally create an extra dialog with 'DlgID' = '1' for dialog topics, this leads to 'NewDialog' event getting triggered for that extra dialog before the one for the base dialog, however both dialogs are already created and added to #Game.Dialogs:# when either event fires.
 	events.cocalls("NewDialog", dlg, id)
 	return p
 end)
 
--- Create/destroy dialogs
+-- Destroy dialogs
 mem.hookfunction(mmv(0x4190D0, 0x41C213, 0x41B923), 1, 0, function(d, def, p)
 	local dlg, id = Game.DialogsArray:Find(p), nil
 	if dlg then
 		id = dlg.DlgID
+		events.cocalls("BeforeDestroyDialog", dlg, id)
 		events.cocalls("DestroyDialog", dlg, id)
 	end
 	local r = def(p)
 	if dlg then
-		events.cocalls("AfterDestroyDialog", id)
+		events.cocalls("AfterDestroyDialog", dlg, id)
 	end
 	return r
 end)
+
+-- OO dialogs
+if mmver == 8 then
+	-- Show
+	mem.hookfunction(0x4D1BC7, 1, 2, function(d, def, mgr, dlg, param)
+		local t = {
+			DialogPtr = dlg,
+			-- This lets you know what dialog is being created even if 'DialogPtr' got changed by the event
+			ClassPtr = u4[dlg],
+			Param = param,
+		}
+		events.cocalls("BeforeShowOODialog", t)
+		t.Result = def(mgr, t.DialogPtr, t.Param)
+		--!-
+		events.cocalls("InternalAfterShowOODialog", t)
+		events.cocalls("AfterShowOODialog", t)
+		return t.Result
+	end)
+	
+	-- Close
+	mem.autohook(0x4D1D62, function(d)
+		local t = {
+			DialogPtr = u4[d.esp + 4],
+		}
+		events.cocalls("CloseOODialog", t)
+		u4[d.esp + 4] = t.DialogPtr
+	end)
+end
+
+-- main menu buttons drawn over my dialogs
+if mmver < 8 then
+	mem.asmhook2(mmv(0x450A69, 0x462B82), [[
+		jnz @f
+		cmp dword [mm6*0x4BCDD8 + mm7*0x4E28D8], 22
+		setz al
+		test al, al
+	@@:
+	]], mmver == 6 and 7 or nil)
+end
+
+-- allow skipping drawing of gold and food
+if mmver == 7 then
+	local p = mem.StaticAlloc(1)
+	internal.FoodGoldVisible = p
+	mem.u1[p] = 1
+	-- drawing glod,food
+	HookManager{p = p}.asmhook2(0x41AE64, [[
+		jz @std
+		cmp byte [%p%], 0
+		jnz @std
+		mov byte [%p%], 1
+	@std:
+	]])
+end
 
 mem.IgnoreProtection(false)

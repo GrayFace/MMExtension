@@ -791,6 +791,11 @@ if mmver > 6 then
 	Conditional(hooks, "PostRender")
 end
 
+-- count frames
+if mmver == 6 then
+	internal.FrameCounter = mem.StaticAlloc(4)
+	mem.asmhook(0x41F190, 'inc dword ['..internal.FrameCounter..']')
+end
 
 -- OnAction
 local function OnAction(InGame, a1, a2, a3)
@@ -1024,6 +1029,33 @@ if mmver == 7 then
 		mov edi, 1
 	@@:
 	]])
+end
+
+-- fix drawing of dialogs under Esc message dialog or custom dialogs that use MimicScreen
+if mmver > 6 and PatchOptionsSize < 400 then
+	for _, p in ipairs(mm78({0x4414BB, 0x42266B, 0x4416E3}, {0x421886, 0x43E53B})) do
+		mem.asmhook2(p, [[
+			cmp eax, 22
+			jnz @f
+			mov eax, [mm7*0x506D8C + mm8*0x51856C]
+		@@:
+		]])
+	end
+	if mmver == 7 then
+		mem.asmhook(0x441030, [[
+			mov eax, [0x4E28D8]
+			cmp eax, 22
+			jnz @f
+			push eax
+			mov eax, [mm7*0x506D8C + mm8*0x51856C]
+			mov [0x4E28D8], eax
+			call @f
+			pop edx
+			mov [0x4E28D8], edx
+			ret
+		@@:
+		]])
+	end
 end
 
 -- Improve doors in D3D mode

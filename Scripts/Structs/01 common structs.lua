@@ -70,13 +70,16 @@ local function FindInObjList(id)
 end
 
 local function AddAction(name)
-	return function(type, info1, info2)
+	return function(act, info1, info2, ...)
 		local a = Game[name]
+		if act == a then
+			act, info1, info2 = info1, info2, ...
+		end
 		local i = a.Count
 		if i < 40 then
 			a.Count = i + 1
 			a = a[i]
-			a.Action = type
+			a.Action = act
 			a.Param = info1 or 0
 			a.Param2 = info2 or 0
 		end
@@ -828,7 +831,7 @@ function structs.f.TravelInfo(define)
 	define[0x0].CustomType('Map', 1, MapType)
 end
 
-local ToBtn = |p| structs.Button:new(tonumber(p) or p['?ptr'])
+local ToBtn = |p| structs.Button:new(p['?ptr'] or tonumber(p))
 
 local EnumDlg = |field, dir| function(it, last)
 	if last then
@@ -849,8 +852,14 @@ function structs.f.Dlg(define)
 	[0x4].i4  'Top'
 	[0x8].i4  'Width'
 	[0xC].i4  'Height'
-	[0x10].i4  'Right_'
-	[0x14].i4  'Bottom_'
+	[0x10].alt.i4  'RightPixel'
+	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right_' before MMExt 2.3, old name still supported for backward compatibility)"
+	.i4  'Right_'
+	 .Info(false)
+	[0x14].i4  'BottomPixel'
+	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom_' before MMExt 2.3, old name still supported for backward compatibility)"
+	.i4  'Bottom_'
+	 .Info(false)
 	[0x18].i4  'DlgID'
 	 .Info{Type = "const.DlgID"}
 	[0x1C][mmver == 6 and 'i2' or 'i4']  'Param'
@@ -863,7 +872,8 @@ function structs.f.Dlg(define)
 	[0x34].i4  'KeyboardLeftRightStep'
 	[0x38].i4  'KeyboardItemsStart'
 	[0x3C].i4  'Index'
-	-- 40
+	 .Info "Current index in #Game.Dialogs:# array."
+	[0x40].i4  'TextInputState'
 	[0x44].i4  'UseKeyboadNavigation'
 	[0x48].alt.EditPChar  'StrParam'
 	.u4  'StrParamPtr'
@@ -879,11 +889,11 @@ function structs.f.Dlg(define)
 	.method{p = mmv(0x419D50, 0x41CCE4, 0x41C205), name = "GetItemPtrByIndex", must = 1; 0}
 	 .Info{Sig = "Index"}
 	
-	function define.m:AddButton(X, Y, Width, Height, Shape, HintAction, ActionType, ActionInfo, Key, Hint, EnglishD, ...)
+	function define.m:AddButton(X, Y, Width, Height, Shape, HintAction, ActionType, ActionParam, Key, Hint, EnglishD, ...)
 		local spr
 		if type(X) == "table" then
 			local t = X
-			X, Y, Width, Height, Shape, HintAction, ActionType, ActionInfo, Key, Hint, EnglishD, spr = t.Left or t[1], t.Top or t[2], t.Width or t[3], t.Height or t[4], t.Shape or t[5], t.HintAction or t[6], t.ActionType or t[7], t.ActionInfo or t[8], t.Key or t[9], t.Hint or t[10], t.EnglishD ~= false, table.copy(t.Sprites)
+			X, Y, Width, Height, Shape, HintAction, ActionType, ActionParam, Key, Hint, EnglishD, spr = t.Left or t[1], t.Top or t[2], t.Width or t[3], t.Height or t[4], t.Shape or t[5], t.HintAction or t[6], t.ActionType or t[7], t.ActionParam or t[8], t.Key or t[9], t.Hint or t[10], t.EnglishD ~= false, table.copy(t.Sprites)
 		elseif EnglishD == not not EnglishD then
 			spr = {...}
 		else
@@ -902,9 +912,9 @@ function structs.f.Dlg(define)
 				Height = Height or i4[p + 0x1A]
 			end
 		end
-		return call(mmv(0x41A170, 0x41D0D8, 0x41C513), 0, self, X, Y, Width, Height, tonumber(Shape) or 1, HintAction, ActionType, ActionInfo, Key, Hint ~= nil and tostring(Hint) or "", unpack(spr)), ToBtn
+		return call(mmv(0x41A170, 0x41D0D8, 0x41C513), 0, self, X, Y, Width, Height, tonumber(Shape) or 1, HintAction, ActionType, ActionParam, Key, Hint ~= nil and tostring(Hint) or "", unpack(spr)), ToBtn
 	end
-	define.Info{Sig = "Left, Top, Width, Height, Shape = 1, HintAction, ActionType, ActionInfo, Key, Hint = \"\", [EnglishD] = true, Sprites..."; [=[
+	define.Info{Sig = "Left, Top, Width, Height, Shape = 1, HintAction, ActionType, ActionParam, Key, Hint = \"\", [EnglishD] = true, Sprites..."; [=[
 Can also accept a table where some parameters are supplied by their name. In this case 'EnglishD' and 'Sprites' must be supplied by name.
 Returns button address and the 'wrap' function. Pass the returned address to the 'wrap' function to create a #dialog item:structs.Button# structure to access it.
 Example:
@@ -938,15 +948,55 @@ for i, it, wrap in Game.Dialogs[0]:Enum() do
 	t[i] = wrap(it)
 end
 ]]
-If you're wandering, the 'wrap' function itself simply does the following: !Lua[[structs.Button:new(tonumber(it) or it['?ptr'])]]]=]}
+If you're wandering, the 'wrap' function itself simply does the following: !Lua[[structs.Button:new(it['?ptr'] or tonumber(it))]]]=]}
 	function define.m:GetByIndex(idx)
-		for i, it in self:Enum() do
+		for i, a in self:Enum() do
 			if i == idx then
-				return it
+				return a
 			end
 		end
 	end
 	define.Info{Sig = "Index"; "Returns #dialog item:structs.Button# at specified index in the items list."}
+
+	local function CheckPoint(self, x, y, absolute)
+		if absolute then
+			x, y = x - self.Left, y - self.Top
+		end
+		if x >= 0 and x < self.Width and y >= 0 and y < self.Height then
+			return x, y
+		end
+	end
+	
+	function define.m:GetRelativePoint(x, y)
+		return CheckPoint(self, x, y, true)
+	end
+	define.Info{Sig = "X, Y"; "Returns relative coordinates or nothing if the coordinates don't fall within the dialog."}
+
+	function define.m:GetFromPoint(x, y, absolute)
+		x, y = CheckPoint(self, x, y, absolute)
+		if not x then
+			return
+		end
+		for i, a in self:Enum() do
+			local shp = a.Shape
+			if shp == 2 then
+				local x = x - a.Left
+				local y = y - a.Top
+				local w = a.Width
+				local h = mmver == 6 and w or a.Height
+				if x < w and -x < w and y < h and -y < h then
+					local ww = w*w
+					local hh = h*h
+					if x*x*hh + y*y*ww < ww*hh then
+						return a, i
+					end
+				end
+			elseif (shp == 1 or shp == 3) and x >= a.Left and x <= a.RightPixel and y >= a.Top and y <= a.BottomPixel then
+				return a, i
+			end
+		end
+	end
+	define.Info{Sig = "X, Y, Absolute"; "Returns #dialog item:structs.Button# at specified relative or absolute coordinates."}
 end
 
 function structs.f.Button(define)
@@ -956,12 +1006,21 @@ function structs.f.Button(define)
 	[0x4].i4  'Top'
 	[0x8].i4  'Width'
 	[0xC].i4  'Height'
-	[0x10].i4  'Right'
-	[0x14].i4  'Bottom'
+	[0x10].alt.i4  'RightPixel'
+	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right' before MMExt 2.3, old name still supported for backward compatibility)"
+	.i4  'Right'
+	 .Info(false)
+	[0x14].i4  'BottomPixel'
+	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom' before MMExt 2.3, old name still supported for backward compatibility)"
+	.i4  'Bottom'
+	 .Info(false)
 	[0x18].i4  'Shape'
 	 .Info "1 - Rectangle.\n2 - Ellipse. 'Left' and 'Top' are center coordinates, 'Width' and 'Height' are radii. In MM6 it's always a circle and 'Height' is '0'.\n3 - Skill rectangle."
 	[0x1C].i4  'HintAction'
-	[0x20].i4  'ActionType'
+	[0x20].alt.i4  'ActionType'
+	 .Info(false)
+	.i4  'Action'
+	 .Info{"Was called 'ActionType' before MMExt 2.3, old name still supported for backward compatibility"}
 	[0x24].i4  'ActionParam'
 	local o = 0
 	if mmver > 6 then
@@ -979,7 +1038,10 @@ function structs.f.Button(define)
 	[0x34+o].u4  'ParentPtr'
 	[0x38+o].array{5, lenA = i4, lenP = 0x4C+o}.i4  'Sprites'
 	 .Info{"A list of pointers to associated icons"}
-	[0x50+o].u1  'ShortCut'
+	[0x50+o].alt.u1  'ShortCut'
+	 .Info(false)
+	.u1  'Key'
+	 .Info{"Was called 'ShortCut' before MMExt 2.3, old name still supported for backward compatibility"}
 	[0x51+o].string(103)  'Hint'
 	.size = 0xB8+o
 	
@@ -1015,7 +1077,7 @@ function structs.f.Button(define)
 		u4[GetLink(p, false)] = pl
 	end
 	function define.m:MoveBefore(pn)
-		return MoveBetween(self, tonumber(pn) or pn['?ptr'] or 0)
+		return MoveBetween(self, pn['?ptr'] or tonumber(pn) or 0)
 	end
 	define.Info{Sig = "Target", "If 'Target' is '0' or 'nil', moves the item to the end of the items list\nNote that first item in the list is topmost and the last one is at the bottom."}
 	function define.m:MoveAfter(pl)
@@ -1026,6 +1088,53 @@ end
 
 if HelpStructs then
 	local _ = structs.Button
+end
+
+function structs.f.OODialogManager(define)
+	define
+	.u4  'VMT'
+	.u4  'CurrentDialogPtr'
+	.array{20, lenA = i4, lenP = 0x58}.u4  'DialogPtrs'
+	.i4  'Count'
+	.skip(16)  -- dialogs stashed for destruction
+	.b1  'Disabled'
+	function define.m:ShowDialog(p, param)
+		if not p then
+			p = mem.new(0x124)
+			call(0x4C4992, 1, p, -1)  -- create base class of all dialogs
+		end
+		return p, call(0x4D1BC7, 1, self, p, param)
+	end
+	define.method{p = 0x4D1C62, name = 'CloseCurrent'; 0, true}
+	function define.m:FindDialog(p)
+		p = p['?ptr'] or tonumber(p)
+		if self.CurrentDialogPtr == p then
+			return -1
+		end
+		for i, v in self.DialogPtrs do
+			if v == p then
+				return i
+			end
+		end
+	end
+	function define.m:CloseSpecific(p, param)
+		p = p['?ptr'] or tonumber(p)
+		local i = self:FindDialog(p)
+		if not i then
+			return
+		elseif i < 0 then
+			return self:CloseCurrent(param)
+		end
+		-- not the active dialog - delete it manually
+		call(u4[u4[p] + 0xE8], 1, p)  -- cleanup
+		call(0x4D1D58, 1, self, p)  -- stash for destruction
+		local n = self.Count - 1
+		local pa = self.DialogPtrs['?ptr'] + i*4
+		mem.copy(pa, pa + 4, (n - i)*4)
+		self.DialogPtrs[n] = 0
+		self.Count = n
+		return
+	end
 end
 
 function structs.f.MonsterAttackInfo(define)
@@ -1439,9 +1548,9 @@ function structs.f.MapStatsItem(define)
 	define
 	.skip(1)
 	.u1  'Lock'
-	 .Info "x5Lock"
+	 .Info "\"x5 Lock\" from MapStats.txt. In MM6 it's multiplied by '5' and compared against player's #GetDisarmTrapTotalSkill:structs.Player.GetDisarmTrapTotalSkill#!Lua[[ + math.random(0, 9)]]. In MM7+ it's multiplied by '2' and compared against #GetDisarmTrapTotalSkill:structs.Player.GetDisarmTrapTotalSkill#."
 	.u1  'Trap'
-	 .Info "D20sTrap"
+	 .Info "\"D20's Trap\" from MapStats.txt. The damage is 'Trap' rolls of '1'-'20' damage."
 	.u1  'Tres'
 	.u1  'EncounterChance'
 	.u1  'EncounterChanceM1'
@@ -2742,6 +2851,7 @@ end
 
 function structs.f.LodPcx(define)
 	define
+	 .Info{Ignore = false}
 	.skip(16)
 	.i4  'BufSize'
 	.i2  'Width'
@@ -2753,6 +2863,18 @@ function structs.f.LodPcx(define)
 	.u4  'Bits'
 	.i4  'Image'
 	.size = 0x28
+	
+	function define.m:Destroy(free)
+		call(mmv(0x4091F0, 0x40E52B, 0x40F7F6), 1, self)
+		if free ~= false then
+			mem.freeMM(self)
+		end
+	end
+	define.Info{Sig = "FreeBuffer = true"}
+end
+
+if HelpStructs then
+	local _ = structs.LodPcx
 end
 
 function structs.f.LodSprite(define)
@@ -2837,11 +2959,12 @@ function structs.f.Fnt(define)
 	define.Info{Sig = "Text, Dialog = nil, X = 0, IgnoreStrRightSymbol = false [MM7+]";
 		"In place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nCalls 'WordWrap' internally and stores the result in #Game.WordWrappedText:#."}
 
-	function define.m:WordWrap(str, dlg, x, IgnoreStrRightSymbol)
-		return mem.string(call(mmv(0x442F50, 0x44C794, 0x449ECA), 2, tostring(str), self, ToDlg(dlg), x, IgnoreStrRightSymbol))
+	function define.m:WordWrap(str, dlg, x, IgnoreStrRightSymbol, ReturnPointer)
+		local p = call(mmv(0x442F50, 0x44C794, 0x449ECA), 2, tostring(str), self, ToDlg(dlg), x, IgnoreStrRightSymbol)
+		return ReturnPointer and p or mem.string(p)
 	end
-	define.Info{Sig = "Text, Dialog = nil, X = 0, IgnoreStrRightSymbol = false [MM7+]";
-		"Returns text with extra line breaks inserted.\nIn place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]]."}
+	define.Info{Sig = "Text, Dialog = nil, X = 0, IgnoreStrRightSymbol = false [MM7+], ReturnPointer = false";
+		"Returns text with extra line breaks inserted.\nIn place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nIf 'ReturnPointer' = 'true', returns the address of #Game.WordWrappedTextBytes:# instead of converting it to Lua string."}
 
 	function define.m:Draw(str, dlg, x, y, cl, clShadow, bottom, opaque)
 		call(mmv(0x4435F0, 0x44CE34, 0x44A50F), 2, ToDlg(dlg), self, x, y, cl, tostring(str), opaque, bottom, clShadow)

@@ -370,6 +370,50 @@ function StrColor(r, g, b, s)
 end
 
 -----------------------------------------------------
+-- Pcx Cache
+-----------------------------------------------------
+
+do
+	local mt = {
+		__index = function(t, s)
+			local a = Game.LoadPcx(s, nil, t[1])
+			t[s] = a
+			return a
+		end,
+		__call = function(t, s)
+			for k, a in pairs(t) do
+				if k ~= 1 then
+					if s == "Clear" then
+						a:Destroy()
+						t[k] = nil
+					elseif s == "Reload" then
+						Game.LoadPcx(s, a, t[1])
+					end
+				end
+			end
+		end,
+	}
+
+	-- Example - loading:
+	-- !Lua[[local t = PcxCache(true)
+	-- local win = t["winBG.PCX"]
+	-- local lose = t["LOSEBG.PCX"]
+	-- ]]
+	-- Drawing:
+	-- !Lua[[Screen.DrawPcx(0, 0, win)
+	-- ]]
+	-- Clearing cache deletes all loaded images:
+	-- !Lua[[t("Clear")
+	-- ]]
+	-- You can also reload all images, say, if you conditionally load a LOD with an inteface skin (all obtained addresses stay the same):
+	-- !Lua[[t("Reload")
+	-- ]]
+	function PcxCache(EnglishD)
+		return setmetatable({not not EnglishD}, mt)
+	end
+end
+
+-----------------------------------------------------
 -- Summon*
 -----------------------------------------------------
 

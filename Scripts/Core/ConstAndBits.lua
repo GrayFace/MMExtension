@@ -43,7 +43,7 @@ const.Year = const.Month*12
 
 local function MakeBitsDefiner(name)
 	internal[name] = function(define)
-		for n, b in sortpairs(const[name]) do
+		for n, b in pairs(const[name]) do
 			define.bit(n, b)
 		end
 		return define
@@ -908,7 +908,7 @@ const.DlgID = {
 	Inventory = 4,  -- character screen, not necessarily Inventory
 	Controls = 6,
 	-- ControlsUnk = 8,
-	Info = 9,  -- Quests, Autonotes, Map, Calendar, History, Town Portal, Lloyd Beacon (see #const.InfoDialog:# for values of 'Param' that define the dialog type)
+	Info = 9,  -- Quests, Autonotes, Map, Calendar, History, Town Portal, Lloyd Beacon. See #const.InfoDialog:# for values of 'Param' that define the dialog type.
 	NPC = 10,  -- 'Param' is NPC index
 	QuickReference = 12,
 	Rest = 16,
@@ -939,6 +939,9 @@ const.DlgID = {
 	CheatCreateMonster = 103,
 	ConfigureKeyboard = 105,
 	VideoOptions = 106,
+	CustomDialog = 1000,  -- used by CustomDialog function
+	BlockDialogs = 1001,  -- in MM8 if #custom dialogs:CustomDialog# exist, these screens are created for each OO dialog in order to prevent processing of said custom dialogs
+	BlockDialogsNoDraw = 1002,  -- used in situation discribed above when it's also important to block drawing the dialogs
 }
 
 const.InfoDialog = {
@@ -1387,9 +1390,15 @@ elseif mmver == 8 then
 
 end
 
-const.GameActions = {
+const.Actions = {
 	Exit = 113,
+	CustomDialogButton = 1000,
+	CustomDialogHint = 1001,
+	CustomDialogMouseUp = 1002,
 }
+
+--!-
+const.GameActions = const.Actions
 
 const.ExitMapAction = {
 	None = 0,
