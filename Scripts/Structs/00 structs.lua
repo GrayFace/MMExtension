@@ -344,13 +344,13 @@ function structs.f.GameStructure(define)
 	.pstruct(structs.Fnt)  'FontSpell'
 	[mmv(0x55CDE0, 0x5C5C30, 0x5DF0E0)].alt.string(2000)  'TextBuffer'
 	.array(2000).u1  'TextBufferBytes'
-	 .Info "Lets you get address of 'TextBuffer' or access it byte by byte"
+	 .Info "Lets you get address of 'TextBuffer' or access it byte by byte (note: traversing it like that is very slow)"
 	[mmv(0x55D5B0, 0x5C6400, 0x5E1020)].alt.string(2000)  'TextBuffer2'
 	.array(2000).u1  'TextBuffer2Bytes'
-	 .Info "Lets you get address of 'TextBuffer2' or access it byte by byte"
+	 .Info "Lets you get address of 'TextBuffer2' or access it byte by byte (note: traversing it like that is very slow)"
 	[mmv(0x55BDE0, 0x5C4430, 0x5DC8E0)].alt.string(2048)  'WordWrappedText'
 	.array(2048).u1  'WordWrappedTextBytes'
-	 .Info "Lets you get address of 'WordWrappedText' or access it byte by byte"
+	 .Info "Lets you get address of 'WordWrappedText' or access it byte by byte (note: traversing it like that is very slow)"
 	[mmv(0x5F6E0C, 0x69AC8C, 0x6C8BC4)].array(mmv(12, 30, 30)).i4  'KeyCodes'
 	[mmv(0x5F6E3C, 0x69AD04, 0x6C8C3C)].array(mmv(12, 30, 30)).i4  'KeyTypes'
 	[mmv(0x908D08, 0xACCE64, 0xB20EBC)].i8  'Time'
@@ -1369,8 +1369,11 @@ function structs.f.Player(define)
 		define.method{p = mm78(0x490139, 0x48F5CE), name = "GetSex"; mm78(nil, false)}
 		 .Info{Sig = "BasedOnVoice[MM8] = false"; "Determines sex based on Face or Voice"}
 	end
-	for name, i in pairs(const.Condition) do
-		define[mmv(0x1380, 0x0, 0x0) + 8*i].i8 (name)
+	do
+		local cname = table.invert(const.Condition)
+		for i = 0, const.Condition.Good do
+			define[mmv(0x1380, 0x0, 0x0) + 8*i].i8 (cname[i])
+		end
 	end
 	define
 	[mmv(0x1380, 0x0, 0x0)].array(mmv(17, 20, 20)).i8  'Conditions'

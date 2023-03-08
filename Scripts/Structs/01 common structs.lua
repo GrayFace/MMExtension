@@ -2949,37 +2949,41 @@ function structs.f.Fnt(define)
 	.array(256).array(3).i4  'ABC'
 	.array(256).i4  'GlyphOffsets'
 	.array(1/0).u1  'GlyphData'
-	.method{p = mmv(0x442DD0, 0x44C54A, 0x449C7B), name = "GetLineWidth", cc = 2, must = 1; ""}
 	
 	local ToDlg = structs.aux.TableToDlg
 
+	function define.m:GetLineWidth(str)
+		return call(mmv(0x442DD0, 0x44C54A, 0x449C7B), 2, self, str['?ptr'] or tostring(str))
+	end
+	define.Info{Sig = "Text"}
+
 	function define.m:GetTextHeight(str, dlg, x, IgnoreStrRightSymbol)
-		return call(mmv(0x442E90, 0x44C5C9, 0x449CFC), 2, self, tostring(str), ToDlg(dlg), x, IgnoreStrRightSymbol)
+		return call(mmv(0x442E90, 0x44C5C9, 0x449CFC), 2, self, str['?ptr'] or tostring(str), ToDlg(dlg), x, IgnoreStrRightSymbol)
 	end
 	define.Info{Sig = "Text, Dialog = nil, X = 0, IgnoreStrRightSymbol = false [MM7+]";
 		"In place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nCalls 'WordWrap' internally and stores the result in #Game.WordWrappedText:#."}
 
 	function define.m:WordWrap(str, dlg, x, IgnoreStrRightSymbol, ReturnPointer)
-		local p = call(mmv(0x442F50, 0x44C794, 0x449ECA), 2, tostring(str), self, ToDlg(dlg), x, IgnoreStrRightSymbol)
-		return ReturnPointer and p or mem.string(p)
+		local p = call(mmv(0x442F50, 0x44C794, 0x449ECA), 2, str['?ptr'] or tostring(str), self, ToDlg(dlg), x, IgnoreStrRightSymbol)
+		return ReturnPointer and Game.WordWrappedTextBytes or mem.string(p)
 	end
 	define.Info{Sig = "Text, Dialog = nil, X = 0, IgnoreStrRightSymbol = false [MM7+], ReturnPointer = false";
-		"Returns text with extra line breaks inserted.\nIn place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nIf 'ReturnPointer' = 'true', returns the address of #Game.WordWrappedTextBytes:# instead of converting it to Lua string."}
+		"Returns text with extra line breaks inserted.\nIn place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nIf 'ReturnPointer' = 'true', returns #Game.WordWrappedTextBytes:# table instead of Lua string. You can then pass this table to any of the font methods."}
 
 	function define.m:Draw(str, dlg, x, y, cl, clShadow, bottom, opaque)
-		call(mmv(0x4435F0, 0x44CE34, 0x44A50F), 2, ToDlg(dlg), self, x, y, cl, tostring(str), opaque, bottom, clShadow)
+		call(mmv(0x4435F0, 0x44CE34, 0x44A50F), 2, ToDlg(dlg), self, x, y, cl, str['?ptr'] or tostring(str), opaque, bottom, clShadow)
 	end
 	define.Info{Sig = "Text, Dialog = nil, X = 0, Y = 0, Color = 0, ShadowColor [MM7+], Bottom [MM7+], Opaque [MM7+]";
 		"In place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nIf 'X' is '0', in MM6 and MM7 it gets set to '12' by the function.\nPassing '0' as 'Color' would draw text using default color.\nUnless 'Bottom' is specified, it calls 'WordWrap' internally and stores the result in #Game.WordWrappedText:#.\n'Bottom' is specified in absolute coordinates, not relative to dialog. When specified, the text doesn't get word-wrapped, but doesn't get drawn below its value. If not specified, text gets ward-wrapped when it exceeds dialog width horizontally, but is not limited vertically."}
 
 	function define.m:DrawLimited(str, dlg, w, x, y, cl, right)
-		call(mmv(0x443210, 0x44CB7B, 0x44A253), 2, ToDlg(dlg), self, x, y, cl, tostring(str), w, right)
+		call(mmv(0x443210, 0x44CB7B, 0x44A253), 2, ToDlg(dlg), self, x, y, cl, str['?ptr'] or tostring(str), w, right)
 	end
 	define.Info{Sig = "Text, Dialog = nil, Width, X = 0, Y = 0, Color = 0, TruncateStart = false";
 		"In place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\n'X' should not be '0' in MM6 and MM7, because it then gets set to '12' by the function if text fits and is kept at '0 if it doesn't.\nPassing '0' as 'Color' would draw text using default color.\nIf 'TruncateStart' is 'true', end of the string is kept and beginning is truncated to fit the required size.\nCalls 'WordWrap' internally and stores the result in #Game.WordWrappedText:#."}
 
 	function define.m:DrawCentered(str, dlg, x, y, cl, ReduceLineHeight)
-		call(mmv(0x443B40, 0x44D432, 0x44AAE3), 2, ToDlg(dlg), self, x, y, cl, tostring(str), ReduceLineHeight or 3)
+		call(mmv(0x443B40, 0x44D432, 0x44AAE3), 2, ToDlg(dlg), self, x, y, cl, str['?ptr'] or tostring(str), ReduceLineHeight or 3)
 	end
 	define.Info{Sig = "Text, Dialog = nil, X = 0, Y = 0, Color = 0, ReduceLineHeight = 3";
 		"In place of 'Dialog' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]].\nPassing '0' as 'Color' would draw text using default color.\nCalls 'WordWrap' internally and stores the result in #Game.WordWrappedText:#."}

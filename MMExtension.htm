@@ -5657,7 +5657,7 @@ Id
 <td class="def-left">
 <a id="structs.GameStructure.TextBufferBytes" class="abs"></a>TextBufferBytes[]
 </td><td class="def-right">
- Lets you get address of <b class="def-param">TextBuffer</b> or access it byte by byte
+ Lets you get address of <b class="def-param">TextBuffer</b> or access it byte by byte (note: traversing it like that is very slow)
 </td>
 </tr><tr>
 <td class="def-left">
@@ -5669,7 +5669,7 @@ Id
 <td class="def-left">
 <a id="structs.GameStructure.TextBuffer2Bytes" class="abs"></a>TextBuffer2Bytes[]
 </td><td class="def-right">
- Lets you get address of <b class="def-param">TextBuffer2</b> or access it byte by byte
+ Lets you get address of <b class="def-param">TextBuffer2</b> or access it byte by byte (note: traversing it like that is very slow)
 </td>
 </tr><tr>
 <td class="def-left">
@@ -5681,7 +5681,7 @@ Id
 <td class="def-left">
 <a id="structs.GameStructure.WordWrappedTextBytes" class="abs"></a>WordWrappedTextBytes[]
 </td><td class="def-right">
- Lets you get address of <b class="def-param">WordWrappedText</b> or access it byte by byte
+ Lets you get address of <b class="def-param">WordWrappedText</b> or access it byte by byte (note: traversing it like that is very slow)
 </td>
 </tr><tr>
 <td class="def-left">
@@ -10084,7 +10084,7 @@ Id
 </tr>
 <tr>
 <td class="def-left">
-<a id="structs.Fnt.GetLineWidth" class="abs"></a>GetLineWidth<b class="def-largs">(</b>arg1 = ""<b class="def-rargs">)</b>
+<a id="structs.Fnt.GetLineWidth" class="abs"></a>GetLineWidth<b class="def-largs">(</b>Text<b class="def-rargs">)</b>
 </td><td class="def-right">
  
 </td>
@@ -10098,7 +10098,7 @@ Id
 <td class="def-left">
 <a id="structs.Fnt.WordWrap" class="abs"></a>WordWrap<b class="def-largs">(</b>Text, Dialog = nil, X = 0, IgnoreStrRightSymbol = false <span class="def-ver">[MM7+]</span>, ReturnPointer = false<b class="def-rargs">)</b>
 </td><td class="def-right">
- Returns text with extra line breaks inserted.<br>In place of <b class="def-param">Dialog</b> you can pass a table in form of <span class="def-code"><span class="lua5-ctrl">{</span>Left, Top, Width, Height<span class="lua5-ctrl">}</span></span>.<br>If <b class="def-param">ReturnPointer</b> = <b class="def-param">true</b>, returns the address of <a href="#structs.GameStructure.WordWrappedTextBytes">Game.WordWrappedTextBytes</a> instead of converting it to Lua string.
+ Returns text with extra line breaks inserted.<br>In place of <b class="def-param">Dialog</b> you can pass a table in form of <span class="def-code"><span class="lua5-ctrl">{</span>Left, Top, Width, Height<span class="lua5-ctrl">}</span></span>.<br>If <b class="def-param">ReturnPointer</b> = <b class="def-param">true</b>, returns <a href="#structs.GameStructure.WordWrappedTextBytes">Game.WordWrappedTextBytes</a> table instead of Lua string. You can then pass this table to any of the font methods.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -17192,73 +17192,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.Player.Disease1" class="abs"></a>Disease1
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Disease2" class="abs"></a>Disease2
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Disease3" class="abs"></a>Disease3
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Zombie" class="abs"></a>Zombie
-</td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Stoned" class="abs"></a>Stoned
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Paralyzed" class="abs"></a>Paralyzed
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Good" class="abs"></a>Good
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Eradicated" class="abs"></a>Eradicated
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
 <a id="structs.Player.Cursed" class="abs"></a>Cursed
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Unconscious" class="abs"></a>Unconscious
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Dead" class="abs"></a>Dead
-</td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Player.Afraid" class="abs"></a>Afraid
 </td><td class="def-right">
  
 </td>
@@ -17271,6 +17205,12 @@ Id
 </tr><tr>
 <td class="def-left">
 <a id="structs.Player.Asleep" class="abs"></a>Asleep
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Afraid" class="abs"></a>Afraid
 </td><td class="def-right">
  
 </td>
@@ -17294,13 +17234,73 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.Player.Disease1" class="abs"></a>Disease1
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.Player.Poison2" class="abs"></a>Poison2
 </td><td class="def-right">
  
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.Player.Disease2" class="abs"></a>Disease2
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.Player.Poison3" class="abs"></a>Poison3
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Disease3" class="abs"></a>Disease3
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Paralyzed" class="abs"></a>Paralyzed
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Unconscious" class="abs"></a>Unconscious
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Dead" class="abs"></a>Dead
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Stoned" class="abs"></a>Stoned
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Eradicated" class="abs"></a>Eradicated
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Zombie" class="abs"></a>Zombie
+</td><td class="def-right">
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.Good" class="abs"></a>Good
 </td><td class="def-right">
  
 </td>
