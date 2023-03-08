@@ -393,6 +393,9 @@ local function GetTextHeight(self, t, w)
 	return GetFont(self, t):GetTextHeight(t.Text, dlg, x) + 1
 end
 
+item.GetTextWidth = |t| GetTextWidth(t.Parent, t)
+item.GetTextHeight = |t| GetTextHeight(t.Parent, t)
+
 local function InitItem(self, t)
 	t.Parent = self
 	t.Visible = t.Visible ~= false
@@ -683,14 +686,16 @@ local function TileDraw(pic, style, x, y, w, h)
 	end
 end
 
-function class:DrawItem(t)
-	if not t.Visible then
-		return
+local function UseClipRect(m, dlg)
+	if not m then
+		return Screen:SetClipRect()
 	end
-	callback(t.OnBeforeDraw, t)
-	if t.NoDraw then
-		return
-	end
+	local L, R = dlg.Left + (tonumber(m.Left) or 0), dlg.RightPixel + 1 - (tonumber(m.Right) or 0)
+	local T, B = dlg.Top + (tonumber(m.Top) or 0), dlg.BottomPixel + 1 - (tonumber(m.Bottom) or 0)
+	Screen:SetClipRect(max(L, 0), max(T, 0), min(R, 640), min(B, 480))
+end
+
+function class:DoDrawItem(t)
 	if t.BoxBorder and t.Width and t.Height then
 		local x, y, w, h = UseMargins(self, t, t.BoxMargin or dummy, t.Width, t.Height)
 		Screen:DrawMessageBoxBorder(x - self.Dlg.Left, y - self.Dlg.Top, w, h)
@@ -738,7 +743,25 @@ function class:DrawItem(t)
 			fnt:DrawCentered(t.Text, {x, y, aw, ah}, 0, 0, cl, clSh)
 		end
 	end
+end
+
+function class:DrawItem(t)
+	if not t.Visible then
+		return
+	end
+	callback(t.OnBeforeDraw, t)
+	if t.NoDraw then
+		return
+	end
+	local clip = t.ClipMargin
+	if clip then
+		UseClipRect(clip, self.Dlg)
+	end
+	self:DoDrawItem(t)
 	callback(t.OnDraw, t)
+	if clip then
+		UseClipRect(self.ClipMargin, self.Dlg)
+	end
 end
 
 function class:Draw()
@@ -749,10 +772,15 @@ function class:Draw()
 	if is7 and self.NoFoodGold ~= nil then
 		NoFoodGold = self.NoFoodGold
 	end
+	local clip = self.ClipMargin
+	if clip then
+		UseClipRect(clip, self.Dlg)
+	end
 	for _, t in ipairs(self.Items) do
 		self:DrawItem(t)
 	end
 	callback(self.OnDraw, self)
+	UseClipRect()
 end
 
 local function UpdateHover()
