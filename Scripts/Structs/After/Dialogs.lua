@@ -6,7 +6,7 @@ local is7 = mmver == 7 or nil
 local is8 = mmver == 8 or nil
 local is78 = mmver > 6 or nil
 
--- TODO: text draw options
+-- TODO: focus
 
 local class, item, dummy, handlers = {}, {}, {}, {}
 local ClassMeta, ItemMeta = {__index = class}, {__index = item}
@@ -16,10 +16,11 @@ local ItemByPointer = setmetatable({}, {__mode = 'v'})
 local GotDown, GotDbl, GotMove
 local HoverItem, HoverFrame
 local DownItem
-local FocusedDialog
+-- local FocusedDialog
 local ClickedItems, ClickTime = {}, nil
 local IDCusDlg, IDBlockInteraction, IDBlock, BlockCount, CreatingOO = const.DlgID.CustomDialog, const.DlgID.BlockDialogs, const.DlgID.BlockDialogsNoDraw, 0, nil
 local NoFoodGold, NeedRestore
+local tmMultiLine = {box = true, center = true}
 
 local function callback(f, ...)
 	if f then
@@ -83,10 +84,6 @@ local function Apply2(self, t, dlg, new)
 	if is8 and t.AutoEsc then
 		t.AutoEsc = dlg:AddButton(0, 0, 0, 0, 0, 0, 113, 0, 27)
 	end
-	t.KeyboardNavigation = (not self.KeyboardNavigation or nil) and (t.KeyboardNavigation or t.KeyboardNavigation == nil and dlg.Width == 640 and dlg.Height == 480)
-	if t.KeyboardNavigation then
-		dlg:SetKeyboardNavigation(0, 0)
-	end
 end
 
 local function InitDlg(dlg, new)
@@ -144,7 +141,7 @@ local function RestoreDialog()
 	if Game.PauseCount2 > 0 and not Game.Paused2 then
 		Game.DoPause2()
 	end
-	FocusedDialog = t
+	-- FocusedDialog = t
 	callback(t.OnActivate, t)
 end
 
@@ -302,19 +299,6 @@ function class:ReloadIcons(AlsoPcx)
 	end
 end
 
-local function UpdatePos(t, L, R, W, sz)
-	local dx = t.CenterPosition and max(0, (t[W] or 0) - 1):div(2)
-	if not t[R] then
-		t[L] = t[L] and (t[L] - (dx or 0)) or 0
-	elseif not t[L] then
-		t[L] = sz - t[R] - (dx or t[W] or 0)
-	elseif t[W] then
-		t[L] = (t[L] + sz - t[R])/2 - (dx or t[W]/2)
-	else
-		t[W] = sz - t[R] - t[L]
-	end
-end
-
 local function ButtonArgs(t, pt)
 	local x, y, w, h = t.Left, t.Top, t.Width or 0, t.Height or 0
 	if t.Shape == 2 then
@@ -344,6 +328,71 @@ function item.UpdateButton(t)
 	end
 end
 
+local function UpdatePos(t, L, R, W, sz)
+	local dx = t.CenterPosition and max(0, (t[W] or 0) - 1):div(2)
+	if not t[R] then
+		t[L] = t[L] and (t[L] - (dx or 0)) or 0
+	elseif not t[L] then
+		t[L] = sz - t[R] - (dx or t[W] or 0)
+	elseif t[W] then
+		t[L] = (t[L] + sz - t[R])/2 - (dx or t[W]/2)
+	else
+		t[W] = sz - t[R] - t[L]
+	end
+end
+
+local function UseMargin(self, t, m, w, vert)
+	local L, R, W = 'Left', 'Right', 'Width'
+	if vert then
+		L, R, W = 'Top', 'Bottom', 'Height'
+	end
+	local ml = tonumber(m[L])
+	local mr = tonumber(m[R])
+	local bl = m[L] == true
+	local br = m[R] == true
+	local x = (t[L] or 0)
+	local r = x + (t[W] or self[W] - x) - (mr or 0)
+	x = x + (ml or 0)
+	if not w then
+		return x, r - x
+	elseif ml and mr or bl and br then
+		return (x + r - w):div(2), w
+	elseif mr or bl then
+		return r - w, w
+	else
+		return x, w
+	end
+end
+
+local function UseMargins(self, t, m, w, h)
+	local x, w = UseMargin(self, t, m, w)
+	local y, h = UseMargin(self, t, m, h, true)
+	return x, y, w, h
+end
+
+local GetFont = |self, t| t.Font or self.Font or Game.FontArrus
+
+local function GetTextWidth(self, t)
+	local fnt = GetFont(self, t)
+	local w0, maxW = fnt:GetLineWidth(t.Text), self.Dlg.Width
+	local w = w0
+	if tmMultiLine[t.TextMode] then  -- accomodate for a bug in WordWrap
+		while w < maxW and fnt:GetLineWidth(fnt:WordWrap(t.Text, {0, 0, w, 480}, 0, false, true)) < w0 do
+			w = w + 1
+		end
+	end
+	return w
+end
+
+local function GetTextHeight(self, t, w)
+	local m, dlg = t.TextMargin or dummy, self.Dlg
+	local x, w = UseMargin(self, t, m, w or m.Left == true and GetTextWidth(self, t))
+	if tmMultiLine[t.TextMode] then
+		x, dlg = 0, {0, 0, w, 480}
+	end
+	return GetFont(self, t):GetTextHeight(t.Text, dlg, x) + 1
+end
+
 local function InitItem(self, t)
 	t.Parent = self
 	t.Visible = t.Visible ~= false
@@ -362,7 +411,15 @@ local function InitItem(self, t)
 		t.Texts = loc["Texts_"..t.Name] or t.Texts
 	end
 	LoadIcons(t, t.Icons or {}, self)
+	if t.Text and not (t.Width or t.Left and t.Right) then
+		local m = t.TextMargin or dummy
+		t.Width = GetTextWidth(self, t) + (tonumber(m.Left) or 0) + (tonumber(m.Right) or 0)
+	end
 	UpdatePos(t, 'Left', 'Right', 'Width', self.Dlg.Width)
+	if t.Text and not (t.Height or t.Top and t.Bottom) then
+		local m = t.TextMargin or dummy
+		t.Height = GetTextHeight(self, t) + (tonumber(m.Top) or 0) + (tonumber(m.Bottom) or 0)
+	end
 	UpdatePos(t, 'Top', 'Bottom', 'Height', self.Dlg.Height)
 	if t.Width and t.Height and t.Button == nil then
 		t.Button = t.Action or t.HintAction or t.Hint or t.OnTriggerClick or t.OnClick or t.OnHint or t.OnDown or t.OnUp or t.Sound
@@ -446,23 +503,33 @@ end
 
 
 local function GetByStateMain(t, a)
-	return t.Disabled and (a[t.StateDisabled] or a.Disabled) or not t.Disabled and (
-		ClickedItems[t] and (a[t.StateClick] or a.Click) or
-		(t == HoverItem and t == DownItem or (ClickedItems[t] or dummy).KeyPress) and (a[t.StateDown] or a.Down) or
-		t == HoverItem and (a[t.StateHover] or a.Hover)
-	)
+	if t.Disabled then
+		return a[t.StateDisabled] or a.Disabled
+	end
+	return ClickedItems[t] and (a[t.StateClick] or a.Click)
+		or (t == HoverItem and t == DownItem or (ClickedItems[t] or dummy).KeyPress) and (a[t.StateDown] or a.Down)
+		or t == HoverItem and (a[t.StateHover] or a.Hover or a[t.StateSelected] or a.Selected)
+		or t.Focus and t == t.Parent.FocusedItem and (-- t == t:GetFocusedItem() and (
+			not (HoverItem or dummy).Focus and (a[t.StateSelected] or a.Selected)
+			or a[t.StateFocused] or a.Focused
+		)
 end
 
 local function GetByState(t, a, NoCallback)
+	if not a then
+		return
+	end
 	local main = GetByStateMain(t, a)
-	return not NoCallback and callback(t.OnStateQuerry, a, main) or main or a[t.State] or a.Normal
+	return not NoCallback and callback(t.OnQuerryState, a, main) or main or a[t.State] or a.Normal
 end
 
 local States = setmetatable({}, {__index = |t, k| k})
 
-function item.GetState(t, q, NoCallback)
-	return GetByState(t, q or States, NoCallback)
+function item.GetState(t, NoCallback)
+	return GetByState(t, States, NoCallback)
 end
+
+item.QuerryState = GetByState
 
 
 -- clicks --
@@ -597,35 +664,23 @@ local CheckParent = |self, t| t and t.Parent == self and t, t
 
 class.GetHoveredItem = |t| CheckParent(t, HoverItem)
 class.GetMouseDownItem = |t| CheckParent(t, DownItem)
--- class.GetFocusedItem = |t| CheckParent(t, FocusedItem)
+-- class.GetFocusedItem = |t| CheckParent((FocusedDialog or dummy).FocusedItem)
 
 
 ---- draw ----
 
 
-local function UseMargin(self, t, m, w, L, R, W)
-	local ml = tonumber(m[L])
-	local mr = tonumber(m[R])
-	local bl = m[L] == true
-	local br = m[R] == true
-	local x = (t[L] or 0)
-	local r = x + (t[W] or self[W] - x) - (mr or 0)
-	x = x + (ml or 0)
-	if not w then
-		return x, r
-	elseif ml and mr or bl and br then
-		return (x + r - w):div(2), w
-	elseif mr or bl then
-		return r - w, w
-	else
-		return x, w
+local function TileDraw(pic, style, x, y, w, h)
+	local dw, dh = max(1, pic.Width or 0), max(1, pic.Height or 0)
+	for y = y, y + h - 1, dh do
+		for x = x, x + w - 1, dw do
+			if pic.Loaded then
+				Screen:Draw(x, y, pic.Loaded, style, pic.Rotate)
+			elseif pic.Pcx then
+				Screen:DrawPcx(x, y, pic.Pcx)
+			end
+		end
 	end
-end
-
-local function UseMargins(self, t, m, w, h)
-	local x, w = UseMargin(self, t, m, w, 'Left', 'Right', 'Width')
-	local y, h = UseMargin(self, t, m, h, 'Top', 'Bottom', 'Height')
-	return x, y, w, h
 end
 
 function class:DrawItem(t)
@@ -642,24 +697,46 @@ function class:DrawItem(t)
 	end
 	local pic = not t.NoIcon and GetByState(t, t.Icons)
 	if pic then
-		local x, y = UseMargins(self, t, pic.Margin or dummy, pic.Width, pic.Height)
+		local tile = (pic.Tile == nil and t.Tile or pic.Tile) and (pic.Width or 0) > 0 and (pic.Height or 0) > 0
+		local x, y, w, h = UseMargins(self, t, pic.Margin or dummy, not tile and pic.Width, not tile and pic.Height)
 		local style = pic.DrawStyle
 		if style == nil then
 			style = t.DrawStyle
 		end
-		if pic.Loaded then
-			Screen:Draw(x, y, pic.Loaded, style, pic.Rotate)
-		else
-			Screen:DrawPcx(x, y, pic.Pcx)
-		end
+		TileDraw(pic, style, x, y, tile and w or 1, tile and h or 1)
 	end
 	if (t.Text or "") ~= "" and not t.NoText then
-		local fnt = t.Font or self.Font or Game.FontArrus
-		local cl = GetByState(t, t.Colors or dummy) or t.Color
-		local clSh = GetByState(t, t.ShadowColors or dummy) or t.ShadowColor
-		-- only the most basic option for now:
-		local x, y = UseMargins(self, t, t.TextMargin or dummy, t.Width, t.Height)
-		fnt:Draw(t.Text, self.Dlg, x, y, cl, clSh)
+		local m = t.TextMargin or dummy
+		local mode, mode2 = t.TextMode, t.TextVMode
+		local tw = m.Left == true and GetTextWidth(self, t)
+		local th = (m.Top == true or mode2 == "center") and GetTextHeight(self, t, tw)
+		local x, y, w, h = UseMargins(self, t, t.TextMargin or dummy, tw, th)
+		if mode2 == "center" then
+			y, h = y + (h - th):div(2), th
+		end
+		local aw, ah = w, h
+		if not mode then
+			aw = self.Dlg.Width - x
+		end
+		if mode2 == "limit" then
+			ah = self.Dlg.Height - y
+		end
+		
+		local offset = GetByState(t, t.Offsets) or dummy
+		x = x + (offset[1] or 0) + self.Dlg.Left
+		y = y + (offset[2] or 0) + self.Dlg.Top
+		
+		local fnt = GetFont(self, t)
+		local cl = GetByState(t, t.Colors) or t.Color
+		local clSh = GetByState(t, t.ShadowColors) or t.ShadowColor
+		if not mode or mode == "box" then
+			fnt:Draw(t.Text, {x - 1, y, aw, ah}, 1, 0, cl, clSh, (mode2 == "box" or mode2 == "limit") and y + ah)
+		elseif mode == "limit" then
+			fnt:DrawLimited(t.Text, {x - 1, y, aw, ah}, aw, 1, 0, cl)
+		elseif mode == "center" then
+			-- TODO: support V limit?
+			fnt:DrawCentered(t.Text, {x, y, aw, ah}, 0, 0, cl, clSh)
+		end
 	end
 	callback(t.OnDraw, t)
 end
@@ -716,10 +793,6 @@ local function before()
 end
 
 local function after()
-	if NoFoodGold ~= nil then
-		Game.FoodGoldVisible, NoFoodGold = Game.MainMenuCode >= 0 or Game.ExitLevelCode == 9 or not NoFoodGold, nil
-	end
-	GotDown, GotDbl, GotMove = nil
 	if not next(ClickedItems) or ClickTime and timeGetTime() >= ClickTime or Game.MainMenuCode < 0 then
 		for i, o in ipairs(ClickedItems) do
 			DoOnClick(o, ClickedItems[o])
@@ -728,6 +801,10 @@ local function after()
 	elseif not ClickTime then
 		ClickTime = timeGetTime() + 32
 	end
+	if NoFoodGold ~= nil and Game.MainMenuCode < 0 and Game.ExitLevelCode ~= 9 then
+		Game.FoodGoldVisible = not NoFoodGold
+	end
+	NoFoodGold, GotDown, GotDbl, GotMove = nil
 end
 
 handlers.BeforeDrawDialogs = before
