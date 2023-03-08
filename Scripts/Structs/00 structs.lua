@@ -533,7 +533,7 @@ end]=]
 		[mm78(0x73B8D4, 0x7798B8)].array(0, 205).array(0, 1).EditPChar  'NPCGreet'
 		[mm78(0x73BFAA, 0x779F8E)].array(0, 50).i2  'NPCGroup'
 		[mm78(0x739CF4, 0x778F50)].array(0, 50).EditPChar  'NPCNews'
-		[mm78(0x5C89E0, 0x5E4DA8)].array(1, 29).struct(structs.HistoryTxtItem)  'HistoryTxt'
+		[mm78(0x5C89E0, 0x5E4DA8)].array(0, 29).struct(structs.HistoryTxtItem)  'HistoryTxt'
 	else
 		define
 		[0x6B8C60].array{0, 279}.struct(structs.NPCNewsItem)  'NPCNews'
@@ -1018,6 +1018,13 @@ end]=]
 		return pcx['?ptr'] and pcx or structs.LodPcx:new(pcx)
 	end
 	define.Info{Sig = "Name, PcxBuffer, FromEnglishD = false, LoadKind = 0"; "Returns #loaded pcx:structs.LodPcx#. 'PcxBuffer' can be 'nil', a #pcx strucutre:structs.LodPcx# or a pointer to the buffer. If it's 'nil', the buffer gets allocated and must freed via a call to #Destroy:structs.LodPcx.Destroy# function."}
+	
+	function define.f.LoadFont(name, pal1, ...)
+		local t = {...}
+		t[#t+1] = 0
+		local p = call(mmv(0x442CF0, 0x44C474, 0x449BA1), 0, name, pal1 or "FONTPAL", unpack(t))
+		return structs.Fnt:new(p)
+	end
 	
 	function define.f.GetCurrentHouse()
 		local p = u4[mmv(0x4D50C4, 0x507A40, 0x519328)]
