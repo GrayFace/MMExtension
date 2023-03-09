@@ -13,9 +13,11 @@ local ClassMeta, ItemMeta = {__index = class}, {__index = item}
 local ActBtn, ActHint, ActUp = const.Actions.CustomDialogButton, const.Actions.CustomDialogHint, const.Actions.CustomDialogMouseUp
 local DlgCount = 0
 local ItemByPointer = setmetatable({}, {__mode = 'v'})
-local GotDown, GotDbl, GotMove
+local GotDown, GotDbl
 local HoverItem, HoverFrame
 local DownItem
+local LastMousePos
+local SelHover = false
 -- local FocusedDialog
 local ClickedItems, ClickTime = {}, nil
 local IDCusDlg, IDBlockInteraction, IDBlock, BlockCount, CreatingOO = const.DlgID.CustomDialog, const.DlgID.BlockDialogs, const.DlgID.BlockDialogsNoDraw, 0, nil
@@ -96,6 +98,7 @@ local function InitDlg(dlg, new)
 	setmetatable(t, ClassMeta)
 	DlgCount = DlgCount + 1
 	if DlgCount == 1 then
+		LastMousePos = nil
 		EnableHandlers(handlers, true)
 	end
 	if not new then
@@ -439,6 +442,9 @@ local function InitItem(self, t)
 	if t.DelayKeyClick == nil then
 		t.DelayKeyClick = t.DelayClick or t.Icons.Down ~= nil
 	end
+	if t.Focus == nil then
+		t.Focus = t.FocusOnClick ~= nil or t.FocusOnHover ~= nil
+	end
 	setmetatable(t, ItemMeta)
 end
 
@@ -499,6 +505,9 @@ function class:RemoveItem(t)
 		t.Button = nil
 		ItemByPointer[mem.topointer(t, true)] = nil
 	end
+	if self.FocusedItem == t then
+		self.FocusedItem = nil
+	end
 end
 
 
@@ -511,9 +520,10 @@ local function GetByStateMain(t, a)
 	end
 	return ClickedItems[t] and (a[t.StateClick] or a.Click)
 		or (t == HoverItem and t == DownItem or (ClickedItems[t] or dummy).KeyPress) and (a[t.StateDown] or a.Down)
-		or t == HoverItem and (a[t.StateHover] or a.Hover or a[t.StateSelected] or a.Selected)
+		or (t == HoverItem and SelHover and t.Focus) and (a[t.StateSelected] or a.Selected)
+		or t == HoverItem and (a[t.StateHover] or a.Hover)
 		or t.Focus and t == t.Parent.FocusedItem and (-- t == t:GetFocusedItem() and (
-			not (HoverItem or dummy).Focus and (a[t.StateSelected] or a.Selected)
+			not (SelHover and (HoverItem or dummy).Focus) and (a[t.StateSelected] or a.Selected)
 			or a[t.StateFocused] or a.Focused
 		)
 end
@@ -570,16 +580,27 @@ local function DoOnClick(o, t)
 	end
 end
 
-local function HandleClick(o, key, dbl)
+function class:SetFocusedItem(t)
+	local cur = self.FocusedItem
+	if t ~= cur then
+		self.FocusedItem = t
+		callback(self.OnFocusItem, self, t, cur)
+	end
+end
+
+local function HandleClick(o, key, dbl, foc)
 	if ClickedItems[1] or ClickedItems[o] then
 		return
 	end
-	local t = {Action = o.Action or 0, Param = o.ActionParam or 0, Param2 = o.ActionParam2 or 0, KeyPress = key, DoubleClick = dbl, DelayClick = o[key and 'DelayKeyClick' or 'DelayClick'], Sound = o.Sound}
+	local t = {Action = o.Action or 0, Param = o.ActionParam or 0, Param2 = o.ActionParam2 or 0, KeyPress = key, DoubleClick = dbl, ByFocusControl = foc, DelayClick = o[key and 'DelayKeyClick' or 'DelayClick'], Sound = o.Sound, FocusOnClick = o.FocusOnClick}
 	callback(o.OnTriggerClick, o, t)
 	if t.Cancel then
 		return
 	elseif t.Sound then
 		Game.PlaySound(DefSound(t.Sound), 0)
+	end
+	if t.FocusOnClick then
+		o.Parent:SetFocusedItem(o)
 	end
 	t.Sound = nil
 	ClickedItems[o] = t
@@ -590,10 +611,29 @@ local function HandleClick(o, key, dbl)
 	end
 end
 
+local function HandleHover(o, menu)
+	local hact = o.HintAction
+	local q = {
+		Action = hact or 0,
+		Param = hact and (o.HintActionParam or o.ActionParam) or 0,
+		Param2 = hact and (o.HintActionParam2 or o.ActionParam2) or 0,
+		FocusOnHover = o.FocusOnHover and SelHover,
+	}
+	callback(o.OnHint, o, q)
+	if o.Hint and not menu and (o.Parent or dummy).Dlg == Game.Dialogs[0] then
+		Game.ShowStatusHint(o.Hint)
+	end
+	if q.FocusOnHover then
+		o.Parent:SetFocusedItem(o)
+	end
+	if (q.Action or 0) ~= 0 then
+		Game.Actions.Add(q.Action, q.Param, q.Param2)
+	end
+end
+
 function handlers.Action(t)
 	local act = t.Action
 	if act == ActBtn then
-		t.Action = 0
 		local o = ItemByPointer[t.Param]
 		if not o then
 			return
@@ -606,31 +646,17 @@ function handlers.Action(t)
 		if key or not o.TriggerOnUp then
 			HandleClick(o, key, not (key or GotDown))
 		end
-		act = t.Action
 	elseif act == ActHint then
-		t.Action = 0
 		local o = ItemByPointer[t.Param]
 		if not o then
 			return
 		end
 		HoverItem, HoverFrame = o, Game.FrameCounter
-		local hact = o.HintAction
-		local q = {
-			Action = hact or 0,
-			Param = hact and (o.HintActionParam or o.ActionParam) or 0,
-			Param2 = hact and (o.HintActionParam2 or o.ActionParam2) or 0
-		}
-		callback(o.OnHint, o, q)
-		if o.Hint and (o.Parent or dummy).Dlg == Game.Dialogs[0] then
-			Game.ShowStatusHint(o.Hint)
-		end
-		if (q.Action or 0) ~= 0 then
-			Game.Actions.Add(q.Action, q.Param, q.Param2)
-		end
+		HandleHover(o)
 	elseif act == ActUp then
 		local o = DownItem
-		t.Action, DownItem = 0, nil
-		callback(o.OnMouseUp, o, t, o == HoverItem)
+		DownItem = nil
+		callback(o.OnMouseUp, o, o == HoverItem)
 		if o == HoverItem and o.TriggerOnUp then
 			HandleClick(o, false, false)
 		end
@@ -650,14 +676,17 @@ handlers.MenuAction = handlers.Action
 
 function handlers.WindowMessage(t)
 	local msg = t.Msg
-	if msg >= 0x0200 and msg <= 0x0203 then
-		if msg == 0x0200 then
-			GotMove = true
-		elseif msg == 0x0201 then
+	if msg >= 0x0200 and msg <= 0x0209 then  -- mouse move and clicks
+		local pos = t.LParam
+		if msg ~= 0x0200 or pos ~= LastMousePos then  -- 0x0200 = mouse move
+			SelHover = true
+		end
+		LastMousePos = pos
+		if msg == 0x0201 then
 			GotDown = true
 		elseif msg == 0x0203 then
 			GotDbl = true
-		elseif DownItem then
+		elseif msg == 0x0202 and DownItem then
 			Game.Actions.Add(ActUp, mem.topointer(DownItem, true), 0)
 		end
 	end
@@ -789,6 +818,7 @@ local function UpdateHover()
 		local btn, dlg = Game.GetButtonFromPoint(Mouse.X, Mouse.Y)
 		if btn and dlg.CustomDialog then
 			HoverItem = ItemByPointer[btn.ActionParam]
+			HandleHover(HoverItem, true)
 		end
 	elseif HoverItem then
 		HoverItem = HoverFrame == Game.FrameCounter and HoverItem
@@ -832,7 +862,7 @@ local function after()
 	if NoFoodGold ~= nil and Game.MainMenuCode < 0 and Game.ExitLevelCode ~= 9 then
 		Game.FoodGoldVisible = not NoFoodGold
 	end
-	NoFoodGold, GotDown, GotDbl, GotMove = nil
+	NoFoodGold, GotDown, GotDbl = nil
 end
 
 handlers.BeforeDrawDialogs = before
@@ -870,4 +900,81 @@ handlers.CloseOODialog = is8 and function(t)
 			a:Destroy()
 		end
 	end
+end
+
+
+-- focus control --
+
+
+local function FindClosestHigher(items, array, get, cur, fromIt)
+	local v0 = fromIt and cur and cur.Focus and get(items, cur, cur) or -1/0
+	local t, vbest = nil, 1/0
+	for i, a in ipairs(array or items) do
+		local v = a.Focus and a.Visible and not a.Disabled and get(items, a, cur, not array and i) or v0
+		if v > v0 and v <= vbest then
+			if v < vbest then
+				t, vbest = {}, v
+			end
+			t[#t + 1] = a
+		end
+	end
+	return t
+end
+
+local Inverter = |get| function(...)
+	local v = get(...)
+	return v and -v
+end
+local GetFocusIndex = |items, a, cur, i| tonumber(a.Focus) or i or table.ifind(items, a)
+local GetFocusSameColumn = |items, a, cur, i| (not cur or (a.Column or 0) == (cur.Column or 0)) and GetFocusIndex(items, a, cur, i)
+local GetColumnIndex = |items, a| a.Column or 0
+local GetCenterDist = |items, a, cur, i| a ~= cur and (not cur and 0 or abs(a.Top + (a.Height or 0)/2 - cur.Top - (cur.Height or 0)/2))
+local GetDistOutside = |items, a, cur, i| if a ~= cur then
+	if not cur then
+		return 0
+	end
+	local c = cur.Top + (cur.Height or 0)/2
+	return max(0, max(a.Top - c, c - a.Top - (a.Height or 0)))
+end
+
+local AddFocusKey = |self, key, filter, wrap| self:Add{Key = key, Button = true, OnClick = function()
+	SelHover = false
+	local cur = self.FocusedItem
+	local t = nil
+	for _, f in ipairs{filter, GetDistOutside, GetCenterDist} do
+		t = FindClosestHigher(self.Items, t, f, cur, true) or wrap and FindClosestHigher(self.Items, t, f, cur)
+		if not t or not t[2] then
+			break
+		end
+	end
+	if t and t[1] then
+		self:SetFocusedItem(t[1])
+	end
+end}
+
+function class:AddFocusControl(enter, columns, wrap, wrap_c, wrap_to_c)
+	if columns == nil then
+		for _, a in ipairs(self.Items) do
+			if a.Focus and a.Column then
+				columns = true
+				break
+			end
+		end
+	end
+	wrap = wrap ~= false
+	wrap_to_c = wrap_to_c ~= false
+	wrap_c = wrap_c == nil and wrap or wrap_c
+	enter = enter ~= false and self:Add{Key = const.Keys.RETURN, Button = true, OnClick = function()
+		SelHover = false
+		local o = self.FocusedItem
+		if o and o.Visible and not o.Disabled then
+			HandleClick(o, true, false, true)
+		end
+	end} or nil
+	local fdown = wrap_to_c and GetFocusIndex or GetFocusSameColumn
+	local up = AddFocusKey(self, const.Keys.UP, Inverter(fdown), wrap)
+	local down = AddFocusKey(self, const.Keys.DOWN, fdown, wrap)
+	local left = columns and AddFocusKey(self, const.Keys.LEFT, Inverter(GetColumnIndex), wrap_c)
+	local right = columns and AddFocusKey(self, const.Keys.RIGHT, GetColumnIndex, wrap_c)
+	return enter, up, down, left, right
 end
