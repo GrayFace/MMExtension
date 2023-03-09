@@ -1074,6 +1074,69 @@ if PatchOptionsSize < 400 then
 	end
 end
 
+-- locale-independant shortcuts (custom dialogs depend on this fix)
+if PatchOptionsSize < 400 then
+	local hooks = HookManager{
+		MainMenuCode = mmv(0x5F811C, 0x6A0BC4, 0x6CEB24),
+		CurrentScreen = mmv(0x4BCDD8, 0x4E28D8, 0x4F37D8),
+		CheckShortCut = mmv(0x417F90, 0x41B3E1, 0x41B214),
+		TextInputMode = mmv(0x5F6E70, 0x69AD80, 0x6C8CD8) + 0x104,
+	}
+	
+	hooks.ref.cmp_code = hooks.ProcessAsm[[
+		cmp dword ptr [%MainMenuCode%], 0
+	if mm6
+		mov cl, [esp + 0x5C]
+	else
+		mov cl, [ebp + 0x10]
+	end if
+		jl @down
+		cmp dword ptr [%CurrentScreen%], 22
+		jz @down
+		cmp cl, 'A'
+		jb @char
+		cmp cl, 'Z' + 1
+	]]
+	
+	-- WM_CHAR - ignore in most cases
+	hooks.asmhook(mmv(0x454564, 0x463D46, 0x461E46), [[
+		jnz @down
+		%cmp_code%
+		jb @down
+	@char:
+		xor eax, eax
+	@down:
+	]])
+	
+	-- WM_KEYDOWN - call CheckShortCut in most cases
+	hooks[mmver == 6 and 'asmhook' or 'asmhook2'](mmv(0x454592, 0x463D6F, 0x461E6F), [[
+	if mm6 = 0
+		jnz @exit
+	end if
+		mov eax, [%TextInputMode%]
+		dec eax
+		jz @char  ; 1 - text input
+		dec eax
+		jz @char  ; 2 - numbers input
+		%cmp_code%
+		ja @char
+	@down:
+		call absolute %CheckShortCut%
+	@char:
+		xor eax, eax
+	@exit:
+	]])
+	
+	-- no toupper() calls for shortcuts
+	if mmver > 6 then
+		mem.nop(mm78(0x41B3E7, 0x41B21B))
+		mem.nop(mm78(0x41B496, 0x41B2CB))
+		mem.nop(mm78(0x41B4A2, 0x41B2D8))
+	else
+		mem.asmpatch(0x417F9A, 'mov eax, ecx')
+	end
+end
+
 -- Improve doors in D3D mode
 if mmver > 6 then
 	-- Bitmap-independant door UV calculation in D3D mode (was good for editor when it used to change textures)

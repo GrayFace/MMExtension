@@ -242,8 +242,10 @@ function structs.f.GameStructure(define)
 	end
 	define
 	[mmv(0x52D29C, 0x576EAC, 0x587ADC)].b4  'NeedRedraw'
-	[mmv(0x55BC04, 0x5C32A8, 0x5DB758)].string(200)  'StatusMessage'
-	.string(200)  'MouseOverStatusMessage'
+	[mmv(0x55BC04, 0x5C32A8, 0x5DB758)].alt.string(200)  'StatusMessage'
+	.array(200).u1  'StatusMessageBytes'
+	.alt.string(200)  'MouseOverStatusMessage'
+	.array(200).u1  'MouseOverStatusMessageBytes'
 	.i4  'StatusDisappearTime'
 	if mmver > 6 then
 		define.b4  'NeedUpdateStatusBar'
@@ -253,6 +255,12 @@ function structs.f.GameStructure(define)
 		 .Info "Set it to 'false' to skip 1 draw call of drawing food and gold"
 	end
 	define
+	[mmv(0x5F6E70, 0x69AD80, 0x6C8CD8)].alt.string(256)  'TextInput'
+	.array(256).u1  'TextInputBytes'
+	.skip(1)
+	.u1  'TextInputLength'
+	.skip(2)
+	.i4  'TextInputMode'
 	[mmv(0x4CB6A0, 0x506D8C, 0x51856C)].i4  'EscMessageLastScreen'
 	[mmv(0x4D50DC, 0x507A5C, 0x519340)].CustomType('EscMessageDialog', 4, structs.aux.PDialog)
 	 .Info{Type = "structs.Dlg"}

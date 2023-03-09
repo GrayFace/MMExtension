@@ -2719,7 +2719,8 @@ function structs.f.BitmapsLod(define)
 	structs.f.Lod(define)
 	define
 	[0x23C].array{mmv(500, 1000, 1000), lenA = i4, lenP = mmv(0x8EDC, 0x11B7C, 0x11B7C)}.struct(structs.LodBitmap)  'Bitmaps'
-	.skip(16)
+	.i4  'BitmapsCount'
+	.skip(12)
 	.i4  'RedBits'
 	.i4  'GreenBits'
 	.i4  'BlueBits'
@@ -2760,6 +2761,10 @@ function structs.f.BitmapsLod(define)
 			call(mmv(0x444BE0, 0x44E119, 0x44B801), 1, p, bmp)
 			return bmp
 		end
+	end
+	if mmver > 6 then
+		define.method{name = 'ReplaceBitmap', p = mm78(0x4101BD, 0x4115BF), must = 2; 0, "", 2}
+		 .Info{Sig = "bmp:structs.LodBitmap, name, unused_must_be_2 = 2"; "Used for changing party faces and in MM7 for recoloring of interface"}
 	end
 	function define.m:BeginTmp()
 		local n = self.TmpIndex
