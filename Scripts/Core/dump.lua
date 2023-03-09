@@ -10,6 +10,11 @@ do
 	end
 end
 
+local function GetStructType(t)
+	local m = structs and getmetatable(t)
+	return m and rawget(m, "mem_struct")
+end
+
 -- Useful for debugging and experiments. Shows 't', expanding all tables in it up to the 'depth' level. In 'exact' = 'true' mode outputs proper Lua code.
 function dump(t, depth, exact, detectClones, limit)
 	local buf = {}
@@ -65,6 +70,9 @@ function dump(t, depth, exact, detectClones, limit)
 	end
 
 	local function FindSameStruct(v)
+		if not GetStructType(v) then
+			return
+		end
 		local ptr = v["?ptr"]
 		local class = structs.class(v)
 		local same = ptrs[ptr]
@@ -80,7 +88,7 @@ function dump(t, depth, exact, detectClones, limit)
 		end
 		if type(v) == "table" then
 			local n = tables[v]
-			local SameStruct = detectClones and not n and structs and FindSameStruct(v)
+			local SameStruct = detectClones and not n and FindSameStruct(v)
 			if SameStruct then
 				n = tables[SameStruct]
 				if n then
@@ -96,12 +104,10 @@ function dump(t, depth, exact, detectClones, limit)
 					else
 						tables[v] = bufn
 					end
-					if structs then
-						local ptr = v["?ptr"]
-						if ptr then
-							ptrs[v] = ptrs[ptr]
-							ptrs[ptr] = v
-						end
+					local ptr = GetStructType(v) and v["?ptr"]
+					if ptr then
+						ptrs[v] = ptrs[ptr]
+						ptrs[ptr] = v
 					end
 					
 					ShowTable(v, space)
@@ -144,7 +150,12 @@ function dump(t, depth, exact, detectClones, limit)
 		end
 		ShowN = bufn
 		space = space.."\t"
-		if not structs or not pcall(ShowStruct, t, space) and not pcall(ShowArray, t, space) then  -- !!!
+		local m = GetStructType(t)
+		if m == "struct" or m == "union" then
+			ShowStruct(t, space)
+		elseif m == "array" then
+			ShowArray(t, space)
+		else
 			local i = 1
 			for k, v in sortpairs(t) do
 				if k == i then
@@ -165,7 +176,7 @@ function dump(t, depth, exact, detectClones, limit)
 	if type(t) == "table" and depth >= 0 then
 		Write("{")
 		tables[t] = bufn
-		local ptr = t["?ptr"]
+		local ptr = GetStructType(t) and t["?ptr"]
 		if ptr then
 			ptrs[ptr] = t
 		end

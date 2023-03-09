@@ -53,6 +53,7 @@ local CoreScriptsPath = DevPath.."Scripts/Core/"
 internal.CoreScriptsPath = CoreScriptsPath
 local CoreGamePath = internal.CoreGamePath and internal.CoreGamePath.."Scripts/Core/" or CoreScriptsPath  -- for game-specific core files (used by LuaConsole)
 local GamePath = internal.AllowForeignDir and AppPath or ""
+local dummy = {}
 
 -- dofile(CoreScriptsPath.."RSFunctions.lua")
 -- PrintToFile("InternalLog.txt")  -- temporary
@@ -372,7 +373,7 @@ function structs.class(t)
 end
 
 function structs.enum(t)
-	local a = (getmetatable(t) or {}).members
+	local a = (getmetatable(t) or dummy).members
 	if a == nil then
 		error("not a structure", 2)
 	end

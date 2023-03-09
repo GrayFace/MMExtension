@@ -1066,7 +1066,7 @@ do -- mem.struct
 				end
 
 				local ret = setmetatable(type(p)=="number" and {["?ptr"] = p} or p, 
-				         {__index = index, __newindex = newindex, __persist = nullpersist, __call = ccall})
+				         {__index = index, __newindex = newindex, __persist = nullpersist, __call = ccall, mem_struct = "struct"})
 				return struct_callback(ret, class, fields, offs, rofields)
 			end
 
@@ -1236,7 +1236,7 @@ do -- mem.struct
 					local f = fields[a]
 					return f and f(offs[a], t, a)
 				end
-				val = setmetatable({}, {__index = index, __newindex = newindex, __persist = nullpersist})
+				val = setmetatable({}, {__index = index, __newindex = newindex, __persist = nullpersist, mem_struct = "union"})
 				val = union_callback(val, fields, offs, rofields)
 				rawset(obj, name, val)
 				return val
@@ -1440,7 +1440,7 @@ do -- mem.struct
 				end
 			end
 			
-			local meta = {__index = indexes, __newindex = indexes, __call = _call, __persist = nullpersist}
+			local meta = {__index = indexes, __newindex = indexes, __call = _call, __persist = nullpersist, mem_struct = "array"}
 			val = setmetatable(val, meta)
 			val = array_callback(val)
 			rawset(obj, name, val)
