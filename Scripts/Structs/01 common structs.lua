@@ -856,7 +856,7 @@ function structs.f.Dlg(define)
 	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right_' before MMExt 2.3, old name still supported for backward compatibility)"
 	.i4  'Right_'
 	 .Info(false)
-	[0x14].i4  'BottomPixel'
+	[0x14].alt.i4  'BottomPixel'
 	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom_' before MMExt 2.3, old name still supported for backward compatibility)"
 	.i4  'Bottom_'
 	 .Info(false)
@@ -1010,7 +1010,7 @@ function structs.f.Button(define)
 	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right' before MMExt 2.3, old name still supported for backward compatibility)"
 	.i4  'Right'
 	 .Info(false)
-	[0x14].i4  'BottomPixel'
+	[0x14].alt.i4  'BottomPixel'
 	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom' before MMExt 2.3, old name still supported for backward compatibility)"
 	.i4  'Bottom'
 	 .Info(false)
