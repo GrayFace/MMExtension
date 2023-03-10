@@ -13,7 +13,7 @@ local ClassMeta, ItemMeta = {__index = class}, {__index = item}
 local ActBtn, ActHint, ActUp = const.Actions.CustomDialogButton, const.Actions.CustomDialogHint, const.Actions.CustomDialogMouseUp
 local DlgCount = 0
 local ItemByPointer = setmetatable({}, {__mode = 'v'})
-local GotDown, GotDbl
+local GotDown, GotDbl, GotMove
 local HoverItem, HoverFrame
 local DownItem
 local LastMousePos
@@ -43,6 +43,7 @@ local function Defaults(t)
 	t.Screen = t.Screen or t.Screen ~= false
 	t.LastScreen = Game.CurrentScreen
 	t.LastMimicScreen = Game.EscMessageLastScreen
+	t.HandleEsc = t.HandleEsc ~= false
 end
 
 local function Apply1(self, t)
@@ -181,7 +182,7 @@ local function RestoreScreen(t)
 	end
 end
 
-local function DoUnbind(t)
+local function DoUnbind(t, cleanup)
 	if not t.Dlg then
 		return
 	end
@@ -194,6 +195,10 @@ local function DoUnbind(t)
 			o.Button = nil
 			ItemByPointer[mem.topointer(o, true)] = nil
 		end
+	end
+	if cleanup and is8 and t.AutoEsc then
+		t.AutoEsc:Destroy()
+		t.AutoEsc = nil
 	end
 	t.PcxCache"Clear"
 	if t.PcxCache ~= t.PcxCacheD then
@@ -314,12 +319,26 @@ local function ButtonArgs(t, pt)
 	return x, y, w, h, vis and (t.Shape or 1) or 0, ActHint, ActBtn, pt, vis and t.Key or 0, t.Hint
 end
 
+local function FindButton(items, start, stop, step)
+	for i = start or #items, stop or #items, step do
+		local b = items[i].Button
+		if b then
+			return b
+		end
+	end
+end
+
 local function CreateButton(self, t)
 	local pt = mem.topointer(t, true)
 	ItemByPointer[pt] = t
 	local p, wrap = self.Dlg:AddButton(ButtonArgs(t, pt))
 	t.Button = wrap(p)
-	t.Button:MoveAfter(0)
+	local b2 = FindButton(self.Items, nil, 1, -1)
+	if b2 then
+		t.Button:MoveBefore(b2)
+	elseif self.Dlg ~= Game.CurrentNPCDialog then  -- it relies on keyboard items starting with 2/1
+		t.Button:MoveAfter(0)
+	end
 end
 
 function item.UpdateButton(t)
@@ -397,7 +416,7 @@ local function GetTextHeight(self, t, w)
 end
 
 item.GetTextWidth = |t| GetTextWidth(t.Parent, t)
-item.GetTextHeight = |t| GetTextHeight(t.Parent, t)
+item.GetTextHeight = |t, NoExtra| GetTextHeight(t.Parent, t) - (NoExtra and 1 or 0)
 
 local function InitItem(self, t)
 	t.Parent = self
@@ -465,6 +484,9 @@ function class:Add(t, ...)
 end
 
 function class:MoveItem(t, idx)
+	if idx < 0 then
+		idx = #self.Items + 1 + idx
+	end
 	local k = table.ifind(self.Items, t)
 	if not k or k == idx then
 		return
@@ -476,15 +498,16 @@ function class:MoveItem(t, idx)
 	table.remove(self.Items, k)
 	idx = min(idx, #self.Items + 1)
 	table.insert(self.Items, idx, t)
-	local btn, upper = t.Button, nil
-	if btn then
-		for i = idx + 1, #self.Items, 1 do
-			upper = self.Items[i].Button
-			if upper then
-				break
+	if t.Button then
+		local b2 = FindButton(self.Items, idx + 1, nil, 1)
+		if b2 then
+			t.Button:MoveAfter(b2)
+		else
+			b2 = FindButton(self.Items, idx - 1, 1, -1)
+			if b2 then
+				t.Button:MoveBefore(b2)
 			end
 		end
-		btn:MoveAfter(upper)
 	end
 end
 
@@ -520,10 +543,10 @@ local function GetByStateMain(t, a)
 	end
 	return ClickedItems[t] and (a[t.StateClick] or a.Click)
 		or (t == HoverItem and t == DownItem or (ClickedItems[t] or dummy).KeyPress) and (a[t.StateDown] or a.Down)
-		or (t == HoverItem and SelHover and t.Focus) and (a[t.StateSelected] or a.Selected)
+		or (t == HoverItem and t.Focus and (SelHover or t == t.Parent.FocusedItem)) and (a[t.StateSelected] or a.Selected)
 		or t == HoverItem and (a[t.StateHover] or a.Hover)
 		or t.Focus and t == t.Parent.FocusedItem and (-- t == t:GetFocusedItem() and (
-			not (SelHover and (HoverItem or dummy).Focus) and (a[t.StateSelected] or a.Selected)
+			not SelHover and (a[t.StateSelected] or a.Selected)
 			or a[t.StateFocused] or a.Focused
 		)
 end
@@ -550,13 +573,13 @@ item.QuerryState = GetByState
 
 local DefSound = |v| v == true and (is8 and 76 or 75) or v
 
-function class:HandleAction(t, index)
+function class:HandleAction(t)
 	if self.PassThrough then
 		return
 	end
-	local more = {Consume = index ~= 0 and t.Action == 113, PassThrough = false}
+	local more = {Consume = self.HandleEsc and t.Action == 113, PassThrough = false}
 	callback(self.OnAction, t, more)
-	if t.Action == 113 and not more.PassThrough and index ~= 0 then
+	if t.Action == 113 and not more.PassThrough and self.HandleEsc then
 		callback(self.OnCanClose, t, more)
 		if not self.NoClose then
 			if self.CloseSound then
@@ -592,7 +615,7 @@ local function HandleClick(o, key, dbl, foc)
 	if ClickedItems[1] or ClickedItems[o] then
 		return
 	end
-	local t = {Action = o.Action or 0, Param = o.ActionParam or 0, Param2 = o.ActionParam2 or 0, KeyPress = key, DoubleClick = dbl, ByFocusControl = foc, DelayClick = o[key and 'DelayKeyClick' or 'DelayClick'], Sound = o.Sound, FocusOnClick = o.FocusOnClick}
+	local t = {Action = o.Action or 0, Param = o.ActionParam or 0, Param2 = o.ActionParam2 or 0, KeyPress = key, DoubleClick = dbl, ByFocusControl = foc, DelayClick = o[key and 'DelayKeyClick' or 'DelayClick'], Sound = o.Sound, FocusOnClick = o.FocusOnClick, Focused = o == o.Parent.FocusedItem}
 	callback(o.OnTriggerClick, o, t)
 	if t.Cancel then
 		return
@@ -613,6 +636,9 @@ end
 
 local function HandleHover(o, menu)
 	local hact = o.HintAction
+	if o.Focus and GotMove then
+		SelHover = true
+	end
 	local q = {
 		Action = hact or 0,
 		Param = hact and (o.HintActionParam or o.ActionParam) or 0,
@@ -665,7 +691,7 @@ function handlers.Action(t)
 		for i = dialogs.High, 0, -1 do
 			local dlg = dialogs[i]
 			dlg = dlg.CustomDialog
-			if not dlg or dlg:HandleAction(t, i) then
+			if not dlg or dlg:HandleAction(t) then
 				break
 			end
 		end
@@ -679,7 +705,7 @@ function handlers.WindowMessage(t)
 	if msg >= 0x0200 and msg <= 0x0209 then  -- mouse move and clicks
 		local pos = t.LParam
 		if msg ~= 0x0200 or pos ~= LastMousePos then  -- 0x0200 = mouse move
-			SelHover = true
+			GotMove = true
 		end
 		LastMousePos = pos
 		if msg == 0x0201 then
@@ -818,7 +844,9 @@ local function UpdateHover()
 		local btn, dlg = Game.GetButtonFromPoint(Mouse.X, Mouse.Y)
 		if btn and dlg.CustomDialog then
 			HoverItem = ItemByPointer[btn.ActionParam]
-			HandleHover(HoverItem, true)
+			if HoverItem then
+				HandleHover(HoverItem, true)
+			end
 		end
 	elseif HoverItem then
 		HoverItem = HoverFrame == Game.FrameCounter and HoverItem
@@ -862,7 +890,7 @@ local function after()
 	if NoFoodGold ~= nil and Game.MainMenuCode < 0 and Game.ExitLevelCode ~= 9 then
 		Game.FoodGoldVisible = not NoFoodGold
 	end
-	NoFoodGold, GotDown, GotDbl = nil
+	NoFoodGold, GotDown, GotDbl, GotMove = nil
 end
 
 handlers.BeforeDrawDialogs = before
