@@ -885,7 +885,7 @@ end]=]
 				Game.HouseScreen = -1
 				call(mmv(0x4998A0, 0x4B4187, 0x4B2C36), 1, Game.HouseNPCSlot - 1)
 			end
-		elseif Game.CurrentNPCDialog['?ptr'] ~= 0 then
+		elseif Game.CurrentNPCDialog then
 			internal.RefillNPCTopics()
 		end
 	end
