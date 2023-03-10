@@ -257,12 +257,13 @@ function structs.f.GameStructure(define)
 		 .Info "Set it to 'false' to skip 1 draw call of drawing food and gold"
 	end
 	define
-	[mmv(0x5F6E70, 0x69AD80, 0x6C8CD8)].alt.string(256)  'TextInput'
-	.array(256).u1  'TextInputBytes'
-	.skip(1)
+	[mmv(0x5F6E6C, 0x69AD7C, 0x6C8CD4)].i4  'TextInputLimit'
+	.alt.string(257)  'TextInput'
+	.array(257).u1  'TextInputBytes'
 	.u1  'TextInputLength'
 	.skip(2)
 	.i4  'TextInputMode'
+	.CustomType('TextInputDialog', 4, structs.aux.PDialog)
 	[mmv(0x4CB6A0, 0x506D8C, 0x51856C)].i4  'EscMessageLastScreen'
 	[mmv(0x4D50DC, 0x507A5C, 0x519340)].CustomType('EscMessageDialog', 4, structs.aux.PDialog)
 	 .Info{Type = "structs.Dlg"}
@@ -978,7 +979,7 @@ end]=]
 	end
 	define.Info{Sig = "Text, ActionOnClose = 0"}
 	function define.f.StartTextInput(lim, numberic, dlg)
-		call(mmv(0x44C8A0, 0x459E93, 0x45775A), 1, mmv(0x5F6E00, 0x69AC80, 0x6C8BB8), numberic, dlg or Game.GetTopDialog() or Game.DialogsArray[0])
+		call(mmv(0x44C8A0, 0x459E93, 0x45775A), 1, mmv(0x5F6E00, 0x69AC80, 0x6C8BB8), numberic, lim or 50, dlg or Game.GetTopDialog() or Game.DialogsArray[0])
 	end
 	define.Info{Sig = "MaxLength = 50, Numerical = false, Dialog = nil"}
 	.func{name = "EndTextInput", p = mmv(0x44C920, 0x459F0A, 0x4577D1), cc = 1, fixed = {mmv(0x5F6E00, 0x69AC80, 0x6C8BB8)}; 0}
