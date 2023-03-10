@@ -895,9 +895,9 @@ function class:DoDrawItem(t)
 			fnt:Draw(cursor, {x - 1, y, wlim + 1, ah}, pos + 1, 0, clCur or cl, clCurSh or clSh)
 		end
 		if not mode or mode == "box" then
-			fnt:Draw(text, {x - 1, y, min(aw + 2, wlim + 1), ah}, 1, 0, cl, clSh, (mode2 == "box" or mode2 == "limit") and y + ah)
+			fnt:Draw(text, {x - 1, y, aw + 1, ah}, 1, 0, cl, clSh, (mode2 == "box" or mode2 == "limit") and y + ah)
 		elseif mode == "limit" then
-			fnt:DrawLimited(text, {x - 1, y, min(aw + 2, wlim + 1), ah}, aw + 1, 1, 0, cl)
+			fnt:DrawLimited(text, {x - 1, y, wlim + 1, ah}, aw + 1, 1, 0, cl)
 		elseif mode == "center" then
 			if cursor then
 				text = text..'\t'..(clCur and StrColor(clCur) or '')..cursor
