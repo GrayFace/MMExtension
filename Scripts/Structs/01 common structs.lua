@@ -1045,46 +1045,6 @@ function structs.f.Button(define)
 	[0x51+o].string(103)  'Hint'
 	.size = 0xB8+o
 	
-	-- local function FindIndexes(dlg, p1, p2)
-	-- 	local i1, i2
-	-- 	for i, a in dlg:Enum() do
-	-- 		local p = a['?ptr']
-	-- 		if p == p1 then
-	-- 			i1, p1 = p, nil
-	-- 			if not p2 then
-	-- 				break
-	-- 			end
-	-- 		elseif p == p2 then
-	-- 			i2, p2 = p, nil
-	-- 			if not p1 then
-	-- 				break
-	-- 			end
-	-- 		end
-	-- 	end
-	-- 	return i1, i2
-	-- end
-	-- local function ShiftNavigation(dlg, i, dn, include, needSel)
-	-- 	local j, k, n = dlg.KeyboardItemsStart, dlg.KeyboardItem, dlg.KeyboardItemsCount
-	-- 	local sel
-	-- 	if i <= k then
-	-- 		if i == k and dn < 0 then
-	-- 			dlg.KeyboardItem = 0
-	-- 			sel = true
-	-- 		else
-	-- 			dlg.KeyboardItem = k + dn
-	-- 		end
-	-- 	end
-	--	local inc, exc = include and 1 or 0, not include and dn > 0 and 1 or 0
-	-- 	if i - exc < j then
-	-- 		dlg.KeyboardItemsStart = j + dn
-	-- 	elseif i - inc < j + n then
-	-- 		dlg.KeyboardItemsCount = n + dn
-	-- 		if needSel then
-	-- 			dlg.KeyboardItem = i
-	-- 		end
-	-- 		return true, sel
-	-- 	end
-	-- end
 	local function GetLink(p, nxt, parent)
 		return p == 0 and parent + 0x4C + (nxt and 0 or 4) or p+o + 0x2C + (nxt and 4 or 0)
 	end
@@ -1134,14 +1094,6 @@ function structs.f.Button(define)
 		local parent = u4[p+o + 0x34]
 		return u4[parent + 0x44] ~= 0, parent
 	end
-	-- local function Unlink(p)
-	-- 	local parent = u4[p+o + 0x34]
-	-- 	local pn = u4[GetLink(p, true)]
-	-- 	local pl = u4[GetLink(p, false)]
-	-- 	u4[GetLink(pl, true, parent)] = pn
-	-- 	u4[GetLink(pn, false, parent)] = pl
-	-- 	return parent
-	-- end
 	local function Unlink(p, parent)
 		local pn = u4[GetLink(p, true)]
 		local pl = u4[GetLink(p, false)]
@@ -1150,11 +1102,6 @@ function structs.f.Button(define)
 	end
 	function define.m:Destroy()
 		local p = self['?ptr']
-		-- local dlg = self.Parent
-		-- if dlg and dlg.UseKeyboadNavigation ~= 0 then
-		-- 	ShiftNavigation(dlg, FindIndexes(dlg, p), -1)
-		-- end
-		-- local parent = Unlink(p)
 		local nav, parent = HasNavigation(p)
 		if nav then
 			ShiftNavigation(parent, FindIndexes(parent, p), -1)
@@ -1169,19 +1116,6 @@ function structs.f.Button(define)
 		if (pn or pl) == p then
 			return
 		end
-		-- local dlg = self.Parent
-		-- if dlg and dlg.UseKeyboadNavigation ~= 0 then
-		-- 	local i, j = FindIndexes(dlg, p, pn or pl)
-		-- 	local keyb, sel = ShiftNavigation(dlg, i, -1)
-		-- 	if not pn then 
-		-- 		j = j + 1
-		-- 	end
-		-- 	if j > i then
-		-- 		j = j - 1
-		-- 	end
-		-- 	ShiftNavigation(dlg, j, 1, keyb, sel)
-		-- end
-		-- local parent = Unlink(p)
 		local nav, parent = HasNavigation(p)
 		if nav then
 			local i, j = FindIndexes(parent, p, pn or pl)
