@@ -181,6 +181,8 @@ function structs.f.GameStructure(define)
 	
 	[mmv(0x4D50C0, 0x507A3C, 0x519324)].CustomType('CurrentNPCDialog', 4, structs.aux.PDialog)
 	 .Info{Type = "structs.Dlg"}
+	[mmv(0x4D50C4, 0x507A40, 0x519328)].CustomType('CurrentHouseDialog', 4, structs.aux.PDialog)
+	 .Info{Type = "structs.Dlg"}
 	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), ret = true}
 	if mmver == 8 then
 		define

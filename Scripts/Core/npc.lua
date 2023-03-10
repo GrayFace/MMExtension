@@ -661,12 +661,12 @@ local function PopulateHouseDlg(eventName, type)
 		events.cocall("PopulateArcomageDialog", t)
 		events.cocall("PopulateDisplayInventoryDialog", t)
 		t.ExtraParams = nil
-		--!k{PicType :const.HouseType} There are also similar AfterPopulateArcomageDialog and PopulateDisplayInventoryDialog events
+		--!k{PicType :const.HouseType} There are also similar 'AfterPopulateArcomageDialog' and 'AfterPopulateDisplayInventoryDialog' events
 		events.cocall("AfterPopulateHouseDialog", t)
 	end
 	events.cocall(eventName, t)
 	local t, extra = modify(t.Result)
-	local t = {PicType = type, House = Game.GetCurrentHouse(), Result = t, ExtraParams = extra}
+	local t = {PicType = type or Game.HousePicType, House = Game.GetCurrentHouse(), Result = t, ExtraParams = extra}
 	--!-
 	events.cocall("After"..eventName, t)
 	i4[pItemsCount] = dlg.KeyboardItemsCount
@@ -736,6 +736,10 @@ if mmver > 6 then
 			d:push(mm78(0x4B39AF, 0x4B23B6))
 			return true
 		end
+	end)
+	mem.autohook(mm78(0x4B39C3, 0x4B23CA), function(d)
+		local t = {PicType = Game.HousePicType, House = Game.GetCurrentHouse()}
+		events.cocall("AfterPopulateLearnSkillsDialog", t)
 	end)
 end
 
