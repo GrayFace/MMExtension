@@ -19,22 +19,50 @@ local DownItem
 local LastMousePos
 local SelHover = false
 -- local FocusedDialog
+local InputItem, InputCaptureEsc
 local ClickedItems, ClickTime = {}, nil
 local IDCusDlg, IDBlockInteraction, IDBlock, BlockCount, CreatingOO = const.DlgID.CustomDialog, const.DlgID.BlockDialogs, const.DlgID.BlockDialogsNoDraw, 0, nil
 local NoFoodGold, NeedRestore
 local tmMultiLine = {box = true, center = true}
 
-local function callback(f, ...)
-	if f then
-		return f(...)
-	end
-end
 
-local function EnableHandlers(t, on)
-	for k, v in pairs(t) do
+---- callbacks ----
+
+
+local function EnableHandlers(on)
+	for k, v in pairs(handlers) do
 		events[on and 'add' or 'remove'](k, v)
 	end
 end
+
+local function callback(name, o, ...)
+	local f = o[name]
+	if f then
+		return f(o, ...)
+	end
+	local a = o.callbacks
+	if a then
+		a.cocalls(name, o, ...)
+	end
+end
+
+function class:callback(name, f, first)
+	self.callbacks = self.callbacks or events.new()
+	self.callbacks[first and 'AddFirst' or 'add'](name, f)
+end
+item.callback = class.callback
+
+function class:event(name, f, first)
+	local a = tget(self, 'DeleteEvents')
+	local i = #a + 1
+	a[i] = f
+	a[-i] = name
+	events[first and 'AddFirst' or 'add'](name, f)
+end
+
+
+---- create/destroy dialog ----
+
 
 local function Defaults(t)
 	t.TmpIcons = t.TmpIcons ~= false
@@ -76,7 +104,7 @@ local function Apply2(self, t, dlg, new)
 	if self.BlockOO then
 		t.BlockOO = nil
 	elseif t.BlockOO == nil and new and is8 then
-		t.BlockOO = dlg.Height == 480
+		t.BlockOO = dlg.Height == 480 and dlg.Width == 640
 	end
 	if is8 and t.BlockOO then
 		CreatingOO = true
@@ -87,6 +115,7 @@ local function Apply2(self, t, dlg, new)
 	if is8 and t.AutoEsc then
 		t.AutoEsc = dlg:AddButton(0, 0, 0, 0, 0, 0, 113, 0, 27)
 	end
+	t.PassThrough = new and t.PassThrough == nil and (dlg.Height ~= 480 or dlg.Width ~= 640) or t.PassThrough
 end
 
 local function InitDlg(dlg, new)
@@ -100,7 +129,7 @@ local function InitDlg(dlg, new)
 	DlgCount = DlgCount + 1
 	if DlgCount == 1 then
 		LastMousePos = nil
-		EnableHandlers(handlers, true)
+		EnableHandlers(true)
 	end
 	if not new then
 		Apply1(dummy, t)
@@ -146,7 +175,7 @@ local function RestoreDialog()
 		Game.DoPause2()
 	end
 	-- FocusedDialog = t
-	callback(t.OnActivate, t)
+	callback('OnActivate', t)
 end
 
 local function FindDialogAfter(dlg)
@@ -186,7 +215,7 @@ local function DoUnbind(t, cleanup)
 	if not t.Dlg then
 		return
 	end
-	callback(t.OnUnbind, t, not cleanup)
+	callback('OnUnbind', t, not cleanup)
 	for _, o in ipairs(t.Items or dummy) do
 		if o.Button then
 			if cleanup then
@@ -212,10 +241,13 @@ local function DoUnbind(t, cleanup)
 	if is8 and t.BlockOO then
 		Game.OODialogs:CloseSpecific(t.BlockOO)
 	end
+	for i, f in ipairs(t.DeleteEvents or dummy) do
+		events.remove(t.DeleteEvents[-i], f)
+	end
 	t.Dlg = nil
 	DlgCount = DlgCount - 1
 	if DlgCount == 0 then
-		EnableHandlers(handlers, false)
+		EnableHandlers(false)
 	end
 	if t.Pause then
 		Game.Resume()
@@ -231,7 +263,7 @@ class.Unbind = |t| DoUnbind(t, true)
 function handlers.DestroyDialog(dlg, id)
 	local t = dlg.CustomDialog
 	if t then
-		callback(t.OnDestroy, t)
+		callback('OnDestroy', t)
 		DoUnbind(t)
 	end
 	NeedRestore = DlgCount > 0
@@ -396,10 +428,11 @@ local GetFont = |self, t| t.Font or self.Font or Game.FontArrus
 
 local function GetTextWidth(self, t)
 	local fnt = GetFont(self, t)
-	local w0, maxW = fnt:GetLineWidth(t.Text), self.Dlg.Width
+	local text = (t == InputItem and Game.TextInput or t.Text)
+	local w0, maxW = fnt:GetLineWidth(text), self.Dlg.Width
 	local w = w0
 	if tmMultiLine[t.TextMode] then  -- accomodate for a bug in WordWrap
-		while w < maxW and fnt:GetLineWidth(fnt:WordWrap(t.Text, {0, 0, w, 480}, 0, false, true)) < w0 do
+		while w < maxW and fnt:GetLineWidth(fnt:WordWrap(text, {0, 0, w, 480}, 0, false, true)) < w0 do
 			w = w + 1
 		end
 	end
@@ -542,6 +575,7 @@ local function GetByStateMain(t, a)
 		return a[t.StateDisabled] or a.Disabled
 	end
 	return ClickedItems[t] and (a[t.StateClick] or a.Click)
+		or t == InputItem and (a[t.StateInput] or a.Input)
 		or (t == HoverItem and t == DownItem or (ClickedItems[t] or dummy).KeyPress) and (a[t.StateDown] or a.Down)
 		or (t == HoverItem and t.Focus and (SelHover or t == t.Parent.FocusedItem)) and (a[t.StateSelected] or a.Selected)
 		or t == HoverItem and (a[t.StateHover] or a.Hover)
@@ -556,7 +590,7 @@ local function GetByState(t, a, NoCallback)
 		return
 	end
 	local main = GetByStateMain(t, a)
-	return not NoCallback and callback(t.OnQuerryState, a, main) or main or a[t.State] or a.Normal
+	return not NoCallback and callback('OnQuerryState', t, a, main) or main or a[t.State] or a.Normal
 end
 
 local States = setmetatable({}, {__index = |t, k| k})
@@ -577,10 +611,11 @@ function class:HandleAction(t)
 	if self.PassThrough then
 		return
 	end
-	local more = {Consume = self.HandleEsc and t.Action == 113, PassThrough = false}
-	callback(self.OnAction, t, more)
-	if t.Action == 113 and not more.PassThrough and self.HandleEsc then
-		callback(self.OnCanClose, t, more)
+	local more = {Handle = t.Action == 113 and self.HandleEsc, PassThrough = t.PassThrough}
+	more.Consume = more.Handle
+	callback('OnAction', self, t, more)
+	if t.Action == 113 and more.Handle then
+		callback('OnCanClose', self, t, more)
 		if not self.NoClose then
 			if self.CloseSound then
 				Game.PlaySound(DefSound(self.CloseSound), 0)
@@ -596,8 +631,31 @@ function class:HandleAction(t)
 	end
 end
 
+local function InputCancelled()
+	local t = InputItem
+	if t then
+		InputItem, InputCaptureEsc = nil
+		callback('OnCancelInput', t.Parent, t)
+	end
+end
+
+local function CancelInput()
+	if Game.TextInputMode ~= 0 then
+		Game.EndTextInput(3)
+	end
+	InputCancelled()
+end
+
+local function InputAccepted()
+	local t, q = InputItem, {Text = Game.TextInput}
+	q.ItemText = q.Text
+	InputItem, InputCaptureEsc = nil
+	callback('OnAcceptInput', t.Parent, t, q)
+	t.Text = q.ItemText or t.Text
+end
+
 local function DoOnClick(o, t)
-	callback(o.OnClick, o, t)
+	callback('OnClick', o, t)
 	if (t.Action or 0) ~= 0 then
 		Game.Actions.Add(t.Action, t.Param, t.Param2)
 	end
@@ -607,7 +665,7 @@ function class:SetFocusedItem(t)
 	local cur = self.FocusedItem
 	if t ~= cur then
 		self.FocusedItem = t
-		callback(self.OnFocusItem, self, t, cur)
+		callback('OnFocusItem', self, t, cur)
 	end
 end
 
@@ -616,7 +674,7 @@ local function HandleClick(o, key, dbl, foc)
 		return
 	end
 	local t = {Action = o.Action or 0, Param = o.ActionParam or 0, Param2 = o.ActionParam2 or 0, KeyPress = key, DoubleClick = dbl, ByFocusControl = foc, DelayClick = o[key and 'DelayKeyClick' or 'DelayClick'], Sound = o.Sound, FocusOnClick = o.FocusOnClick, Focused = o == o.Parent.FocusedItem}
-	callback(o.OnTriggerClick, o, t)
+	callback('OnTriggerClick', o, t)
 	if t.Cancel then
 		return
 	elseif t.Sound then
@@ -645,7 +703,7 @@ local function HandleHover(o, menu)
 		Param2 = hact and (o.HintActionParam2 or o.ActionParam2) or 0,
 		FocusOnHover = o.FocusOnHover and SelHover,
 	}
-	callback(o.OnHint, o, q)
+	callback('OnHint', o, q)
 	if o.Hint and not menu and (o.Parent or dummy).Dlg == Game.Dialogs[0] then
 		Game.ShowStatusHint(o.Hint)
 	end
@@ -667,7 +725,7 @@ function handlers.Action(t)
 		local key = not (GotDown or GotDbl)
 		if not key then
 			DownItem = o
-			callback(o.OnMouseDown, o)
+			callback('OnMouseDown', o)
 		end
 		if key or not o.TriggerOnUp then
 			HandleClick(o, key, not (key or GotDown))
@@ -682,11 +740,15 @@ function handlers.Action(t)
 	elseif act == ActUp then
 		local o = DownItem
 		DownItem = nil
-		callback(o.OnMouseUp, o, o == HoverItem)
+		callback('OnMouseUp', o, o == HoverItem)
 		if o == HoverItem and o.TriggerOnUp then
 			HandleClick(o, false, false)
 		end
 	elseif act ~= 0 then
+		if InputCaptureEsc and act == 113 then
+			t.Action = 0
+			return CancelInput()
+		end
 		local dialogs = Game.Dialogs
 		for i = dialogs.High, 0, -1 do
 			local dlg = dialogs[i]
@@ -722,6 +784,7 @@ local CheckParent = |self, t| t and t.Parent == self and t, t
 
 class.GetHoveredItem = |t| CheckParent(t, HoverItem)
 class.GetMouseDownItem = |t| CheckParent(t, DownItem)
+class.GetInputItem = |t| CheckParent(t, InputItem)
 -- class.GetFocusedItem = |t| CheckParent((FocusedDialog or dummy).FocusedItem)
 
 
@@ -750,6 +813,19 @@ local function UseClipRect(m, dlg)
 	Screen:SetClipRect(max(L, 0), max(T, 0), min(R, 640), min(B, 480))
 end
 
+local function TrimInput(fnt, w)
+	local n
+	while fnt:GetLineWidth(Game.TextInputBytes) > w do
+		n = (n or Game.TextInputLength) - 1
+		if n < 0 then
+			n = 0
+			break
+		end
+		Game.TextInputBytes[n] = 0
+	end
+	Game.TextInputLength = n
+end
+
 function class:DoDrawItem(t)
 	if t.BoxBorder and t.Width and t.Height then
 		local x, y, w, h = UseMargins(self, t, t.BoxMargin or dummy, t.Width, t.Height)
@@ -765,7 +841,7 @@ function class:DoDrawItem(t)
 		end
 		TileDraw(pic, style, x, y, tile and w or 1, tile and h or 1)
 	end
-	if (t.Text or "") ~= "" and not t.NoText then
+	if (t == InputItem or (t.Text or "") ~= "") and not t.NoText then
 		local m = t.TextMargin or dummy
 		local mode, mode2 = t.TextMode, t.TextVMode
 		local tw = m.Left == true and GetTextWidth(self, t)
@@ -775,8 +851,9 @@ function class:DoDrawItem(t)
 			y, h = y + (h - th):div(2), th
 		end
 		local aw, ah = w, h
+		local wlim = self.Dlg.Width - x
 		if not mode then
-			aw = self.Dlg.Width - x
+			aw = wlim
 		end
 		if mode2 == "limit" then
 			ah = self.Dlg.Height - y
@@ -789,13 +866,28 @@ function class:DoDrawItem(t)
 		local fnt = GetFont(self, t)
 		local cl = GetByState(t, t.Colors) or t.Color
 		local clSh = GetByState(t, t.ShadowColors) or t.ShadowColor
+		if t == InputItem and mode == "limit" then
+			TrimInput(fnt, aw)
+		end
+		local text = t == InputItem and Game.TextInput or t.Text
+		local cursor = t == InputItem and timeGetTime()%1000 > 500 and (t.Cursor or self.Cursor or '_')
+		local clCur = (t.Colors or dummy).Cursor
+		local clCurSh = (t.ShadowColors or dummy).Cursor
+		if cursor and (not mode or mode == "box" or mode == "limit") then
+			local pos = (tw or GetTextWidth(self, t)) + (t.CursorIndent or self.CursorIndent or 0)
+			pos = min(pos, wlim - fnt:GetLineWidth(cursor))
+			fnt:Draw(cursor, {x - 1, y, wlim + 1, ah}, pos + 1, 0, clCur or cl, clCurSh or clSh)
+		end
 		if not mode or mode == "box" then
-			fnt:Draw(t.Text, {x - 1, y, aw, ah}, 1, 0, cl, clSh, (mode2 == "box" or mode2 == "limit") and y + ah)
+			fnt:Draw(text, {x - 1, y, min(aw + 2, wlim + 1), ah}, 1, 0, cl, clSh, (mode2 == "box" or mode2 == "limit") and y + ah)
 		elseif mode == "limit" then
-			fnt:DrawLimited(t.Text, {x - 1, y, aw, ah}, aw, 1, 0, cl)
+			fnt:DrawLimited(text, {x - 1, y, min(aw + 2, wlim + 1), ah}, aw + 1, 1, 0, cl)
 		elseif mode == "center" then
+			if cursor then
+				text = text..'\t'..(clCur and StrColor(clCur) or '')..cursor
+			end
 			-- TODO: support V limit?
-			fnt:DrawCentered(t.Text, {x, y, aw, ah}, 0, 0, cl, clSh)
+			fnt:DrawCentered(text, {x, y, aw, ah}, 0, 0, cl, clSh)
 		end
 	end
 end
@@ -804,7 +896,7 @@ function class:DrawItem(t)
 	if not t.Visible then
 		return
 	end
-	callback(t.OnBeforeDraw, t)
+	callback('OnBeforeDraw', t)
 	if t.NoDraw then
 		return
 	end
@@ -813,14 +905,14 @@ function class:DrawItem(t)
 		UseClipRect(clip, self.Dlg)
 	end
 	self:DoDrawItem(t)
-	callback(t.OnDraw, t)
+	callback('OnDraw', t)
 	if clip then
 		UseClipRect(self.ClipMargin, self.Dlg)
 	end
 end
 
 function class:Draw()
-	callback(self.OnBeforeDraw, self)
+	callback('OnBeforeDraw', self)
 	if self.NoDraw or not self.Dlg then
 		return
 	end
@@ -834,7 +926,7 @@ function class:Draw()
 	for _, t in ipairs(self.Items) do
 		self:DrawItem(t)
 	end
-	callback(self.OnDraw, self)
+	callback('OnDraw', self)
 	UseClipRect()
 end
 
@@ -872,6 +964,14 @@ end
 local function before()
 	UpdateHover()
 	NeedRestore = NeedRestore and RestoreDialog()
+	if InputItem then
+		local state = InputItem.Parent.Dlg.TextInputState
+		if state == 2 then
+			InputAccepted()
+		elseif state ~= 1 then
+			InputCancelled()
+		end
+	end
 	local o = BlockCount == 0 and Game.Dialogs[0].CustomDialog
 	if o and Game.MainMenuCode < 0 then
 		o:Draw()
@@ -965,7 +1065,7 @@ local GetDistOutside = |items, a, cur, i| if a ~= cur then
 	return max(0, max(a.Top - c, c - a.Top - (a.Height or 0)))
 end
 
-local AddFocusKey = |self, key, filter, wrap| self:Add{Key = key, Button = true, OnClick = function()
+local AddFocusKey = |self, name, key, filter, wrap| self:Add{Name = name, Key = key, Button = true, OnClick = function()
 	SelHover = false
 	local cur = self.FocusedItem
 	local t = nil
@@ -992,7 +1092,7 @@ function class:AddFocusControl(enter, columns, wrap, wrap_c, wrap_to_c)
 	wrap = wrap ~= false
 	wrap_to_c = wrap_to_c ~= false
 	wrap_c = wrap_c == nil and wrap or wrap_c
-	enter = enter ~= false and self:Add{Key = const.Keys.RETURN, Button = true, OnClick = function()
+	enter = enter ~= false and self:Add{Name = '_FocusControl_Enter', Key = const.Keys.RETURN, Button = true, OnClick = function()
 		SelHover = false
 		local o = self.FocusedItem
 		if o and o.Visible and not o.Disabled then
@@ -1000,9 +1100,41 @@ function class:AddFocusControl(enter, columns, wrap, wrap_c, wrap_to_c)
 		end
 	end} or nil
 	local fdown = wrap_to_c and GetFocusIndex or GetFocusSameColumn
-	local up = AddFocusKey(self, const.Keys.UP, Inverter(fdown), wrap)
-	local down = AddFocusKey(self, const.Keys.DOWN, fdown, wrap)
-	local left = columns and AddFocusKey(self, const.Keys.LEFT, Inverter(GetColumnIndex), wrap_c)
-	local right = columns and AddFocusKey(self, const.Keys.RIGHT, GetColumnIndex, wrap_c)
+	local up = AddFocusKey(self, '_FocusControl_Up', const.Keys.UP, Inverter(fdown), wrap)
+	local down = AddFocusKey(self, '_FocusControl_Down', const.Keys.DOWN, fdown, wrap)
+	local left = columns and AddFocusKey(self, '_FocusControl_Left', const.Keys.LEFT, Inverter(GetColumnIndex), wrap_c)
+	local right = columns and AddFocusKey(self, '_FocusControl_Right', const.Keys.RIGHT, GetColumnIndex, wrap_c)
 	return enter, up, down, left, right
+end
+
+
+-- text input --
+
+
+function item.StartInput(t, captureEsc, lim, numeric, text, acceptInput)
+	if acceptInput and InputItem then
+		InputItem.Parent:AcceptInput()
+	end
+	CancelInput()
+	InputItem, InputCaptureEsc = t, captureEsc
+	Game.StartTextInput(lim, numeric, t.Parent.Dlg)
+	text = text or t.Text or ""
+	Game.TextInput = text
+	Game.TextInputLength = #text
+	callback('OnStartInput', t.Parent, t)
+end
+
+function class:AcceptInput()
+	if InputItem and InputItem.Parent == self then
+		if Game.TextInputMode ~= 0 then
+			Game.EndTextInput(2)
+		end
+		InputAccepted()
+	end
+end
+
+function class:CancelInput()
+	if InputItem and InputItem.Parent == self then
+		CancelInput()
+	end
 end
