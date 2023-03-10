@@ -211,6 +211,18 @@ local function RestoreScreen(t)
 	end
 end
 
+local function CleanupSpecialItems()
+	HoverItem = ItemByPointer[mem.topointer(HoverItem, true)]
+	DownItem = ItemByPointer[mem.topointer(DownItem, true)]
+	if InputItem and not ItemByPointer[mem.topointer(InputItem, true)] then
+		InputItem, InputCaptureEsc = nil
+		Game.EndTextInput(3)
+	end
+	for i, a in ipairs(ClickedItems) do
+		ClickedItems[i] = ItemByPointer[mem.topointer(ClickedItems[i], true)]
+	end
+end
+
 local function DoUnbind(t, cleanup)
 	if not t.Dlg then
 		return
@@ -244,6 +256,7 @@ local function DoUnbind(t, cleanup)
 	for i, f in ipairs(t.DeleteEvents or dummy) do
 		events.remove(t.DeleteEvents[-i], f)
 	end
+	CleanupSpecialItems()
 	t.Dlg = nil
 	DlgCount = DlgCount - 1
 	if DlgCount == 0 then
@@ -560,6 +573,7 @@ function class:RemoveItem(t)
 		t.Button:Destroy()
 		t.Button = nil
 		ItemByPointer[mem.topointer(t, true)] = nil
+		CleanupSpecialItems()
 	end
 	if self.FocusedItem == t then
 		self.FocusedItem = nil
@@ -691,6 +705,8 @@ local function HandleClick(o, key, dbl, foc)
 		DoOnClick(o, t)
 	end
 end
+
+item.Click = |o, key| HandleClick(o, key == nil or key, false, false)
 
 local function HandleHover(o, menu)
 	local hact = o.HintAction
