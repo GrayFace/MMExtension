@@ -1045,20 +1045,121 @@ function structs.f.Button(define)
 	[0x51+o].string(103)  'Hint'
 	.size = 0xB8+o
 	
+	-- local function FindIndexes(dlg, p1, p2)
+	-- 	local i1, i2
+	-- 	for i, a in dlg:Enum() do
+	-- 		local p = a['?ptr']
+	-- 		if p == p1 then
+	-- 			i1, p1 = p, nil
+	-- 			if not p2 then
+	-- 				break
+	-- 			end
+	-- 		elseif p == p2 then
+	-- 			i2, p2 = p, nil
+	-- 			if not p1 then
+	-- 				break
+	-- 			end
+	-- 		end
+	-- 	end
+	-- 	return i1, i2
+	-- end
+	-- local function ShiftNavigation(dlg, i, dn, include, needSel)
+	-- 	local j, k, n = dlg.KeyboardItemsStart, dlg.KeyboardItem, dlg.KeyboardItemsCount
+	-- 	local sel
+	-- 	if i <= k then
+	-- 		if i == k and dn < 0 then
+	-- 			dlg.KeyboardItem = 0
+	-- 			sel = true
+	-- 		else
+	-- 			dlg.KeyboardItem = k + dn
+	-- 		end
+	-- 	end
+	--	local inc, exc = include and 1 or 0, not include and dn > 0 and 1 or 0
+	-- 	if i - exc < j then
+	-- 		dlg.KeyboardItemsStart = j + dn
+	-- 	elseif i - inc < j + n then
+	-- 		dlg.KeyboardItemsCount = n + dn
+	-- 		if needSel then
+	-- 			dlg.KeyboardItem = i
+	-- 		end
+	-- 		return true, sel
+	-- 	end
+	-- end
 	local function GetLink(p, nxt, parent)
 		return p == 0 and parent + 0x4C + (nxt and 0 or 4) or p+o + 0x2C + (nxt and 4 or 0)
 	end
-	local function Unlink(p)
+	local function FindIndexes(parent, p1, p2)
+		local p, i = u4[GetLink(0, true, parent)], 0
+		local i1, i2
+		while p ~= 0 do
+			if p == p1 then
+				i1, p1 = i, nil
+				if not p2 then
+					break
+				end
+			elseif p == p2 then
+				i2, p2 = i, nil
+				if not p1 then
+					break
+				end
+			end
+			p, i = u4[GetLink(p, true)], i + 1
+		end
+		return i1, i2
+	end
+	local function ShiftNavigation(parent, i, dn, include, needSel)
+		local Start, Selected, Count = 0x38, 0x2C, 0x28
+		local j, k, n = u4[parent + Start], u4[parent + Selected], u4[parent + Count]
+		local sel
+		if i <= k then
+			if i == k and dn < 0 then
+				u4[parent + Selected] = j
+				sel = true
+			else
+				u4[parent + Selected] = k + dn
+			end
+		end
+		local inc, exc = include and 1 or 0, not include and dn > 0 and 1 or 0
+		if i - exc < j then
+			u4[parent + Start] = j + dn
+		elseif i - inc < j + n then
+			u4[parent + Count] = n + dn
+			if needSel then
+				u4[parent + Selected] = i
+			end
+			return true, sel
+		end
+	end
+	local function HasNavigation(p)
 		local parent = u4[p+o + 0x34]
+		return u4[parent + 0x44] ~= 0, parent
+	end
+	-- local function Unlink(p)
+	-- 	local parent = u4[p+o + 0x34]
+	-- 	local pn = u4[GetLink(p, true)]
+	-- 	local pl = u4[GetLink(p, false)]
+	-- 	u4[GetLink(pl, true, parent)] = pn
+	-- 	u4[GetLink(pn, false, parent)] = pl
+	-- 	return parent
+	-- end
+	local function Unlink(p, parent)
 		local pn = u4[GetLink(p, true)]
 		local pl = u4[GetLink(p, false)]
 		u4[GetLink(pl, true, parent)] = pn
 		u4[GetLink(pn, false, parent)] = pl
-		return parent
 	end
 	function define.m:Destroy()
 		local p = self['?ptr']
-		local parent = Unlink(p)
+		-- local dlg = self.Parent
+		-- if dlg and dlg.UseKeyboadNavigation ~= 0 then
+		-- 	ShiftNavigation(dlg, FindIndexes(dlg, p), -1)
+		-- end
+		-- local parent = Unlink(p)
+		local nav, parent = HasNavigation(p)
+		if nav then
+			ShiftNavigation(parent, FindIndexes(parent, p), -1)
+		end
+		Unlink(p, parent)
 		u4[parent + 0x20] = u4[parent + 0x20] - 1
 		mem.freeMM(p)
 	end
@@ -1068,7 +1169,36 @@ function structs.f.Button(define)
 		if (pn or pl) == p then
 			return
 		end
-		local parent = Unlink(p)
+		-- local dlg = self.Parent
+		-- if dlg and dlg.UseKeyboadNavigation ~= 0 then
+		-- 	local i, j = FindIndexes(dlg, p, pn or pl)
+		-- 	local keyb, sel = ShiftNavigation(dlg, i, -1)
+		-- 	if not pn then 
+		-- 		j = j + 1
+		-- 	end
+		-- 	if j > i then
+		-- 		j = j - 1
+		-- 	end
+		-- 	ShiftNavigation(dlg, j, 1, keyb, sel)
+		-- end
+		-- local parent = Unlink(p)
+		local nav, parent = HasNavigation(p)
+		if nav then
+			local i, j = FindIndexes(parent, p, pn or pl)
+			local keyb, sel = ShiftNavigation(parent, i, -1)
+			if not j then
+				j = pl and 0 or u4[parent + 0x20]
+			elseif pl then 
+				j = j + 1
+			end
+			print(i, j, keyb, sel)
+			if j > i then
+				j = j - 1
+			end
+			print(j)
+			ShiftNavigation(parent, j, 1, keyb, sel)
+		end
+		Unlink(p, parent)
 		pn = pn or u4[GetLink(pl, true, parent)]
 		pl = pl or u4[GetLink(pn, false, parent)]
 		u4[GetLink(pl, true, parent)] = p
