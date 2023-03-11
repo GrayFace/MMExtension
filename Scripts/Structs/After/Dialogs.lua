@@ -71,7 +71,6 @@ local function Defaults(t)
 	t.Screen = t.Screen or t.Screen ~= false
 	t.LastScreen = Game.CurrentScreen
 	t.LastMimicScreen = Game.EscMessageLastScreen
-	t.HandleEsc = t.HandleEsc ~= false
 end
 
 local function Apply1(self, t)
@@ -116,6 +115,7 @@ local function Apply2(self, t, dlg, new)
 		t.AutoEsc = dlg:AddButton(0, 0, 0, 0, 0, 0, 113, 0, 27)
 	end
 	t.PassThrough = new and t.PassThrough == nil and (dlg.Height ~= 480 or dlg.Width ~= 640) or t.PassThrough
+	t.HandleEsc = new and t.HandleEsc == nil and not t.PassThrough or t.HandleEsc
 end
 
 local function InitDlg(dlg, new)
@@ -621,11 +621,11 @@ item.QuerryState = GetByState
 
 local DefSound = |v| v == true and (is8 and 76 or 75) or v
 
-function class:HandleAction(t)
+function class:HandleAction(t, index)
 	if self.PassThrough then
 		return
 	end
-	local more = {Handle = t.Action == 113 and self.HandleEsc, PassThrough = t.PassThrough}
+	local more = {Handle = t.Action == 113 and self.HandleEsc, PassThrough = self.PassThrough}
 	more.Consume = more.Handle
 	callback('OnAction', self, t, more)
 	if t.Action == 113 and more.Handle then
@@ -634,7 +634,13 @@ function class:HandleAction(t)
 			if self.CloseSound then
 				Game.PlaySound(DefSound(self.CloseSound), 0)
 			end
-			self.Dlg:Destroy()
+			local dialogs = Game.Dialogs
+			for i = dialogs.High, index, -1 do
+				local dlg = dialogs[i].CustomDialog
+				if dlg then
+					dlg.Dlg:Destroy()
+				end
+			end
 		end
 	end
 	if not more.PassThrough then
@@ -767,9 +773,8 @@ function handlers.Action(t)
 		end
 		local dialogs = Game.Dialogs
 		for i = dialogs.High, 0, -1 do
-			local dlg = dialogs[i]
-			dlg = dlg.CustomDialog
-			if not dlg or dlg:HandleAction(t) then
+			local dlg = dialogs[i].CustomDialog
+			if not dlg or dlg:HandleAction(t, i) then
 				break
 			end
 		end
