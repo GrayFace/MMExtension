@@ -17,16 +17,17 @@ local function BatchAdd(t, d)
 end
 mem.BatchAdd = BatchAdd
 
-local function ChangeGameArray(name, p, count, lenP)
+local function ChangeGameArray(name, p, count, lenP, stru)
+	stru = stru or Game
 	if p then
-		structs.o.GameStructure[name] = p
-		internal.SetArrayUpval(Game[name], 'o', p)
+		structs.o[structs.name(stru)][name] = p
+		internal.SetArrayUpval(stru[name], 'o', p)
 	end
 	if count then
-		internal.SetArrayUpval(Game[name], 'count', count)
+		internal.SetArrayUpval(stru[name], 'count', count)
 	end
 	if lenP then
-		internal.SetArrayUpval(Game[name], 'lenP', lenP)
+		internal.SetArrayUpval(stru[name], 'lenP', lenP)
 	end
 end
 mem.ChangeGameArray = ChangeGameArray
@@ -34,7 +35,8 @@ mem.ChangeGameArray = ChangeGameArray
 local ItemSize = |t| t[t.low]['?size']
 
 local function Extend(t)
-	local name, size, endSize, start, before = t[1], t.Size or ItemSize(Game[t[1]]), t.EndSize or 0, t.StartSize or 0, t.StartBefore or 0
+	local stru = t.BaseStruct or Game
+	local name, size, endSize, start, before = t[1], t.Size or ItemSize(stru[t[1]]), t.EndSize or 0, t.StartSize or 0, t.StartBefore or 0
 	start = start + before
 	local esize = endSize + start
 	local ptr, count, limit
@@ -42,7 +44,7 @@ local function Extend(t)
 		error('size unspecified: '..(name or ('%X'):format(t.Struct['?ptr'])))
 	end
 	local function Resize(newCount, canShrink)
-		local a = name and Game[name] or t.Struct
+		local a = name and stru[name] or t.Struct
 		local OldCount = count or t.UseDynCount and a.count or t.Limit or a.limit
 		if newCount == OldCount or newCount < OldCount and not canShrink then
 			return
@@ -94,25 +96,25 @@ local function Extend(t)
 			-- If lenP is set, 'count' acts as a limit and should be set only if dp ~= 0
 			-- If lenP is inside the relocated area, correct it.
 			-- If it's at the end of it, also move it by 'dlim*size'.
-			local lenP = internal.GetArrayUpval(Game[s], 'lenP')
+			local lenP = internal.GetArrayUpval(stru[s], 'lenP')
 			local n = (not lenP or dp ~= 0) and count or nil
 			if lenP and n and lenP >= old and lenP < old + (limit - dlim)*size + esize then
 				lenP = lenP + dp + (lenP < old + start and 0 or dlim*size)
 			else
 				lenP = nil
 			end
-			ChangeGameArray(s, structs.o.GameStructure[s] + dp, n, lenP)
+			ChangeGameArray(s, structs.o[structs.name(stru)][s] + dp, n, lenP, stru)
 		end
 		for _, f in ipairs(t.Custom or {}) do
 			f(count, OldCount, dp, ptr or old, size, t, dlim)
 		end
 	end
 	local function SetHigh(newMax, canShrink)
-		Resize(newMax - Game[name].low + 1, canShrink)
+		Resize(newMax - stru[name].low + 1, canShrink)
 	end
 	for _, s in ipairs(t) do
-		rawset(Game[s], 'Resize', Resize)
-		rawset(Game[s], 'SetHigh', SetHigh)
+		rawset(stru[s], 'Resize', Resize)
+		rawset(stru[s], 'SetHigh', SetHigh)
 	end
 	return Resize, SetHigh
 end

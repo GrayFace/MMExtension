@@ -3,8 +3,11 @@ local i4, i2, i1, u4, u2, u1, pchar, call = mem.i4, mem.i2, mem.i1, mem.u4, mem.
 local mmver = offsets.MMVersion
 
 local mmv = |...| (select(mmver - 5, ...))
+local mm78 = |...| (select(mmver - 6, ...))
+
 
 -- extend Game.PlayerFaces
+
 
 local ResizeFaces = ||;
 local function HookLoadedFaces()
@@ -38,3 +41,57 @@ mem.ExtendGameStructure{'PlayerFaces',
 	CustomOnce = {HookLoadedFaces},
 	Custom = {|n| ResizeFaces(n, true)},
 }
+
+
+-- remove skills list limits
+
+
+if mmver > 6 then
+	mem.ExtendGameStructure{'ArmorSkills',
+		Size = 4, BaseStruct = Game.DialogLogic,
+		Refs = mm78(
+			{0x419544, 0x419BF5},
+			{0x4194BD, 0x419F17}
+		),
+		EndRefs = mm78(
+			{0x4195A4, 0x419D71},
+			{0x419735, 0x419F44}
+		),
+	}
+
+	mem.ExtendGameStructure{'WeaponSkills',
+		Size = 4, BaseStruct = Game.DialogLogic,
+		Refs = mm78(
+			{0x419444, 0x419806},
+			{0x418D70, 0x419E4B}
+		),
+		EndRefs = mm78(
+			{0x4194B4, 0x41997D},
+			{0x418FE8, 0x419E78}
+		),
+	}
+
+	mem.ExtendGameStructure{'MiscSkills',
+		Size = 4, BaseStruct = Game.DialogLogic,
+		Refs = mm78(
+			{0x4195C1, 0x419DFC},
+			{0x419860}
+		),
+		EndRefs = mm78(
+			{0x41961D, 0x419F6A},
+			{0x419AD8}
+		),
+	}
+
+	mem.ExtendGameStructure{'MagicSkills',
+		Size = 4, BaseStruct = Game.DialogLogic,
+		Refs = mm78(
+			{0x4194D1, 0x419A02},
+			{0x419113}
+		),
+		EndRefs = mm78(
+			{0x419531, 0x419B6D},
+			{0x419395}
+		),
+	}
+end
