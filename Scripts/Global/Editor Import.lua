@@ -168,6 +168,7 @@ local function LoadBlvObj(file, AsObjects)
 	UniqueVertex, UniqueFacet = Editor.AddUnique(state)
 	-- NewVertexes, OldVertexes = {}, {}
 	NewFacets, OldFacets = {}, {}
+	local duplicates = {}
 	local OldRoomObj = state.RoomObj or {}
 	state.RoomObj = {}
 	local obj
@@ -216,6 +217,9 @@ local function LoadBlvObj(file, AsObjects)
 			ObjName = s
 			if not AsObjects then
 				local o = OldRoomObj[ObjName] or {}
+				if state.RoomObj[ObjName] then
+					duplicates[#duplicates + 1] = ObjName
+				end
 				state.RoomObj[ObjName] = o
 				obj = {}
 				o.BaseFacets = obj
@@ -246,6 +250,9 @@ local function LoadBlvObj(file, AsObjects)
 				end
 			end
 		end
+	elseif duplicates[1] then
+		Editor.LastError = "Duplicated rooms have not been imported:\n"..table.concat(duplicates, "\n")
+		Editor.LastErrorFacets = {}
 	end
 end
 
@@ -350,9 +357,9 @@ local function LoadOdmObj(file)
 	UniqueVertex, UniqueFacet = Editor.AddUnique(state)
 	-- NewVertexes, OldVertexes = {}, {}
 	NewFacets, OldFacets = {}, {}
+	local duplicates = {}
 	local OldModels = state.ModelByName or {}
 	local models = {}
-	local duplicates = {}
 	state.ModelByName = models
 	local obj
 	local ObjName
@@ -470,7 +477,7 @@ local function LoadOdmObj(file)
 	end
 	
 	if duplicates[1] then
-		Editor.LastError = "Duplicated models found:\n"..table.concat(duplicates)
+		Editor.LastError = "Duplicated models have not been imported:\n"..table.concat(duplicates, "\n")
 		Editor.LastErrorFacets = {}
 	end
 end
