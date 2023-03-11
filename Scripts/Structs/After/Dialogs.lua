@@ -842,7 +842,8 @@ local function TrimInput(fnt, w)
 	Game.TextInputLength = n
 end
 
-function class:DoDrawItem(t)
+function item.DrawImages(t)
+	local self = t.Parent
 	if t.BoxBorder and t.Width and t.Height then
 		local x, y, w, h = UseMargins(self, t, t.BoxMargin or dummy, t.Width, t.Height)
 		Screen:DrawMessageBoxBorder(x - self.Dlg.Left, y - self.Dlg.Top, w, h)
@@ -857,6 +858,10 @@ function class:DoDrawItem(t)
 		end
 		TileDraw(pic, style, x, y, tile and w or 1, tile and h or 1)
 	end
+end
+
+function item.DrawText(t)
+	local self = t.Parent
 	if (t == InputItem or (t.Text or "") ~= "") and not t.NoText then
 		local m = t.TextMargin or dummy
 		local mode, mode2 = t.TextMode, t.TextVMode
@@ -920,7 +925,8 @@ function class:DrawItem(t)
 	if clip then
 		UseClipRect(clip, self.Dlg)
 	end
-	self:DoDrawItem(t)
+	t:DrawImages()
+	t:DrawText()
 	callback('OnDraw', t)
 	if clip then
 		UseClipRect(self.ClipMargin, self.Dlg)
