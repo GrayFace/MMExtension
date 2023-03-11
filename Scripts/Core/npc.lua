@@ -26,6 +26,63 @@ if mmver == 7 and mem.u1[0x445F76] == 4 then
 	mem.u1[0x445F76] = 3
 end
 
+-- fix inability to hire NPCs with index over 256
+if mmver == 6 then
+	-- -- GetCurrentNPCPtr
+	-- mem.asmhook(0x43BDE5, [[
+	-- 	mov edx, eax
+	-- 	shl edx, 2
+	-- 	mov [ecx + 1000], dh
+	-- ]])
+	-- mem.asmhook2(0x43BE03, [[
+	-- 	mov ah, [0x55CDE0 + 1000 + ebp]
+	-- ]])
+	-- mem.asmpatch(0x43BE23, [[
+	-- 	and eax, 0xffff
+	-- 	shr eax, 2
+	-- 	add eax, 2
+	-- ]])
+	
+	-- too manu places to fix
+elseif mmver == 7 then
+	-- GetNPCPtrFromIndex (2 variants)
+	local code = [[
+		mov eax, [ebp - 8]
+		shl eax, 2
+		mov [ebx + 1000], ah
+	]]
+	for _, p in ipairs{0x445B0E, 0x445C51} do
+		mem.nop(p)
+		mem.asmhook(p, code)
+	end
+	local code2 = [[
+		jb @f
+		mov ah, [0x5C5C30 + 1000 + esi]
+		shr eax, 2
+		add eax, 2
+	@@:
+	]]
+	for _, p in ipairs{0x445B2D, 0x445C78} do
+		mem.asmhook2(p, code2)
+	end
+	mem.asmpatch(0x445C93, [[add eax, 2]])
+	-- AddGold - check for banker
+	local code3 = [[
+		lea eax, [ebx*4]
+		mov [0x5C5C30 + 1000 + ecx], ah
+	]]
+	mem.asmhook(0x420C5F, code3)
+	mem.asmhook(0x420C8A, [[
+		mov ah, [0x5C5C30 + 1000 + edi]
+		shr eax, 2
+		add eax, 2
+	]])
+	-- draw portrait
+	mem.asmhook(0x492008, code3)
+	mem.asmhook(0x492046, [[mov esi, eax]])
+	mem.asmhook2(0x49204C, code2)
+end
+
 --!(NPC:structs.NPC) Finds the prototype NPC in #Game.NPC:# array for the supplied hired NPC. Returns 'nil' if it's a street NPC.
 function FindHiredNPC(npc)
 	local s = npc.Name
