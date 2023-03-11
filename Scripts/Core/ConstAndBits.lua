@@ -880,7 +880,7 @@ const.Screens = {
 	Query = 6,  -- like with hotkeys in Chinese debug MM6
 	Inventory = 7,  -- character screen, not necessarily Inventory
 	SpellBook = 8,
-	NewGameBreefing = 9,
+	NewGameBriefing = 9,  -- was called 'NewGameBreefing' before MMExtension v2.3, old name still supported for backward compatibility
 	Chest = 10,
 	SaveGame = 11,
 	LoadGame = 12,
@@ -901,6 +901,7 @@ const.Screens = {
 	ItemSpellMM6 = 103,
 	QuickReference = 104,
 }
+setmetatable(const.Screens, {__index = {NewGameBreefing = 9}})
 
 const.DlgID = {
 	Generic = 1,  -- a lot of dialogs use this Id
