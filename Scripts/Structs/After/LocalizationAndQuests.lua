@@ -715,6 +715,7 @@ local function RegisterQuest(t)
 	local LastSlot = {}
 	local CurrentNPC, HiredNPC
 	local CurrentQuests
+	local CurrentPlayer
 	local FreeEvents
 	local BackupTopics = {}
 	local BackupNPC = {}
@@ -730,6 +731,12 @@ local function RegisterQuest(t)
 		FreeEvents = {[0] = 995, 996, 997, 998, 999, 1000}
 	end
 
+	local function UpdatePlayer()
+		local i, old = Party.CurrentPlayer, CurrentPlayer
+		CurrentPlayer = i >= 0 and Party[i]['?ptr']
+		return CurrentPlayer ~= old
+	end
+
 	local function FindCurrentQuest(npc, i)
 		local t = RegQuests[npc*7 + i]
 		while t and (t.Branch and t.Branch ~= CurrentBranch or t.CanShow and not t:CanShow()) do
@@ -740,6 +747,7 @@ local function RegisterQuest(t)
 	
 	local function UpdateCurrentQuests(npc)
 		CurrentQuests = {}
+		UpdatePlayer()
 		local ev = Game.NPC[npc].Events
 		for i = 0, 5 do
 			local t = FindCurrentQuest(-1, i) or FindCurrentQuest(npc, i)
@@ -871,6 +879,11 @@ local function RegisterQuest(t)
 	
 	events.PopulateNPCDialog = |t| if t.DlgKind == "JoinMenu" then
 		RestoreBackupNPC()  -- need to initialize the hired NPC with a clean set of topics
+	end
+	
+	-- update topics
+	events.BeforeDrawDialogs = || if CurrentNPC and CurrentQuests and Game.CurrentNPCDialog == Game.GetTopDialog() and UpdatePlayer() then
+		UpdateNPCQuests()
 	end
 	
 	-- Sets current dialog branch to 'branch' if it's specified.
