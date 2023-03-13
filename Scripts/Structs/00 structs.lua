@@ -181,7 +181,7 @@ function structs.f.GameStructure(define)
 	
 	[mmv(0x4D50C0, 0x507A3C, 0x519324)].CustomType('CurrentNPCDialog', 4, structs.aux.PDialog)
 	 .Info{Type = "structs.Dlg"}
-	[mmv(0x4D50C4, 0x507A40, 0x519328)].CustomType('CurrentHouseDialog', 4, structs.aux.PDialog)
+	.CustomType('CurrentHouseDialog', 4, structs.aux.PDialog)
 	 .Info{Type = "structs.Dlg"}
 	.func{name = "ExitHouseScreen", p = mmv(0x4A4AA0, 0x4BD818, 0x4BB3F8), ret = true}
 	if mmver == 8 then
@@ -845,9 +845,9 @@ end]=]
 	end
 	define.Info{Sig = "SoundId, Unk = 0, Unk2 = 0"; "'Unk2' is present only in MM8"}
 	function define.f.PlaySound(soundId, object, loops, x, y, unk, volume, playbackRate)
-		call(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, SoundStru, soundId, object or -1, loops or 0, x or -1, y or 0, unk or 0, volume or 0, playbackRate or 0)
+		call(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, SoundStru, soundId, object or 0, loops or 0, x or -1, y or 0, unk or 0, volume or 0, playbackRate or 0)
 	end
-	define.Info{Sig = "SoundId, Object = -1, Loops = 0, X = -1, Y = 0, Unk = 0, Volume = 0, PlaybackRate = 0"}
+	define.Info{Sig = "SoundId, Object = 0, Loops = 0, X = -1, Y = 0, Unk = 0, Volume = 0, PlaybackRate = 0"; "Each object kind has a number of sound channels to use. Special 'Object' values of '-1' and '-2' also have 1 channel reserved for each (lower values have the same effect as '-2'). So, when many sounds are played at once you could use one of these negative values instead of the default 'Object' = '0'."}
 	function define.f.StopAllSounds(keepMin, keepMax)
 		call(mmv(0x48FB40, 0x4AB69F, 0x4A9BF7), 1, SoundStru, keepMin, keepMax)
 	end

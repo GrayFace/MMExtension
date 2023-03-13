@@ -3126,7 +3126,7 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="mem.ChangeGameArray" class="abs"></a><h5 class="def-h5">mem.ChangeGameArray</h5><b class="def-largs">(</b>name, p, count, lenP<b class="def-rargs">)</b>
+<a id="mem.ChangeGameArray" class="abs"></a><h5 class="def-h5">mem.ChangeGameArray</h5><b class="def-largs">(</b>name, p, count, lenP, stru<b class="def-rargs">)</b>
 </td><td class="def-right">
  
 </td>
@@ -5421,6 +5421,12 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
+<a id="structs.GameStructure.TextInputLimit" class="abs"></a>TextInputLimit
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
 <a id="structs.GameStructure.TextInput" class="abs"></a>TextInput
 </td><td class="def-right">
  
@@ -5440,6 +5446,12 @@ Id
 </tr><tr>
 <td class="def-left">
 <a id="structs.GameStructure.TextInputMode" class="abs"></a>TextInputMode
+</td><td class="def-right">
+ 
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.GameStructure.TextInputDialog" class="abs"></a>TextInputDialog
 </td><td class="def-right">
  
 </td>
@@ -6848,9 +6860,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.GameStructure.PlaySound" class="abs"></a>PlaySound<b class="def-largs">(</b>SoundId, Object = -1, Loops = 0, X = -1, Y = 0, Unk = 0, Volume = 0, PlaybackRate = 0<b class="def-rargs">)</b>
+<a id="structs.GameStructure.PlaySound" class="abs"></a>PlaySound<b class="def-largs">(</b>SoundId, Object = 0, Loops = 0, X = -1, Y = 0, Unk = 0, Volume = 0, PlaybackRate = 0<b class="def-rargs">)</b>
 </td><td class="def-right">
- 
+ Each object kind has a number of sound channels to use. Special <b class="def-param">Object</b> values of '-1' and '-2' also have 1 channel reserved for each (lower values have the same effect as '-2'). So, when many sounds are played at once you could use one of these negative values instead of the default <b class="def-param">Object</b> = <b class="def-param">0</b>.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -9011,13 +9023,13 @@ Id
 <td class="def-left">
 <a id="structs.Button.RightPixel" class="abs"></a>RightPixel
 </td><td class="def-right">
- <span class="def-code"><span class="lua5-note">=</span> Left <span class="lua5-operator">+</span> Width <span class="lua5-operator">-</span> <span class="lua5-literal">1</span></span> <span class="def-nbsp"> </span>(it was called <b class="def-param">Right</b> before MMExt 2.3, old name still supported for backward compatibility)
+ <span class="def-code"><span class="lua5-note">=</span> Left <span class="lua5-operator">+</span> Width <span class="lua5-operator">-</span> <span class="lua5-literal">1</span></span> <span class="def-nbsp"> </span>(it was called <b class="def-param">Right</b> before MMExtension v2.3, old name still supported for backward compatibility)
 </td>
 </tr><tr>
 <td class="def-left">
 <a id="structs.Button.BottomPixel" class="abs"></a>BottomPixel
 </td><td class="def-right">
- <span class="def-code"><span class="lua5-note">=</span> Top <span class="lua5-operator">+</span> Height <span class="lua5-operator">-</span> <span class="lua5-literal">1</span></span> <span class="def-nbsp"> </span>(it was called <b class="def-param">Bottom</b> before MMExt 2.3, old name still supported for backward compatibility)
+ <span class="def-code"><span class="lua5-note">=</span> Top <span class="lua5-operator">+</span> Height <span class="lua5-operator">-</span> <span class="lua5-literal">1</span></span> <span class="def-nbsp"> </span>(it was called <b class="def-param">Bottom</b> before MMExtension v2.3, old name still supported for backward compatibility)
 </td>
 </tr><tr>
 <td class="def-left">
@@ -9035,7 +9047,7 @@ Id
 <td class="def-left">
 <a id="structs.Button.Action" class="abs"></a>Action
 </td><td class="def-right">
- Was called <b class="def-param">ActionType</b> before MMExt 2.3, old name still supported for backward compatibility
+ Was called <b class="def-param">ActionType</b> before MMExtension v2.3, old name still supported for backward compatibility
 </td>
 </tr><tr>
 <td class="def-left">
@@ -9089,7 +9101,7 @@ Id
 <td class="def-left">
 <a id="structs.Button.Key" class="abs"></a>Key
 </td><td class="def-right">
- Was called <b class="def-param">ShortCut</b> before MMExt 2.3, old name still supported for backward compatibility
+ Was called <b class="def-param">ShortCut</b> before MMExtension v2.3, old name still supported for backward compatibility
 </td>
 </tr><tr>
 <td class="def-left">
@@ -9585,13 +9597,13 @@ Id
 <td class="def-left">
 <a id="structs.Dlg.RightPixel" class="abs"></a>RightPixel
 </td><td class="def-right">
- <span class="def-code"><span class="lua5-note">=</span> Left <span class="lua5-operator">+</span> Width <span class="lua5-operator">-</span> <span class="lua5-literal">1</span></span> <span class="def-nbsp"> </span>(it was called <b class="def-param">Right_</b> before MMExt 2.3, old name still supported for backward compatibility)
+ <span class="def-code"><span class="lua5-note">=</span> Left <span class="lua5-operator">+</span> Width <span class="lua5-operator">-</span> <span class="lua5-literal">1</span></span> <span class="def-nbsp"> </span>(it was called <b class="def-param">Right_</b> before MMExtension v2.3, old name still supported for backward compatibility)
 </td>
 </tr><tr>
 <td class="def-left">
 <a id="structs.Dlg.BottomPixel" class="abs"></a>BottomPixel
 </td><td class="def-right">
- <span class="def-code"><span class="lua5-note">=</span> Top <span class="lua5-operator">+</span> Height <span class="lua5-operator">-</span> <span class="lua5-literal">1</span></span> <span class="def-nbsp"> </span>(it was called <b class="def-param">Bottom_</b> before MMExt 2.3, old name still supported for backward compatibility)
+ <span class="def-code"><span class="lua5-note">=</span> Top <span class="lua5-operator">+</span> Height <span class="lua5-operator">-</span> <span class="lua5-literal">1</span></span> <span class="def-nbsp"> </span>(it was called <b class="def-param">Bottom_</b> before MMExtension v2.3, old name still supported for backward compatibility)
 </td>
 </tr><tr>
 <td class="def-left">
@@ -26432,9 +26444,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Screens.NewGameBreefing" class="abs"></a>NewGameBreefing <i class="def-const">= 9</i>
+<a id="const.Screens.NewGameBriefing" class="abs"></a>NewGameBriefing <i class="def-const">= 9</i>
 </td><td class="def-right">
- 
+ was called <b class="def-param">NewGameBreefing</b> before MMExtension v2.3, old name still supported for backward compatibility
 </td>
 </tr><tr>
 <td class="def-left">

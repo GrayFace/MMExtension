@@ -853,11 +853,11 @@ function structs.f.Dlg(define)
 	[0x8].i4  'Width'
 	[0xC].i4  'Height'
 	[0x10].alt.i4  'RightPixel'
-	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right_' before MMExt 2.3, old name still supported for backward compatibility)"
+	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right_' before MMExtension v2.3, old name still supported for backward compatibility)"
 	.i4  'Right_'
 	 .Info(false)
 	[0x14].alt.i4  'BottomPixel'
-	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom_' before MMExt 2.3, old name still supported for backward compatibility)"
+	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom_' before MMExtension v2.3, old name still supported for backward compatibility)"
 	.i4  'Bottom_'
 	 .Info(false)
 	[0x18].i4  'DlgID'
@@ -1007,11 +1007,11 @@ function structs.f.Button(define)
 	[0x8].i4  'Width'
 	[0xC].i4  'Height'
 	[0x10].alt.i4  'RightPixel'
-	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right' before MMExt 2.3, old name still supported for backward compatibility)"
+	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right' before MMExtension v2.3, old name still supported for backward compatibility)"
 	.i4  'Right'
 	 .Info(false)
 	[0x14].alt.i4  'BottomPixel'
-	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom' before MMExt 2.3, old name still supported for backward compatibility)"
+	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom' before MMExtension v2.3, old name still supported for backward compatibility)"
 	.i4  'Bottom'
 	 .Info(false)
 	[0x18].i4  'Shape'
@@ -1020,7 +1020,7 @@ function structs.f.Button(define)
 	[0x20].alt.i4  'ActionType'
 	 .Info(false)
 	.i4  'Action'
-	 .Info{"Was called 'ActionType' before MMExt 2.3, old name still supported for backward compatibility"}
+	 .Info{"Was called 'ActionType' before MMExtension v2.3, old name still supported for backward compatibility"}
 	[0x24].i4  'ActionParam'
 	local o = 0
 	if mmver > 6 then
@@ -1041,7 +1041,7 @@ function structs.f.Button(define)
 	[0x50+o].alt.u1  'ShortCut'
 	 .Info(false)
 	.u1  'Key'
-	 .Info{"Was called 'ShortCut' before MMExt 2.3, old name still supported for backward compatibility"}
+	 .Info{"Was called 'ShortCut' before MMExtension v2.3, old name still supported for backward compatibility"}
 	[0x51+o].string(103)  'Hint'
 	.size = 0xB8+o
 	

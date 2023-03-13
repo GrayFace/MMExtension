@@ -632,7 +632,7 @@ function class:HandleAction(t, index)
 		callback('OnCanClose', self, t, more)
 		if not self.NoClose then
 			if self.CloseSound then
-				Game.PlaySound(DefSound(self.CloseSound), 0)
+				Game.PlaySound(DefSound(self.CloseSound))
 			end
 			local dialogs = Game.Dialogs
 			for i = dialogs.High, index, -1 do
@@ -698,7 +698,7 @@ local function HandleClick(o, key, dbl, foc)
 	if t.Cancel then
 		return
 	elseif t.Sound then
-		Game.PlaySound(DefSound(t.Sound), 0)
+		Game.PlaySound(DefSound(t.Sound))
 	end
 	if t.FocusOnClick then
 		o.Parent:SetFocusedItem(o)
