@@ -149,7 +149,13 @@ function AddPaperDollGraphics(t)
 		for i in pairs(GetCats(a.Doll or '')) do
 			local a1 = table.copy(a1)
 			a1.Image = a.Image and a.Image:format(i+1) or ''
-			tget(tget(PaperDollGraphics, i), a.Piece or '')[(a.ItemPicture or ''):lower()] = a1
+			local move, piece = (a.Piece or ''):match('^(>?)(.*)')
+			tget(tget(PaperDollGraphics, i), piece)[(a.ItemPicture or ''):lower()] = a1
+			if move ~= '' then
+				local a2 = table.copy(a1)
+				a2.Image = ''
+				tget(tget(PaperDollGraphics, i), '')[(a.ItemPicture or ''):lower()] = a2
+			end
 		end
 	end
 end
@@ -168,9 +174,8 @@ else
 	events.GameInitialized2 = ReloadPaperDollGraphics
 end
 
---!v Defaults to #Game.Version:#. If set to '8', spears aren't treated as 2-handed weapons. If set to '6' prior to including 'PaperDoll' module, #PaperDollDrawOrder:# would be different.
+--!v Defaults to #Game.Version:#. If set to '8', spears aren't treated as 2-handed weapons.
 PaperDollMode = PaperDollMode or mmver
-local mm6 = (PaperDollMode == 6)
 
 --!v Default (depending on #PaperDollMode:#):
 -- !Lua[[{'BackDoll', 'BackDoll.menu', 'BackDoll.game',
@@ -178,12 +183,13 @@ local mm6 = (PaperDollMode == 6)
 -- 	'Armor.back', 'Belt.back',
 -- 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2b', 'Player.arm2hb', 'Player.arm2fb', 'Player.shield', 'Player.hair2', 'Player.hair',
 -- 	'Armor.back2',
--- 	mm6 and 'Helm' or 'Helm.back', mm6 and 'Boots' or 'Boots.back',
--- 	'Armor', 'Armor.arm1', 'Armor.arm1f',
--- 	mm6 and 'Boots.front' or 'Boots',
+-- 	'Helm.back', 'Boots.back',
+-- 	'Armor',
+-- 	'Boots',
+-- 	'Armor.front', 'Armor.arm1', 'Armor.arm1f',
 -- 	'Belt',
 -- 	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h', 'Player.arm2f',
--- 	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
+-- 	'Cloak.scarf', 'Player.scarf', 'Helm', 'Cloak.scarf2',
 -- 	'MainHand',
 -- 	'Player.hand1a', 'Player.hand1', 'Player.hand1f', 'Armor.hand1a', 'Armor.hand1', 'Armor.hand1f',
 -- 	'ExtraHand.hand2', 'ExtraHand.shield',
@@ -196,12 +202,13 @@ PaperDollDrawOrder = {'BackDoll', 'BackDoll.menu', 'BackDoll.game',
 	'Armor.back', 'Belt.back',
 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2b', 'Player.arm2hb', 'Player.arm2fb', 'Player.shield', 'Player.hair2', 'Player.hair',
 	'Armor.back2',
-	mm6 and 'Helm' or 'Helm.back', mm6 and 'Boots' or 'Boots.back',
-	'Armor', 'Armor.arm1', 'Armor.arm1f',
-	mm6 and 'Boots.front' or 'Boots',
+	'Helm.back', 'Boots.back',
+	'Armor',
+	'Boots',
+	'Armor.front', 'Armor.arm1', 'Armor.arm1f',
 	'Belt',
 	'Player.arm2', 'Player.arm2h', 'Armor.arm2', 'Armor.arm2h', 'Player.arm2f',
-	'Cloak.scarf', 'Player.scarf', mm6 and 'Helm.scarf' or 'Helm', 'Cloak.scarf2',
+	'Cloak.scarf', 'Player.scarf', 'Helm', 'Cloak.scarf2',
 	'MainHand',
 	'Player.hand1a', 'Player.hand1', 'Player.hand1f', 'Armor.hand1a', 'Armor.hand1', 'Armor.hand1f',
 	'ExtraHand.hand2', 'ExtraHand.shield',

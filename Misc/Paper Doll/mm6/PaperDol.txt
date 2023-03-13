@@ -39,26 +39,26 @@ Doll	ItemPicture	Image	X	Y	Piece	Comments
 	:Player	LEFTHAND	513	160	hand1a	main hand, always drawn
 	:ExtraHand		91	26	hand2	2nd hand weapon offset (such offsets can be followed by player face number)
 						piece 'shield' is used for drawing shield, so :ExtraHand with piece 4 can set shield offset
-						piece 'scarf' can be used for cloaks, then it's drawn above the head and helmet
+						piece 'scarf' can be used for cloaks, it's drawn above helmet and armor
 	
 						Armor:
-	lr1icon	LR1BOD	534	98
-	lr2icon	LR2BOD	516	94
-	lr3icon	LR3BOD	514	93
-	lr4icon	LR4BOD	510	92
-	lr5icon	LR5BOD	525	93
-	chn1icon	CHN1BOD	523	92
-	chn2icon	CHN2BOD	521	91
-	chn3icon	CHN3BOD	506	94
-	chn4icon	CHN4BOD	508	94
-	chn5icon	CHN5BOD	497	94
-	chnAicon	CHNABOD	497	94
-	chnRicon	CHNRBOD	497	94
-	pl1icon	PL1BOD	494	102
-	pl2icon	PL2BOD	494	101
-	pl3icon	PL3BOD	495	97
-	plAicon	PLABOD	495	97
-	plRicon	PLRBOD	495	97
+	lr1icon	LR1BOD	534	98	>front	(draw above boots)
+	lr2icon	LR2BOD	516	94	>front
+	lr3icon	LR3BOD	514	93	>front
+	lr4icon	LR4BOD	510	92	>front
+	lr5icon	LR5BOD	525	93	>front
+	chn1icon	CHN1BOD	523	92	>front
+	chn2icon	CHN2BOD	521	91	>front
+	chn3icon	CHN3BOD	506	94	>front
+	chn4icon	CHN4BOD	508	94	>front
+	chn5icon	CHN5BOD	497	94	>front
+	chnAicon	CHNABOD	497	94	>front
+	chnRicon	CHNRBOD	497	94	>front
+	pl1icon	PL1BOD	494	102	>front
+	pl2icon	PL2BOD	494	101	>front
+	pl3icon	PL3BOD	495	97	>front
+	plAicon	PLABOD	495	97	>front
+	plRicon	PLRBOD	495	97	>front
 	lr1icon	LR1ARM1	569	98	arm2	(not 2-handed weapon)
 	lr2icon	LR2ARM1	568	96	arm2
 	lr3icon	LR3ARM1	569	97	arm2
@@ -94,19 +94,19 @@ Doll	ItemPicture	Image	X	Y	Piece	Comments
 	plAicon	PLAARM2	513	103	hand2h
 	plRicon	PLRARM2	513	103	hand2h
 						Helms:
-	helm1	helm1
-	hlm2icon	helm2
-	hlm3icon	helm3
-	hlm4icon	helm4
-	hlm5icon	helm5
-	hat1a	hat1b
-	hat2a	hat2b
-	hat3a	hat3b
-	crown1a	crown1b
-	crown2a	crown2b
-	crown3a	crown3b
-	crownAa	crownAb
-	crownRa	crownRb
+	helm1	helm1			>back	(draw below armor)
+	hlm2icon	helm2			>back
+	hlm3icon	helm3			>back
+	hlm4icon	helm4			>back
+	hlm5icon	helm5			>back
+	hat1a	hat1b			>back
+	hat2a	hat2b			>back
+	hat3a	hat3b			>back
+	crown1a	crown1b			>back
+	crown2a	crown2b			>back
+	crown3a	crown3b			>back
+	crownAa	crownAb			>back
+	crownRa	crownRb			>back
 						Belts:
 	belt1a	BELT1B
 	belt2a	BELT2B
