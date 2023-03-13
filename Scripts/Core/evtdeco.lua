@@ -1,7 +1,7 @@
 local i4, i2, i1, u4, u2, u1 = mem.i4, mem.i2, mem.i1, mem.u4, mem.u2, mem.u1
 local mmver = offsets.MMVersion
 
-local _KNOWNGLOBALS = vars, Vars, mapvars, MapVars, Game, Party, Map, ReadLodTextTable, path, table
+local _KNOWNGLOBALS = vars, Vars, mapvars, MapVars, Game, Party, Map, ReadLodTextTable, path, table, DecompileDetectBigIndex
 
 local P = ...
 local CmdStructs = P.CmdStructs
@@ -362,7 +362,8 @@ function evt.Decompile(fileName, funcMode, outFile, asTxt)
 			-- return GetFromArray(Game.ClassNames, v)
 			return nil, FindConst("Class", v)
 		elseif k == "Awards" then
-			if v < Game.AwardsTxt.Count and v > select(mmver - 5, 87, 104, 104) then
+			-- warn about out-of-range award in Rev4
+			if DecompileDetectBigIndex and v < Game.AwardsTxt.Count and v > select(mmver - 5, 87, 104, 104) then
 				Error("Award index outside of normal range")
 			end
 			return GetFromArray(Game.AwardsTxt, v)
