@@ -149,12 +149,12 @@ local function AddGraphicsItem(a)
 	end
 end
 
-local function AddDrawOrderPiece(a)
-	local after, part = a.ItemPicture:match('^:InsertAfter:()(.+)')
-	part = part or assert(a.ItemPicture:match('^:Insert:(.+)'), 'Insert command - Invalid syntax')
+local function AddDrawOrderPiece(a, part)
 	local new = (a.Piece or '') ~= '' and part..'.'..a.Piece or part
-	local iold = table.ifind(PaperDollDrawOrder, a.Image) or (a.Image or '') == '' and (after and #PaperDollDrawOrder or 1)
-	assert(iold, 'Insert command - Insertion point not found')
+	local after = (a.Image or ''):match('^after:(.+)')
+	local old = after or a.Image or ''
+	local iold = table.ifind(PaperDollDrawOrder, old) or old == '' and (after and #PaperDollDrawOrder or 1)
+	assert(iold, 'insert command - insertion point not found')
 	local inew = table.ifind(PaperDollDrawOrder, new)
 	if iold == inew then
 		return
@@ -175,8 +175,9 @@ function AddPaperDollGraphics(t)
 		t = ParseNamedColTable(t)
 	end
 	for _, a in ipairs(t) do
-		if (a.ItemPicture or ''):match('^:Insert') then
-			AddDrawOrderPiece(a)
+		local ins = (a.ItemPicture or ''):match('^:insert:(.*)')
+		if ins then
+			AddDrawOrderPiece(a, ins)
 		else
 			AddGraphicsItem(a)
 		end
