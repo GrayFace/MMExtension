@@ -1790,7 +1790,7 @@ function structs.f.GameScreen(define)
 	
 	function define.m:Draw(x, y, pic, style, rotate, EnglishD)
 		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
-		local f = assert(DrawStyles[style == true and 'opaque' or style or 'transparent'], 'unknown draw style')
+		local f = assert(DrawStyles[style == true and 'opaque' or style or 'transparent'], 'unknown drawing style')
 		if mmver == 6 then
 			mem.call(abs(f), 2, self.Buffer + (self.Width*y + x)*2, pic, f < 0 and u4[pic + 64] or 0)
 		else

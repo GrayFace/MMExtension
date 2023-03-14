@@ -314,7 +314,8 @@ local function LoadIcons(t, a, self)
 		v[1] = v[1] or o.Name
 		v.Width = o.Width
 		v.Height = o.Height
-		if v.Rotate and is8 then
+		v.Rotate = is8 and (v.Rotate == nil and o.Rotate or v.Rotate)
+		if v.Rotate then
 			v.Width, v.Height = v.Height, v.Width
 		end
 		best = best and best < k and best or k
