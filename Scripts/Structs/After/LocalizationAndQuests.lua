@@ -752,21 +752,16 @@ local function RegisterQuest(t)
 		for i = 0, 5 do
 			local t = FindCurrentQuest(-1, i) or FindCurrentQuest(npc, i)
 			if t then
-				local topic = t:GetTopic()
-				if topic then
-					BackupNPC[i] = BackupNPC[i] or ev[i]
-					if type(topic) == "number" then
-						ev[i] = topic
-					else
-						local k = FreeEvents[i]
-						ev[i] = k
-						BackupTopics[k] = BackupTopics[k] or Game.NPCTopic[k]
-						Game.NPCTopic[k] = topic
-						CurrentQuests[k] = t
-					end
+				local topic = t:GetTopic() or 0
+				BackupNPC[i] = BackupNPC[i] or ev[i]
+				if type(topic) == "number" then
+					ev[i] = topic
 				else
-					BackupNPC[i] = BackupNPC[i] or ev[i]
-					ev[i] = 0
+					local k = FreeEvents[i]
+					ev[i] = k
+					BackupTopics[k] = BackupTopics[k] or Game.NPCTopic[k]
+					Game.NPCTopic[k] = topic
+					CurrentQuests[k] = t
 				end
 			elseif BackupNPC[i] then
 				Game.NPC[npc].Events[i] = BackupNPC[i]
@@ -882,8 +877,18 @@ local function RegisterQuest(t)
 	end
 	
 	-- update topics
-	events.BeforeDrawDialogs = || if CurrentNPC and CurrentQuests and Game.CurrentNPCDialog == Game.GetTopDialog() and UpdatePlayer() then
-		UpdateNPCQuests()
+	events.BeforeDrawDialogs = || if CurrentNPC and CurrentQuests then
+		if Game.CurrentNPCDialog == Game.GetTopDialog() and UpdatePlayer() then
+			UpdateNPCQuests()
+		end
+		for i = 0, 5 do
+			local k = FreeEvents[i]
+			local t = CurrentQuests[k]
+			local f = t and t.BeforeDraw
+			if f then
+				f(t, k, Game.CurrentNPCDialog)
+			end
+		end
 	end
 	
 	-- Sets current dialog branch to 'branch' if it's specified.
@@ -1204,7 +1209,7 @@ function Quest(t)
 			t:AddAutonote()
 		end
 		if t.Texts[ev] then
-			SimpleMessage(t.Texts[ev])
+			Message(t.Texts[ev])
 		end
 		if t[ev] then
 			t[ev](t)
