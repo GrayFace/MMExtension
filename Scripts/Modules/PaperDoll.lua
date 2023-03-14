@@ -127,6 +127,46 @@ local function GetCats(s)
 	return t
 end
 
+local function AddGraphicsItem(a)
+	local a1 = {X = tonumber(a.X), Y = tonumber(a.Y)}
+	if (a.Mul or '') ~= '' then
+		local t = (a.Mul or ''):split(', *')
+		if not t[2] then
+			t = {t[1], 0, 0, t[1]}
+		end
+		for i = 1, #t do
+			t[i] = tonumber(t[i])
+		end
+		a1.Mul = t
+	end
+	for i in pairs(GetCats(a.Doll or '')) do
+		local a2 = table.copy(a1, {Image = a.Image and a.Image:format(i+1) or ''}, true)
+		local move, piece = (a.Piece or ''):match('^(>?)(.*)')
+		tget(tget(PaperDollGraphics, i), piece)[(a.ItemPicture or ''):lower()] = a2
+		if move ~= '' then
+			tget(tget(PaperDollGraphics, i), '')[(a.ItemPicture or ''):lower()] = table.copy(a1, {Image = ''}, true)
+		end
+	end
+end
+
+local function AddDrawOrderPiece(a)
+	local after, part = a.ItemPicture:match('^:InsertAfter:()(.+)')
+	part = part or assert(a.ItemPicture:match('^:Insert:(.+)'), 'Insert command - Invalid syntax')
+	local new = (a.Piece or '') ~= '' and part..'.'..a.Piece or part
+	local iold = table.ifind(PaperDollDrawOrder, a.Image) or (a.Image or '') == '' and (after and #PaperDollDrawOrder or 1)
+	assert(iold, 'Insert command - Insertion point not found')
+	local inew = table.ifind(PaperDollDrawOrder, new)
+	if iold == inew then
+		return
+	elseif inew then
+		table.remove(PaperDollDrawOrder, inew)
+		if iold > inew then
+			iold = iold - 1
+		end
+	end
+	table.insert(PaperDollDrawOrder, after and iold + 1 or iold, new)
+end
+
 -- 't' can be a string following the "PaperDol.txt" convention or a table that's similar to the result of calling #ParseNamedColTable:# for such file.
 -- Example - loading additional paper doll file for mods:
 -- !Lua[[events.ReloadPaperDollGraphics = || AddPaperDollGraphics(Game.LoadTextFileFromLod'PaperMod.txt')]]
@@ -135,27 +175,10 @@ function AddPaperDollGraphics(t)
 		t = ParseNamedColTable(t)
 	end
 	for _, a in ipairs(t) do
-		local a1 = {X = tonumber(a.X), Y = tonumber(a.Y)}
-		if (a.Mul or '') ~= '' then
-			local t = (a.Mul or ''):split(', *')
-			if not t[2] then
-				t = {t[1], 0, 0, t[1]}
-			end
-			for i = 1, #t do
-				t[i] = tonumber(t[i])
-			end
-			a1.Mul = t
-		end
-		for i in pairs(GetCats(a.Doll or '')) do
-			local a1 = table.copy(a1)
-			a1.Image = a.Image and a.Image:format(i+1) or ''
-			local move, piece = (a.Piece or ''):match('^(>?)(.*)')
-			tget(tget(PaperDollGraphics, i), piece)[(a.ItemPicture or ''):lower()] = a1
-			if move ~= '' then
-				local a2 = table.copy(a1)
-				a2.Image = ''
-				tget(tget(PaperDollGraphics, i), '')[(a.ItemPicture or ''):lower()] = a2
-			end
+		if (a.ItemPicture or ''):match('^:Insert') then
+			AddDrawOrderPiece(a)
+		else
+			AddGraphicsItem(a)
 		end
 	end
 end
@@ -181,7 +204,7 @@ PaperDollMode = PaperDollMode or mmver
 -- !Lua[[{'BackDoll', 'BackDoll.menu', 'BackDoll.game',
 -- 	'Bow', 'Cloak',
 -- 	'Armor.back', 'Belt.back',
--- 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2b', 'Player.arm2hb', 'Player.arm2fb', 'Player.shield', 'Player.hair2', 'Player.hair',
+-- 	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2b', 'Player.arm2hb', 'Player.arm2fb', 'Player.shield', 'Player.hair',
 -- 	'Armor.back2', 'Helm.back', 'Boots.back',
 -- 	'Armor', 'Boots',
 -- 	'Armor.front', 'Armor.arm1', 'Armor.arm1f',
@@ -198,7 +221,7 @@ PaperDollMode = PaperDollMode or mmver
 PaperDollDrawOrder = {'BackDoll', 'BackDoll.menu', 'BackDoll.game',
 	'Bow', 'Cloak',
 	'Armor.back', 'Belt.back',
-	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2b', 'Player.arm2hb', 'Player.arm2fb', 'Player.shield', 'Player.hair2', 'Player.hair',
+	'Player', 'Player.arm1', 'Player.arm1f', 'Player.arm2b', 'Player.arm2hb', 'Player.arm2fb', 'Player.shield', 'Player.hair',
 	'Armor.back2', 'Helm.back', 'Boots.back',
 	'Armor', 'Boots',
 	'Armor.front', 'Armor.arm1', 'Armor.arm1f',
