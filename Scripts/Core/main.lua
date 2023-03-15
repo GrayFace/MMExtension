@@ -243,10 +243,18 @@ end
 --------- general
 
 if isMM then
+	local function SetPause(p, b)
+		local last = u4[p + 4] ~= 0
+		if b ~= last and internal.InGame then
+			call(offsets[b and 'PauseTime' or 'ResumeTime'], 1, p)
+		end
+		return last
+	end
+	
 	function internal.PauseGame()
 		local Game = _G.Game
 		if Game then
-			local state = {Game.Pause(), Game.Pause2(), u4[offsets.GameStateFlags]}
+			local state = {SetPause(offsets.TimeStruct1, true), SetPause(offsets.TimeStruct2, true), u4[offsets.GameStateFlags]}
 			u4[offsets.GameStateFlags] = state[3]:Or(0x100)  -- idle flag
 			return state
 		end
@@ -255,8 +263,8 @@ if isMM then
 	function internal.ResumeGame(state)
 		if state then
 			local old1, old2, old3 = unpack(state)
-			_G.Game.Resume()
-			_G.Game.Resume2()
+			SetPause(offsets.TimeStruct1, old1)
+			SetPause(offsets.TimeStruct2, old2)
 			u4[offsets.GameStateFlags] = old3
 		end
 		if _G.Game and _G.Keys then
