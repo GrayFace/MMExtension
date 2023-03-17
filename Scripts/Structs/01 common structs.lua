@@ -1817,7 +1817,10 @@ function structs.f.Events2DItem(define)
 	[0x8].EditPChar  'OwnerName'
 	[0xC].EditPChar  'EnterText'
 	[0x10].EditPChar  'OwnerTitle'
-	[0x14].i2  'PictureUnk'
+	[0x14].alt.i2  'PictureUnk'
+	 .Info(false)
+	.i2  'OwnerPicture'
+	 .Info "Was called 'PictureUnk' before MMExtension v2.3, old name still supported for backward compatibility"
 	[0x16].i2  'State'
 	[0x18].i2  'Rep'
 	[0x1A].i2  'Per'
@@ -2826,9 +2829,11 @@ function structs.f.BitmapsLod(define)
 			return bmp
 		end
 	end
+	define.method{name = 'LoadBitmapInPlace', p = mmv(0x40BD30, 0x41052E, 0x411931), must = 2; 0, "", 2}
+	 .Info{Sig = "bmp:structs.LodBitmap, name, unused_must_be_2 = 2"; "Used for loading of progress bar bitmaps"}
 	if mmver > 6 then
 		define.method{name = 'ReplaceBitmap', p = mm78(0x4101BD, 0x4115BF), must = 2; 0, "", 2}
-		 .Info{Sig = "bmp:structs.LodBitmap, name, unused_must_be_2 = 2"; "Used for changing party faces and in MM7 for recoloring of interface"}
+		 .Info{Sig = "bmp:structs.LodBitmap, name, unused_must_be_2 = 2"; "Used for changing party faces and in MM7 for recoloring of interface. Assumes the new bitmap has the same dimensions."}
 	end
 	function define.m:BeginTmp()
 		local n = self.TmpIndex
@@ -2916,6 +2921,16 @@ function structs.f.LodBitmap(define)
 		self.LoadedPalette = Game.LoadPalette(self.Palette)
 	end
 	define.method{p = mmv(0x40A0C0, 0x40F788, 0x410A10), name = "Destroy"}
+	function define.m:DestroyInPlace()
+		local p = self['?ptr']
+		for p = p + 0x30, p + 0x44, 4 do
+			local v = u4[p]
+			if v ~= 0 then
+				mem.free(v)
+			end
+		end
+		mem.fill(self)
+	end
 end
 
 function structs.f.LodPcx(define)
@@ -3232,8 +3247,21 @@ function structs.f.ProgressBar(define)
 	[0xA].u1  'Max'
 	.u1  'Current'
 	.i4  'Kind'
-	-- .array(8).b1  'ShownScreens'
-	-- ...
+	if mmver > 6 then
+		define.array(8).b1  'SeenScreens'
+	end
+	define
+	.struct(structs.LodPcx)  'PcxLoading'
+	.struct(structs.LodPcx)  'PcxWomover'
+	.struct(structs.LodPcx)  'PcxDemover'
+	.struct(structs.LodPcx)  'PcxWomover2'
+	.struct(structs.LodPcx)  'PcxDemover2'
+	.struct(structs.LodBitmap)  'BmpFireball'
+	.struct(structs.LodBitmap)  'BmpBardata'
+	if mmver > 6 then
+		define.struct(structs.LodBitmap)  'BmpLoadprog'
+	end
+	define
 	.method{p = mmv(0x438C30, 0x4434A7, 0x440288), name = "Show"}
 	.method{p = mmv(0x438D40, 0x443605, 0x4403DA), name = "Hide"}
 	.method{p = mmv(0x438E20, 0x443693, 0x44047E), name = "Draw"}

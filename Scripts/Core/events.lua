@@ -405,6 +405,14 @@ if mmver > 6 and PatchOptionsSize < 336 then
 	]])
 end
 
+if mmver > 6 and PatchOptionsSize < 228 then
+	-- fix FixLoadBitmapInPlace
+	mem.asmhook(mm78(0x4105F9, 0x4119FC), [[
+	  mov eax, [esi + $14]
+	  mov [esp + 4], eax
+	]])
+end
+
 -- fix savegame loading
 if mmver == 6 then
 	u1[0x44F03A] = 1

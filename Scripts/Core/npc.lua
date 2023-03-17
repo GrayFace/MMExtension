@@ -978,4 +978,18 @@ if mmver == 7 then
 	]])
 end
 
+-- draw loading screen
+do
+	local function DrawProgress(d)
+		events.cocalls("DrawProgressBar")
+	end
+	mem.autohook(mmv(0x439140, 0x4437F7, 0x4405FE), DrawProgress)
+	if mmver == 6 then
+		mem.autohook(0x438FD7, DrawProgress)	
+	end
+	mem.autohook(mmv(0x438D40, 0x443605, 0x4403DA), function(d)
+		events.cocalls("HideProgressBar")
+	end)
+end
+
 mem.IgnoreProtection(false)
