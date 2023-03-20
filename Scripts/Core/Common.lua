@@ -336,6 +336,13 @@ function mem.struct_callback(t, class, fields, offs, rofields)
 	return t
 end
 
+function mem.union_callback(t, fields, offs, rofields)
+	local meta = getmetatable(t)
+	meta.members = fields
+	meta.offsets = offs
+	return t
+end
+
 dofile(CoreScriptsPath.."RSMem.lua")
 
 local mem = _G.mem
