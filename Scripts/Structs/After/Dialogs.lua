@@ -827,7 +827,9 @@ local function TileDraw(pic, style, x, y, w, h)
 end
 
 local function UseClipRect(m, dlg)
-	if not m then
+	if is6 then
+		return
+	elseif not m then
 		return Screen:SetClipRect()
 	end
 	local L, R = dlg.Left + (tonumber(m.Left) or 0), dlg.RightPixel + 1 - (tonumber(m.Right) or 0)
