@@ -406,7 +406,7 @@ if mmver > 6 and PatchOptionsSize < 336 then
 end
 
 if mmver > 6 and PatchOptionsSize < 228 then
-	-- fix FixLoadBitmapInPlace
+	-- fix LoadBitmapInPlace
 	mem.asmhook(mm78(0x4105F9, 0x4119FC), [[
 	  mov eax, [esi + $14]
 	  mov [esp + 4], eax
@@ -1089,6 +1089,7 @@ if PatchOptionsSize < 400 then
 		CurrentScreen = mmv(0x4BCDD8, 0x4E28D8, 0x4F37D8),
 		CheckShortCut = mmv(0x417F90, 0x41B3E1, 0x41B214),
 		TextInputMode = mmv(0x5F6E70, 0x69AD80, 0x6C8CD8) + 0x104,
+		DialogsHigh = mmv(0x4D46BC, 0x5074B0, 0x518CE8),
 	}
 	
 	hooks.ref.cmp_code = hooks.ProcessAsm[[
@@ -1120,6 +1121,9 @@ if PatchOptionsSize < 400 then
 	hooks[mmver == 6 and 'asmhook' or 'asmhook2'](mmv(0x454592, 0x463D6F, 0x461E6F), [[
 	if mm6 = 0
 		jnz @exit
+	else
+		cmp dword [%DialogsHigh%], 0
+		jz @exit
 	end if
 		mov eax, [%TextInputMode%]
 		dec eax
