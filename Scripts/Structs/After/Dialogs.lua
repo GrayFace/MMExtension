@@ -125,6 +125,7 @@ local function InitDlg(dlg, new)
 	t.Items = {}
 	t.PcxCache = PcxCache()
 	t.PcxCacheD = is8 and PcxCache(true) or t.PcxCache
+	t.IconCache = IconCache()
 	setmetatable(t, ClassMeta)
 	DlgCount = DlgCount + 1
 	if DlgCount == 1 then
@@ -241,6 +242,7 @@ local function DoUnbind(t, cleanup)
 		t.AutoEsc:Destroy()
 		t.AutoEsc = nil
 	end
+	t.IconCache"Clear"
 	t.PcxCache"Clear"
 	if t.PcxCache ~= t.PcxCacheD then
 		t.PcxCacheD"Clear"
@@ -288,9 +290,13 @@ end
 
 local function LoadIcon(t, v, self)
 	if not v[1]:match'%.[pP][cC][xX]$' then
-		v.Loaded, v.Pcx = Game.IconsLod:LoadBitmap(v[1], t.EnglishD ~= false), nil
+		if v.InPlace == nil and (t.InPlace == nil and self.InPlace or t.InPlace) or v.InPlace then
+			v.LoadedInPlace, v.Loaded, v.Pcx = self.IconCache[v[1]], nil, nil
+		else
+			v.Loaded, v.LoadedInPlace, v.Pcx = Game.IconsLod:LoadBitmap(v[1], t.EnglishD ~= false), nil, nil
+		end
 	elseif self then
-		v.Loaded, v.Pcx = nil, self[t.EnglishD ~= false and "PcxCacheD" or "PcxCache"][v[1]]
+		v.Pcx, v.Loaded, v.LoadedInPlace = self[t.EnglishD ~= false and "PcxCacheD" or "PcxCache"][v[1]], nil, nil
 	end
 end
 
@@ -310,7 +316,7 @@ local function LoadIcons(t, a, self)
 		else
 			LoadIcon(t, v, self)
 		end
-		local o = v.Pcx or Game.IconsLod.Bitmaps[v.Loaded]
+		local o = v.Pcx or v.LoadedInPlace or Game.IconsLod.Bitmaps[v.Loaded]
 		v[1] = v[1] or o.Name
 		v.Width = o.Width
 		v.Height = o.Height
@@ -343,6 +349,7 @@ item.ReloadIcons = |t| ReloadIcons(t)
 
 function class:ReloadIcons(AlsoPcx)
 	if AlsoPcx then
+		self.IconCache"Reload"
 		self.PcxCache"Reload"
 		if self.PcxCache ~= self.PcxCacheD then
 			self.PcxCacheD"Reload"
@@ -819,6 +826,8 @@ local function TileDraw(pic, style, x, y, w, h)
 		for x = x, x + w - 1, dw do
 			if pic.Loaded then
 				Screen:Draw(x, y, pic.Loaded, style, pic.Rotate)
+			elseif pic.LoadedInPlace then
+				Screen:Draw(x, y, pic.LoadedInPlace, style == true and 'popaque' or style and 'p'..style:match('p?(.*)') or 'p', pic.Rotate)
 			elseif pic.Pcx then
 				Screen:DrawPcx(x, y, pic.Pcx)
 			end

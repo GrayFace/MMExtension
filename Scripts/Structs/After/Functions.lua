@@ -374,21 +374,27 @@ end
 -----------------------------------------------------
 
 do
+	local Command = |t, k, a, s| if s == "Clear" then
+		a:Destroy()
+		t[k] = nil
+	elseif s == "Reload" then
+		Game.LoadPcx(s, a, t[1])
+	end
+	
 	local mt = {
 		__index = function(t, s)
 			local a = Game.LoadPcx(s, nil, t[1])
 			t[s] = a
 			return a
 		end,
-		__call = function(t, s)
+		__call = function(t, s, one)
+			if one then
+				local a = t[one]
+				return a and Command(t, one, a, s)
+			end
 			for k, a in pairs(t) do
 				if k ~= 1 then
-					if s == "Clear" then
-						a:Destroy()
-						t[k] = nil
-					elseif s == "Reload" then
-						Game.LoadPcx(s, a, t[1])
-					end
+					Command(t, k, a, s)
 				end
 			end
 		end,
@@ -408,8 +414,48 @@ do
 	-- You can also reload all images, say, if you conditionally load a LOD with an inteface skin (all obtained addresses stay the same):
 	-- !Lua[[t("Reload")
 	-- ]]
+	-- Pass file name as second argument when invoking "Clear" or "Reload" to handle a specific file only.
 	function PcxCache(EnglishD)
 		return setmetatable({not not EnglishD}, mt)
+	end
+end
+
+-----------------------------------------------------
+-- Icon Cache
+-----------------------------------------------------
+
+do
+	local Command = |t, k, a, s| if s == "Clear" then
+		a:DestroyInPlace()
+		mem.freeMM(a)
+		t[k] = nil
+	elseif s == "Reload" then
+		a:DestroyInPlace()
+		Game.IconsLod:LoadBitmapInPlace(a, s)
+	end
+	
+	local mt = {
+		__index = function(t, s)
+			local p = mem.allocMM(0x48)
+			Game.IconsLod:LoadBitmapInPlace(p, s)
+			local a = structs.LodBitmap:new(p)
+			t[s] = a
+			return a
+		end,
+		__call = function(t, s, one)
+			if one then
+				local a = t[one]
+				return a and Command(t, one, a, s)
+			end
+			for k, a in pairs(t) do
+				Command(t, k, a, s)
+			end
+		end,
+	}
+
+	-- Same as 'PcxCache', but for in-place icons, which means loaded icons aren't stored in #Game.IconsLod.Bitmaps:structs.BitmapsLod.Bitmaps#, but instead stored in the cache until it's cleared
+	function IconCache()
+		return setmetatable({}, mt)
 	end
 end
 
