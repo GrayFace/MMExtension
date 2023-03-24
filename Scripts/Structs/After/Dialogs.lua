@@ -74,46 +74,63 @@ local function Defaults(t)
 end
 
 local function Apply1(self, t)
-	t.TmpIcons = (not self.TmpIcons or nil) and t.TmpIcons
-	if t.TmpIcons then
+	if t.TmpIcons and not self.TmpIcons then
 		Game.IconsLod:BeginTmp()
+	elseif t.TmpIcons == false and self.TmpIcons then
+		Game.IconsLod:EndTmp()
 	end
-	t.Pause = (not self.Pause or nil) and t.Pause
-	if t.Pause then
+	
+	if t.Pause and not self.Pause then
 		Game.Pause()
+	elseif t.Pause == false and self.Pause then
+		Game.Resume()
 	end
-	t.Pause2 = (not self.Pause or nil) and t.Pause2
-	if t.Pause2 then
+	
+	if t.Pause2 and not self.Pause2 then
 		Game.Pause2()
+	elseif t.Pause2 == false and self.Pause2 then
+		Game.Resume2()
 	end
 end
 
 local function Apply2(self, t, dlg, new)
 	t.Screen = tonumber(t.Screen) or (t.Screen or t.MimicScreen) and 22 or nil
 	if t.Screen then
+		if not (t.LastScreen or self.LastScreen) then
+			t.LastScreen = Game.CurrentScreen
+		end
 		Game.CurrentScreen = t.Screen
 	end
 	t.MimicScreen = tonumber(t.MimicScreen) or t.Screen == 22 and self.Screen ~= 22 and (Game.MainMenuCode < 0 and 22 or t.LastScreen ~= 22 and t.LastScreen or t.LastMimicScreen or 12) or nil
 	if t.MimicScreen then
 		Game.EscMessageLastScreen = t.MimicScreen
 	end
+	
 	if t.NoFoodGold == nil and self.NoFoodGold == nil and t.Screen == 22 and t.MimicScreen == 22 then
 		t.NoFoodGold = true
 	end
-	if self.BlockOO then
-		t.BlockOO = nil
-	elseif t.BlockOO == nil and new and is8 then
+	
+	if new and is8 and t.BlockOO == nil then
 		t.BlockOO = dlg.Height == 480 and dlg.Width == 640
 	end
-	if is8 and t.BlockOO then
+	if is8 and t.BlockOO and not self.BlockOO then
 		CreatingOO = true
 		t.BlockOO = Game.OODialogs:ShowDialog()
 		CreatingOO = nil
+	elseif is8 and t.BlockOO == false and self.BlockOO then
+		Game.OODialogs:CloseSpecific(self.BlockOO)
+	else
+		t.BlockOO = nil
 	end
-	t.AutoEsc = (not self.AutoEsc or nil) and t.AutoEsc
-	if is8 and t.AutoEsc then
+	
+	if is8 and t.AutoEsc and not self.AutoEsc then
 		t.AutoEsc = dlg:AddButton(0, 0, 0, 0, 0, 0, 113, 0, 27)
+	elseif is8 and t.AutoEsc == false and self.AutoEsc then
+		self.AutoEsc:Destroy()
+	else
+		t.BlockOO = nil
 	end
+	
 	t.PassThrough = new and t.PassThrough == nil and (dlg.Height ~= 480 or dlg.Width ~= 640) or t.PassThrough
 	t.HandleEsc = new and t.HandleEsc == nil and not t.PassThrough or t.HandleEsc
 end
@@ -169,10 +186,10 @@ local function RestoreDialog()
 	if t.MimicScreen then
 		Game.EscMessageLastScreen = t.MimicScreen
 	end
-	if Game.PauseCount > 0 and not Game.Paused then
+	if Game.PauseCount > 0 then
 		Game.DoPause()
 	end
-	if Game.PauseCount2 > 0 and not Game.Paused2 then
+	if Game.PauseCount2 > 0 then
 		Game.DoPause2()
 	end
 	-- FocusedDialog = t
@@ -238,23 +255,14 @@ local function DoUnbind(t, cleanup)
 			ItemByPointer[mem.topointer(o, true)] = nil
 		end
 	end
-	if cleanup and is8 and t.AutoEsc then
-		t.AutoEsc:Destroy()
-		t.AutoEsc = nil
-	end
 	t.IconCache"Clear"
 	t.PcxCache"Clear"
 	if t.PcxCache ~= t.PcxCacheD then
 		t.PcxCacheD"Clear"
 	end
 	RestoreScreen(t)
+	t:Change{TmpIcons = false, Pause = false, Pause2 = false, BlockOO = is8 and false, AutoEsc = cleanup and is8 and false}
 	t.Dlg.CustomDialog = nil
-	if t.TmpIcons then
-		Game.IconsLod:EndTmp()
-	end
-	if is8 and t.BlockOO then
-		Game.OODialogs:CloseSpecific(t.BlockOO)
-	end
 	for i, f in ipairs(t.DeleteEvents or dummy) do
 		events.remove(t.DeleteEvents[-i], f)
 	end
@@ -263,12 +271,6 @@ local function DoUnbind(t, cleanup)
 	DlgCount = DlgCount - 1
 	if DlgCount == 0 then
 		EnableHandlers(false)
-	end
-	if t.Pause then
-		Game.Resume()
-	end
-	if t.Pause2 then
-		Game.Resume2()
 	end
 	Game.NeedRedraw = true
 end
