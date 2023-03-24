@@ -1744,7 +1744,7 @@ local DrawStyles = {
 	red = mmv(0x40A760, 0x4A6706, 0x4A4784),
 	green = mmv(0x40A880, 0x4A687F, 0x4A4A1E),
 	popaque = -mmv(0x40B000, 0x4A5E42, 0x4A3CD5),
-	p = -mmv(0x40B180, 0x4A6204, 0x4A419B),
+	p = -mmv(0x40B180, 0x4A6204, 0x4A419B),  -- same as ptransparent
 	ptransparent = -mmv(0x40B180, 0x4A6204, 0x4A419B),
 	pred = mm78(-0x4A6706, -0x4A4784),
 	pgreen = mm78(-0x4A687F, -0x4A4A1E),
@@ -1790,12 +1790,16 @@ function structs.f.GameScreen(define)
 	end
 	
 	function define.m:Draw(x, y, pic, style, rotate, EnglishD)
-		pic = type(pic) == "number" and pic or pic['?ptr'] or Game.IconsLod:LoadBitmap(pic, EnglishD)
+		local ptr = pic['?ptr']
+		if ptr then
+			style = style == true and 'popaque' or style and style:gsub('^(p?)', 'p') or 'p'
+		end
+		pic = ptr or type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
 		local f = assert(DrawStyles[style == true and 'opaque' or style or 'transparent'], 'unknown drawing style')
 		if mmver == 6 then
 			mem.call(abs(f), 2, self.Buffer + (self.Width*y + x)*2, pic, f < 0 and u4[pic + 64] or 0)
 		else
-			mem.call(abs(f), 1, self['?ptr'], x, y, f < 0 and pic or Game.IconsLod.Bitmaps[pic], rotate or 0)
+			mem.call(abs(f), 1, self['?ptr'], x, y, f < 0 and pic or Game.IconsLod.Bitmaps['?ptr'] + pic*0x48, rotate or 0)
 		end
 	end
 	define.Info{Sig = "x, y, pic, style, rotate, EnglishD"; [[

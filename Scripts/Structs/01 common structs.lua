@@ -1160,7 +1160,7 @@ function structs.f.OODialogManager(define)
 	.u4  'CurrentDialogPtr'
 	.array{20, lenA = i4, lenP = 0x58}.u4  'DialogPtrs'
 	.i4  'Count'
-	.skip(16)  -- dialogs stashed for destruction
+	.skip(16)  -- dialogs stashed for destruction on next frame
 	.b1  'Disabled'
 	function define.m:ShowDialog(p, param)
 		if not p then

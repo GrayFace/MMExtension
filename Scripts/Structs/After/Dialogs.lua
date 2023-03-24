@@ -829,7 +829,7 @@ local function TileDraw(pic, style, x, y, w, h)
 			if pic.Loaded then
 				Screen:Draw(x, y, pic.Loaded, style, pic.Rotate)
 			elseif pic.LoadedInPlace then
-				Screen:Draw(x, y, pic.LoadedInPlace, style == true and 'popaque' or style and 'p'..style:match('p?(.*)') or 'p', pic.Rotate)
+				Screen:Draw(x, y, pic.LoadedInPlace, style, pic.Rotate)
 			elseif pic.Pcx then
 				Screen:DrawPcx(x, y, pic.Pcx)
 			end
