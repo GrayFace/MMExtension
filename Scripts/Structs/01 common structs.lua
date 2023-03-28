@@ -1612,7 +1612,7 @@ function structs.f.MapStatsItem(define)
 	define
 	.skip(1)
 	.u1  'Lock'
-	 .Info "\"x5 Lock\" from MapStats.txt. In MM6 it's multiplied by '5' and compared against player's #GetDisarmTrapTotalSkill:structs.Player.GetDisarmTrapTotalSkill#!Lua[[ + math.random(0, 9)]]. In MM7+ it's multiplied by '2' and compared against #GetDisarmTrapTotalSkill:structs.Player.GetDisarmTrapTotalSkill#."
+	 .Info "\"x5 Lock\" from MapStats.txt. In MM6 the condition for successful disarming is !Lua[[Lock*5 < player:GetDisarmTrapTotalSkill() + math.random(0, 9)]]. In MM7+ the condition is !Lua[[Lock*2 <= player:GetDisarmTrapTotalSkill()]]."
 	.u1  'Trap'
 	 .Info "\"D20's Trap\" from MapStats.txt. The damage is 'Trap' rolls of '1'-'20' damage."
 	.u1  'Tres'
@@ -3345,6 +3345,7 @@ function structs.f.DialogLogic(define)
 	end
 	define
 	[mmv(0x4CB3B8, 0x506400, 0x517B50)].struct(structs.MapMonster)  'MonsterInfoMonster'
+	[mmv(0x4D50F0, 0x511760, 0x523040)].b4  'PlayerRingsOpen'
 end
 
 function structs.f.MoveToMap(define)

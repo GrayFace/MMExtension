@@ -246,12 +246,15 @@ end
 
 local function GetItemGraphics(it, i)
 	local a = it:T()
-	return {Image = a.Picture:lower(), X = a.EquipX, Y = a.EquipY, Item = it, Index = i}
+	local x = a.EquipX
+	if mmver == 6 then
+		x = (x + 240) % 481 - 240
+	end
+	return {Image = a.Picture:lower(), X = x, Y = a.EquipY, Item = it, Index = i}
 end
 
 local DrawCache
 local DrawStyles = {[0] = 'green', false, 'red', 'red'}  -- unid, norm, brk, brk
-local RingsShown = mmv(0x4D50F0, 0x511760, 0x523040)
 local EffectItem
 local InMenu
 local DrawOffsetX, DrawOffsetY = 0, 0
@@ -269,6 +272,8 @@ local function draw(a, it, idx, off, style)
 		local p = mm78(0x4E4BF8, 0x4F5890)
 		x = x + i4[p] + DrawOffsetX
 		y = y + i4[p + 4] + DrawOffsetY
+	else
+		x = x + 481
 	end
 	x = x + (PaperDollOffsetX or 0)
 	y = y + (PaperDollOffsetY or 0)
@@ -287,7 +292,7 @@ local function draw(a, it, idx, off, style)
 	else
 		Screen:Draw(x, y, pic, style or DrawStyles[cond:And(3)], rot)
 	end
-	if idx and i4[RingsShown] == 0 then
+	if idx and not Game.DialogLogic.PlayerRingsOpen then
 		Screen:DrawToObjectByPixel(x, y, pic, idx, rot)
 	end
 end
@@ -339,8 +344,8 @@ local function GetHiddenPieces(pl)
 	-- 1st hand when not holding a weapon
 	hide.hand1f = not hide.arm1
 	local player = pl
-	--!k{hand1a 1st hand (always drawn), menu in new game menu (for BackDoll in MM8), game in game (for BackDoll in MM8)} Here I've described pieces that 'PaperDoll' module handles automatically. You can define your own pieces through #PaperDollDrawOrder:# array and hide them conditionally here.
-	events.cocall('PaperDollHiddenPieces', hide, player)
+	--!k{hand1a 1st hand (always drawn), menu in new game menu (for BackDoll in MM8), game in game (for BackDoll in MM8)} Here I've described pieces that 'PaperDoll' module handles automatically. You can define your own pieces through #PaperDollDrawOrder:# array and hide them conditionally here. 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
+	events.cocall('PaperDollHiddenPieces', hide, player, InMenu, DrawOffsetX, DrawOffsetY)
 	hide.Player = nil
 	return hide
 end
@@ -350,8 +355,8 @@ local function GetItems(pl)
 	for k, v in pairs(const.ItemSlot) do
 		t[k] = pl.EquippedItems[v]
 	end
-	--!(t, player) Lets you modify weared items, such as add new weared item slots. E.g. setting !Lua[[t.My = 1]] would draw !Lua[[pl.Items[1]]]. Setting !Lua[[t.My = true]] would make ":My" drawn the same way ":Player" is drawn. You'll also need to add "My" to #PaperDollDrawOrder:#. If you set !Lua[[t.My = "solid"]], ":My" would be drawn without transparency, just like ":BackDoll".
-	events.cocall('PaperDollGetItems', t, pl)
+	--!(t, player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Lets you modify weared items, such as add new weared item slots. E.g. setting !Lua[[t.My = 1]] would draw !Lua[[pl.Items[1]]]. Setting !Lua[[t.My = true]] would make ":My" drawn the same way ":Player" is drawn. You'll also need to add "My" to #PaperDollDrawOrder:#. If you set !Lua[[t.My = "solid"]], ":My" would be drawn without transparency, just like ":BackDoll". 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
+	events.cocall('PaperDollGetItems', t, pl, InMenu, DrawOffsetX, DrawOffsetY)
 	for k, i in pairs(t) do
 		t[k] = (i == true and {} or i == 'solid' and {DrawStyle = true} or i ~= 0 and GetItemGraphics(pl.Items[i], i) or nil)
 	end
@@ -406,6 +411,9 @@ local function DrawDoll(pl)
 			EffectItem.Condition = EffectItem.Condition:AndNot(0xf0)
 		end
 	end
+	
+	--!(player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Called after the paper doll is drawn. 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
+	events.cocall('PaperDollDrawn', pl, InMenu, DrawOffsetX, DrawOffsetY)
 end
 
 if mmver == 6 then
@@ -423,7 +431,7 @@ if mmver == 6 then
 elseif mmver == 7 then
 	mem.hook(0x43CD55, |d| do
 		DrawDoll(Party[d.eax - 1])
-		if i4[RingsShown] == 0 then
+		if not Game.DialogLogic.PlayerRingsOpen then
 			draw2(603, 299, "MAGNIF-B")
 			if PaperDollDrawCustomBorder then
 				draw2(PaperDollDrawCustomBorder())
