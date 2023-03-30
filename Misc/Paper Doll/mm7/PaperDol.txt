@@ -27,6 +27,28 @@ FDwarf	:Player	PC%.2dLhu	32	146	hand2h
 13	:Player	PC13BRD	52	130	scarf
 14	:Player	PC14BRD	56	136	scarf
 
+							Offsets:
+							Shield:
+MBase	:ExtraHand		128	205	shield	-1
+FBase	:ExtraHand		131	201	shield	-1
+MDwarf	:ExtraHand		131	216	shield	-1
+FDwarf	:ExtraHand		123	216	shield	-1
+							Dual-wielding:
+MBase	:ExtraHand		128	205	hand2	-1
+FBase	:ExtraHand		131	201	hand2	-1
+MDwarf	:ExtraHand		131	216	hand2	-1
+FDwarf	:ExtraHand		123	216	hand2	-1
+							Arm1 weapon:
+MBase	:MainHand		30	144		-1
+FBase	:MainHand		38	158		-1
+MDwarf	:MainHand		29	186		-1
+FDwarf	:MainHand		35	184		-1
+							Bow:
+MBase	:Bow		88	85		-1
+FBase	:Bow		98	87		-1
+MDwarf	:Bow		88	119		-1
+FDwarf	:Bow		98	119		-1
+
 							Wetsuit:
 MBase	item299	PC23v1Bod	0	0
 MBase	item299	PC23v1Lad	103	106	arm2
@@ -52,35 +74,13 @@ FDwarf	item299	PC23v4Lau	32	146	arm2h
 FDwarf	item299	PC23v4Rh	31	184	hand1a
 FDwarf	item299	PC23v4Lh	123	216	hand2
 FDwarf	item299	PC23v4Lhu	32	146	hand2h
-	:Player.item299						Don't draw regular paper doll
-	:Player.item299				arm2
-	:Player.item299				arm2h
-	:Player.item299				hand1a
-	:Player.item299				hand2
-	:Player.item299				hand2h
-	:Player.item299				scarf
-
-							Offsets:
-							Shield:
-MBase	:ExtraHand		128	205	shield	-1
-FBase	:ExtraHand		131	201	shield	-1
-MDwarf	:ExtraHand		131	216	shield	-1
-FDwarf	:ExtraHand		123	216	shield	-1
-							Dual-wielding:
-MBase	:ExtraHand		128	205	hand2	-1
-FBase	:ExtraHand		131	201	hand2	-1
-MDwarf	:ExtraHand		131	216	hand2	-1
-FDwarf	:ExtraHand		123	216	hand2	-1
-							Arm1 weapon:
-MBase	:MainHand		30	144		-1
-FBase	:MainHand		38	158		-1
-MDwarf	:MainHand		29	186		-1
-FDwarf	:MainHand		35	184		-1
-							Bow:
-MBase	:Bow		88	85		-1
-FBase	:Bow		98	87		-1
-MDwarf	:Bow		88	119		-1
-FDwarf	:Bow		98	119		-1
+	:Player:if.item299						Don't draw regular paper doll
+	:Player:if.item299				arm2
+	:Player:if.item299				arm2h
+	:Player:if.item299				hand1a
+	:Player:if.item299				hand2
+	:Player:if.item299				hand2h
+	:Player:if.item299				scarf
 
 							Cloaks:
 MBase	item105	item105v1	17	104

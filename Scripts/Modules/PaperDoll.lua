@@ -11,19 +11,20 @@ How it works:
 A special case is when you specify item slot as 'ItemPicture', e.g. ":Armor". In this case 'X' and 'Y' act as offsets added to whatever coordinates are specified for the item in #Armor:structs.Player.ItemArmor# slot. If you specify 'Mul' for a slot, coordinates of the item are multiplied by it. It can also contain 4 values "a1,a2,a3,a4" that work this way: !Lua[[x = a1*X + a2*Y; y = a3*X + a4*Y]]. Setting 'Mul' to "0,-1,1,0" or similar 90 degree rotation matrices would cause the item to be drawn rotated in MM8.
 
 Coordinates are given relative to the following point:
-MM6 and MM7 - (481, 0), MM8 - (467, 23)
+MM6 and MM7 - (481, 0), MM8 - (467, 23).
 You can change it by modifying #Game.DialogLogic.PaperDollPositionX:structs.DialogLogic.PaperDollPositionX# and #Game.DialogLogic.PaperDollPositionY:structs.DialogLogic.PaperDollPositionY#, but changing it only affects paper doll position and not BACKDOLL or interface above paper doll.
 
 Options for 'ItemPicture' values:
-item1 - override "item1" graphics
-:Player - override piece of the body
-:Player:Armor - override piece of the body if any Armor is equipped
-:Player.item1 - override piece of the body if "item1" is equipped
-:Player:Armor.item1 - override piece of the body if "item1" is equipped as Armor
-:Belt:Armor.item1 - override any belt if "item1" if equipped as Armor
-item2:Belt:Armor - override "item2" equipped as Belt if anything is equipped as Armor
-item2:Belt.item1 - override "item2" equipped as Belt if "item1" is equipped
-item2:Belt:Armor.item1 - override "item2" equipped as Belt if "item1" is equipped as Armor
+item1  !--  Override "item1" graphics
+:Player  !--  Override piece of the body
+:ExtraHand.item1  !--  Override "item1" graphics if equipped in the second hand
+:Player:if:Armor  !--  Override piece of the body if any Armor is equipped
+:Player:if.item1  !--  Override piece of the body if "item1" is equipped
+:Player:if:Armor.item1  !--  Override piece of the body if "item1" is equipped as Armor
+:Belt:if:Armor.item1  !--  Override any belt if "item1" if equipped as Armor
+:Belt.item2:if:Armor  !--  Override "item2" equipped as Belt if anything is equipped as Armor
+:Belt.item2:if.item1  !--  Override "item2" equipped as Belt if "item1" is equipped
+:Belt.item2:if:Armor.item1  !--  Override "item2" equipped as Belt if "item1" is equipped as Armor
 
 "insert" command:
 'ItemPicture' may start with ":insert" in order to insert a new piece to draw into #PaperDollDrawOrder:#. It's an alternative to doing that in Lua code. TODO: I'll describe it some other day.
@@ -42,9 +43,9 @@ end
 --!v Maps category name to a !lua[[function(i)]] that returns 'true' if player face number 'i' belongs to the category. Use #PaperDollAddBodies:# or #PaperDollAddRace:# to populate in a custom way.
 PaperDollCategories = {}
 PaperDollGraphics = {}
---!v Specifies which pieces inherit item graphics by default. Default:
+--!v Specifies which pieces inherit item graphics by default. For slots not specified here piece with empty name is the main one.
+-- Default:
 -- !Lua[[{ExtraHand = {hand2 = true, shield = true}, Gauntlets = {ring = true}, Amulet = {ring = true}, Ring1 = {ring = true}, Ring2 = {ring = true}, Ring3 = {ring = true}, Ring4 = {ring = true}, Ring5 = {ring = true}, Ring6 = {ring = true}}]]
--- For slots not specified here piece with empty name is the main one.
 PaperDollMainPieces = {ExtraHand = {hand2 = true, shield = true}, Gauntlets = {ring = true}, Amulet = {ring = true}, Ring1 = {ring = true}, Ring2 = {ring = true}, Ring3 = {ring = true}, Ring4 = {ring = true}, Ring5 = {ring = true}, Ring6 = {ring = true}}
 local PaperDollMainPiecesStd = {[''] = true}
 local CurDollGraphics
@@ -237,10 +238,13 @@ else
 	events.GameInitialized2 = ReloadPaperDollGraphics
 end
 
---!v If set to 'true' (default in MM6 and MM7), spears are treated as 2-handed weapons when use without a second weapon. Gets initialized according to game version.
+--!v If set to 'true' (default in MM6 and MM7), spears are treated as two-handed weapons when used without a second weapon. Gets initialized according to game version.
 PaperDollTwoHandedSpear = PaperDollTwoHandedSpear == nil and mmver ~= 8 or PaperDollTwoHandedSpear or false
 
---!v List of things to draw in the form of 'Slot.Piece.DrawStyle'. 'Slot' is either one of the wearable item slots (e.g. "Bow") or a pseudo-slot like "Player". 'Piece' defines what element of that item gets drawn. 'DrawStyle' can be set to "opaque" for opaque bitmaps ("red" and "green" drawing styles are also supported) or "rect" to have the whole item rect count as item in regards to clicks.
+--!v List of things to draw in the form of "'Slot'.'Piece'.'DrawStyle'" (or "'Slot'.'Piece'", or "'Slot'").
+-- 'Slot' is either one of the wearable item slots (e.g. "Bow") or a pseudo-slot like "Player".
+-- 'Piece' defines what element of that item gets drawn.
+-- 'DrawStyle' can be set to "opaque" for opaque bitmaps ("red" and "green" are also supported) or "rect" to have the whole item rect count as item in regards to clicks.
 --
 -- Default:
 -- !Lua[[{'BackDoll..opaque', 'BackDoll.menu.opaque', 'BackDoll.game.opaque',
@@ -416,7 +420,8 @@ local function GetHiddenPieces(pl)
 		hide[i == 0 and 'good' or i == 2 and 'evil' or 'neutral'] = nil
 	end
 	local player = pl
-	--!k{hand1a 1st hand (always drawn), menu in new game menu (for BackDoll in MM8), game in game (for BackDoll in MM8), ring rings menu open, noring rings menu closed} Here I've described pieces that 'PaperDoll' module handles automatically. You can define your own pieces through #PaperDollDrawOrder:# array and hide them conditionally here. 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
+	--!k{hand1a 1st hand (always drawn), menu in new game menu (for BackDoll in MM8), game in game (for BackDoll in MM8), ring rings menu open, noring rings menu closed} Here I've described pieces that 'PaperDoll' module handles automatically. You can define when your own pieces are drawn through #PaperDollDrawOrder:# array and hide them conditionally here.
+	-- 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
 	events.cocall('PaperDollHiddenPieces', hide, player, InMenu, DrawOffsetX, DrawOffsetY)
 	hide.Player = nil
 	return hide
@@ -427,7 +432,8 @@ local function GetItems(pl)
 	for k, v in pairs(const.ItemSlot) do
 		t[k] = pl.EquippedItems[v]
 	end
-	--!(t, player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Lets you modify weared items, such as add new weared item slots. E.g. setting !Lua[[t.My = 1]] would draw !Lua[[pl.Items[1]]]. Setting !Lua[[t.My = true]] would make ":My" drawn the same way ":Player" is drawn. You'll also need to add "My" to #PaperDollDrawOrder:#. 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
+	--!(t, player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Lets you modify weared items, such as add new weared item slots. E.g. setting !Lua[[t.My = 1]] would draw !Lua[[pl.Items[1]]]. Setting !Lua[[t.My = true]] would make ":My" drawn the same way ":Player" is drawn. You'll also need to add "My" to #PaperDollDrawOrder:#.
+	-- 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
 	events.cocall('PaperDollGetItems', t, pl, InMenu, DrawOffsetX, DrawOffsetY)
 	for k, i in pairs(t) do
 		t[k] = (i == true and {} or i ~= 0 and GetItemGraphics(pl.Items[i], i) or nil)
@@ -442,14 +448,25 @@ local function DrawDoll(pl)
 	local hide = GetHiddenPieces(pl)
 	local wear = GetItems(pl)
 	local face = pl.Face
-	local function Override(t, s, fmt, fmt2)
-		fmt, fmt2 = fmt or ':%s', fmt2 or '.%s'
-		for k, a in pairs(wear) do
-			a = a.Image and t[s..fmt:format(k:lower())..fmt2:format(a.Image)]
-			if a then
-				return a
+	
+	local function DoOverride(t, s, NeedImg, NeedClass)
+		if NeedImg or NeedClass then
+			local fmt, fmt2 = (NeedClass and ':if:%s' or ':if'), NeedImg and '.%s' or ''
+			for k, a in pairs(wear) do
+				a = a.Image and t[s..fmt:format(k:lower())..fmt2:format(a.Image)]
+				if a then
+					return a
+				end
 			end
+		else
+			return t[s]
 		end
+	end
+	local function Override(t, img, class, NeedImg, NeedClass)
+		return img and class and DoOverride(t, class..'.'..img, NeedImg, NeedClass) or DoOverride(t, img or class, NeedImg, NeedClass)
+	end
+	local function OverrideIf(t, img, class)
+		return Override(t, img, class, true, true) or Override(t, img, class, true) or Override(t, img, class, nil, true)
 	end
 
 	for _, s in ipairs(PaperDollDrawOrder) do
@@ -458,8 +475,7 @@ local function DrawDoll(pl)
 		if a and not hide[piece] then
 			local class, t = ':'..s:lower(), tget(CurDollGraphics, piece)
 			local it, idx = a.Item, a.Index
-			local over = it and (Override(t, a.Image..class) or Override(t, a.Image..class, '') or Override(t, a.Image..class, nil, '') or Override(t, a.Image, '', ''))
-					or Override(t, class) or Override(t, class, '') or Override(t, class, nil, '')
+			local over = it and (OverrideIf(t, a.Image, class) or Override(t, a.Image, class)) or OverrideIf(t, nil, class)
 			if over then
 				a = table.copy(over, {Image = a.Image, X = a.X, Y = a.Y}, true)
 			end
@@ -471,14 +487,16 @@ local function DrawDoll(pl)
 			draw(a, it, idx, it and t[class], style)
 		elseif s == 'BeginDoll' and not hide[piece] then
 			InDoll, ClicksOn = true, not (InMenu or Game.DialogLogic.PlayerRingsOpen)
-			-- !(player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Called before the paper doll is drawn after drawing the background. 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
+			--!(player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Called before the paper doll is drawn after drawing the background.
+			-- 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
 			events.cocall('PaperDollBeforeDoll', pl, InMenu, DrawOffsetX, DrawOffsetY)
 		elseif s == 'EndDoll' and not hide[piece] then
 			InDoll, ClicksOn = nil, true
 			if mmver > 6 then
 				Screen:SetClipRect()
 			end
-			-- !(player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Called after the paper doll is drawn before drawing UI elements. 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
+			--!(player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Called after the paper doll is drawn before drawing UI elements.
+			-- 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
 			events.cocall('PaperDollAfterDoll', pl, InMenu, DrawOffsetX, DrawOffsetY)
 		elseif s == 'Clicks' and not hide[piece] then
 			ClicksOn = style ~= 'off'
@@ -496,7 +514,8 @@ local function DrawDoll(pl)
 		end
 	end
 	
-	--!(player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Called after the paper doll is drawn. 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
+	--!(player:structs.Player, InMenu, DrawOffsetX, DrawOffsetY) Called after the paper doll is drawn.
+	-- 'InMenu' is 'true' if it's a new game menu in MM8, in which case 'DrawOffsetX' and 'DrawOffsetY' are non-zero.
 	events.cocall('PaperDollAfterDraw', pl, InMenu, DrawOffsetX, DrawOffsetY)
 end
 

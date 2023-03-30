@@ -35,10 +35,10 @@ Doll	ItemPicture	Image	X	Y	Piece	Comments
 10	:Player	grlbarm2	32	104	hand2h
 11	:Player	grlcarm2	32	107	hand2h
 12	:Player	grldarm2	32	101	hand2h
-	:Player	RTHAND	125	186	hand2	2nd hand drawn when dual-wielding (can also be used to shift weapon position in 2nd hand)
+	:Player	RTHAND	125	186	hand2	2nd hand drawn when dual-wielding
 	:Player	LEFTHAND	32	160	hand1a	main hand, always drawn
-	:ExtraHand		91	26	hand2	2nd hand weapon offset (such offsets can be followed by player face number)
-						piece 'shield' is used for drawing shield, so :ExtraHand with piece 4 can set shield offset
+	:ExtraHand		91	26	hand2	2nd hand weapon offset
+						piece 'shield' is used for drawing shield, so :ExtraHand with piece 'shield' can set shield offset
 						piece 'scarf' can be used for cloaks, it's drawn above helmet and armor
 			
 						Armor:
@@ -114,7 +114,7 @@ Doll	ItemPicture	Image	X	Y	Piece	Comments
 	belt4a	BELT4B	
 	belt5a	BELT5B	
 						Cloaks:
-	:Cloak:Cloak	nwcapeb	
+	:Cloak:if:Cloak	nwcapeb	
 	cape1a	cape1b	
 	cape2a	cape2b	
 	cape3a	cape3b	
