@@ -3119,7 +3119,7 @@ function structs.f.GeneralStoreItemKind(define)
 	define
 	.i2  'Level'
 	.array(1, 6).i2  'Items'
-	 .Info{Sig = '[1..6]', "If it's zero, random Boots or Gountlets are generated."}
+	 .Info{Sig = '[1..6]', "If it's zero, random Boots or Gauntlets are generated."}
 	.indexmember  'Items'
 	.newindexmember  'Items'
 end
@@ -3346,6 +3346,18 @@ function structs.f.DialogLogic(define)
 	define
 	[mmv(0x4CB3B8, 0x506400, 0x517B50)].struct(structs.MapMonster)  'MonsterInfoMonster'
 	[mmv(0x4D50F0, 0x511760, 0x523040)].b4  'PlayerRingsOpen'
+	if mmver > 6 then
+		define[mm78(0x4E4BF8, 0x4F5890)].i4  'PaperDollPositionX'
+		.i4  'PaperDollPositionY'
+	else
+		local f = |def| function(o, obj, name, val)
+			val = val == nil and def or val
+			rawset(obj, name, val)
+			return val
+		end
+		define.CustomType('PaperDollPositionX', 0, f(481))
+		define.CustomType('PaperDollPositionY', 0, f(0))
+	end
 end
 
 function structs.f.MoveToMap(define)

@@ -599,7 +599,7 @@ const.ItemType = {
 	Helm       = 6,
 	Belt       = 7,
 	Cloak      = 8,
-	Gountlets  = 9,
+	Gauntlets  = 9,
 	Boots      = 10,
 	Ring       = 11,
 	Amulet     = 12,
@@ -629,7 +629,7 @@ const.ItemType = {
 	Helm_      = 35,
 	Belt_      = 36,
 	Cloak_     = 37,
-	Gountlets_ = 38,
+	Gauntlets_ = 38,
 	Boots_     = 39,
 	Ring_      = 40,
 	Amulet_    = 41,
@@ -641,6 +641,7 @@ const.ItemType = {
 	Gems2      = 47,
 	Gold_      = 50,
 }
+setmetatable(const.ItemType, {__index = {Gountlets = 9, Gountlets_ = 38}})
 
 const.ItemSlot = {
 	ExtraHand = 0,
@@ -650,7 +651,7 @@ const.ItemSlot = {
 	Helm = 4,
 	Belt = 5,
 	Cloak = 6,
-	Gountlets = 7,
+	Gauntlets = 7,
 	Boots = 8,
 	Amulet = 9,
 	Ring1 = 10,
@@ -660,6 +661,7 @@ const.ItemSlot = {
 	Ring5 = 14,
 	Ring6 = 15,
 }
+setmetatable(const.ItemSlot, {__index = {Gountlets = 7}})
 
 if mmver == 6 then
 	const.Damage = {

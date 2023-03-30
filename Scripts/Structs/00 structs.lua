@@ -1504,7 +1504,9 @@ function structs.f.Player(define)
 	.i4  'ItemHelm'
 	.i4  'ItemBelt'
 	.i4  'ItemCloak'
-	.i4  'ItemGountlets'
+	.alt.i4  'ItemGountlets'
+	 .Info(false)
+	.i4  'ItemGauntlets'
 	.i4  'ItemBoots'
 	.i4  'ItemAmulet'
 	.i4  'ItemRing1'
@@ -1820,14 +1822,25 @@ function structs.f.GameScreen(define)
 	define.Info{Sig = "x, y, shapePic, effectPic, palShift, palAnimateFrom, palAnimateTo, rotate, EnglishD, effectEnglishD"}
 	
 	function define.m:DrawToObjectByPixel(x, y, pic, index, rotate, EnglishD)
-		pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
+		local picPtr = pic['?ptr']
+		pic = picPtr or type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
 		if mmver == 6 then
+			assert(not picPtr)
 			mem.call(0x40A990, 2, self.ObjectByPixel + (self.Width*y + x)*4, pic, index)
 		else
-			mem.call(mm78(0x4A60BA, 0x4A3F4D), 1, self['?ptr'], x, y, Game.IconsLod.Bitmaps[pic], index, rotate or 0)
+			mem.call(mm78(0x4A60BA, 0x4A3F4D), 1, self['?ptr'], x, y, picPtr or Game.IconsLod.Bitmaps[pic], index, rotate or 0)
 		end
 	end	
 	define.Info{Sig = "x, y, pic, index, rotate, EnglishD"}
+
+	if mmver > 6 then
+		function define.m:DrawToObjectByPixelOpaque(x, y, pic, index, EnglishD)
+			local picPtr = pic['?ptr']
+			pic = type(pic) == "number" and pic or Game.IconsLod:LoadBitmap(pic, EnglishD)
+			mem.call(mm78(0x4A5FAE, 0x4A3E41), 1, self['?ptr'], x, y, picPtr or Game.IconsLod.Bitmaps[pic], index)
+		end	
+		define.Info{Sig = "x, y, pic, index, EnglishD"}
+	end
 
 	function define.m:DrawPcx(x, y, pcx)
 		pcx = assert(pcx['?ptr'] or tonumber(pcx))
