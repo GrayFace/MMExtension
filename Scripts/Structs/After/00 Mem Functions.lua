@@ -6,7 +6,7 @@ local function mmv(...)
 	return (select(mmver - 5, ...))
 end
 
-local function BatchAdd(t, d)
+local BatchAdd = |t, d| if d ~= 0 then
 	prot(true)
 	local moved = mem.MovedCode
 	for _, p in ipairs(t) do
@@ -34,11 +34,28 @@ mem.ChangeGameArray = ChangeGameArray
 
 local ItemSize = |t| t[t.low]['?size']
 
+local function ReallocAligned(p, OldSize, NewSize, align, calign, NoFree)
+	local new = mem.allocMM(NewSize + align - 1)
+	local nalign = (p - new)%align
+	new = new + nalign
+	if OldSize < NewSize then
+		mem.copy(new, p, OldSize)
+		mem.fill(new + OldSize, NewSize - OldSize, 0)
+	else
+		mem.copy(new, p, NewSize)
+	end
+	if not NoFree then
+		mem.freeMM(p - calign)
+	end
+	return new, nalign
+end
+
 local function Extend(t)
 	local stru = t.BaseStruct or Game
 	local name, size, endSize, start, before = t[1], t.Size or ItemSize(stru[t[1]]), t.EndSize or 0, t.StartSize or 0, t.StartBefore or 0
 	start = start + before
 	local esize = endSize + start
+	local align, calign = t.Align or 1, 0
 	local ptr, count, limit
 	if not size then
 		error('size unspecified: '..(name or ('%X'):format(t.Struct['?ptr'])))
@@ -53,7 +70,7 @@ local function Extend(t)
 		local dp, dlim, dnum, old = 0, 0, count - OldCount, ptr or (t.Ptr or a['?ptr']) - before
 		if count > limit then
 			dlim = count - limit
-			ptr = mem.reallocMM(old, limit*size + esize, count*size + esize, not ptr)
+			ptr, calign = ReallocAligned(old, limit*size + esize, count*size + esize, align, calign, not ptr)
 			if endSize ~= 0 then
 				mem.copy(ptr + start + count*size, ptr + start + limit*size, endSize)
 			end
