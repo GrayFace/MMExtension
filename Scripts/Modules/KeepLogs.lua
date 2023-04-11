@@ -45,6 +45,53 @@ function internal.DebugConsole(s, _, branch, ...)
 	return s
 end
 
+local function ShowLogInConsole(s, name)
+	local timestate = internal.PauseGame()
+	local s = internal.DebugConsole(s, (internal.IsTopmost or internal.IsFullScreen)(), name) or ""
+	DebugConsole(nil, false, name)
+	internal.ResumeGame(timestate)
+	internal.DebugConsoleAnswer(s, 1)
+end
+
+local OutputLogs = {}
+
+local function ViewOutputLog()
+	local ok, name = internal.LogFileInfo()
+	if not ok then
+		return 'log file is empty'
+	end
+	local n = OutputLogs[name]
+	local s = n and "" or '['..name..']\n'..("—"):rep(internal.DebugConsoleCharsInLine()).."\n"
+	local f = io.open(name, 'rb')
+	if f then
+		f:seek('set', n or 0)
+		s = s..f:read('*a'):gsub('\r\n', '\n')
+		OutputLogs[name] = f:seek()
+		f:close()
+	else
+		OutputLogs[name] = 0
+	end
+	ShowLogInConsole(s, name)
+end
+
+local GotLogs = {}
+
+-- Shows contents of console log from previous run of the game.
+-- 'n' is the log index or '0' to show current output log.
+function ViewLog(n)
+	if (n or 2) <= 1 then
+		return ViewOutputLog()
+	end
+	backup()
+	local name = "consoleLog"..(n or 2)..'.txt'
+	local s = GotLogs[name] or path.FindFirst(LogPath..name) and '['..name..']\n'..io.load(LogPath..name)
+	if not s then
+		return name..' not found'
+	end
+	GotLogs[name] = ""
+	ShowLogInConsole(s, name)
+end
+
 for s in path.find(LastPath) do
 	local ok, s = pcall(io.load, LastPath, true)
 	if ok then
