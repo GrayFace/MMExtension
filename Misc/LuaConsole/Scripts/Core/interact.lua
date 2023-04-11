@@ -1,7 +1,7 @@
 offsets = nil
 
 -- log all
-require'KeepLogs'(AppPath, 9)
+require'KeepLogs'(AppPath, 19)
 
 -- arg - command line
 do
