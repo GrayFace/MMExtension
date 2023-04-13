@@ -92,6 +92,9 @@ function ViewLog(n)
 	ShowLogInConsole(s, name)
 end
 
+-- short name for 'ViewLog'
+VL = ViewLog
+
 for s in path.find(LastPath) do
 	local ok, s = pcall(io.load, LastPath, true)
 	if ok then
