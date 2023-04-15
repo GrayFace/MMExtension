@@ -24,14 +24,15 @@ end
 
 
 P.BaseSnowSetup = {
-	Bitmap = 'snow01', FallSpeed = 0.002, FadeSpeed = 0.004, distMul = 0.28,
-	Opacity = 0.88, BottomOpMul = 0.8, NightLight = 4.7, RMul = 1, GMul = 1, BMul = 1,
-	AngleMul = 1, MoveMul = 0.0002, MoveFwdMul = 0.15, MoveFwdLim = 20, MoveZMul = 0.45,
+	Bitmap = 'snow01', FallSpeed = 0.0019, FadeSpeed = 0.004, DistMul = 0.27,
+	Opacity = 1.1, FoggyOpacity = 0.5, BottomOpMul = 0.5, FoggyBottomOpMul = 0.9,
+	NightLight = 3.2, RMul = 1, GMul = 1, BMul = 1,
+	AngleMul = 1, MoveMul = 0.00015, MoveFwdMul = 0.15, MoveFwdLim = 20, MoveZMul = 0.45,
 }
 P.BaseSnowSetup.Layers = {
 	{u = 0.81, v = 0.97, dist = 0.5, sx = -0.1, sy = 0.9, opacity = 0.18},
-	{u = 0.46, v = 0.01, dist = 1.25, sx = 0.2, sy = 0.9, opacity = 0.65},
-	{u = 0.27, v = 0.82, dist = 1.6, sx = 0.02, sy = 0.9, opacity = 0.55},
+	{u = 0.46, v = 0.01, dist = 1.25, sx = 0.2, sy = 0.9, opacity = 0.5},
+	{u = 0.27, v = 0.82, dist = 1.6, sx = 0.02, sy = 0.9, opacity = 0.47},
 	{u = 0.4, v = 0.4, dist = 3, sx = -0.03, sy = 0.95, opacity = 0.8},
 	{u = 0.81, v = 0.97, dist = 5, sx = 0.08, sy = 1, opacity = 0.75},
 }
@@ -98,6 +99,7 @@ function P.DrawSnow(on)
 	
 	-- shift from moving
 	local mul = sn.MoveMul
+	local Dir, LookAngle = Party.Direction + (po.SubDirection or 0)/2048, Party.LookAngle + (po.SubLookAngle or 0)/2048
 	local dx, dy = Party.X - LastX, Party.Y - LastY
 	local mx, my = math.cos(LastDir*math.pi/1024), math.sin(LastDir*math.pi/1024)
 	dx, dy = (mx*dy - my*dx)*mul, (Party.Z - LastZ)*math.cos(LastLookAngle*math.pi/1024)*sn.MoveZMul*mul
@@ -106,8 +108,8 @@ function P.DrawSnow(on)
 	
 	-- shift from changing view direction
 	local mul = sn.AngleMul*math.pi/1024
-	local ax, ay = dx + (Party.Direction - LastDir)*mul, dy + (Party.LookAngle - LastLookAngle)*mul
-	LastDir, LastLookAngle = Party.Direction, Party.LookAngle
+	local ax, ay = dx + ((Dir - LastDir + 1024)%2048 - 1024)*mul*(math.cos(LookAngle*math.pi/1024)*0.9 + 0.1), dy + ((LookAngle - LastLookAngle + 1024)%2048 - 1024)*mul
+	LastDir, LastLookAngle = Dir, LookAngle
 	
 	-- adjust global opacity (fade in/out)
 	local dt = Game.TimeDelta
@@ -118,13 +120,15 @@ function P.DrawSnow(on)
 	end
 	
 	-- global dist mul and snow color
-	local distMul = sn.distMul*(Game.PatchOptions.UILayoutActive() and 1 or 0.93)
+	local distMul = sn.DistMul*(Game.PatchOptions.UILayoutActive() and 1 or 0.93)
 	local cl = mem.call(mm78(0x47C500, 0x47B893), 2, 31, 0, mem.i4[mm78(0x50AA9C, 0x51C374)], 1, 0)
 	local b, g, r = cl:And(0xFF), cl:And(0xFF00)/0x100, cl:And(0xFF0000)/0x10000
 	r, g, b = r*sn.RMul, g*sn.GMul, b*sn.BMul
-	local op = P.Opacity*sn.Opacity
-	local opb = min(op*sn.NightLight, op*sn.BottomOpMul*255/max(max(r, g), b))
-	op = op*min(sn.NightLight, 255/max(max(r, g), b))
+	local fog = Map.OutdoorExtra.Foggy
+	local op = P.Opacity*sn[fog and 'FoggyOpacity' or 'Opacity']
+	local opnight = P.Opacity*sn.Opacity*sn.NightLight
+	local opb = min(opnight, op*sn[fog and 'FoggyBottomOpMul' or 'BottomOpMul']*255/max(max(r, g), b))
+	op = min(opnight, op*255/max(max(r, g), b))
 	
 	for _, t in pairs(sn.Layers) do
 		-- move the texture by changing UV, then draw
