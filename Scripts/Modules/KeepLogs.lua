@@ -31,7 +31,9 @@ function internal.DebugConsole(s, _, branch, ...)
 		return DebugConsole(s, _, branch, ...)
 	end
 	backup()
-	pcall(myprint, s)
+	if s ~= "" then
+		pcall(myprint, s:match'(.-)\r?\n?$')
+	end
 	s = DebugConsole(s, _, branch, ...) or ""
 	local last = s
 	if s ~= "" then
@@ -47,10 +49,17 @@ end
 
 local function ShowLogInConsole(s, name)
 	local timestate = internal.PauseGame()
-	local s = internal.DebugConsole(s, (internal.IsTopmost or internal.IsFullScreen)(), name) or ""
+	local s = DebugConsole(s, (internal.IsTopmost or internal.IsFullScreen)(), name) or ""
 	DebugConsole(nil, false, name)
 	internal.ResumeGame(timestate)
-	internal.DebugConsoleAnswer(s, 1)
+	if s ~= '' then
+		-- internal.DebugConsoleAnswer(s, 1)
+		pcall(myprint, "> "..s)
+		internal.DebugDll.DebugDialogMoveLastInput('')
+		return (loadstring("return "..s) or assert(loadstring(s, "@<console>")))()
+	else
+		internal.DebugDll.DebugDialogMoveLastInput(0)  -- remove "> " if it's there
+	end
 end
 
 local OutputLogs = {}

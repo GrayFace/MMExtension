@@ -49,6 +49,7 @@ local GitPath = internal.GitPath
 AppPath = internal.AppPath
 local AppPath = internal.AppPath
 DevPath = GitPath or AppPath
+local DevPath = DevPath
 local CoreScriptsPath = DevPath.."Scripts/Core/"
 internal.CoreScriptsPath = CoreScriptsPath
 local CoreGamePath = internal.CoreGamePath and internal.CoreGamePath.."Scripts/Core/" or CoreScriptsPath  -- for game-specific core files (used by LuaConsole)
@@ -538,6 +539,7 @@ end
 
 -- core files
 
+internal.DebugDll = mem.dll[DevPath..'ExeMods\\MMExtension\\MMExtDialogs.dll']
 dofile(CoreScriptsPath.."Debug.lua")
 d_debug = _G.debug.debug
 

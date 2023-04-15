@@ -28,6 +28,7 @@ type
     procedure WMSysCommand(var m: TWMSysCommand); message WM_SysCommand;
     procedure AcceptResult;
     procedure CancelInput;
+    function RemoveInput: string;
   public
     { Public declarations }
   end;
@@ -39,9 +40,11 @@ function DebugDialog(parentWnd: HWND; question: PChar; topmost: BOOL): PChar; st
 procedure DebugDialogAnswer(text: PChar; pos: int4); stdcall;
 procedure DebugDialogResize(w, h: int); stdcall;
 function DebugDialogCharsInLine(parentWnd: HWND): int; stdcall;
-procedure DebugDialogBranch(p: PChar); stdcall;
 procedure DebugDialogCaption(p: PChar); stdcall;
 function DebugDialogLastResult(p: PChar): PChar; stdcall;
+
+procedure DebugDialogBranch(p: PChar); stdcall;
+procedure DebugDialogMoveLastInput(branch: PChar); stdcall;
 
 implementation
 
@@ -331,6 +334,7 @@ begin
   begin
     Form1.RSMemo1.Text:= b.MemoText;
     b.MemoText:= '';
+    Form1.FMomoPos:= MaxInt;
   end else
     b.MemoText:= Form1.RSMemo1.Text;
 end;
@@ -344,6 +348,18 @@ begin
   StoreBranch(GetBranch(CurBranch), true);
   StoreBranch(GetBranch(s), false);
   CurBranch:= s;
+end;
+
+procedure DebugDialogMoveLastInput(branch: PChar); stdcall;
+var
+  br, s: string;
+begin
+  br:= branch;
+  if (branch <> nil) and (br = CurBranch) then  exit;
+  s:= Form1.RemoveInput;
+  if (s <> '') and (branch <> nil) then
+    with GetBranch(br) do
+      MemoText:= MemoText + s;
 end;
 
 { TForm1 }
@@ -386,6 +402,13 @@ procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_ESCAPE then
     Close;
+end;
+
+function TForm1.RemoveInput: string;
+begin
+  RSMemo1.Perform(EM_SETSEL, FMomoPos - length(InputStart), -1);
+  Result:= RSMemo1.SelText;
+  RSMemo1.SelText:= '';
 end;
 
 procedure TForm1.RSMemo1KeyDown(Sender: TObject; var Key: Word;
@@ -539,6 +562,7 @@ exports
   DebugDialogBranch,
   DebugDialogCaption,
   DebugDialogLastResult,
+  DebugDialogMoveLastInput,
   //MyReallocMem name 'ReallocMem',
   LuaAlloc,
   SaveBufferToBitmap;
