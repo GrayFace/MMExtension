@@ -80,7 +80,7 @@ local function ViewOutputLog()
 	else
 		OutputLogs[name] = 0
 	end
-	ShowLogInConsole(s, name)
+	return ShowLogInConsole(s, name)
 end
 
 local GotLogs = {}
@@ -98,7 +98,7 @@ function ViewLog(n)
 		return name..' not found'
 	end
 	GotLogs[name] = ""
-	ShowLogInConsole(s, name)
+	return ShowLogInConsole(s, name)
 end
 
 -- short name for 'ViewLog'
