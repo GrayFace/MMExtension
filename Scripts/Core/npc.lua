@@ -57,9 +57,12 @@ if mmver == 7 then
 	]]
 	mem.asmhook(0x420C5F, code3)
 	mem.asmhook(0x420C8A, [[
+		cmp dl, 2
+		jb @f
 		mov ah, [0x5C5C30 + 1000 + edi]
 		shr eax, 2
 		add eax, 2
+	@@:
 	]])
 	-- draw portrait
 	mem.asmhook(0x492008, code3)
