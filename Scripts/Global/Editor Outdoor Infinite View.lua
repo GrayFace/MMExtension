@@ -3,8 +3,7 @@ local _KNOWNGLOBALS
 
 local mmver = offsets.MMVersion
 if mmver < 7 or Game.RendererD3D == 0 or Editor.UpdateVisibility then
-	function Editor.UpdateVisibility()
-	end
+	Editor.UpdateVisibility = Editor.UpdateVisibility or function() end
 	return
 end
 

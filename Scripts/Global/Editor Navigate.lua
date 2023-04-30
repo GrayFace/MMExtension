@@ -56,8 +56,6 @@ if not TmpHooks.AddEx then  -- support older MMExt versions just in case
 	TmpHooks = HookManager()
 end
 
-events.LeaveGame = TmpHooks.Clear
-
 local function TmpHookManager(...)
 	local t = HookManager(...)
 	TmpHooks[#TmpHooks + 1] = t.Clear
@@ -141,8 +139,11 @@ Editor.SwitchWorkLoadEvents = SwitchWorkLoadEvents
 
 function events.LeaveGame()
 	Editor.LoadBlvTime = nil
-	Editor.SetWorkMode(false)
+	if Editor.WorkMode then
+		Editor.SetWorkMode(false)
+	end
 	Editor.SwitchWorkLoadEvents = nil
+	TmpHooks.Clear()
 end
 
 function Editor.SetWorkMode(mode)
