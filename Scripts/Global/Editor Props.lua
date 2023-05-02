@@ -4,6 +4,7 @@ Editor = Editor or {}
 local _KNOWNGLOBALS
 
 local abs, floor, ceil, round, max, min = math.abs, math.floor, math.ceil, math.round, math.max, math.min
+local dummy = {}
 
 local skSpawn = 1
 local skObject = 2
@@ -67,6 +68,17 @@ local function GetFromArray(arr, n, name)
 		return (name and arr[n][name] or arr[n])
 	end
 end
+
+local function IndexVis(v)
+	return mmver > v and not (Editor.State.ShowAllIndexes or Editor.ShowAllIndexes) or nil
+end
+ 
+local function ExcludeIndex(v)
+	return function()
+		return {Index = IndexVis(v)}
+	end
+end
+
 
 local COMMENT = "      --"
 
@@ -190,7 +202,8 @@ local function MakeProps(t)
 		end
 	end
 	
-	t.GetExcluded = t.GetExcluded or function() end
+	t.GetExcluded = t.GetExcluded or function()
+	end
 	
 	return t
 end
@@ -368,8 +381,8 @@ local FacetProps = MakeProps{
 	"BitmapU",
 	"BitmapV",
 	
-	mm6o "Index",
-	mm6o "ModelIndex",
+	"Index",
+	"ModelIndex",
 	mm7 "Id",
 	
 	"Event",
@@ -405,9 +418,12 @@ local FacetProps = MakeProps{
 	
 	GetExcluded = function()
 		return Map.IsIndoor() and {
+			Index = IndexVis(6),
 			ModelIndex = true,
 			ScrollDown = mmver == 6,  -- implemented through IsSky = true in MM6 outdoors
 		} or {
+			Index = IndexVis(6),
+			ModelIndex = IndexVis(6),
 			IsSky = true,
 			IsLava = true,
 			DoorStaticBmp = true,
@@ -971,7 +987,7 @@ local SpriteProps = MakeProps{
 	"Y",
 	"Z",
 	"Direction",
-	mm6o "Index",
+	"Index",
 	mm7 "Id",
 	"Event",
 	"TriggerRadius",
@@ -984,6 +1000,8 @@ local SpriteProps = MakeProps{
 	mmver == 6 and "IsShip" or "IsObeliskChest",
 
 	IndexList = "Sprites",
+	
+	GetExcluded = ExcludeIndex(6),
 	
 	get = function(id, prop)
 		local a = Editor.Sprites[id + 1]
@@ -1044,7 +1062,7 @@ local LightProps = MakeProps{
 	"Y",
 	"Z",
 	"Radius",
-	mm67 "Index",
+	"Index",
 	mm8 "Id",
 	-- Bits
 	"Off",
@@ -1056,6 +1074,8 @@ local LightProps = MakeProps{
 	
 	IndexList = "Lights",
 	IndexSetId = mmver < 8,
+
+	GetExcluded = ExcludeIndex(7),
 	
 	get = function(id, prop)
 		local a = Editor.Lights[id + 1]
@@ -1763,6 +1783,7 @@ local CommonMapProps = {
 	"ImportIgnoreUV",
 	"ImportScale",
 	"NoExportRotation",
+	"ShowAllIndexes",
 	
 	get = function(id, prop)
 		local ret, comment = Editor.State[prop], nil
@@ -1776,6 +1797,8 @@ local CommonMapProps = {
 			comment = "all coordinates are multiplied by this number on import and divided by it on export"
 		elseif prop == "NoExportRotation" then
 			comment = "set to 'true' to keep Z coordinate the vertical one on export and import"
+		elseif prop == "ShowAllIndexes" then
+			comment = "set to 'true' to allow editing of 'Index' properties even when 'Id' property is available"
 		end
 		return ret, comment and ('%s%s %s'):format(tostring2(ret), COMMENT, comment)
 	end,
