@@ -1820,10 +1820,12 @@ OutdoorProps = JoinProps(OutdoorProps, CommonMapProps)
 -- Editor.EditProps
 -----------------------------------------------------
 
+local function nilv()
+end
+
 local function CombineProps(sel, props, GetProp)
 	local t = {}
 	local s = {}
-	local nilv = t
 	local exclude = props.GetExcluded() or {}
 	for i, prop in ipairs(props) do
 		if not exclude[prop] then
@@ -1849,7 +1851,10 @@ local function CombineProps(sel, props, GetProp)
 				val = nil
 			end
 			s[#s + 1] = (bad and "--" or "")..prop.." = "..(bad ~= 2 and (valStr or tostr(val)) or "")
-			if not bad then
+			if bad then
+				t[i] = nilv
+				t[prop] = nilv
+			else
 				t[i] = val
 			end
 		end
@@ -1857,12 +1862,12 @@ local function CombineProps(sel, props, GetProp)
 	return s, t
 end
 
-local function UpdateProps(t, ot, sel, props, SetProp)
+local function UpdateProps(t, sel, props, SetProp)
 	local exclude = props.GetExcluded() or {}
 	for i, prop in ipairs(props) do
 		if not exclude[prop] then
 			local val = t[prop]
-			if val ~= ot[i] then
+			if val ~= t[i] then
 				for id in pairs(sel) do
 					props.set(id, prop, val)
 				end
@@ -1895,13 +1900,12 @@ function Editor.EditProps(SpecialKind, ChestNum)
 	if not f then
 		return debug.debug(err)
 	end
-	local ot = table.copy(t)
 	setmetatable(t, {__index = _G})
 	setfenv(f, t)
 	f()
 	setmetatable(t, nil)
 	
-	UpdateProps(t, ot, sel, props)
+	UpdateProps(t, sel, props)
 	props.done()
 end
 
