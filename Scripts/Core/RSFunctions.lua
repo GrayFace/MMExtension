@@ -207,11 +207,17 @@ function io.save(path, s, translate)
 end
 
 -- Loads a file as a string
-function io.load(path, translate)
-	local f = assert(io_open(path, translate and "rt" or "rb"))
-	local s = f:read("*a")
-	f:close()
-	return s
+function io.load(path, translate, IgnoreErrors)
+	local f, err = io_open(path, translate and "rt" or "rb")
+	if f then
+		local s = f:read("*a")
+		f:close()
+		return s
+	elseif IgnoreErrors then
+		return nil, err
+	else
+		error(err, 2)
+	end
 end
 
 local function print1(t, n, arg, ...)
