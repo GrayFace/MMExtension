@@ -282,7 +282,6 @@ function structs.f.GameStructure(define)
 	-- 552F50 TimersCount
 	-- 5F883C ; char SaveSlotsFiles[40][280]
 	-- 5FB9B4 SaveSlotsCount
-	-- 6296EC dist_mist
 
 	[mmv(0x560C14, 0x5D2864, 0x5EFBCC)].array{mmv(581, 800, 803), lenA = i4, lenP = mmv(0x560C10, 0x5D2860, 0x5EFBC8)}.struct(structs.ItemsTxtItem)  'ItemsTxt'
 	.array(mmv(14, 24, 24)).struct(structs.StdItemsTxtItem)  'StdItemsTxt'
@@ -715,7 +714,9 @@ end]=]
 		[0x6F30D0].struct(structs.LanguageLod)  'EnglishTLod'
 		[0x6F330C].struct(structs.LanguageLod)  'EnglishDLod'
 	end
-	define.Info{Name = "IsD3D", new = true}
+	define
+	[mmv(0x6296EC, 0x6BDEFC, 0x6F3004)].i4  'dist_mist'
+	.Info{Name = "IsD3D", new = true}
 	if mmver > 6 then
 		define[mm78(0xE31AF0, 0xF01A08)].alt.u4  'RendererD3D'
 		.Info{Name = "IsD3D", new = true}
@@ -1507,6 +1508,7 @@ function structs.f.Player(define)
 	.alt.i4  'ItemGountlets'
 	 .Info(false)
 	.i4  'ItemGauntlets'
+	 .Info "Was called 'ItemGountlets' before MMExtension v2.3, old name is supported for backward compatibility"
 	.i4  'ItemBoots'
 	.i4  'ItemAmulet'
 	.i4  'ItemRing1'
@@ -2020,6 +2022,14 @@ function structs.f.PatchOptions(define)
 	single  'ExtraSMulD3D'  Info "[MM7+]"
 	single  'ExtraVMulD3D'  Info "[MM7+]"
 	pchar  'DataFilesDir'
+	bool  'ProperSky'  Info "[MM7+]"
+	single  'SkyHeight'  Info "[MM7+] Parameter of 'ProperSkyD3D'"
+	single  'SkyDistance'  Info "[MM7+] Parameter of 'ProperSkyD3D'"
+	single  'SkyScale'  Info "[MM7+] Parameter of 'ProperSkyD3D'"
+	single  'SkySpeedX'  Info "[MM7+] Parameter of 'ProperSkyD3D'"
+	single  'SkySpeedY'  Info "[MM7+] Parameter of 'ProperSkyD3D'"
+	single  'SkyOffsetX'  Info "[MM7+] Parameter of 'ProperSkyD3D'"
+	single  'SkyOffsetY'  Info "[MM7+] Parameter of 'ProperSkyD3D'"
 	
 	function define.f.Present(name)
 		return not not addr[name]

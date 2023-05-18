@@ -188,6 +188,8 @@ function structs.f.GameMap(define)
 	if mmver > 6 then
 		local d = mm78(0, 4)
 		define
+		[base + d + 1232].i4  'OutdoorReputation'
+		[base + d + 1236].i4  'OutdoorAlertState'
 		[base + d + 1240].i4  'OutdoorSanityFacetsCount'
 		[base + d + 1244].i4  'OutdoorSanitySpritesCount'
 		[base + d + 1248].i4  'SanityModelsCount'
@@ -199,9 +201,6 @@ function structs.f.GameMap(define)
 	[base + d + 1264].i8  'OutdoorLastVisitTime'
 	[base + d + 1320].array(88).array(88).abit  'VisibleMap1'
 	[base + d + 2288].array(88).array(88).abit  'VisibleMap2'
-	if mmver > 6 then
-		define[base + d + 1232].i4  'OutdoorReputation'
-	end
 	if mmver == 8 then
 		define[base + 95].u1  'TilesetsFile'
 		 .Info "0 = dtile.bin, 1 = dtile2.bin, 2 = dtile3.bin"
@@ -239,6 +238,7 @@ function structs.f.GameMap(define)
 	[base + mmv(772, 804, 804)].array(7000).abit  'VisibileOutlines'
 	if mmver > 6 then
 		define[base + 716].i4  'IndoorReputation'
+		define[base + 720].i4  'IndoorAlertState'
 		define[base + 724].i4  'IndoorSanityFacetsCount'
 		define[base + 728].i4  'IndoorSanitySpritesCount'
 		define[base + 732].CustomType('SanityDoorDataSize', 4, function(o, obj, name, val)
@@ -266,11 +266,13 @@ function structs.f.GameMap(define)
 	.CustomType('RefillCount', 0, IndoorOutdoorField)
 	.CustomType('LastRefillDay', 0, IndoorOutdoorField)
 	 .Info "The day of refill plus 1"
+	.CustomType('Extra', 0, IndoorOutdoorField)
 	.CustomType('LastVisitTime', 0, IndoorOutdoorField)
-	.CustomType('Reputation', 0, IndoorOutdoorField)
 	
 	if mmver > 6 then
 		define
+		.CustomType('Reputation', 0, IndoorOutdoorField)
+		.CustomType('AlertState', 0, IndoorOutdoorField)
 		.CustomType('SanityFacetsCount', 0, IndoorOutdoorField)
 		.CustomType('SanitySpritesCount', 0, IndoorOutdoorField)
 		local p = mm78(0x518674, 0x529F5C)
@@ -755,6 +757,13 @@ function structs.f.NPC(define)
 	.i4  'UsedSpell'  -- 0x34/0x44
 	.i4  'NewsTopic'  -- 0x38/0x48
 	.size = mmv(0x3C, 0x4C, 0x4C)
+	
+	if mmver < 8 then
+		function define.m:InitPeasant(monType, house, map)
+			call(mmv(0x469210, 0x477330), 1, mmv(0x6A9168, 0x724050), self, monType or 1, house, map or Map.MapStatsIndex)
+		end
+		define.Info{Sig = "MonType, House, MapStatsIndex"}
+	end
 end
 
 function structs.f.NPCNewsItem(define)
@@ -853,11 +862,11 @@ function structs.f.Dlg(define)
 	[0x8].i4  'Width'
 	[0xC].i4  'Height'
 	[0x10].alt.i4  'RightPixel'
-	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right_' before MMExtension v2.3, old name still supported for backward compatibility)"
+	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right_' before MMExtension v2.3, old name is supported for backward compatibility)"
 	.i4  'Right_'
 	 .Info(false)
 	[0x14].alt.i4  'BottomPixel'
-	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom_' before MMExtension v2.3, old name still supported for backward compatibility)"
+	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom_' before MMExtension v2.3, old name is supported for backward compatibility)"
 	.i4  'Bottom_'
 	 .Info(false)
 	[0x18].i4  'DlgID'
@@ -1007,11 +1016,11 @@ function structs.f.Button(define)
 	[0x8].i4  'Width'
 	[0xC].i4  'Height'
 	[0x10].alt.i4  'RightPixel'
-	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right' before MMExtension v2.3, old name still supported for backward compatibility)"
+	 .Info "!Lua[[= Left + Width - 1]]  (it was called 'Right' before MMExtension v2.3, old name is supported for backward compatibility)"
 	.i4  'Right'
 	 .Info(false)
 	[0x14].alt.i4  'BottomPixel'
-	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom' before MMExtension v2.3, old name still supported for backward compatibility)"
+	 .Info "!Lua[[= Top + Height - 1]]  (it was called 'Bottom' before MMExtension v2.3, old name is supported for backward compatibility)"
 	.i4  'Bottom'
 	 .Info(false)
 	[0x18].i4  'Shape'
@@ -1020,7 +1029,7 @@ function structs.f.Button(define)
 	[0x20].alt.i4  'ActionType'
 	 .Info(false)
 	.i4  'Action'
-	 .Info{"Was called 'ActionType' before MMExtension v2.3, old name still supported for backward compatibility"}
+	 .Info{"Was called 'ActionType' before MMExtension v2.3, old name is supported for backward compatibility"}
 	[0x24].i4  'ActionParam'
 	local o = 0
 	if mmver > 6 then
@@ -1041,7 +1050,7 @@ function structs.f.Button(define)
 	[0x50+o].alt.u1  'ShortCut'
 	 .Info(false)
 	.u1  'Key'
-	 .Info{"Was called 'ShortCut' before MMExtension v2.3, old name still supported for backward compatibility"}
+	 .Info{"Was called 'ShortCut' before MMExtension v2.3, old name is supported for backward compatibility"}
 	[0x51+o].string(103)  'Hint'
 	.size = 0xB8+o
 	
@@ -1820,7 +1829,7 @@ function structs.f.Events2DItem(define)
 	[0x14].alt.i2  'PictureUnk'
 	 .Info(false)
 	.i2  'OwnerPicture'
-	 .Info "Was called 'PictureUnk' before MMExtension v2.3, old name still supported for backward compatibility"
+	 .Info "Was called 'PictureUnk' before MMExtension v2.3, old name is supported for backward compatibility"
 	[0x16].i2  'State'
 	[0x18].i2  'Rep'
 	[0x1A].i2  'Per'
