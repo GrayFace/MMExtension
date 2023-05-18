@@ -1566,8 +1566,8 @@ if mmver > 6 then
 		}
 		-- write
 		hooks.asmpatch(mm78(0x45FB69, 0x45D5AA), [[
-			mov eax, [%size%]
-			mov [%sanity%], eax
+			mov edx, [%size%]
+			mov [%sanity%], edx
 		]])
 		-- read
 		hooks.asmhook(mm78(0x49A5B8, 0x497AAD), [[
