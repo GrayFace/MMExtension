@@ -1791,7 +1791,7 @@ local function PrepareLists(compile)
 			if compile and a.Door then
 				doors[a.Door] = true
 			end
-			if not a.IsPortal or not a.Room or a.Room == i - 1 or a.RoomBehind ~= i - 1 then
+			if not a.IsPortal or (a.Room or 0) == 0 or a.Room == i - 1 or a.RoomBehind ~= i - 1 then
 				AddToList(Facets, FacetIds, a, LastFacetIds[a] or r.Facets[a])
 			end
 		end
@@ -1808,9 +1808,10 @@ local function PrepareLists(compile)
 			end
 		end
 	end
-	for a in pairs(FacetRooms) do
+	for a, r in pairs(FacetRooms) do
 		if not FacetIds[a] then
-			print(dump(a))
+			print('not in FacetIds', dump(a))
+			AddToList(Facets, FacetIds, a, LastFacetIds[a] or r.Facets[a])
 		end
 	end
 	FinalizeList(Facets, FacetIds)
