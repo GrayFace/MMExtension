@@ -183,11 +183,18 @@ end
 
 -- make all peasants hireable
 if mmver == 7 then
-	local hooks
+	local hooks, off = nil, true
 	-- [MM7] Normally first level of each peasant kind just talls you some news and can't be hired. Pass 'on' = 'true' to this function to make all peasants hireable.
+	-- Pass 'on' = 'nil' to obtain current state of it.
 	function HireAllPeasants(on)
+		if on == nil then
+			return not off
+		elseif off == not on then
+			return
+		end
+		off = not on
 		if hooks then
-			hooks.Switch(on)
+			hooks.Switch(not off)
 		elseif on then
 			hooks = HookManager()
 			hooks.asmpatch(0x4611DC, [[jmp absolute 0x461382]])
@@ -427,12 +434,19 @@ if mmver > 6 then
 end
 
 if mmver == 7 then
-	local hooks
+	local hooks, off = nil, false
 	-- [MM7] Pass 'false' to remove the deck requirement.
+	-- Pass 'on' = 'nil' to obtain current state of it.
 	function ArcomageRequireDeck(on)
+		if on == nil then
+			return not off
+		elseif off == not on then
+			return
+		end
+		off = not on
 		if hooks then
-			hooks.Switch(not on)
-		elseif not on then
+			hooks.Switch(off)
+		elseif off then
 			hooks = HookManager()
 			hooks.nop(0x4B3A06)  -- no arcomage deck requirement
 			hooks.nop(0x4B8A31)  -- no arcomage deck requirement
