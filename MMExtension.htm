@@ -2405,7 +2405,7 @@ Id
 <td class="def-left">
 <a id="events.LoadSavedMap" class="abs"></a><h4 class="def-h4">LoadSavedMap</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span>Data = Raw <b class="def-param">ddm</b> or <b class="def-param">dlv</b> data<br><span class="def-nbsp">  </span>FacetsCount = <span class="def-ver">[MM7+]</span> Total numuber of facets on the map<br><span class="def-nbsp">  </span>IsIndoor<br><span class="def-nbsp">  </span>IsOutdoor<br><b class="def-rargs">}</b>
 </td><td class="def-right">
- You can do a number of things here:<br>1. Set <a href="#structs.GameMap.LastRefillDay">Map.LastRefillDay</a> to <b class="def-param">0</b> to force a refill.<br>2. In MM7+ you could handle games saved in an older version of your mod. The game checks <a href="#structs.GameMap.SanitySpritesCount">Map.SanitySpritesCount</a> against <a href="#structs.GameMap.Sprites">Map.Sprites.Count</a>, <a href="#structs.GameMap.SanityFacetsCount">Map.SanityFacetsCount</a> against <b class="def-param">FacetsCount</b>, and on outdoor maps <a href="#structs.GameMap.SanityModelsCount">Map.SanityModelsCount</a> against <a href="#structs.GameMap.Models">Map.Models.Count</a>. If all sanity fields are non-zero and either of them doesn't match the real count, the game forcibly refills the map. You can do a similar check and either change <b class="def-param">Data</b> (use <a href="#mem.free">mem.free</a> and <a href="#mem.malloc">mem.malloc</a> if needed) or backup monsters, objects, chests and visible map data and restore them in <a href="#events.CancelLoadingMapScripts">CancelLoadingMapScripts</a> event (that's the first of events that fire once the map is loaded). Not an easy task, but it will provide saves compatibility when signinficant changes to maps happen.<br><b>Important:</b> <a href="#structs.GameMap.Name">Map.Name</a> at this point is changed from "map.odm"/"map.blv" to "map.ddm"/"map.dlv".<br>Another note: <a href="#structs.GameMap.SanityDoorDataSize">Map.SanityDoorDataSize</a> was added in MMExtension. At this point you can check it against <a href="#structs.BlvHeader.DoorDataSize">Map.IndoorHeader.DoorDataSize</a>, later on <b class="def-param">DoorDataSize</b> gets replaced with <b class="def-param">SanityDoorDataSize</b> if the latter is non-zero.
+ You can do a number of things here:<br>1. Set <a href="#structs.GameMap.LastRefillDay">Map.LastRefillDay</a> to <b class="def-param">0</b> to force a refill.<br>2. In MM7+ you could handle games saved in an older version of your mod. The game checks <a href="#structs.GameMap.SanitySpritesCount">Map.SanitySpritesCount</a> against <a href="#structs.GameMap.Sprites">Map.Sprites.Count</a>, <a href="#structs.GameMap.SanityFacetsCount">Map.SanityFacetsCount</a> against <b class="def-param">FacetsCount</b>, and on outdoor maps <a href="#structs.GameMap.SanityModelsCount">Map.SanityModelsCount</a> against <a href="#structs.GameMap.Models">Map.Models.Count</a>. If all sanity fields are non-zero and either of them doesn't match the real count, the game forcibly refills the map. You can do a similar check, and either change <b class="def-param">Data</b> (use <a href="#mem.free">mem.free</a> and <a href="#mem.malloc">mem.malloc</a> if needed) or backup monsters, objects, chests and visible map data and restore them in <a href="#events.CancelLoadingMapScripts">CancelLoadingMapScripts</a> event (that's the first of events that fires once the map is loaded). Not an easy task, but it will provide saves compatibility when signinficant changes to maps happen.<br><b>Important:</b> <a href="#structs.GameMap.Name">Map.Name</a> at this point is changed from "map.odm"/"map.blv" to "map.ddm"/"map.dlv".<br>Another note: <a href="#structs.GameMap.SanityDoorDataSize">Map.SanityDoorDataSize</a> was added in MMExtension. At this point you can check it against <a href="#structs.BlvHeader.DoorDataSize">Map.IndoorHeader.DoorDataSize</a>, later on <b class="def-param">DoorDataSize</b> gets replaced with <b class="def-param">SanityDoorDataSize</b> if the latter is non-zero.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -3430,7 +3430,7 @@ Id
 <td class="def-left">
 <a id="CreateSprite" class="abs"></a><h5 class="def-h5">CreateSprite</h5><b class="def-largs">{</b>name, x, y, z;<br><span class="def-nbsp">  </span>Bits<br><span class="def-nbsp">  </span>X<br><span class="def-nbsp">  </span>Y<br><span class="def-nbsp">  </span>Z<br><b class="def-rargs">}</b>
 </td><td class="def-right">
- 
+ Warning: In MM7+ sprite bits are stored in the save game. Thus, adding sprites would cause mismatch between <a href="#structs.GameMap.SanitySpritesCount">Map.SanitySpritesCount</a> and <a href="#structs.GameMap.Sprites">Map.Sprites.Count</a> next time the game is loaded (see <a href="#events.LoadSavedMap">LoadSavedMap</a> event for more info on that).<br>If you do decide to use this function in a live MM7+ game, I recommend setting <a href="#structs.GameMap.Sprites">Map.Sprites.Count</a> to normal amount in <a href="#events.BeforeSaveGame">BeforeSaveGame</a> event and restoring current amount in <a href="#events.AfterSaveGame">AfterSaveGame</a>.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -6259,17 +6259,17 @@ Id
 <td class="def-left">
 <a id="structs.GameStructure.NPCProfNames" class="abs"></a>NPCProfNames[]
 </td><td class="def-right">
-<span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
+ 
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.GameStructure.NPCProfTxt" class="abs"></a><a href="#structs.NPCProfTxtItem">NPCProfTxt</a>[]
+<a id="structs.GameStructure.NPCNames" class="abs"></a>NPCNames[][]
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.GameStructure.NPCNames" class="abs"></a>NPCNames[][]
+<a id="structs.GameStructure.NPCProfTxt" class="abs"></a><a href="#structs.NPCProfTxtItem">NPCProfTxt</a>[]
 </td><td class="def-right">
 <span class="def-ver">[MM6, MM7]</span><span class="def-nbsp"> </span>  
 </td>
@@ -10021,13 +10021,7 @@ Id
 <td class="def-left">
 <a id="structs.Events2DItem.QBit" class="abs"></a>QBit
 </td><td class="def-right">
- 
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="structs.Events2DItem.QuestBitRestriction" class="abs"></a>QuestBitRestriction
-</td><td class="def-right">
- (old name)
+ Was called <b class="def-param">QuestBitRestriction</b> before MMExtension v2.3, old name is supported for backward compatibility
 </td>
 </tr></tbody>
 </table>
@@ -16019,21 +16013,27 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="structs.NPC.BribedBefore" class="abs"></a>BribedBefore
+<a id="structs.NPC.TalkedOnce" class="abs"></a>TalkedOnce
 </td><td class="def-right">
- 
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  Set to <b class="def-param">true</b> the first time you interact with the NPC, set to <b class="def-param">false</b> the second time
 </td>
 </tr><tr>
 <td class="def-left">
 <a id="structs.NPC.TalkedBefore" class="abs"></a>TalkedBefore
 </td><td class="def-right">
-<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  
+<span class="def-ver">[MM7+]</span><span class="def-nbsp"> </span>  Set to <b class="def-param">true</b> when you visit the NPC the second time
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.NPC.BribedBefore" class="abs"></a>BribedBefore
+</td><td class="def-right">
+<span class="def-ver">[MM6]</span><span class="def-nbsp"> </span>  Set to <b class="def-param">true</b> the first time you interact with the NPC, set to <b class="def-param">false</b> the second time
 </td>
 </tr><tr>
 <td class="def-left">
 <a id="structs.NPC.BeggedBefore" class="abs"></a>BeggedBefore
 </td><td class="def-right">
-<span class="def-ver">[MM6]</span><span class="def-nbsp"> </span>  
+<span class="def-ver">[MM6]</span><span class="def-nbsp"> </span>  Set to <b class="def-param">true</b> when you visit the NPC the second time
 </td>
 </tr><tr>
 <td class="def-left">
@@ -18653,6 +18653,12 @@ Id
 <a id="structs.Player.GetIndex" class="abs"></a>GetIndex<b class="def-largs">(</b><b class="def-rargs">)</b>
 </td><td class="def-right">
  Returns player index in <a href="#structs.GameParty.PlayersArray">Party.PlayersArray</a>
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="structs.Player.GetSlot" class="abs"></a>GetSlot<b class="def-largs">(</b><b class="def-rargs">)</b>
+</td><td class="def-right">
+ Returns player slot index. Returns <b class="def-param">nil</b> in MM8 if the player is not in the active party.
 </td>
 </tr></tbody>
 </table>
@@ -27879,85 +27885,67 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.DarkElfAbilities" class="abs"></a>DarkElfAbilities <i class="def-const">= 100</i>
+<a id="const.Spells.Glamour" class="abs"></a>Glamour <i class="def-const">= 100</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.Glamour" class="abs"></a>Glamour <i class="def-const">= 101</i>
+<a id="const.Spells.TravelersBoon" class="abs"></a>TravelersBoon <i class="def-const">= 101</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.TravelersBoon" class="abs"></a>TravelersBoon <i class="def-const">= 102</i>
+<a id="const.Spells.Blind" class="abs"></a>Blind <i class="def-const">= 102</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.Blind" class="abs"></a>Blind <i class="def-const">= 103</i>
+<a id="const.Spells.DarkfireBolt" class="abs"></a>DarkfireBolt <i class="def-const">= 103</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.DarkfireBolt" class="abs"></a>DarkfireBolt <i class="def-const">= 104</i>
+<a id="const.Spells.Lifedrain" class="abs"></a>Lifedrain <i class="def-const">= 111</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.VampireAbilities" class="abs"></a>VampireAbilities <i class="def-const">= 112</i>
+<a id="const.Spells.Levitate" class="abs"></a>Levitate <i class="def-const">= 112</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.Lifedrain" class="abs"></a>Lifedrain <i class="def-const">= 113</i>
+<a id="const.Spells.Mistform" class="abs"></a>Mistform <i class="def-const">= 114</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.Levitate" class="abs"></a>Levitate <i class="def-const">= 114</i>
+<a id="const.Spells.Fear" class="abs"></a>Fear <i class="def-const">= 122</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.Mistform" class="abs"></a>Mistform <i class="def-const">= 116</i>
+<a id="const.Spells.FlameBlast" class="abs"></a>FlameBlast <i class="def-const">= 123</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.DragonAbilities" class="abs"></a>DragonAbilities <i class="def-const">= 124</i>
+<a id="const.Spells.Flight" class="abs"></a>Flight <i class="def-const">= 124</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Spells.Fear" class="abs"></a>Fear <i class="def-const">= 125</i>
-</td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="const.Spells.FlameBlast" class="abs"></a>FlameBlast <i class="def-const">= 126</i>
-</td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="const.Spells.Flight" class="abs"></a>Flight <i class="def-const">= 127</i>
-</td><td class="def-right">
-<span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
-</td>
-</tr><tr>
-<td class="def-left">
-<a id="const.Spells.WingBuffet" class="abs"></a>WingBuffet <i class="def-const">= 128</i>
+<a id="const.Spells.WingBuffet" class="abs"></a>WingBuffet <i class="def-const">= 125</i>
 </td><td class="def-right">
 <span class="def-ver">[MM8]</span><span class="def-nbsp"> </span>  
 </td>

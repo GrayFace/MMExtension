@@ -577,7 +577,8 @@ function ChangeSprite(n, name)
 	-- also need to do sound: 45E6EE (MM8)
 end
 
---!a{name, x, y, z}
+--!a{name, x, y, z} Warning: In MM7+ sprite bits are stored in the save game. Thus, adding sprites would cause mismatch between #Map.SanitySpritesCount:structs.GameMap.SanitySpritesCount# and #Map.Sprites.Count:structs.GameMap.Sprites# next time the game is loaded (see #LoadSavedMap:events.LoadSavedMap# event for more info on that).
+-- If you do decide to use this function in a live MM7+ game, I recommend setting #Map.Sprites.Count:structs.GameMap.Sprites# to normal amount in #BeforeSaveGame:events.BeforeSaveGame# event and restoring current amount in #AfterSaveGame:events.AfterSaveGame#.
 function CreateSprite(t)
 	local n = Map.Sprites.Count
 	if n < Map.Sprites.Limit then
