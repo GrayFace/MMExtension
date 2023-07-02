@@ -415,7 +415,8 @@ procedure TForm1.RSMemo1KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if not FInUndo then
-    if (Key = VK_BACKSPACE) or (Key = VK_DELETE) and (GetKeyState(VK_SHIFT) < 0) then
+    if ((Key = VK_BACKSPACE) or (Key = VK_DELETE) and (ssShift in Shift))
+       and not (ssCtrl in Shift) and (RSMemo1.SelLength = 0) then
       RSMemo1.ReadOnly:= RSMemo1.SelStart <= FMomoPos
     else
       RSMemo1.ReadOnly:= RSMemo1.SelStart < FMomoPos;
@@ -477,10 +478,11 @@ begin
       end;
     #27:
       Key:= #0;
-    chr(VK_BACKSPACE):
-      RSMemo1.ReadOnly:= RSMemo1.SelStart <= FMomoPos;
     else
-      RSMemo1.ReadOnly:= RSMemo1.SelStart < FMomoPos;
+      if (Key = chr(VK_BACKSPACE)) and (RSMemo1.SelLength = 0) and (GetKeyState(VK_CONTROL) >= 0) then
+        RSMemo1.ReadOnly:= RSMemo1.SelStart <= FMomoPos
+      else
+        RSMemo1.ReadOnly:= RSMemo1.SelStart < FMomoPos;
   end;
 end;
 
