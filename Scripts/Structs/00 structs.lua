@@ -549,18 +549,15 @@ end]=]
 		[0x6B8C60].array{0, 279}.struct(structs.NPCNewsItem)  'NPCNews'
 		[0x6BA568].array(96).i2  'NPCNewsCountByMap'
 	end
+	define[mmv(0x6A9168, 0x724050, 0x761998)]
+	.array(mmv(400, 501, 551)).struct(structs.NPC)  'NPCDataTxt'
+	.array{mmv(400, 501, 551), lenA = i4, lenP = mmv(0x6BA534, 0x73C014, 0x779FF8)}.struct(structs.NPC)  'NPC'
+	[mmv(0x6BA85C, 0x73C110, 0x77A0E8)].array(mmv(78, 59, 59)).EditPChar  'NPCProfNames'
 	if mmver < 8 then
-		define[mmv(0x6A9168, 0x724050)]
-		.array(mmv(400, 501)).struct(structs.NPC)  'NPCDataTxt'
-		.array{mmv(400, 501), lenA = i4, lenP = mmv(0x6BA534, 0x73C014)}.struct(structs.NPC)  'NPC'
-		[mmv(0x6BA85C, 0x73C110)].array(mmv(78, 59)).EditPChar  'NPCProfNames'
-		[mmv(0x6B5DC8, 0x737AA8)].array(mmv(78, 59)).struct(structs.NPCProfTxtItem)  'NPCProfTxt'
+		define
 		[mmv(0x6B4CE8, 0x7369C8)].array(540).array(2).EditPChar  'NPCNames'
+		[mmv(0x6B5DC8, 0x737AA8)].array(mmv(78, 59)).struct(structs.NPCProfTxtItem)  'NPCProfTxt'
 		[mmv(0x6BA540, 0x73C020)].array(2).i4  'NPCNamesCount'
-	else
-		define[0x761998]
-		.array(551).struct(structs.NPC)  'NPCDataTxt'
-		.array(551).struct(structs.NPC)  'NPC'
 	end
 	define
 	[mmv(0x6B74F0, 0x737F44, 0x7771A0)].array{100, lenA = i4, lenP = mmv(0x6BA530, 0x73C010, 0x779FF4)}.struct(structs.NPC)  'StreetNPC'
@@ -1052,6 +1049,8 @@ end]=]
 			return a[i], i, kind
 		elseif ... then
 			return FromArray(p, ...)
+		-- else
+		-- 	error(('NPC not found: 0x%X'):format(p), 3)
 		end
 	end
 	local NPCFromPtr = |p| FromArray(p, 'NPC', Game.NPC, 'StreetNPC', Game.StreetNPC, mmver < 8 and 'HiredNPC', mmver < 8 and Party.HiredNPC)
@@ -1740,6 +1739,14 @@ function structs.f.Player(define)
 		end
 	end
 	define.Info "Returns player index in #Party.PlayersArray:structs.GameParty.PlayersArray#"
+	function define.m:GetSlot()
+		for i, a in Party do
+			if a == self then
+				return i
+			end
+		end
+	end
+	define.Info "Returns player slot index. Returns 'nil' in MM8 if the player is not in the active party."
 end
 
 local DrawStyles = {

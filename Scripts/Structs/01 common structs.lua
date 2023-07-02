@@ -727,8 +727,10 @@ function structs.f.NPC(define)
 	 .Info 'Use to check if a slot is empty in Party.HiredNPC array'
 	[0x0].EditPChar  'Name'
 	[0x4].i4  'Pic'
-	[0x8].bit('BribedBefore', 1)
+	[0x8].bit(mmver == 6 and 'BribedBefore' or 'TalkedOnce', 1)
+	 .Info "Set to 'true' the first time you interact with the NPC, set to 'false' the second time"
 	[0x8].bit(mmver == 6 and 'BeggedBefore' or 'TalkedBefore', 2)
+	 .Info "Set to 'true' when you visit the NPC the second time"
 	[0x8].bit('ThreatenedBefore', 4)
 	[0x8].bit('Hired', 0x80)
 	[0x8].u4  'Bits'
@@ -1471,7 +1473,7 @@ function structs.f.MapMonster(define)
 	 .Info{Sig = "SoundLoaded = false";  "If 'SoundLoaded' = 'false', sound indexes would be loaded for the monster as well."}
 	.method{p = mmv(0x4219B0, 0x426DC7, 0x425203), name = "ChooseTargetPlayer"}
 	 .Info "Returns player slot index"
-	.method{p = mmv(0x421DC0, 0x427522, 0x425951), name = "CalcTakenDamage", must = 2, ret = true}
+	.method{p = mmv(0x421DC0, 0x427522, 0x425951), name = "CalcTakenDamage", cc = 0, must = 2}
 	 .Info{Sig = "DamageKind, Damage";  "Returns the amount of damage the monster has to actually receive"}
 	.method{p = mmv(0x421E90, 0x427619, 0x425A4F), name = "CalcHitByEffect", must = 1, ret = true}
 	 .Info{Sig = "DamageKind";  "Returns 'true' if the monster couldn't dodge the effect"}
@@ -1846,8 +1848,9 @@ function structs.f.Events2DItem(define)
 	.i2  'ExitPic'  -- 0x28
 	.i2  'ExitMap'  -- 0x2A
 	.alt.i2  'QBit'
+	 .Info "Was called 'QuestBitRestriction' before MMExtension v2.3, old name is supported for backward compatibility"
 	.i2  'QuestBitRestriction'  -- 0x2C
-	 .Info '(old name)'
+	 .Info(false)
 	.skip(2)
 	.size = mmv(0x30, 0x34, 0x34)
 end
