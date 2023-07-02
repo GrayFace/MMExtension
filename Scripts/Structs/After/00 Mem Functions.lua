@@ -32,8 +32,6 @@ local function ChangeGameArray(name, p, count, lenP, stru)
 end
 mem.ChangeGameArray = ChangeGameArray
 
-local ItemSize = |t| t[t.low]['?size']
-
 local function ReallocAligned(p, OldSize, NewSize, align, calign, NoFree)
 	local new = mem.allocMM(NewSize + align - 1)
 	local nalign = (p - new)%align
@@ -52,7 +50,7 @@ end
 
 local function Extend(t)
 	local stru = t.BaseStruct or Game
-	local name, size, endSize, start, before = t[1], t.Size or ItemSize(stru[t[1]]), t.EndSize or 0, t.StartSize or 0, t.StartBefore or 0
+	local name, size, endSize, start, before = t[1], t.Size or stru[t[1]].ItemSize, t.EndSize or 0, t.StartSize or 0, t.StartBefore or 0
 	start = start + before
 	local esize = endSize + start
 	local align, calign = t.Align or 1, 0
