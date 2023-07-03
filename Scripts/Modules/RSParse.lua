@@ -45,6 +45,7 @@ arg[0] = table.remove(arg, 1)
 
 local type = type
 local pairs = pairs
+local error = error
 local string_find = string.find
 local string_sub = string.sub
 local string_gsub = string.gsub
@@ -57,11 +58,15 @@ local _NOGLOBALS
 ----------- No globals from this point ------------
 
 local nearest
-	
+
+local function GetMode(def, mode)
+	return def[mode] or error('mode not found: '..mode, 3)
+end
+
 local function myfind(str, t, n, def)
 	if t.import then
 		local n1, n2, k = nearest(str, t.import, n, def)
-		def[t.import].found = k
+		GetMode(def, t.import).found = k
 		return n1, n2, t.nocache
 	end
 	local n1, n2, nocache
@@ -80,7 +85,7 @@ local function myfind(str, t, n, def)
 end
 
 function nearest(str, mode, n, def)
-	local t = def[mode]
+	local t = GetMode(def, mode)
 	local n1, n2, k = 1/0, 1/0, nil
 	for i = 1, t[0], 3 do
 		local m1, m2, nocache = t[i+1], t[i+2], nil
@@ -147,10 +152,10 @@ function P.parse(str, rules, f, i)
 	local n1, n2, k
 	i = i or 1
 	local function parsed(k, mode)
-		local t = def[mode][k]
+		local t = GetMode(def, mode)[k]
 		local k0 = (k == def[mode][0] and "ret" or (k+2)/3)
 		local r = f(n1, n2, t, k0, mode, stack, i) or t.run and t.run(n1, n2, t, k0, mode, stack, i) or stackcmd(t, k0, stack)
-		return r or t.import and parsed(def[t.import].found, t.import)
+		return r or t.import and parsed(GetMode(def, t.import).found, t.import)
 	end
 	repeat
 		local mode = stack[#stack]
