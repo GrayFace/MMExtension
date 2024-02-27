@@ -766,7 +766,16 @@ local function DeclareCommands()
 	MakeCmd("SetSprite", 0x0D, function(define)
 		define
 		.i4  'SpriteId'
-		.u1  'Visible'
+		.CustomType('Visible', 1, function(o, obj, name, val)
+			o = obj["?ptr"] + o
+			if val == nil then
+				return u1[o]
+			elseif val == true then
+				u1[o] = 1
+			else
+				u1[o] = val or 0
+			end
+		end)
 		 .Info "bit 0x20 of sprite"
 		EvtString 'Name'
 		 .Info[[If 'Name' is unspecified or "0", the sprite isn't changed]]
