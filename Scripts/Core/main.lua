@@ -615,7 +615,7 @@ if isMM then
 	for f in path_find(AppPath.."MMExtension.txt") do
 		CheckNoDel(f)
 	end
-	for f in path_find(AppPath.."General/*.lua") do
+	for f in path_find(AppPath.."Scripts/General/*.lua") do
 		CheckNoDel(f)
 	end
 	if isMM == 6 then
