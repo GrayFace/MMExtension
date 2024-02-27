@@ -428,7 +428,7 @@ local function UseMargin(self, t, m, w, vert)
 	local bl = m[L] == true
 	local br = m[R] == true
 	local x = (t[L] or 0)
-	local r = x + (t[W] or self[W] - x) - (mr or 0)
+	local r = x + (t[W] or self.Dlg[W] - x) - (mr or 0)
 	x = x + (ml or 0)
 	if not w then
 		return x, r - x
@@ -998,6 +998,10 @@ end
 function handlers.DrawDialog(t)
 	local o = (t.Dialog or dummy).CustomDialog
 	if o and (BlockCount == 0 or not FindBlock(t.Index)) then
+		if not o.DrawnOnce then
+			o.DrawnOnce = true
+			callback('OnFirstDraw', o)
+		end
 		o:Draw()
 	end
 end
