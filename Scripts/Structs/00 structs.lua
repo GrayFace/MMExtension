@@ -141,7 +141,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x4D4714, 0x506DC8, 0x5185A8)].i4  'CurrentCharScreen'
 	 .Info ":const.CharScreens"
 	[mmv(0x5F811C, 0x6A0BC4, 0x6CEB24)].i4  'MainMenuCode'
-	 .Info "-1 = in game, 0 = in main menu, 1 = show new game, 2 = show credits, 3 = show load menu, 4 = exit, 5 = loading game, 6 = in new game screen, 8 = in credits, 9 = load game, 10 = load level [MM7+]"
+	 .Info "-1 = in game, 0 = in main menu, 1 = show new game, 2 = show credits, 3 = show load menu, 4 = exit, 5 = loading game, 6 = in new game screen, 8 = in credits/new game breefing in MM6, 9 = load game/clicked Create Party in MM6, 10 = load level [MM7+]"
 	-- 465012(MM8) SetMainMenuCode
 	[mmv(0x52D0E4, 0x576CEC, 0x587914)].b4  'LoadingScreen'
 	[mmv(0x533EB8, 0x590F10, 0x5A537C)].i4  'DialogNPC'

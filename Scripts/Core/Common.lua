@@ -598,7 +598,7 @@ local function GetCurrentDirectory()
 	return mem_string(dirBuf)
 end
 
---!([dir]) Returns previous current directory. Call without parameters to look up current dirrectory
+--!([dir]) Returns previous current directory. Call without parameters to look up current directory
 function _G.os.chdir(dir)
 	-- return call(internal.SetCurrentDirectory, 0, dir) ~= 0
 	local s = GetCurrentDirectory()
