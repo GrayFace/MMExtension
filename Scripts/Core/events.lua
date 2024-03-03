@@ -790,6 +790,39 @@ do
 	end)
 end
 
+-- right click reaction
+do
+	local hooks = HookManager{}
+	hooks.hookfunction(mmv(0x4113C0, 0x416D0B, 0x41634C), 1, 0, function(d, def, mouse)
+		local t = {
+			-- false
+			Handled = false,
+			-- nil
+			Once = nil,
+		}
+		local done
+		-- function!Params[[()]]
+		t.CallDefault = function()
+			if not t.Handled then
+				def(mouse)
+				t.Handled, done = true, true
+			end
+		end
+		-- First called when the right mouse button is pressed, then on every frame while the button is being held.
+		-- You can assume that if #Game.RightButtonPressed:# is 'false', this is the moment the button has been pressed.
+		-- Set 'Handled' to 'true' to prevent standard reaction.
+		-- Set 'Once' to 'true' to prevent #Game.RightButtonPressed:# from being set to 'true' and thus have the event trigger only once per click.
+		-- Set 'Once' to 'false' to force #Game.RightButtonPressed:# to be set to 'true'. This can be useful if #Game.CurrentScreen:# is #const.Screens.MainManu:#, as it's the only case when the game doesn't do it by itself.
+		events.cocalls("RightClick", t)
+		t.CallDefault()
+		if t.Once ~= nil or not done and Game.CurrentScreen ~= 16 then
+			Game.RightButtonPressed = not t.Once
+			Game.NeedRedraw = true
+		end
+	end)
+	Conditional(hooks, "RightClick")
+end
+
 -- Draw D3D effects
 if mmver > 6 then
 	local hooks = HookManager()

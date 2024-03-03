@@ -38,7 +38,8 @@ function events.StructsLoaded()
 	Game.PauseCount2 = Game.PauseCount2 or 0
 end
 
-local _KNOWNGLOBALS, DecListBuf
+local _KNOWNGLOBALS = StrColor
+local DecListBuf
 
 local function SetLenRealloc(obj, v, ps, lenA, size, o)
 	local old = lenA[ps]
@@ -1863,7 +1864,7 @@ function structs.f.GameScreen(define)
 	
 	local MsgText
 	function define.m:DrawMessageBox(t, text, SnapToViewBox)
-		local p = structs.aux.TableToDlg(t, text)
+		local p, isTable = structs.aux.TableToDlg(t, text)
 		if text then
 			MsgText = tostring(text)
 			text, u4[p + 0x48] = u4[p + 0x48], mem.topointer(MsgText)
@@ -1872,9 +1873,9 @@ function structs.f.GameScreen(define)
 		if text then
 			u4[p + 0x48], MsgText = text, nil
 		end
-		if table then
+		if t and isTable then
 			for i = 0, 3 do
-				t[i + 1] = i4[p + i*3]
+				t[i + 1] = i4[p + i*4]
 			end
 		end
 	end
@@ -1884,6 +1885,25 @@ function structs.f.GameScreen(define)
 		call(mmv(0x40F710, 0x4151E4, 0x41468F), 2, x, y, w, h)
 	end
 	define.Info{Sig = "Left, Top, Width, Height"; "Draws a message box border.\nMinimal dimensions for proper display are '64'."}
+
+	function define.m:DrawInfoBox(caption, text, t)
+		caption = caption == nil and '' or tostring(caption)
+		text = text == nil and '' or tostring(text)
+		t = t or {}
+		local fnt = Game.FontSmallnum
+		local fntCap = Game.FontCreate
+		local luc = Game.FontLucida.Height
+		t[3] = t[3] or 384
+		t[1] = t[1] or (640 - t[3]):div(2)
+		t[2] = t[2] or 40
+		t[4] = t[4] or 256
+		t[4] = fnt:GetTextHeight(text, t, 24) + luc*2 + 24
+		self:DrawMessageBox(t)
+		local t1 = {t[1] + 12, t[2] + 12, t[3] - 24, t[4] - 12}
+		fntCap:DrawCentered(StrColor(255,255,150)..caption, t1)
+		fnt:Draw(text, t1, 1, luc)
+	end
+	define.Info{Sig = "Caption, Text, Box = nil"; "Draws a message box with caption and text.\nAs 'Box' you can pass a table in form of !Lua[[{Left, Top, Width, Height}]]. The table gets updated with proper dialog dimensions as a result of running the function."}
 end
 
 function structs.f.PatchOptions(define)

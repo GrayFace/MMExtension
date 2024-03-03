@@ -374,10 +374,10 @@ local function ButtonArgs(t, pt)
 	return x, y, w, h, vis and (t.Shape or 1) or 0, ActHint, ActBtn, pt, vis and t.Key or 0, t.Hint
 end
 
-local function FindButton(items, start, stop, step)
+local function FindButton(items, start, stop, step, ignore)
 	for i = start or #items, stop or #items, step do
 		local b = items[i].Button
-		if b then
+		if b and b ~= ignore then
 			return b
 		end
 	end
@@ -388,7 +388,7 @@ local function CreateButton(self, t)
 	ItemByPointer[pt] = t
 	local p, wrap = self.Dlg:AddButton(ButtonArgs(t, pt))
 	t.Button = wrap(p)
-	local b2 = FindButton(self.Items, nil, 1, -1)
+	local b2 = FindButton(self.Items, nil, 1, -1, t.Button)
 	if b2 then
 		t.Button:MoveBefore(b2)
 	elseif self.Dlg ~= Game.CurrentNPCDialog then  -- it relies on keyboard items starting with 2/1
@@ -1044,6 +1044,30 @@ handlers.AfterDrawDialogs = after
 function handlers.AfterDrawNoDialogs()
 	before()
 	after()
+end
+
+
+-- right click --
+
+
+local function HandleRightClick(o, t, x, y)
+	callback('OnRightClick', o, t, x, y)
+	if not t.Handled and o.Info then
+		Screen:DrawInfoBox(o.InfoCaption, o.Info)
+		t.Handled = true
+	end
+end
+
+function handlers.RightClick(t)
+	if t.Handled then
+		return
+	end
+	local x, y = Mouse.X, Mouse.Y
+	local btn, dlg = Game.GetButtonFromPoint(x, y)
+	local o = btn and ItemByPointer[btn.ActionParam]
+	if o then
+		HandleRightClick(o, t, x, y)
+	end
 end
 
 
