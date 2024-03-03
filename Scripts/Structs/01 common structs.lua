@@ -1136,11 +1136,9 @@ function structs.f.Button(define)
 			elseif pl then 
 				j = j + 1
 			end
-			print(i, j, keyb, sel)
 			if j > i then
 				j = j - 1
 			end
-			print(j)
 			ShiftNavigation(parent, j, 1, keyb, sel)
 		end
 		Unlink(p, parent)
