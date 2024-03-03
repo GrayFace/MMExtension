@@ -794,6 +794,9 @@ end
 do
 	local hooks = HookManager{}
 	hooks.hookfunction(mmv(0x4113C0, 0x416D0B, 0x41634C), 1, 0, function(d, def, mouse)
+		if Game.CurrentScreen == 16 then
+			return  -- movie
+		end
 		local t = {
 			-- false
 			Handled = false,
@@ -812,15 +815,19 @@ do
 		-- You can assume that if #Game.RightButtonPressed:# is 'false', this is the moment the button has been pressed.
 		-- Set 'Handled' to 'true' to prevent standard reaction.
 		-- Set 'Once' to 'true' to prevent #Game.RightButtonPressed:# from being set to 'true' and thus have the event trigger only once per click.
-		-- Set 'Once' to 'false' to force #Game.RightButtonPressed:# to be set to 'true'. This can be useful if #Game.CurrentScreen:# is #const.Screens.MainManu:#, as it's the only case when the game doesn't do it by itself.
 		events.cocalls("RightClick", t)
 		t.CallDefault()
-		if t.Once ~= nil or not done and Game.CurrentScreen ~= 16 then
+		if t.Once ~= nil or not done then
 			Game.RightButtonPressed = not t.Once
 			Game.NeedRedraw = true
 		end
 	end)
 	Conditional(hooks, "RightClick")
+end
+
+-- MM6 - fix CurrentScreen staying at its last value when main menu is shown
+if mmver == 6 then
+	mem.asmhook(0x4506F0, 'mov dword [0x4BCDD8], 0')
 end
 
 -- Draw D3D effects

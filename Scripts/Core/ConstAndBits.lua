@@ -889,7 +889,7 @@ const.Screens = {
 	House = 13,
 	InventoryInShop = 14,  -- double clicking a character in any Buy dialog in MM6 or in Buy Standard in MM7
 	InventoryInChest = 15,
-	MainManu = 16,  -- or movie
+	Movie = 16,  -- was called 'MainManu' before MMExtension v2.3, old name is supported for backward compatibility
 	WalkToMap = 17,
 	MapEntrance = 18,  -- or #Question:# screen
 	SimpleMessage = 19,
@@ -903,7 +903,7 @@ const.Screens = {
 	ItemSpellMM6 = 103,
 	QuickReference = 104,
 }
-setmetatable(const.Screens, {__index = {NewGameBreefing = 9}})
+setmetatable(const.Screens, {__index = {NewGameBreefing = 9, MainManu = 16}})
 
 const.DlgID = {
 	Generic = 1,  -- a lot of dialogs use this Id

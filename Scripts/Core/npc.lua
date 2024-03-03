@@ -921,7 +921,8 @@ mem.hookfunction(mmv(0x419320, 0x41C3DB, 0x41BAF1), 2, 5, function(d, def, x, y,
 		internal.InitDlg = nil
 		init()
 	end
-	-- This function is called once a new dialog finishes creation. Note that in case of house dialogs, they internally create an extra dialog with 'DlgID' = '1' for dialog topics, this leads to 'NewDialog' event getting triggered for that extra dialog before the one for the base dialog, however both dialogs are already created and added to #Game.Dialogs:# when either event fires.
+	-- Called once a new dialog finishes creation. Note that in case of house dialogs, they internally create an extra dialog with 'DlgID' = '1' for dialog topics, this leads to 'NewDialog' event getting triggered for that extra dialog before the one for the base dialog, however both dialogs are already created and added to #Game.Dialogs:# when either event fires.
+	-- At this point the dialog can be populated with some items, while other items are added afterwards. To manipulate a dialog after it's fully populated you can use the first time subsequent #BeforeDrawDialog:# event is called. 'OnFirstDraw' of #custom dialogs:CustomDialog# implements this functionality.
 	events.cocalls("NewDialog", dlg, id)
 	return p
 end)

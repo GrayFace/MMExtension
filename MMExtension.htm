@@ -2345,7 +2345,7 @@ Id
 <td class="def-left">
 <a id="events.RightClick" class="abs"></a><h4 class="def-h4">RightClick</h4><b class="def-largs">{</b><br><span class="def-nbsp">  </span>CallDefault = function<b class="def-largs-i">(</b><b class="def-rargs-i">)</b><br><span class="def-nbsp">  </span>Handled = false<br><span class="def-nbsp">  </span>Once = nil<br><b class="def-rargs">}</b>
 </td><td class="def-right">
- First called when the right mouse button is pressed, then on every frame while the button is being held.<br>You can assume that if <a href="#structs.GameStructure.RightButtonPressed">Game.RightButtonPressed</a> is <b class="def-param">false</b>, this is the moment the button has been pressed.<br>Set <b class="def-param">Handled</b> to <b class="def-param">true</b> to prevent standard reaction.<br>Set <b class="def-param">Once</b> to <b class="def-param">true</b> to prevent <a href="#structs.GameStructure.RightButtonPressed">Game.RightButtonPressed</a> from being set to <b class="def-param">true</b> and thus have the event trigger only once per click.<br>Set <b class="def-param">Once</b> to <b class="def-param">false</b> to force <a href="#structs.GameStructure.RightButtonPressed">Game.RightButtonPressed</a> to be set to <b class="def-param">true</b>. This can be useful if <a href="#structs.GameStructure.CurrentScreen">Game.CurrentScreen</a> is <a href="#const.Screens.MainManu">const.Screens.MainManu</a>, as it's the only case when the game doesn't do it by itself.
+ First called when the right mouse button is pressed, then on every frame while the button is being held.<br>You can assume that if <a href="#structs.GameStructure.RightButtonPressed">Game.RightButtonPressed</a> is <b class="def-param">false</b>, this is the moment the button has been pressed.<br>Set <b class="def-param">Handled</b> to <b class="def-param">true</b> to prevent standard reaction.<br>Set <b class="def-param">Once</b> to <b class="def-param">true</b> to prevent <a href="#structs.GameStructure.RightButtonPressed">Game.RightButtonPressed</a> from being set to <b class="def-param">true</b> and thus have the event trigger only once per click.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -2987,7 +2987,7 @@ Id
 <td class="def-left">
 <a id="events.NewDialog" class="abs"></a><h4 class="def-h4">NewDialog</h4><b class="def-largs">(</b>dlg, id<b class="def-rargs">)</b>
 </td><td class="def-right">
- This function is called once a new dialog finishes creation. Note that in case of house dialogs, they internally create an extra dialog with <b class="def-param">DlgID</b> = <b class="def-param">1</b> for dialog topics, this leads to <b class="def-param">NewDialog</b> event getting triggered for that extra dialog before the one for the base dialog, however both dialogs are already created and added to <a href="#structs.GameStructure.Dialogs">Game.Dialogs</a> when either event fires.
+ Called once a new dialog finishes creation. Note that in case of house dialogs, they internally create an extra dialog with <b class="def-param">DlgID</b> = <b class="def-param">1</b> for dialog topics, this leads to <b class="def-param">NewDialog</b> event getting triggered for that extra dialog before the one for the base dialog, however both dialogs are already created and added to <a href="#structs.GameStructure.Dialogs">Game.Dialogs</a> when either event fires.<br>At this point the dialog can be populated with some items, while other items are added afterwards. To manipulate a dialog after it's fully populated you can use the first time subsequent <a href="#BeforeDrawDialog">BeforeDrawDialog</a> event is called. <b class="def-param">OnFirstDraw</b> of <a href="#CustomDialog">custom dialogs</a> implements this functionality.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -26733,9 +26733,9 @@ Id
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="const.Screens.MainManu" class="abs"></a>MainManu <i class="def-const">= 16</i>
+<a id="const.Screens.Movie" class="abs"></a>Movie <i class="def-const">= 16</i>
 </td><td class="def-right">
- or movie
+ was called <b class="def-param">MainManu</b> before MMExtension v2.3, old name is supported for backward compatibility
 </td>
 </tr><tr>
 <td class="def-left">
