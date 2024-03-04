@@ -42,7 +42,7 @@ do
 		hookcall = false,
 	}
 
-	-- Allows switching all hooks installed by it on/off. 'ref' table is used for substitutions in Asm code: "%key%" is replaced with !Lua[=[ref[key]]=], "%%" is replaced with "%". All hook functions are supported, but memory-editing arrays are supported through 'set' function.
+	-- Allows switching all hooks installed by it on/off. 'ref' table is used for substitutions in Asm code: "%key%" is replaced with !Lua[=[ref[key]]=], "%%" is replaced with "%". All hook functions are supported, but memory-editing arrays are supported as functions instead.
 	-- !\ Example 1 - substitution:!Lua[=[
 	-- local ArtifactBonus = mem.StaticAlloc(8)
 	-- HookManager{
@@ -64,8 +64,8 @@ do
 	-- end]=]
 	-- !\ Example 3 - editing memory:!Lua[=[
 	-- local hooks = HookManager()
-	-- hooks.set('i4', 0x469BBE+1, 0x10000)  -- instead of mem.prot(true);  mem.i4[0x469BBE+1] = 0x10000;  mem.prot(false)
-	-- hooks.set('u2', 0x472FB7, 0x9090)  -- instead of mem.prot(true);  mem.u2[0x472FB7] = 0x9090;  mem.prot(false)
+	-- hooks.i4p(0x469BBE+1, 0x10000)  -- instead of mem.i4p[0x469BBE+1] = 0x10000
+	-- hooks.u2p(0x472FB7, 0x9090)     -- instead of mem.u2p[0x472FB7] = 0x9090
 	-- hooks.asmpatch(0x472F5E, "add eax, ecx", 2)
 	-- DisableVFlipFix = |on| hooks.Switch(not on)]=]
 	-- !\ P.S. Don't try to run the code of these examples, they are for illustration.
@@ -140,10 +140,22 @@ do
 			mem.nop2(p, p2)
 		end
 		function t.set(a, p, v)
-			t.AddMem(p, a:sub(2, -1) + 0)
+			t.AddMem(p, a:match('%d+') + 0)
 			mem.prot(true)
 			mem[a][p] = v
 			mem.prot(false)
+		end
+		local function SetMe(s)
+			local sz = s:match('%d+') + 0
+			local a = mem[s]
+			t[s] = function(p, v)
+				t.AddMem(p, sz)
+				a[p] = v
+			end
+		end
+		for _, s in pairs({'i1', 'i2', 'i4', 'i8', 'u1', 'u2', 'u4', 'u8', 'r4', 'r8', 'r10', ffi and 'i8x' or nil, ffi and 'u8x' or nil}) do
+			SetMe(s)
+			SetMe(s..'p')
 		end
 		function t.hookalloc(size)
 			local p = mem.hookalloc(size)

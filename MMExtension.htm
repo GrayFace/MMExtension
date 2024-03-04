@@ -4151,21 +4151,33 @@ Id
 </tr>
 <tr>
 <td class="def-left">
-<a id="mem.i1[p],%20%20mem.i2[p],%20%20mem.i4[p],%20%20mem.i8[p]" class="abs"></a>mem.i1[p], <span class="def-nbsp"> </span>mem.i2[p], <span class="def-nbsp"> </span>mem.i4[p], <span class="def-nbsp"> </span>mem.i8[p]
+<a id="mem.i1" class="abs"></a>mem.i1[p], <span class="def-nbsp"> </span>mem.i2[p], <span class="def-nbsp"> </span>mem.i4[p], <span class="def-nbsp"> </span>mem.i8[p]
 </td><td class="def-right">
  Read/write signed integer at address <b class="def-param">p</b>. Can also be called to convert a number to specified format.<br>For example, for a function that returns a signed byte:<div class="def-codeblock"><span class="lua5-note">return</span> mem.i1(mem.call(func, <span class="lua5-literal">0</span>))</div><br>This would treat function call result as a signed byte, ignoring 3 higher-order bytes.
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="mem.u1[p],%20%20mem.u2[p],%20%20mem.u4[p],%20%20mem.u8[p]" class="abs"></a>mem.u1[p], <span class="def-nbsp"> </span>mem.u2[p], <span class="def-nbsp"> </span>mem.u4[p], <span class="def-nbsp"> </span>mem.u8[p]
+<a id="mem.u1" class="abs"></a>mem.u1[p], <span class="def-nbsp"> </span>mem.u2[p], <span class="def-nbsp"> </span>mem.u4[p], <span class="def-nbsp"> </span>mem.u8[p]
 </td><td class="def-right">
  Read/write unsigned integer at address <b class="def-param">p</b>. Can also be called to convert a number to specified format.
 </td>
 </tr><tr>
 <td class="def-left">
-<a id="mem.r4[p],%20%20mem.r8[p],%20%20mem.r10[p]" class="abs"></a>mem.r4[p], <span class="def-nbsp"> </span>mem.r8[p], <span class="def-nbsp"> </span>mem.r10[p]
+<a id="mem.r4" class="abs"></a>mem.r4[p], <span class="def-nbsp"> </span>mem.r8[p], <span class="def-nbsp"> </span>mem.r10[p]
 </td><td class="def-right">
  Read/write a floating-point number at address <b class="def-param">p</b>
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="mem.i1p" class="abs"></a>mem.i1p[p], <span class="def-nbsp"> </span>mem.i2p[p], <span class="def-nbsp"> </span>...
+</td><td class="def-right">
+ Versions of all of the above with <b class="def-param">p</b> at the end to be used for editing code. They perform <span class="def-code">mem.prot(<span class="lua5-literal">true</span>)</span> before changing the memory and <span class="def-code">mem.prot(<span class="lua5-literal">false</span>)</span> afterwards.
+</td>
+</tr><tr>
+<td class="def-left">
+<a id="mem.dll" class="abs"></a>mem.dll[Name]
+</td><td class="def-right">
+ Loads specified library using <a href="#mem.LoadDll">mem.LoadDll</a> and stores it for later use. Allows for extension to be omitted when only the DLL name without the path is specified.<br>Example:<br><span class="def-code">mem.dll.user32.MessageBoxA(Game.WindowHandle, <span class="lua5-str">'World'</span>, <span class="lua5-str">'Hello'</span>, <span class="lua5-literal">0</span>)</span>
 </td>
 </tr><tr>
 <td colspan="2" class="def-functions"><br>
@@ -4194,7 +4206,7 @@ Id
 <td class="def-left">
 <a id="mem.prot" class="abs"></a>mem.prot<b class="def-largs">(</b>on<b class="def-rargs">)</b>
 </td><td class="def-right">
- Same as above.
+ Same as the above.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -4206,7 +4218,7 @@ Id
 <td class="def-left">
 <a id="mem.alloc" class="abs"></a>mem.alloc<b class="def-largs">(</b>size<b class="def-rargs">)</b>
 </td><td class="def-right">
- Same as above.
+ Same as the above.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -4380,7 +4392,7 @@ Id
 <td class="def-left">
 <a id="mem.bytecodehook" class="abs"></a>mem.bytecodehook<b class="def-largs">(</b>p, code, size<b class="def-rargs">)</b>
 </td><td class="def-right">
- Like <a href="#mem.autohook">autohook</a>, but takes a compiled Asm code string as parameter<br><b class="def-param">code</b> can also be a function <span class="def-code">f(ptr)</span>. <b class="def-param">ptr</b> is the address of memory allocated for hook code or <b class="def-param">nil</b> (to calculate size)
+ Like <a href="#mem.autohook">autohook</a>, but takes a compiled Asm code string as parameter<br><b class="def-param">code</b> can also be a function <span class="def-code">f(ptr)</span>. The function returns the bytecode string. First it's called with <b class="def-param">nil</b> as parameter and its result is only used to calculate code size, then it's called with <b class="def-param">ptr</b> pointing to memory allocated for hook code.
 </td>
 </tr><tr>
 <td class="def-left">
@@ -4404,13 +4416,13 @@ Id
 <td class="def-left">
 <a id="mem.asmhook" class="abs"></a>mem.asmhook<b class="def-largs">(</b>p, code, size<b class="def-rargs">)</b>
 </td><td class="def-right">
- Like <a href="#mem.autohook">autohook</a>, but takes an Asm code string as parameter.<br><i><span class="def-vspace">Example</span> (from MM7):</i><div class="def-codeblock">mem.asmhook(<span class="lua5-literal">0x441D4C</span>, <span class="lua5-literal">[[</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">cmp dword [0xE31AF0], 0</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">jnz absolute 0x441D51</span><br><span class="lua5-literal">]]</span>)</div><br>Original Asm code:<div class="def-codeblock">.text:00441D4C    call sub_4C2E6C<br>.text:00441D51    mov ecx, offset unk_511768</div><br>Resulting Asm code:<div class="def-codeblock">.text:00441D4C    jmp @p<br>.text:00441D51    mov ecx, offset unk_511768<br><br>@p:<br>                  cmp dword [0xE31AF0], 0<br>                  jnz 0x441D51<br>                  call sub_4C2E6C<br>                  jmp 0x441D51</div><br>
+ Like <a href="#mem.autohook">autohook</a>, but takes an Asm code string as parameter.<br><i><span class="def-vspace">Example</span> (from MM7):</i><div class="def-codeblock">mem.asmhook(<span class="lua5-literal">0x441D4C</span>, <span class="lua5-literal">[[</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">cmp dword [0xE31AF0], 0</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">jnz absolute 0x441D51</span><br><span class="lua5-literal">]]</span>)</div><br>Original Asm code:<div class="def-codeblock">.text:00441D4C    call sub_4C2E6C<br>.text:00441D51    mov ecx, offset unk_511768</div><br>Resulting Asm code is similar to:<div class="def-codeblock">                  cmp dword [0xE31AF0], 0<br>                  jnz 0x441D51<br>.text:00441D4C    call sub_4C2E6C<br>.text:00441D51    mov ecx, offset unk_511768</div><br>Actual resulting Asm code:<div class="def-codeblock">.text:00441D4C    jmp @p2<br>.text:00441D51    mov ecx, offset unk_511768<br><br>@p2:<br>                  cmp dword [0xE31AF0], 0<br>                  jnz 0x441D51<br>                  call sub_4C2E6C<br>                  jmp 0x441D51</div><br>
 </td>
 </tr><tr>
 <td class="def-left">
 <a id="mem.asmhook2" class="abs"></a>mem.asmhook2<b class="def-largs">(</b>p, code, size<b class="def-rargs">)</b>
 </td><td class="def-right">
- Like <a href="#mem.autohook2">autohook2</a>, but takes an Asm code string as parameter<br><i><span class="def-vspace">Example</span> (from MM6):</i><div class="def-codeblock"><span class="lua5-note">local</span> p <span class="lua5-note">=</span> mem.asmhook2(<span class="lua5-literal">0x43C8E3</span>, <span class="lua5-literal">[[</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">mov [edi], esi</span><br><span class="lua5-literal">]]</span>)</div><br>Original Asm code:<div class="def-codeblock">.text:0043C8E3    mov edi, offset CurrentEvtLines<br>.text:0043C8E8    rep movsd</div><br>Resulting Asm code:<div class="def-codeblock">.text:0043C8E3    jmp @p<br>.text:0043C8E8    rep movsd<br><br>@p:<br>                  mov edi, offset CurrentEvtLines<br>                  mov [edi], esi<br>                  jmp 0x43C8E8</div><br>
+ Like <a href="#mem.autohook2">autohook2</a>, but takes an Asm code string as parameter<br><i><span class="def-vspace">Example</span> (from MM6):</i><div class="def-codeblock"><span class="lua5-note">local</span> p <span class="lua5-note">=</span> mem.asmhook2(<span class="lua5-literal">0x43C8E3</span>, <span class="lua5-literal">[[</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">mov [edi], esi</span><br><span class="lua5-literal">]]</span>)</div><br>Original Asm code:<div class="def-codeblock">.text:0043C8E3    mov edi, offset CurrentEvtLines<br>.text:0043C8E8    rep movsd</div><br>Resulting Asm code is similar to:<div class="def-codeblock">.text:0043C8E3    mov edi, offset CurrentEvtLines<br>                  mov [edi], esi<br>.text:0043C8E8    rep movsd</div><br>Actual resulting Asm code:<div class="def-codeblock">.text:0043C8E3    jmp @p2<br>.text:0043C8E8    rep movsd<br><br>@p2:<br>                  mov edi, offset CurrentEvtLines<br>                  mov [edi], esi<br>                  jmp 0x43C8E8</div><br>
 </td>
 </tr><tr>
 <td class="def-left">
@@ -4535,7 +4547,7 @@ Id
 <td class="def-left">
 <a id="HookManager" class="abs"></a><h5 class="def-h5">HookManager</h5><b class="def-largs">(</b>ref<b class="def-rargs">)</b>
 </td><td class="def-right">
- Allows switching all hooks installed by it on/off. <b class="def-param">ref</b> table is used for substitutions in Asm code: "%key%" is replaced with <span class="def-code">ref[key]</span>, "%%" is replaced with "%". All hook functions are supported, but memory-editing arrays are supported through <b class="def-param">set</b> function.<br><span class="def-vspace">Example</span> 1 &ndash; substitution:<div class="def-codeblock"><span class="lua5-note">local</span> ArtifactBonus <span class="lua5-note">=</span> mem.StaticAlloc(<span class="lua5-literal">8</span>)<br>HookManager<span class="lua5-ctrl">{</span><br><span class="lua5-tab">&#9;</span>buf <span class="lua5-note">=</span> ArtifactBonus,<br><span class="lua5-ctrl">}</span>.asmhook2(<span class="lua5-literal">0x48F60A</span>, <span class="lua5-literal">[[</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">mov [%buf%], eax</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">mov [%buf%+4], ecx</span><br><span class="lua5-literal">]]</span>)</div><br><span class="def-vspace">Example</span> 2 &ndash; on/off:<div class="def-codeblock"><span class="lua5-note">local</span> hooks<br><span class="lua5-ctrl">function</span> ArcomageRequireDeck(on)<br><span class="lua5-tab">&#9;</span><span class="lua5-ctrl">if</span> hooks <span class="lua5-ctrl">then</span><br><span class="lua5-tab">&#9;</span><span class="lua5-tab">&#9;</span>hooks.Switch(<span class="lua5-ctrl">not</span> on)<br><span class="lua5-tab">&#9;</span><span class="lua5-ctrl">elseif</span> <span class="lua5-ctrl">not</span> on <span class="lua5-ctrl">then</span><br><span class="lua5-tab">&#9;</span><span class="lua5-tab">&#9;</span>hooks <span class="lua5-note">=</span> HookManager()<br><span class="lua5-tab">&#9;</span><span class="lua5-tab">&#9;</span>hooks.nop(<span class="lua5-literal">0x4B3A06</span>) <span> </span><span class="lua5-comment">-- no arcomage deck requirement</span><br><span class="lua5-tab">&#9;</span><span class="lua5-tab">&#9;</span>hooks.nop(<span class="lua5-literal">0x4B8A31</span>) <span> </span><span class="lua5-comment">-- no arcomage deck requirement</span><br><span class="lua5-tab">&#9;</span><span class="lua5-ctrl">end</span><br><span class="lua5-ctrl">end</span></div><br><span class="def-vspace">Example</span> 3 &ndash; editing memory:<div class="def-codeblock"><span class="lua5-note">local</span> hooks <span class="lua5-note">=</span> HookManager()<br>hooks.set(<span class="lua5-str">'i4'</span>, <span class="lua5-literal">0x469BBE</span><span class="lua5-operator">+</span><span class="lua5-literal">1</span>, <span class="lua5-literal">0x10000</span>) <span> </span><span class="lua5-comment">-- instead of mem.prot(true); <span> </span>mem.i4[0x469BBE+1] = 0x10000; <span> </span>mem.prot(false)</span><br>hooks.set(<span class="lua5-str">'u2'</span>, <span class="lua5-literal">0x472FB7</span>, <span class="lua5-literal">0x9090</span>) <span> </span><span class="lua5-comment">-- instead of mem.prot(true); <span> </span>mem.u2[0x472FB7] = 0x9090; <span> </span>mem.prot(false)</span><br>hooks.asmpatch(<span class="lua5-literal">0x472F5E</span>, <span class="lua5-str">"add eax, ecx"</span>, <span class="lua5-literal">2</span>)<br>DisableVFlipFix <span class="lua5-note">=</span> <span class="lua5-ctrl">|</span>on<span class="lua5-ctrl">|</span> hooks.Switch(<span class="lua5-ctrl">not</span> on)</div><br><span class="def-vspace">P.S.</span> Don't try to run the code of these examples, they are for illustration.
+ Allows switching all hooks installed by it on/off. <b class="def-param">ref</b> table is used for substitutions in Asm code: "%key%" is replaced with <span class="def-code">ref[key]</span>, "%%" is replaced with "%". All hook functions are supported, but memory-editing arrays are supported as functions instead.<br><span class="def-vspace">Example</span> 1 &ndash; substitution:<div class="def-codeblock"><span class="lua5-note">local</span> ArtifactBonus <span class="lua5-note">=</span> mem.StaticAlloc(<span class="lua5-literal">8</span>)<br>HookManager<span class="lua5-ctrl">{</span><br><span class="lua5-tab">&#9;</span>buf <span class="lua5-note">=</span> ArtifactBonus,<br><span class="lua5-ctrl">}</span>.asmhook2(<span class="lua5-literal">0x48F60A</span>, <span class="lua5-literal">[[</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">mov [%buf%], eax</span><br><span class="lua5-tab">&#9;</span><span class="lua5-literal">mov [%buf%+4], ecx</span><br><span class="lua5-literal">]]</span>)</div><br><span class="def-vspace">Example</span> 2 &ndash; on/off:<div class="def-codeblock"><span class="lua5-note">local</span> hooks<br><span class="lua5-ctrl">function</span> ArcomageRequireDeck(on)<br><span class="lua5-tab">&#9;</span><span class="lua5-ctrl">if</span> hooks <span class="lua5-ctrl">then</span><br><span class="lua5-tab">&#9;</span><span class="lua5-tab">&#9;</span>hooks.Switch(<span class="lua5-ctrl">not</span> on)<br><span class="lua5-tab">&#9;</span><span class="lua5-ctrl">elseif</span> <span class="lua5-ctrl">not</span> on <span class="lua5-ctrl">then</span><br><span class="lua5-tab">&#9;</span><span class="lua5-tab">&#9;</span>hooks <span class="lua5-note">=</span> HookManager()<br><span class="lua5-tab">&#9;</span><span class="lua5-tab">&#9;</span>hooks.nop(<span class="lua5-literal">0x4B3A06</span>) <span> </span><span class="lua5-comment">-- no arcomage deck requirement</span><br><span class="lua5-tab">&#9;</span><span class="lua5-tab">&#9;</span>hooks.nop(<span class="lua5-literal">0x4B8A31</span>) <span> </span><span class="lua5-comment">-- no arcomage deck requirement</span><br><span class="lua5-tab">&#9;</span><span class="lua5-ctrl">end</span><br><span class="lua5-ctrl">end</span></div><br><span class="def-vspace">Example</span> 3 &ndash; editing memory:<div class="def-codeblock"><span class="lua5-note">local</span> hooks <span class="lua5-note">=</span> HookManager()<br>hooks.i4p(<span class="lua5-literal">0x469BBE</span><span class="lua5-operator">+</span><span class="lua5-literal">1</span>, <span class="lua5-literal">0x10000</span>) <span> </span><span class="lua5-comment">-- instead of mem.i4p[0x469BBE+1] = 0x10000</span><br>hooks.u2p(<span class="lua5-literal">0x472FB7</span>, <span class="lua5-literal">0x9090</span>) <span> </span><span> </span><span> </span><span> </span><span class="lua5-comment">-- instead of mem.u2p[0x472FB7] = 0x9090</span><br>hooks.asmpatch(<span class="lua5-literal">0x472F5E</span>, <span class="lua5-str">"add eax, ecx"</span>, <span class="lua5-literal">2</span>)<br>DisableVFlipFix <span class="lua5-note">=</span> <span class="lua5-ctrl">|</span>on<span class="lua5-ctrl">|</span> hooks.Switch(<span class="lua5-ctrl">not</span> on)</div><br><span class="def-vspace">P.S.</span> Don't try to run the code of these examples, they are for illustration.
 </td>
 </tr><tr>
 <td class="def-left">
