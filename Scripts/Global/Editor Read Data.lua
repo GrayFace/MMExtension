@@ -1189,7 +1189,7 @@ function Editor.ReadMap()
 			DoorTryFreeFilter(t)
 		end
 	end
-	ClearMovedByDoor()
+	-- ClearMovedByDoor()
 	Editor.DefaultFileName = (Editor.MapsDir or "")..path.setext(Map.Name, '.dat')
 	-- Editor.ProcessDoors()
 	Editor.profile(nil)
