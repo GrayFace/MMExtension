@@ -748,7 +748,7 @@ function Commands.NewDoor()
 	local door = {
 		DirectionX = f.nx, DirectionY = f.ny, DirectionZ = f.nz,
 		MoveLength = 128, Speed1 = 50, Speed2 = 50,
-		VertexFilter = not FoundMoving and not Keys.IsPressed(const.Keys.CTRL) and "Free" or nil,
+		VertexFilter = Keys.IsPressed(const.Keys.CTRL) and "Free" or nil,
 		Id = FreeDoorId(),
 	}
 	Editor.BeginUndoState()
