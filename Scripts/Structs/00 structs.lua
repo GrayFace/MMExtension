@@ -881,6 +881,11 @@ end]=]
 		return i
 	end
 	define.Info{Sig = "Name";  "Loads a texture and returns its ID."}
+	if mmver > 6 then
+		define
+		.func{name = "LoadPlayerFace", p = mm78(0x491DDF, 0x4909B5), cc = 2, must = 2}
+		 .Info{Sig = "PlayerSlot, NewFace"}
+	end
 	function define.f.UpdateDialogTopics()
 		if Game.CurrentScreen == 13 then
 			if Game.HouseNPCSlot > (Game.HouseOwnerPic ~= 0 and 1 or 0) then
@@ -1349,7 +1354,10 @@ function structs.f.GameParty(define)
 	if mmver < 8 then
 		define.func{name = "HasNPCProfession", p = mmv(0x467F30, 0x476399, nil), cc = 1, must = 1, ret = true}
 	else
-		define.method{p = 0x4903C0, name = "ResetStartingPlayer", false, false}
+		function define.f.ResetStartingPlayer(ClearClass, AutoFill)
+			call(0x4903C0, 1, 0xB20E90, ClearClass, AutoFill)
+		end
+		define.Info{Sig = "ClearClass, AutoFill"}
 	end
 	function define.f.CountItems(items)
 		local t = PrepareCountItems(items)
