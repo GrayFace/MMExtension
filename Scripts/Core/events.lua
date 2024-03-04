@@ -2030,6 +2030,68 @@ mem.hookfunction(mmv(0x480010, 0x48DCDC, 0x48D166), 1, mmv(1, 2, 2), function(d,
 	return t.Allow and def(this, thing, mon) or 0
 end)
 
+-- ChangePlayerClass
+do
+	local sClass = mmv('dl', 'al', 'al')
+	local sPlayer = mmv('esi', 'esi', 'edi')
+	local function f(d)
+		local t = {
+			Class = d[sClass],
+			Lich = mmver > 6 and d.zf,
+		}
+		local pl = d[sPlayer]
+		t.PlayerIndex, t.Player = GetPlayer(pl)
+		--!k{Player :structs.Player} Called before the class change is performed.
+		-- If 'Lich' is 'true', player face would be changed and immunities would be given.
+		events.cocalls("ChangePlayerClass", t)
+		d[sClass] = t.Class
+		if mmver > 6 then
+			d.zf = t.Lich
+		else
+			u1[pl + 0x12] = t.Class
+		end
+	end
+
+	if mmver > 6 then
+		mem.autohook(mm78(0x44A6E6, 0x447D3D), f)
+	else
+		mem.nop(0x440AEE)
+		mem.autohook2(0x440AEA, f)
+	end
+end
+
+-- LichFace
+if mmver > 6 then
+	local reg = mm78('esi', 'edi')
+	mem.autohook(mm78(0x44A7BE, 0x447DE0), function(d)
+		local t = {}
+		t.PlayerIndex, t.Player = GetPlayer(d[reg])
+		local pl = t.Player
+		--!k{Player :structs.Player} [MM7+] Called when a player becomes a lich, letting you change the face before its frames are loaded
+		events.cocalls("LichFace", t)
+	end)
+end
+
+-- ZombieFace
+if mmver == 7 then
+	-- do all the work in SetCondition
+	mem.hook(0x493166, function(d)
+		local t = {}
+		t.PlayerIndex, t.Player = GetPlayer(d.esi)
+		local pl = t.Player
+		-- use GetSex() instead of in-place code that does the same
+		local face = pl:GetSex() ~= 0 and 24 or 23
+		pl.Face = face
+		pl.Voice = face
+		--!k{Player :structs.Player} [MM7] Called when a player becomes a zombie, letting you change the face before its frames are loaded
+		events.cocalls("ZombieFace", t)
+		Game.LoadPlayerFace(pl:GetSlot(), pl.Face)
+	end)
+	-- remove the work in other places
+	mem.asmpatch(0x4B7621, 'jmp absolute 0x4B7659')  -- temple
+	mem.nop(0x42DD70)  -- spell 89
+end
+
 -- GetStatisticEffect
 mem.hookfunction(mmv(0x482DC0, 0x48EA13, 0x48E18E), 0, 1, function(d, def, val)
 	local t = {
@@ -2039,34 +2101,6 @@ mem.hookfunction(mmv(0x482DC0, 0x48EA13, 0x48E18E), 0, 1, function(d, def, val)
 	events.cocalls("GetStatisticEffect", t)
 	return t.Result
 end)
-
--- UseMouseItem
-do
-	local phases = {[1] = true, [3] = true}
-	local screens = {[29] = true, [10] = true, [15] = true}
-	mem.hookfunction(mmv(0x459040, 0x4680F1, 0x466572), 1, 2, function(d, def, this, player, portrait)
-		if mmver > 6 and Game.TurnBased and phases[Game.TurnBasedPhase] or mmver == 8 and screens[Game.CurrentScreen] then
-			return def(this, player, portrait)
-		end
-		local t = {
-			Player = Party[player - 1],
-			PlayerSlot = player - 1,
-			IsPortraitClick = (portrait ~= 0),
-			Allow = true,
-		}
-		-- function!Params[[()]]
-		t.CallDefault = function()
-			if t.Allow then
-				def(t.ActivePlayer, t.PlayerSlot + 1, t.IsPortraitClick)
-				t.Allow = false
-			end
-		end
-		t.ActivePlayerIndex, t.ActivePlayer = GetPlayer(this)
-		--!k{Player :structs.Player, ActivePlayer :structs.Player}
-		events.cocalls("UseMouseItem", t)
-		t.CallDefault()
-	end)
-end
 
 -- CanLearnSpell
 if mmver > 6 then
@@ -2107,8 +2141,7 @@ do
 		if pl.Dead ~= 0 or pl.Eradicated ~= 0 then
 			return
 		end
-		-- 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes care of conditions
-		--!k{Player :structs.Player}
+		--!k{Player :structs.Player} 'HP' and 'SP' don't include regeneration values assigned by the game, but setting them takes care of conditions
 		events.cocalls('Regeneration', t)
 		if t.HP ~= 0 then
 			local v = pl.HP
@@ -2127,6 +2160,34 @@ do
 		end
 	end)
 	Conditional(hooks, "Regeneration")
+end
+
+-- UseMouseItem
+do
+	local phases = {[1] = true, [3] = true}
+	local screens = {[29] = true, [10] = true, [15] = true}
+	mem.hookfunction(mmv(0x459040, 0x4680F1, 0x466572), 1, 2, function(d, def, this, player, portrait)
+		if mmver > 6 and Game.TurnBased and phases[Game.TurnBasedPhase] or mmver == 8 and screens[Game.CurrentScreen] then
+			return def(this, player, portrait)
+		end
+		local t = {
+			Player = Party[player - 1],
+			PlayerSlot = player - 1,
+			IsPortraitClick = (portrait ~= 0),
+			Allow = true,
+		}
+		-- function!Params[[()]]
+		t.CallDefault = function()
+			if t.Allow then
+				def(t.ActivePlayer, t.PlayerSlot + 1, t.IsPortraitClick)
+				t.Allow = false
+			end
+		end
+		t.ActivePlayerIndex, t.ActivePlayer = GetPlayer(this)
+		--!k{Player :structs.Player, ActivePlayer :structs.Player}
+		events.cocalls("UseMouseItem", t)
+		t.CallDefault()
+	end)
 end
 
 -- ModifyItemDamage

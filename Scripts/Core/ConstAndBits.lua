@@ -944,7 +944,7 @@ const.DlgID = {
 	VideoOptions = 106,
 	CustomDialog = 1000,  -- used by CustomDialog function
 	BlockDialogs = 1001,  -- in MM8 if #custom dialogs:CustomDialog# exist, these screens are created for each OO dialog in order to prevent processing of said custom dialogs
-	BlockDialogsNoDraw = 1002,  -- used in situation discribed above when it's also important to block drawing the dialogs
+	BlockDialogsNoDraw = 1002,  -- used in situation discribed above when it's also important to block drawing of the dialogs
 }
 
 const.InfoDialog = {
