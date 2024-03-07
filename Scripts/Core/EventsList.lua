@@ -7,6 +7,7 @@ local ipairs = ipairs
 local next = next
 local assert = assert
 local setmetatable = setmetatable
+local select = select
 local d_getinfo = debug.getinfo
 local FunctionFile = debug.FunctionFile
 local pcall2 = pcall2
@@ -276,7 +277,11 @@ local function make_events(evt)
 	end
 	evt.clear, evt.Clear = clear, clear
 
-	local function exists(a, func)
+	local function exists(...)
+		local a, func = ...
+		if a == nil and select('#', ...) == 0 then
+			return next(t) ~= nil
+		end
 		local f = t[a]
 		if f then
 			if not func then
