@@ -160,7 +160,7 @@ function internal.OnLoadMap()
 	--!v([]) Event handlers
 	--
 	-- Event indexes convention:
-	-- Indexes 20000 - 22999 are for sprite events, so that event (20000 + i) corresponds to #Map.Sprites:#[i].
+	-- Indexes 20000 - 28191 are for sprite events, so that event (20000 + i) corresponds to #Map.Sprites:#[i].
 	evt.map = MakeEventsTable()
 	evt.Map = evt.map
 	--!v([])
@@ -188,6 +188,11 @@ function internal.OnLoadMap()
 	internal.ResetEvtPlayer()
 	-- 'NoScripts' = 'true' if map scripts execution was cancelled by #CancelLoadingMapScripts:events.CancelLoadingMapScripts# event.
 	events.cocall("LoadMap", WasInGame, NoScripts)
+	if not NoScripts and events.exists("InitSprite") then
+		for i, a in Map.Sprites do
+			events.cocalls("InitSprite", i, a, a.DecName or "")
+		end
+	end
 	UpdateEventJustHint()
 	MayShow = 1
 end

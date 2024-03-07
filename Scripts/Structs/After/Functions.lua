@@ -7,7 +7,7 @@ local function mmv(...)
 	return ret
 end
 
-local _KNOWNGLOBALS_F = SimpleMessage, HouseMessageVisible
+local _KNOWNGLOBALS_F = SimpleMessage, HouseMessageVisible, CustomActions, CustomMenuActions, CustomAction, CustomMenuAction
 
 
 function SplitSkill(val)
@@ -456,6 +456,52 @@ do
 	-- Same as 'PcxCache', but for in-place icons, which means loaded icons aren't stored in #Game.IconsLod.Bitmaps:structs.BitmapsLod.Bitmaps#, but instead stored in the cache until it's cleared
 	function IconCache()
 		return setmetatable({}, mt)
+	end
+end
+
+-----------------------------------------------------
+-- Custom Actions
+-----------------------------------------------------
+
+do
+	local ActCustom = const.Actions.CustomAction
+	--!+v([])
+	CustomActions = {}
+	--!+v([])
+	CustomMenuActions = {}
+
+	local f = |actions| |t| if t.Action == ActCustom then
+		local f = actions[t.Param]
+		return f and f(t)
+	end
+	events.Action = f(CustomActions)
+	events.MenuAction = f(CustomMenuActions)
+	local add = |actions| function(f)
+		local p = mem.topointer(f, true)
+		actions[p] = f
+		return p
+	end
+	--!+(f) Usage example:!Lua[[
+	-- local param = CustomAction(|| MessageBox'Action triggered!')
+	-- Game.Actions:Add(const.Actions.CustomAction, param)]]
+	-- To delete the action:!Lua[[
+	-- CustomActions[param] = nil]]
+	CustomAction = add(CustomActions)
+	--!+(f) Same, but for main menu actions. You can pass the same function to both 'CustomAction' and 'CustomMenuAction', the returned 'param' would be the same.
+	CustomMenuAction = add(CustomMenuActions)
+end
+
+-----------------------------------------------------
+-- Sprite Events
+-----------------------------------------------------
+
+-- Sets 'f' as the handler of !Lua[[Map.Sprites[i].Event]], optionally sets its hint to 'hint'
+function SetSpriteEvent(i, f, hint)
+	local id = 20000 + i
+	Map.Sprites[i].Event = id
+	evt.map[id] = |...| f(i, Map.Sprites[i], ...)
+	if hint then
+		evt.hint[id] = hint
 	end
 end
 

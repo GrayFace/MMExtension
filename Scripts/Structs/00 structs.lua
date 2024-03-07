@@ -2057,7 +2057,7 @@ function structs.f.PatchOptions(define)
 	single  'ExtraSMulD3D'  Info "[MM7+]"
 	single  'ExtraVMulD3D'  Info "[MM7+]"
 	pchar  'DataFilesDir'
-	bool  'ProperSky'  Info "[MM7+]"
+	bool  'ProperSkyD3D'  Info "[MM7+]"
 	single  'SkyHeight'  Info "[MM7+] Parameter of 'ProperSkyD3D'"
 	single  'SkyDistance'  Info "[MM7+] Parameter of 'ProperSkyD3D'"
 	single  'SkyScale'  Info "[MM7+] Parameter of 'ProperSkyD3D'"

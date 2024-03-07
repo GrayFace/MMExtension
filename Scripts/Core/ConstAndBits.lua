@@ -40,6 +40,8 @@ const.Day = const.Hour*24
 const.Week = const.Day*7
 const.Month = const.Week*4
 const.Year = const.Month*12
+const.SpriteEventsMin = 20000  -- Event indexes 20000 – 28191 are reserved for sprite events
+const.SpriteEventsMax = 28191  -- Maximum possible sprite event index. Currently sprite limit is 3000, pushing it to 8192 is possible
 
 local function MakeBitsDefiner(name)
 	internal[name] = function(define)
@@ -1398,6 +1400,7 @@ const.Actions = {
 	CustomDialogButton = 1000,
 	CustomDialogHint = 1001,
 	CustomDialogMouseUp = 1002,
+	CustomAction = 1003,
 }
 
 --!-

@@ -723,23 +723,14 @@ local TXT = Localize{
 	FlowerHint = "Flowers",
 }
 
-local function Flower(EvtId)
-	local i = EvtId - SpriteEvents
+local function Flower(i, a, EvtId)
 	evt.Add("Inventory", 208)
-	evt.SetSprite(i, false)  -- alternatively, for the same effect:  Map.Sprites[i].Invisible = true
+	a.Invisible = true
 end
 
-local function InitFlower(i, a)
-	a.Event = SpriteEvents + i
-	evt.map[SpriteEvents + i] = Flower
-	evt.hint[SpriteEvents + i] = TXT.FlowerHint
-end
-
-function events.LoadMap()
-	for i, a in Map.Sprites do
-		if a.DecName == "plant27" then
-			InitFlower(i, a)
-		end
+function events.InitSprite(i, a, name)
+	if name == "plant27" then
+		SetSpriteEvent(i, Flower, TXT.FlowerHint)
 	end
 end
 </lua>
@@ -750,21 +741,19 @@ en|Put this script into <b>Scripts\Global</b> folder to turn trees into barrels.
 <lua>
 -- Turns trees into barrels
 
-local SpriteEvents = 20000
 local TopicBase = 383
 local TextBase = 582
 local Reorder = {[0] = 0, 1, 4, 3, 5, 2, 6, 7}  -- NPC topics order for barrels is messed up
 local AutonotesBase = 32
 
-local function Barrel(EvtId)
-	local i = EvtId - SpriteEvents
+local function Barrel(i, a, EvtId)
 	local v = mapvars.Barrels[i]
 	Game.ShowStatusText(Game.NPCText[TextBase + Reorder[v]])
 	if v > 0 then
 		evt.Add(evt.VarNum.BaseStats[v - 1], 2)
 		evt.Set("AutonotesBits", AutonotesBase + v)
 		mapvars.Barrels[i] = 0
-		evt.hint[SpriteEvents + i] = Game.NPCTopic[TopicBase]
+		evt.hint[EvtId] = Game.NPCTopic[TopicBase]
 	end
 end
 
@@ -772,16 +761,12 @@ local function InitBarrel(i, a)
 	mapvars.Barrels = mapvars.Barrels or {}
 	mapvars.Barrels[i] = mapvars.Barrels[i] or math.random(1, 7)
 	
-	a.Event = SpriteEvents + i
-	evt.map[SpriteEvents + i] = Barrel
-	evt.hint[SpriteEvents + i] = Game.NPCTopic[TopicBase + Reorder[mapvars.Barrels[i]]]
+	SetSpriteEvent(i, Barrel, Game.NPCTopic[TopicBase + Reorder[mapvars.Barrels[i]]])
 end
 
-function events.LoadMap()
-	for i, a in Map.Sprites do
-		if a.DecName and a.DecName:match("^tree") then
-			InitBarrel(i, a)
-		end
+function events.InitSprite(i, a, name)
+	if name:match("^tree") then
+		InitBarrel(i, a)
 	end
 end
 </lua>
