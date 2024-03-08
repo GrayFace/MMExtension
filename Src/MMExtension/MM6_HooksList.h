@@ -22,7 +22,7 @@ __HooksList MM6_HooksList[] =
 	{0x458BD0, (long)_MM6_BeforeLoadMap, HKT_JMP, 6}, // loading level lod
 	{0x4017CD, 0, HKT_BYTE}, // Allow Armageddon effect indoors
 	//{0x45F8D0, 0x4623D9, HKT_JMP}, // test
-	{0x4318C5, (long)MM6_CalcSpellDamage, HKT_CALL, 0, (long*)&MM6_CalcSpellDamageStd}, // Spell damage
+	{0x47F0A0, (long)MM6_CalcSpellDamage, HKT_JMP, 5}, // Spell damage
 	{0x47BCA0, (long)TravelWalk, HKT_JMP, 6}, // TravelWalkingChooseMap
 	{(long)&TravelWalkStd, (long)MM6_TravelWalkStd, HKT_DWORD}, // TravelWalkingChooseMap std
 	{0x47C3B1, (long)_MM6_SetFogRange, HKT_CALL, 6},

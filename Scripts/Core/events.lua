@@ -292,6 +292,19 @@ function internal.CalcSpellDamage(dmg, spell, skill, mastery, HP)
 	return t.Result
 end
 
+if mmver == 6 then
+	mem.asmpatch(0x4320D7, [[
+		mov eax, [esp]
+		push eax  ; mastery
+		push edx  ; skill
+		push ecx  ; spell
+		mov ecx, esi
+		call absolute 0x481EA0
+		mov [esp + 12], eax  ; HP
+		call absolute 0x47F0A0
+	]])
+end
+
 
 -- WalkToMap
 local WorldSides = {'up', 'down', 'left', 'right'}  -- 0 - party start, 1 - north, 2 - south, 3 - east, 4 - west

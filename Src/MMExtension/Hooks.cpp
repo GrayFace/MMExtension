@@ -897,8 +897,16 @@ __declspec(naked) void _MM8_BeforeLoadMap()
 	}
 }
 
-int (__stdcall *MM6_CalcSpellDamageStd)(int spell, int skill, int mastery, int monHP);
-int (__fastcall *CalcSpellDamageStd)(int spell, int skill, int mastery, int monHP);
+__declspec(naked) int __stdcall MM6_CalcSpellDamageStd(int spell, int skill, int mastery, int monHP)
+{
+	_asm
+	{
+		mov eax, [esp+4]
+		push esi
+		push 0x47F0A5
+		ret
+	}
+}
 
 __declspec(naked) int __fastcall MM7_CalcSpellDamageStd(int spell, int skill, int mastery, int monHP)
 {
@@ -929,9 +937,14 @@ int __stdcall MM6_CalcSpellDamage(int spell, int skill, int mastery, int monHP)
 	return LuaRun("CalcSpellDamage", MM6_CalcSpellDamageStd(spell, skill, mastery, monHP), spell, skill, mastery, monHP);
 }
 
-int __fastcall CalcSpellDamage(int spell, int skill, int mastery, int monHP)
+int __fastcall MM7_CalcSpellDamage(int spell, int skill, int mastery, int monHP)
 {
-	return LuaRun("CalcSpellDamage", CalcSpellDamageStd(spell, skill, mastery, monHP), spell, skill, mastery, monHP);
+	return LuaRun("CalcSpellDamage", MM7_CalcSpellDamageStd(spell, skill, mastery, monHP), spell, skill, mastery, monHP);
+}
+
+int __fastcall MM8_CalcSpellDamage(int spell, int skill, int mastery, int monHP)
+{
+	return LuaRun("CalcSpellDamage", MM8_CalcSpellDamageStd(spell, skill, mastery, monHP), spell, skill, mastery, monHP);
 }
 
 

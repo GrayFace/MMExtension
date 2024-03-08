@@ -17,8 +17,7 @@ __HooksList MM7_HooksList[] =
 	{0x46340F, (long)_OnTimer, HKT_CALL, 5, (long*)&OnTimerStd}, // called on every tick
 	{0x460745, (long)_MM7_BeforeLoadMap, HKT_JMP, 9}, // loading level lod
 	{0x401AB9, 0, HKT_BYTE}, // Allow Armageddon effect indoors (just earthquake and damage part)
-	{0x43B006, (long)CalcSpellDamage, HKT_JMP, 6}, // Spell damage
-	{(long)&CalcSpellDamageStd, (long)MM7_CalcSpellDamageStd, HKT_DWORD}, // Spell damage std
+	{0x43B006, (long)MM7_CalcSpellDamage, HKT_JMP, 6}, // Spell damage
 	{0x489014, (long)TravelWalk, HKT_JMP, 6}, // TravelWalkingChooseMap
 	{(long)&TravelWalkStd, (long)MM7_TravelWalkStd, HKT_DWORD}, // TravelWalkingChooseMap std
 	{0x489551, (long)_MM7_SetFogRange, HKT_CALL},

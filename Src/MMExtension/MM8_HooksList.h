@@ -17,8 +17,7 @@ __HooksList MM8_HooksList[] =
 	{0x4613EF, (long)_OnTimer, HKT_CALL, 5, (long*)&OnTimerStd}, // called on every tick
 	{0x45E058, (long)_MM8_BeforeLoadMap, HKT_JMP, 9}, // loading level lod
 	{0x401ADA, 0, HKT_BYTE}, // Allow Armageddon effect indoors (just earthquake and damage part)
-	{0x438B05, (long)CalcSpellDamage, HKT_JMP, 5}, // Spell damage
-	{(long)&CalcSpellDamageStd, (long)MM8_CalcSpellDamageStd, HKT_DWORD}, // Spell damage std
+	{0x438B05, (long)MM8_CalcSpellDamage, HKT_JMP, 5}, // Spell damage
 	{0x4889A8, (long)TravelWalk, HKT_JMP, 6}, // TravelWalkingChooseMap
 	{(long)&TravelWalkStd, (long)MM8_TravelWalkStd, HKT_DWORD}, // TravelWalkingChooseMap std
 	{0x488E54, (long)_MM8_SetFogRange, HKT_CALL},
