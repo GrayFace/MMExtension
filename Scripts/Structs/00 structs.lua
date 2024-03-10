@@ -565,7 +565,7 @@ end]=]
 	[mmv(0x4BDD70, 0x4E3C48, 0x4F4870)].array(0, mmv(99, 99, 132)).struct(structs.SpellInfo)  'Spells'
 	[mmv(0x56ABD0, 0x5CBEB0, 0x5E8278)].array(0, mmv(99, 99, 132)).struct(structs.SpellsTxtItem)  'SpellsTxt'
 	[mmv(0x4C28E2, 0x4EDF32, 0x4FE12A)].array(1, mmv(99, 99, 132)).i2  'SpellSounds'
-	[mmv(0x4BDBD8, 0x4E3AB0, 0x4F4648)].array(1, mmv(99, 99, 132)).CustomType('SpellObjId', 4, function(o, obj, name, val)
+	[mmv(0x4BDBD8, 0x4E3AB0, 0x4F4648)].array(1, mmv(102, 102, 137)).CustomType('SpellObjId', 4, function(o, obj, name, val)
 		if val == nil then
 			return i2[obj["?ptr"] + o]
 		else
