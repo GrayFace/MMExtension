@@ -179,11 +179,12 @@ internal.BitArrayBaseSizes = sizes
 internal.BitArrayLimits = lims
 
 local function NeedBitHooks()
+	local dk = mmv(1, 0, 0)
 	local function handler(d)
 		local p = d.ecx
 		local n = sizes[p]
 		local k = n and d.dx
-		if n and k >= n then
+		if n and k + dk > n then
 			d.ecx = ptrs[p]
 			d.edx = k - n
 		end
