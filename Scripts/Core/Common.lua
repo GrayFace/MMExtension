@@ -236,6 +236,22 @@ local function coroutine_resume2(...)
 end
 _G.coroutine.resume2 = coroutine_resume2
 
+-- Same as 'pairs', but accepts 'nil' as an argument
+function _G.pairs2(t)
+	if t ~= nil then
+		return pairs(t)
+	end
+	return nullsub
+end
+
+-- Same as 'ipairs', but accepts 'nil' as an argument
+function _G.ipairs2(t)
+	if t ~= nil then
+		return ipairs(t)
+	end
+	return nullsub
+end
+
 -- pause/unpause game, synchronize keys state
 internal.PauseGame = function() end
 internal.ResumeGame = function() end

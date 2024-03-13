@@ -152,7 +152,9 @@ if mmver == 7 then
 	end, 7)
 elseif mmver == 8 then
 	mem.i4[0x44274E + 2] = 0
-	mem.hook(0x442765, function(d)  d.eax = NPCGreetingHook(d.eax, d.edi)  end, 7)
+	mem.hook(0x442765, function(d)
+		d.eax = NPCGreetingHook(d.eax, d.edi)
+	end, 7)
 	mem.i4[0x4B1389 + 2] = 0
 	mem.hook(0x4B13A3, function(d)
 		d.edx = NPCGreetingHook(d.eax, d.esi)
