@@ -4,7 +4,7 @@ local unpersist = internal.unpersist
 local DevPath = DevPath or AppPath
 
 Editor = Editor or {}
-local _KNOWNGLOBALS
+local _KNOWNGLOBALS = NoTrash, NoMapsInTrash
 Editor.Selection = Editor.Selection or {}
 local skSpawn = 1  -- in the game 1 is for doors
 local skObject = 2
@@ -341,10 +341,25 @@ function Commands.Open(name)
 	Editor.NeedStateSync()
 end
 
+local function backup(name)
+	-- mem.dll.kernel32.CopyFileA(name, path.setext(name, ".bak"), false)
+	local bak = path.setext(name, ".bak")
+	local time1, time2
+	for _, a in path.find(bak) do
+		time1, time2 = a.LastWriteTimeLow, a.LastWriteTimeHigh
+	end
+	if time1 then
+		local del = path.setext(name, '.'..time2..'-'..time1)
+		os.rename(bak, del)
+		os.remove(del, NoTrash or NoMapsInTrash)
+	end
+	os.rename(name, bak)
+end
+
 function Commands.Save(name)
 	name = memstr(name)
 	Editor.FileName = name
-	mem.dll.kernel32.CopyFileA(name, path.setext(name, ".bak"), false)
+	backup(name)
 	io.SaveString(name, persist(Editor.State))
 end
 
