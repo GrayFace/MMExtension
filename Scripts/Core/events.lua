@@ -464,6 +464,7 @@ local delayedDefs = {}
 local function delayed(f)
 	delayedDefs[f] = true
 end
+internal.delayed = delayed
 
 local InitDone0
 
@@ -857,11 +858,13 @@ end
 
 -- Draw D3D effects
 if mmver > 6 then
-	local hooks = HookManager()
-	hooks.autohook(mm78(0x4A1F92, 0x49FA68), function()
-		events.cocalls("PostRender")
+	delayed(function()
+		local hooks = HookManager()
+		hooks.autohook(mm78(0x4A1F92, 0x49FA68), function()
+			events.cocalls("PostRender")
+		end)
+		Conditional(hooks, "PostRender")
 	end)
-	Conditional(hooks, "PostRender")
 end
 
 -- count frames
@@ -930,7 +933,7 @@ do
 end
 
 -- KeysFilter
-do
+delayed(function()
 	local hooks = HookManager()
 	if mmver > 6 then
 		hooks.hook(mm78(0x42FCD1, 0x42E616), function(d)
@@ -957,7 +960,7 @@ do
 		hooks.hook(0x42AE73, f, 6)
 	end
 	Conditional(hooks, "KeysFilter")
-end
+end)
 
 -- Save/load game
 do
@@ -1742,7 +1745,7 @@ mem.hookfunction(mmv(0x48EB40, 0x4AA29B, 0x4A87DC), 1, 8, function(d, def, this,
 end)
 
 -- FaceAnimation
-do
+delayed(function()
 	local p = mem.StaticAlloc(16)
 	local hooks = HookManager{
 		face = p,
@@ -1822,7 +1825,7 @@ do
 	]])
 	-- on/off
 	Conditional(hooks, {"FaceAnimation", "InternalFaceAnimation"})
-end
+end)
 
 -- dungeon enter from house (draw properly)
 if mmver == 7 then
@@ -2154,7 +2157,7 @@ end
 
 -- Regeneration
 
-do
+delayed(function()
 	local hooks = HookManager()
 	hooks[mmver == 7 and 'hook' or 'autohook'](mmv(0x487F74, 0x493DC0, 0x49216B), function(d)
 		if mmver == 7 and d.zf then
@@ -2185,7 +2188,7 @@ do
 		end
 	end)
 	Conditional(hooks, "Regeneration")
-end
+end)
 
 -- UseMouseItem
 do
@@ -2258,7 +2261,7 @@ else
 end
 
 -- GenerateItem
-do
+delayed(function()
 	local hooks = HookManager()
 	hooks.hookfunction(mmv(0x448790, 0x45664C, 0x453ECC), 1, mmv(3, 3, 4), function(d, def, this, strength, kind, item, alwaysEnchant)
 		local t = {
@@ -2282,7 +2285,7 @@ do
 		events.cocalls("ItemGenerated", t)
 	end)
 	Conditional(hooks, {"GenerateItem", "ItemGenerated"})
-end
+end)
 
 
 ---- Monster hooks
@@ -2460,7 +2463,7 @@ delayed(|| if mmver > 6 then
 end)
 
 -- MonsterChooseAction
-do
+delayed(function()
 	local hooks = HookManager()
 	hooks.hookfunction(mmv(0x421C50, 0x427002, 0x4253DF), 1, mmv(1, 2, 3), function(d, def, ai, mon, monIndex, dist)
 		local t = {
@@ -2486,7 +2489,7 @@ do
 		return t.Action or def(ai, mon, monIndex, dist)
 	end)
 	Conditional(hooks, "MonsterChooseAction")
-end
+end)
 
 
 -- monster/player attacked

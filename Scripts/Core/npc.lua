@@ -10,7 +10,7 @@ local function mm78(...)
 	return (select(mmver - 5, nil, ...))
 end
 
-local Conditional = internal.Conditional
+local Conditional, delayed = internal.Conditional, internal.delayed
 local GetPlayer, GetMonster = internal.GetPlayer, internal.GetMonster
 
 local _KNOWNGLOBALS_F = Party, Game, Map, VFlipUnfixed, structs, GameInitialized1, GameInitialized2
@@ -397,7 +397,7 @@ mem.autohook(mmv(0x4A465D, 0x4BD307, 0x4BB2B6), function(d)
 end)
 
 -- HouseMovieFrame
-do
+delayed(function()
 	local hooks = HookManager()
 	hooks.autohook(mmv(0x4A6113, 0x4BF09B, 0x4BCCCE), function(d)
 		local t = {
@@ -406,7 +406,7 @@ do
 		events.cocall("HouseMovieFrame", t)
 	end)
 	Conditional(hooks, "HouseMovieFrame")
-end
+end)
 
 -- Arcomage
 if mmver > 6 then
@@ -805,7 +805,7 @@ end
 
 -- Draw dialogs
 
-do
+delayed(function()
 	local p = mem.StaticAlloc(1)
 	u1[p] = 0
 	local hooks = HookManager{p = p, CurScreen = 0x4F37D8, MenuCode = 0x6CEB24}
@@ -912,7 +912,7 @@ do
 		hooks2.asmpatch(pAfter, [[jmp absolute %ptr%]])
 	end
 	Conditional(hooks2, "AfterDrawNoDialogs")
-end
+end)
 
 -- Create dialogs
 mem.hookfunction(mmv(0x419320, 0x41C3DB, 0x41BAF1), 2, 5, function(d, def, x, y, w, h, id, ...)
