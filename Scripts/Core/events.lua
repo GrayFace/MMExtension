@@ -816,7 +816,7 @@ do
 end
 
 -- right click reaction
-do
+delayed(function()
 	local hooks = HookManager{}
 	hooks.hookfunction(mmv(0x4113C0, 0x416D0B, 0x41634C), 1, 0, function(d, def, mouse)
 		if Game.CurrentScreen == 16 then
@@ -848,7 +848,7 @@ do
 		end
 	end)
 	Conditional(hooks, "RightClick")
-end
+end)
 
 -- MM6 - fix CurrentScreen staying at its last value when main menu is shown
 if mmver == 6 then
