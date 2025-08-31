@@ -1469,7 +1469,7 @@ function structs.f.MapMonster(define)
 	define
 	.method{p = mmv(0x44BF50, 0x4595D3, 0x456E90), name = "LoadFrames"; false}
 	 .Info{Sig = "SoundLoaded = false";  "If 'SoundLoaded' = 'false', sound indexes would be loaded for the monster as well."}
-	.method{p = mmv(0x4219B0, 0x426DC7, 0x425203), name = "ChooseTargetPlayer"}
+	.method{p = mmv(0x4219B0, 0x426DC7, 0x425203), cc = 0, name = "ChooseTargetPlayer"}
 	 .Info "Returns player slot index"
 	.method{p = mmv(0x421DC0, 0x427522, 0x425951), name = "CalcTakenDamage", cc = 0, must = 2}
 	 .Info{Sig = "DamageKind, Damage";  "Returns the amount of damage the monster has to actually receive"}
