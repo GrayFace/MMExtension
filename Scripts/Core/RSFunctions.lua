@@ -17,6 +17,7 @@ local tonumber = tonumber
 local tostring = tostring
 local rawget = rawget
 local rawset = rawset
+local rawequal = rawequal
 local getfenv = getfenv
 local setfenv = setfenv
 local pcall = pcall
@@ -207,13 +208,13 @@ function io.save(path, s, translate)
 end
 
 -- Loads a file as a string
-function io.load(path, translate, IgnoreErrors)
+function io.load(path, translate, ReturnErrors)
 	local f, err = io_open(path, translate and "rt" or "rb")
 	if f then
 		local s = f:read("*a")
 		f:close()
 		return s
-	elseif IgnoreErrors then
+	elseif ReturnErrors then
 		return nil, err
 	else
 		error(err, 2)
@@ -289,16 +290,51 @@ do
 	end
 end
 
--- Parameters are treated as plain strings, not patterns
-function string.replace(str, old, new, IgnoreCase)
-	old = string_gsub(old, "[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")
-	if IgnoreCase then
-		old = string_gsub(old, "%a", function(c)
-			return format("[%s%s]", string_lower(c), string_upper(c))
-		end)
+-- Converts a plain string (or a pattern if 'AlreadyPattern' ='true') into a pattern, makes it case-insensitive if 'IgnoreCase' = 'true' 
+local function string_pattern(pat, IgnoreCase, AlreadyPattern)
+	if not AlreadyPattern then
+		pat = pat:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")
+		if IgnoreCase then
+			pat = string_gsub(pat, "%a", function(c)
+				return format("[%s%s]", string_lower(c), string_upper(c))
+			end)
+		end
+		pat = pat:gsub("%z", "%%%z")
+	elseif IgnoreCase then
+		local esc, bra
+		local t, i = {}, 1
+		for c in pat:gmatch('.') do
+			t[i], i = c, i+1
+			if esc then
+				esc = false
+			elseif c == '%' then
+				esc = true
+			elseif c == '[' then
+				bra = true
+			elseif c == ']' then
+				bra = false
+			elseif c:match'%a' then
+				i = i - 1
+				if not bra then
+					t[i], i = '[', i+1
+				end
+				t[i], i = string_lower(c), i+1
+				t[i], i = string_upper(c), i+1
+				if not bra then
+					t[i], i = ']', i+1
+				end
+			end
+		end
+		pat = table_concat(t)
 	end
-	old = string_gsub(old, "%z", "%%%z")
-	local tp = type(new)
+	return pat
+end
+string.pattern = string_pattern
+
+-- Parameters are treated as plain strings, not patterns
+function string.replace(str, old, new, IgnoreCase, AlreadyPattern)
+	old = string_pattern(old, IgnoreCase, AlreadyPattern)
+	local tp = not AlreadyPattern and type(new)
 	if tp == "string" or tp == "number" then
 		new = string_gsub(new, "%%", "%%%%")
 	end
@@ -339,20 +375,38 @@ do
 	end
 
 	-- Returns 'pairs' in ascending order with the following comparison rule:  number < boolean < string < userdata < table < function < thread
-	function sortpairs(t)
+	-- if 'reverse' is 'true', the order is reversed
+	-- 'cmp' is custom comparison function
+	function sortpairs(t, reverse, cmp)
 		local order = {}
 		local i = 1
 		for k in next, t do -- pairs(t) do
 			order[i] = k
 			i = i + 1
 		end
-		table_sort(order, compare)
-		i = 0
+		table_sort(order, cmp or compare)
+		i = reverse and #order + 1 or 0
+		local add = reverse and -1 or 1
 		return function()
-			i = i + 1
+			i = i + add
 			local k = order[i]
 			return k, rawget(t, k) -- t[k]
 		end
+	end
+	local sortpairs = sortpairs
+
+	-- Returns 'pairs' in value-ascending order with the following comparison rule:  number < boolean < string < userdata < table < function < thread
+	-- if 'reverse' is 'true', the order is reversed
+	-- 'cmpv' is custom comparison function for values
+	-- 'cmpk' is custom comparison function for keys if values are equal
+	function vsortpairs(t, reverse, cmpv, cmpk)
+		return sortpairs(t, reverse, function(a, b)
+			local va, vb = t[a], t[b]
+			if rawequal(va, vb) or not rawequal(va, va) and not rawequal(vb, vb) then  -- equal or NaN
+				return (cmpk or compare)(a, b)
+			end
+			return (cmpv or compare)(va, vb)
+		end)
 	end
 end
 
