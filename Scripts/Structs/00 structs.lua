@@ -97,6 +97,20 @@ function structs.aux.PDialog(o, obj, name, val)
 	end
 end
 
+function structs.aux.ValueInCode(a)
+	a = a or i4
+	return function(o, obj, name, val)
+		o = obj["?ptr"] + o
+		if val == nil then
+			return a[o]
+		else
+			mem.IgnoreProtection(true)
+			a[o] = val
+			mem.IgnoreProtection(false)
+		end
+	end
+end
+
 function structs.f.GameStructure(define)
 	define
 	 .Info{Name = "Game"}
@@ -138,9 +152,9 @@ function structs.f.GameStructure(define)
 		end
 	end)
 	[mmv(0x4BCDD8, 0x4E28D8, 0x4F37D8)].i4  'CurrentScreen'
-	 .Info ":const.Screens"
+	 .Info{Type = "const.Screens"}
 	[mmv(0x4D4714, 0x506DC8, 0x5185A8)].i4  'CurrentCharScreen'
-	 .Info ":const.CharScreens"
+	 .Info{Type = "const.CharScreens"}
 	[mmv(0x5F811C, 0x6A0BC4, 0x6CEB24)].i4  'MainMenuCode'
 	 .Info "-1 = in game, 0 = in main menu, 1 = show new game, 2 = show credits, 3 = show load menu, 4 = exit, 5 = loading game, 6 = in new game screen, 8 = in credits/new game breefing in MM6, 9 = load game/clicked Create Party in MM6, 10 = load level [MM7+]"
 	-- 465012(MM8) SetMainMenuCode
@@ -236,7 +250,7 @@ function structs.f.GameStructure(define)
 	end
 	define.func{name = "ProcessActions", p = mmv(0x42ADA0, 0x4304D6, 0x42EDD8)}
 	[mmv(0x6199C0, 0x6A0BC8, 0x6CEB28)].i4  'ExitMapAction'
-	 .Info ":const.ExitMapAction"
+	 .Info{Type = "const.ExitMapAction"}
 	if mmver == 7 then
 		define[0x5077C8]
 		.b1  'FlashHistoryBook'
@@ -314,15 +328,7 @@ function structs.f.GameStructure(define)
 	[mmv(0x4C3B74, 0x4EFEC8, 0x5004E8)].array(mmv(68, 78, 78)).i2  'MapDoorSound'
 	[mmv(0x4C1F18, 0x4EC9B8, 0x4FC9EC)].array(16).struct(structs.FogChances)  'MapFogChances'
 	if mmver < 8 then
-		define[mmv(0x465243, 0x473C64)].CustomType('FlyCeiling', 4, function(o, obj, _, val)
-			if val == nil then
-				return i4[o]
-			else
-				mem.IgnoreProtection(true)
-				i4[o] = val
-				mem.IgnoreProtection(false)
-			end
-		end)
+		define[mmv(0x465243, 0x473C64)].CustomType('FlyCeiling', 4, structs.aux.ValueInCode(i4))
 		 .Info "3000 in MM6, 4000 in MM7+, in MM8 it's configured per map (!Lua[[Map.OutdoorExtra.Ceiling]])"
 	end
 	
@@ -408,15 +414,7 @@ function structs.f.GameStructure(define)
 			mem.IgnoreProtection(false)
 		end
 	end)
-	[mmv(0x483E62, 0x4902C2, 0x4904EB) - 4].CustomType('MaxBirthYear', 4, function(o, obj, _, val)
-		if val == nil then
-			return i4[o]
-		else
-			mem.IgnoreProtection(true)
-			i4[o] = val
-			mem.IgnoreProtection(false)
-		end
-	end)
+	[mmv(0x483E62, 0x4902C2, 0x4904EB) - 4].CustomType('MaxBirthYear', 4, structs.aux.ValueInCode(i4))
 	[mmv(0x90E838, 0xAD45B0, 0xB7CA88)].bit ('NeedRender', 2)
 	 .Info "Same as Party.NeedRender"
 	[mmv(0x908E30, 0xACD6B4, 0xB21728)].b4  'TurnBased'
@@ -595,15 +593,7 @@ end]=]
 		end
 	end)
 	if mmver == 6 then
-		define[0x452FDE].CustomType('NarratorTrack', 1, function(o, obj, _, val)
-			if val == nil then
-				return u1[o]
-			else
-				mem.IgnoreProtection(true)
-				u1[o] = val
-				mem.IgnoreProtection(false)
-			end
-		end)
+		define[0x452FDE].CustomType('NarratorTrack', 1, structs.aux.ValueInCode(u1))
 	end
 	
 	local pmis = mem.StaticAlloc(8)

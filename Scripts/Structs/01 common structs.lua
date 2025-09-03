@@ -3228,7 +3228,7 @@ function structs.f.ArcomageCard(define)
 	.array(3).i1  'CostRes'
 	.b1  'Discardable'
 	.i4  'If'
-	 .Info ":const.ArcomageIf"
+	 .Info{Type = "const.ArcomageIf"}
 	.struct(structs.ArcomageActions)  'Then'
 	.struct(structs.ArcomageActions)  'Else'
 	.skip(2)
