@@ -540,13 +540,18 @@ end]=]
 	if mmver > 6 then
 		define
 		[mm78(0x73B8D4, 0x7798B8)].array(0, 205).array(0, 1).EditPChar  'NPCGreet'
-		[mm78(0x73BFAA, 0x779F8E)].array(0, 50).i2  'NPCGroup'
+		.array(0, 50).i2  'BaseNPCGroup'
+		.array(0, 50).i2  'NPCGroup'
 		[mm78(0x739CF4, 0x778F50)].array(0, 50).EditPChar  'NPCNews'
 		[mm78(0x5C89E0, 0x5E4DA8)].array(0, 29).struct(structs.HistoryTxtItem)  'HistoryTxt'
 	else
 		define
 		[0x6B8C60].array{0, 279}.struct(structs.NPCNewsItem)  'NPCNews'
 		[0x6BA568].array(96).i2  'NPCNewsCountByMap'
+		[0x6B9980].struct(structs.BTB)  'BTB'
+		 .Info "npcBTB.txt"
+		[0x4C1036].array(13).u1  'RemapBTB'
+		 .Info{"Remaps a column in npcBTB.txt file onto index in #BTB:structs.BTB# structure", Type = "const.NPCPersonality"}
 	end
 	define[mmv(0x6A9168, 0x724050, 0x761998)]
 	.array(mmv(400, 501, 551)).struct(structs.NPC)  'NPCDataTxt'

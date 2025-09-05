@@ -3140,6 +3140,7 @@ function structs.f.NPCProfTxtItem(define)
 		.i4  'Chance'
 		.i4  'Cost'
 		.i4  'Personality'
+		 .Info{Type = "const.NPCPersonality"}
 		.EditPChar  'Benefit'
 		.EditPChar  'JoinText'
 		.array(7).EditPChar 'ProfNewsTopic'
@@ -3152,6 +3153,20 @@ function structs.f.NPCProfTxtItem(define)
 		.EditPChar  'JoinText'
 		.EditPChar  'DismissText'
 	end
+end
+
+function structs.f.BTB(define)
+	define
+	 .Info "Represents data from npcBTB.txt. Note that #Game.RemapBTB:# is used when npcBTB.txt is read, because its columns order is different."
+	.array(13).u1  'AcceptBribe'
+	 .Info{Sig = "[personality:const.NPCPersonality]"}
+	.array(13).u1  'AcceptThreat'
+	 .Info{Sig = "[personality:const.NPCPersonality]"}
+	.array(13).u1  'AcceptBeg'
+	 .Info{Sig = "[personality:const.NPCPersonality]"}
+	.skip(1)
+	.array(25).array(13).EditPChar  'Text'
+	 .Info{Sig = "[Msg#][personality:const.NPCPersonality]"}
 end
 
 local function ArcStartIncome(o, obj, name, val)
