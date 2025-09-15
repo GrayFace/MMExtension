@@ -106,8 +106,8 @@ type
     BinkCopyToBuffer: function(Bink:PRSBinkStruct; Buffer:ptr; Stride, Height:int;
        x:int=0; y:int=0; Mode:int=0):int; stdcall;
 
-    BinkCopyToBufferRect: function(Bink:PRSBinkStruct; Buffer:ptr;
-      Stride, Height:int; x:int; y:int; SrcRect:TRect; Mode:int=0):int; stdcall;
+//    BinkCopyToBufferRect: function(Bink:PRSBinkStruct; Buffer:ptr;
+//      Stride, Height:int; x:int; y:int; SrcRect:TRect; Mode:int=0):int; stdcall;
      // '_BinkCopyToBufferRect@44'
 
     BinkGetError: function:PChar; stdcall;
@@ -124,6 +124,7 @@ type
     procedure SetPause(v:Boolean); override;
   public
     UseInternalBuffer: Boolean;
+    NoWaveOutOpen: Boolean;
     constructor Create(const LibName:string = 'BINKW32.DLL');
     procedure Close; override;
     procedure NextFrame; override;
@@ -138,8 +139,10 @@ type
     Height: int;
     FrameCount: int;
     mspf: int;
-    Unk1: array[0..87] of byte;
-    Palette: array[0..775] of byte;
+    Unk1: array[0..83] of byte;
+    PalChanged: BOOL;
+    Palette: array[0..771] of byte;
+    PalType: int;
     CurrentFrame: int; // Starting with 0
 
      // 72 - ุ่๏
@@ -340,7 +343,7 @@ begin
   LoadProc(@BinkGetError, '_BinkGetError@0');
   LoadProc(@BinkOpen, '_BinkOpen@8');
 
-  if FWaveOutOpen<>nil then
+  if not NoWaveOutOpen and (FWaveOutOpen<>nil) then
   begin
     LoadProc(@BinkSetSoundSystem, '_BinkSetSoundSystem@8');
     BinkSetSoundSystem(FWaveOutOpen, nil);

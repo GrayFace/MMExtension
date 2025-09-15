@@ -72,8 +72,9 @@ contains
   RSFileAssociation in 'RSFileAssociation.pas',
   RSIni in 'RSIni.pas',
   RSTreeView in 'RSTreeView.pas',
-  RSForm in 'RSForm.pas',
   RSTrayIcon in 'RSTrayIcon.pas',
-  RSClipboard in 'RSClipboard.pas';
+  RSClipboard in 'RSClipboard.pas',
+  RSLabel in 'RSLabel.pas',
+  RSDesignerDPI in 'RSDesignerDPI.pas';
 
 end.

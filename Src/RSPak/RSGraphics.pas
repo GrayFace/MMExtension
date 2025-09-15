@@ -16,7 +16,12 @@ interface
 uses Windows, Classes, SysUtils, Graphics, Math, RSQ, RSSysUtils, GraphUtil;
 
 type
-  TRSXForm = object
+  TRSFloatPoint = record
+    X, Y: Double;
+  end;
+  PRSFloatPoint = ^TRSFloatPoint;
+
+  TRSXForm = {$IFDEF D2006}record{$ELSE}object{$ENDIF}
     eM11: Double;
     eM12: Double;
     eM21: Double;
@@ -26,16 +31,56 @@ type
     procedure Inverse; overload;
     procedure Inverse(var dest:TRSXForm); overload;
     procedure SetE;
+    // rotation is clockwise in images, counter-clockwise in math
     procedure SetRotate(const angle: Double);
     procedure SetScale(const x,y: Double);
-    procedure SetTransform(O1,X1,Y1,O2,X2,Y2:TPoint);
+    procedure SetTransform(O1,X1,Y1,O2,X2,Y2: TPoint); overload;
+    procedure SetTransform(O1,X1,Y1,O2,X2,Y2: TRSFloatPoint); overload;
     procedure Rotate(const angle: Double);
     procedure Scale(const x,y: Double);
     function Mul(const v:TRSXForm):TRSXForm;
   end;
   PRSXForm = ^TRSXForm;
 
-  TRSHLS = packed record
+  TRSAreaTransform = {$IFDEF D2006}record{$ELSE}object{$ENDIF}
+    Form: TRSXForm;
+    Lo, Hi: TRSFloatPoint;
+    function GetDestWidth: int;
+    function GetDestHeight: int;
+    function MapSourcePoint(x, y: ext): TRSFloatPoint;
+    function MapSourcePixel(x, y: int): TPoint;
+    procedure IncludeSourcePoint(x, y: ext);
+    procedure IncludeSourceRect(r: TRect);
+    procedure SetSourceRect(r: TRect);
+    procedure SetEmpty;
+    procedure CenterInDest(w, h: ext); overload;
+    procedure CenterInDest; overload;
+  end;
+  PRSAreaTransform = ^TRSAreaTransform;
+
+  TRSTransformProc = function(p: TPoint; Source, Dest: TBitmap): TPoint of object;
+  TRSSmoothTransformProc = function(p: TPoint; Source, Dest: TBitmap): TRSFloatPoint of object;
+  TRSTransformEnhanceProc = function(Src, Dest: TBitmap; const ClipRect: TRect;
+    Proc: TRSSmoothTransformProc): TRSSmoothTransformProc of object;
+
+  TRSEnhancedTransform = {$IFDEF D2006}record{$ELSE}object{$ENDIF}
+    Width, Height: int;
+    Points: array of TRSFloatPoint;
+    function Init(BmpSrc, BmpDest: TBitmap; const sr: TRect; Proc: TRSSmoothTransformProc;
+       ISigma: ext = 1.9; MidShift: ext = 0.5; MainShift: ext = 1): TRSSmoothTransformProc;
+    function Get: TRSSmoothTransformProc;
+  end;
+  PRSEnhancedTransform = ^TRSEnhancedTransform;
+
+  TRSTransformEnhancer = {$IFDEF D2006}record{$ELSE}object{$ENDIF}
+    Enhanced: TRSEnhancedTransform;
+    ISigma, MidShift, MainShift: Double;
+    Reuse: Boolean;
+    function Get: TRSTransformEnhanceProc;
+  end;
+  PRSTransformEnhancer = ^TRSTransformEnhancer;
+
+  TRSHLS = record
     Hue: Byte; // Hue
     Lum: Byte; // Luminance
     Sat: Byte; // Saturation
@@ -130,54 +175,67 @@ function RSSimpleRotate32(Source:TBitmap; r:TRect; RSsrValue:integer):TBitmap; o
 function RSSimpleRotate32(Source:TBitmap; RSsrValue:integer):TBitmap; overload;
 
 type
-  TRSFourIntArray = array[0..3] of int;
-  TRSTransformColorProc = procedure(var per, col:TRSFourIntArray; AllP:int;
-    a:pint; ColorData:int);
+  TRSFourIntArray = array[0..3] of Integer;
+  TRSTransformColorProc = procedure(var per, col: TRSFourIntArray;
+    AllP: Integer; a: PLongint) of object;
 
 // Bylinear
-procedure RSTransformSmoothProc(var per, col:TRSFourIntArray; AllP:int; a:pint;
-            Data:int);
+function RSTransformSmoothProc: TRSTransformColorProc;
 // Finds the color closest to bylinear among the 4 colors, then mixes in bylinear color with Mix parameter
-procedure RSTransformSmartProc(var per, col:TRSFourIntArray; AllP:int; a:pint;
-            Mix:int);
+function RSTransformSmartProc(Mix: Integer = 0): TRSTransformColorProc;
 // Mixes nearest neighbour with bylinear color with Mix parameter (0 - full nearest, 255 - full bylinear)
-procedure RSTransformSmartProc2(var per, col:TRSFourIntArray; AllP:int; a:pint;
-            Mix:int);
+function RSTransformSmartProc2(Mix: Integer = 0): TRSTransformColorProc;
 
-            
-function RSTransform32(Source:TBitmap; Form:TRSXForm;
-           NoCl:TColor; PreserveNoCl:Boolean; Rect:TRect; CutRect:boolean;
-           ColorProc:TRSTransformColorProc=nil; ColorData:int=0;
-           FirstPoint:PPoint=nil; PointsCount:DWord=0):TBitmap; overload;
-function RSTransform32(Source:TBitmap; Form:TRSXForm;
+
+function RSXForm(scale: ext = 1): TRSXForm; overload;
+function RSXForm(scaleX, scaleY: ext; rotate: ext = 0): TRSXForm; overload;
+
+function RSTransformEnhancer(ISigma: Double = 1.9; MidShift: Double = 0.5;
+   MainShift: Double = 1): TRSTransformEnhancer;
+
+function RSPrepareTransform32(var Area: TRSAreaTransform;
+   var wd, hd: int; ACenterInDest: Boolean = true): TRSSmoothTransformProc;
+
+function RSTransform32(Source: TBitmap; Area: TRSAreaTransform;
+           NoCl: TColor; PreserveNoCl: Boolean; sr: TRect;
+           ColorProc: TRSTransformColorProc = nil;
+           CenterInDest: Boolean = true;
+           Enhance: TRSTransformEnhanceProc = nil): TBitmap; overload;
+function RSTransform32(Source: TBitmap; const Area: TRSAreaTransform;
+           NoCl: TColor; PreserveNoCl: Boolean;
+           ColorProc: TRSTransformColorProc = nil;
+           CenterInDest: Boolean = true;
+           Enhance: TRSTransformEnhanceProc = nil): TBitmap; overload;
+function RSTransform32(Source:TBitmap; const XForm: TRSXForm;
+           NoCl:TColor; PreserveNoCl:Boolean; sr:TRect; CutRect:boolean;
+           ColorProc:TRSTransformColorProc = nil;
+           Enhance: TRSTransformEnhanceProc = nil):TBitmap; overload;
+function RSTransform32(Source:TBitmap; const XForm: TRSXForm;
            NoCl:TColor; PreserveNoCl:Boolean;
-           ColorProc:TRSTransformColorProc=nil; ColorData:int=0;
-           FirstPoint:PPoint=nil; PointsCount:DWord=0):TBitmap; overload;
+           ColorProc: TRSTransformColorProc = nil;
+           Enhance: TRSTransformEnhanceProc = nil): TBitmap; overload;
+
+function RSAnyTransform32(Source:TBitmap; proc:TRSTransformProc;
+           Width, Height:integer; NoCl:TColor; ClipRect:TRect):TBitmap; overload;
+function RSAnyTransform32(Source:TBitmap; proc:TRSTransformProc;
+           Width, Height:integer; NoCl:TColor):TBitmap; overload;
+
+function RSAnyTransform32(Source:TBitmap; proc:TRSSmoothTransformProc;
+           Width, Height:integer; NoCl:TColor; PreserveNoCl:Boolean;
+           ClipRect:TRect; ColorProc: TRSTransformColorProc = nil;
+           Enhance: TRSTransformEnhanceProc = nil):TBitmap; overload;
+function RSAnyTransform32(Source:TBitmap; proc:TRSSmoothTransformProc;
+           Width, Height:integer; NoCl:TColor; PreserveNoCl:Boolean;
+           ColorProc: TRSTransformColorProc = nil;
+           Enhance: TRSTransformEnhanceProc = nil):TBitmap; overload;
 
 type
-  TRSFloatPoint = record
-    X:real;
-    Y:real;
-  end;
-  TRSTransformProc = function(UserData:pointer; p:TPoint; Source,Dest:TBitmap):TPoint;
-  TRSSmoothTransformProc = function(UserData:pointer; p:TPoint; Source,Dest:TBitmap):TRSFloatPoint;
+  TRSVectorGlyphLine = array[0..3] of Double; // TopX, Top, BottomX, Bottom
+           
+// Lines must be ordered from left to right. Horizontal lines are ignored.
+procedure RSDrawVectorGlyph(Canvas: TCanvas; const lines: array of TRSVectorGlyphLine;
+   AX, AY: ext; ScaleX: ext = 1; ScaleY: ext = Infinity);
 
-function RSAnyTransform32(Source:TBitmap; proc:TRSTransformProc;
-           Width, Height:integer; NoCl:TColor; ClipRect:TRect;
-           UserData:pointer=nil):TBitmap; overload;
-
-function RSAnyTransform32(Source:TBitmap; proc:TRSTransformProc;
-           Width, Height:integer; NoCl:TColor;
-           UserData:pointer=nil):TBitmap; overload;
-
-function RSAnyTransform32(Source:TBitmap; proc:TRSSmoothTransformProc;
-           Width, Height:integer; NoCl:TColor; PreserveNoCl:Boolean;
-           ClipRect:TRect; ColorProc:TRSTransformColorProc=nil;
-           ColorData:int=0; UserData:pointer=nil):TBitmap; overload;
-function RSAnyTransform32(Source:TBitmap; proc:TRSSmoothTransformProc;
-           Width, Height:integer; NoCl:TColor; PreserveNoCl:Boolean;
-           ColorProc:TRSTransformColorProc=nil; ColorData:int=0;
-           UserData:pointer=nil):TBitmap; overload;
 {
 type TRSBlendProc = function(Ratio, Pos, Param:integer):real;
 
@@ -191,9 +249,20 @@ function RSBlend(Source, Dest:TBitmap; XRatio:integer;
 }
 
 resourcestring
-  SRSZeroDet='The determinant is zero';
+  SRSZeroDet = 'The determinant is zero';
 
 implementation
+
+const
+  Delta = 1e-8;
+
+function Point(X, Y: Integer): TPoint; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result.X := X;
+  Result.Y := Y;
+end;
+
+{ TRSXForm }
 
 function TRSXForm.TryInverse:boolean;
 var d,x:Extended;
@@ -261,10 +330,10 @@ end;
 
 procedure TRSXForm.SetRotate(const angle: Double);
 begin
-  eM11:=cos(angle);
-  eM22:=eM11;
-  eM12:=sin(angle);
-  eM21:=-eM12;
+  eM11:= cos(angle);
+  eM22:= eM11;
+  eM21:= sin(angle);
+  eM12:= -eM21;
 end;
 
 procedure TRSXForm.SetScale(const x,y: Double);
@@ -275,8 +344,31 @@ begin
   eM22:=y;
 end;
 
+procedure TRSXForm.SetTransform(O1, X1, Y1, O2, X2, Y2: TRSFloatPoint);
+var
+  a1, a2:TRSXForm;
+begin
+  with a1 do
+  begin
+    eM11:=x1.X-o1.X;
+    eM21:=o1.Y-x1.Y;
+    eM12:=y1.X-o1.X;
+    eM22:=o1.Y-y1.Y;
+  end;
+  with a2 do
+  begin
+    eM11:=x2.X-o2.X;
+    eM21:=o2.Y-x2.Y;
+    eM12:=y2.X-o2.X;
+    eM22:=o2.Y-y2.Y;
+  end;
+  a1.Inverse;
+  self:=a1.Mul(a2);
+end;
+
 procedure TRSXForm.SetTransform(O1,X1,Y1,O2,X2,Y2:TPoint);
-var a1,a2:TRSXForm;
+var
+  a1, a2:TRSXForm;
 begin
   with a1 do
   begin
@@ -300,31 +392,390 @@ end;
 procedure TRSXForm.Rotate(const angle: Double);
 var a:TRSXForm;
 begin
-  with a do
-  begin
-    eM11:=cos(angle);
-    eM22:=eM11;
-    eM12:=sin(angle);
-    eM21:=-eM12;
-  end;
-  self:=a.Mul(self);
+  a.SetRotate(angle);
+  self:= a.Mul(self);
 end;
 
 procedure TRSXForm.Scale(const x,y: Double);
 begin
-  eM11:=eM11*x;
-  eM12:=eM12*x;
-  eM21:=eM21*y;
-  eM22:=eM22*y;
+  eM11:= eM11*x;
+  eM12:= eM12*x;
+  eM21:= eM21*y;
+  eM22:= eM22*y;
 end;
 
 function TRSXForm.Mul(const v:TRSXForm):TRSXForm;
 begin
-  Result.eM11:=eM11*v.eM11+eM12*v.eM21;
-  Result.eM12:=eM11*v.eM12+eM12*v.eM22;
-  Result.eM21:=eM21*v.eM11+eM22*v.eM21;
-  Result.eM22:=eM21*v.eM12+eM22*v.eM22;
+  Result.eM11:= eM11*v.eM11+eM12*v.eM21;
+  Result.eM12:= eM11*v.eM12+eM12*v.eM22;
+  Result.eM21:= eM21*v.eM11+eM22*v.eM21;
+  Result.eM22:= eM21*v.eM12+eM22*v.eM22;
 end;
+
+{ TRSAreaTransform }
+
+procedure TRSAreaTransform.CenterInDest(w, h: ext);
+var
+  v: ext;
+begin
+  v:= (Hi.X - Lo.X - w)/2;
+  Lo.X:= Lo.X + v;
+  Hi.X:= Hi.X - v;
+  v:= (Hi.Y - Lo.Y - h)/2;
+  Lo.Y:= Lo.Y + v;
+  Hi.Y:= Hi.Y - v;
+end;
+
+procedure TRSAreaTransform.CenterInDest;
+begin
+  CenterInDest(GetDestWidth, GetDestHeight);
+end;
+
+function TRSAreaTransform.GetDestHeight: int;
+begin
+  Result:= Ceil(Hi.Y - Lo.Y - Delta);
+end;
+
+function TRSAreaTransform.GetDestWidth: int;
+begin
+  Result:= Ceil(Hi.X - Lo.X - Delta);
+end;
+
+procedure TRSAreaTransform.IncludeSourcePoint(x, y: ext);
+var
+  v: ext;
+begin
+  v:= x*Form.eM11 + y*Form.eM12;
+  SetMin(Lo.X, v);
+  SetMax(Hi.X, v);
+  v:= x*Form.eM21 + y*Form.eM22;
+  SetMin(Lo.Y, v);
+  SetMax(Hi.Y, v);
+end;
+
+procedure TRSAreaTransform.IncludeSourceRect(r: TRect);
+begin
+  IncludeSourcePoint(r.Left, r.Top);
+  IncludeSourcePoint(r.Left, r.Bottom);
+  IncludeSourcePoint(r.Right, r.Top);
+  IncludeSourcePoint(r.Right, r.Bottom);
+end;
+
+function TRSAreaTransform.MapSourcePixel(x, y: int): TPoint;
+begin
+  Result.X:= Floor((x + 0.5)*Form.eM11 + (y + 0.5)*Form.eM12 - Lo.X - Delta);
+  Result.Y:= Floor((x + 0.5)*Form.eM21 + (y + 0.5)*Form.eM22 - Lo.Y - Delta);
+end;
+
+function TRSAreaTransform.MapSourcePoint(x, y: ext): TRSFloatPoint;
+begin
+  Result.X:= x*Form.eM11 + y*Form.eM12 - Lo.X;
+  Result.Y:= x*Form.eM21 + y*Form.eM22 - Lo.Y;
+end;
+
+procedure TRSAreaTransform.SetEmpty;
+begin
+  Lo.X:= Infinity;
+  Lo.Y:= Infinity;
+  Hi.X:= -Infinity;
+  Hi.Y:= -Infinity;
+end;
+
+procedure TRSAreaTransform.SetSourceRect(r: TRect);
+begin
+  SetEmpty;
+  IncludeSourceRect(r);
+end;
+
+{ TRSEnhancedTransform }
+
+// errf approximation with precision 1.5E-7
+// http://kaktusenok.blogspot.ru/2011/09/erf-cc.html
+function errf(x: ext): ext;
+var
+  y: ext;
+begin
+  y:= 1.0 / ( 1.0 + 0.3275911 * abs(x));
+  Result:= 1 - (((((
+        + 1.061405429  * y
+        - 1.453152027) * y
+        + 1.421413741) * y
+        - 0.284496736) * y
+        + 0.254829592) * y)
+        * exp (-x * x);
+  if x < 0 then
+    Result:= -Result;
+end;
+
+function ResampleCoreInt(mid, x1, x2, scale, isigma: ext): ext;
+begin
+  x1:= (x1 - mid)*scale;
+  x2:= (x2 - mid)*scale;
+  // domain from -1 to +1
+  // Let's use gaussian with sigma = 2 at x = 1 (so sigma = 1/2)
+  // Graph: https://www.graphsketch.com/?eqn1_color=1&eqn1_eqn=8*(exp(-(2.0*x)%5E2)%20-%20exp(-(2.0)%5E2))%2F(exp(-(2.0*x)%5E2)%2Bexp(-(2.0*(x-1))%5E2)%20-%20exp(-(2.0)%5E2)*2)%2B0.5&eqn2_color=2&eqn2_eqn=&eqn3_color=3&eqn3_eqn=&eqn4_color=4&eqn4_eqn=&eqn5_color=5&eqn5_eqn=&eqn6_color=6&eqn6_eqn=&x_min=-0.5&x_max=1.5&y_min=0.5&y_max=8.5&x_tick=0.2&y_tick=1&x_label_freq=5&y_label_freq=1&do_grid=0&do_grid=1&bold_labeled_lines=0&bold_labeled_lines=1&line_width=4&image_w=850&image_h=525
+  // x5 resample check: https://www.graphsketch.com/parametric.php?mode=para&eqn1_color=1&eqn1_x=t*6%2F5&eqn1_y=8*%28exp%28-%282.0*t%29%5E2%29+-+exp%28-%282.0%29%5E2%29%29%2F%28exp%28-%282.0*t%29%5E2%29%2Bexp%28-%282.0*%28t-1%29%29%5E2%29+-+exp%28-%282.0%29%5E2%29*2%29%2B0.5&eqn2_color=2&eqn2_x=&eqn2_y=&eqn3_color=3&eqn3_x=&eqn3_y=&x_min=-0.5&x_max=1.5&y_min=0.5&y_max=8.5&t_min=0&t_max=1&x_tick=0.2&y_tick=1&x_label_freq=6&y_label_freq=1&do_grid=0&do_grid=1&bold_labeled_lines=0&bold_labeled_lines=1&line_width=4&image_w=850&image_h=525
+  Result:= errf(x2*isigma) - errf(x1*isigma) - (x2 - x1)*exp(-isigma*isigma);
+end;
+
+type
+  TRSEnhancedTransformProc = class
+    function Proc(p: TPoint; Source, Dest: TBitmap): TRSFloatPoint;
+  end;
+
+{ TRSEnhancedTransformProc }
+
+function TRSEnhancedTransformProc.Proc(p: TPoint; Source,
+  Dest: TBitmap): TRSFloatPoint;
+begin
+  with PRSEnhancedTransform(self)^ do
+    Result:= Points[p.Y*Width + p.X];
+end;
+
+function TRSEnhancedTransform.Get: TRSSmoothTransformProc;
+begin
+  Result:= TRSEnhancedTransformProc(@self).Proc;
+end;
+
+function TRSEnhancedTransform.Init(BmpSrc, BmpDest: TBitmap; const sr: TRect;
+  Proc: TRSSmoothTransformProc; ISigma, MidShift, MainShift: ext): TRSSmoothTransformProc;
+type
+  PSrcRec = ^TSrcRec;
+  PDestRec = ^TDestRec;
+  TSrcRec = record
+    SrcX, SrcY: int;
+    DestRec: PDestRec;
+    Weight: Double;
+  end;
+  TDestRec = record
+    Mapped: TRSFloatPoint;
+    rec: PSrcRec;
+  end;
+  
+var
+  SrcInfo: array of TSrcRec;
+  DestInfo: array of TDestRec;
+  SrcW: int;
+  MidPoints: array[0..1, 0..1] of TRSFloatPoint; // indexed as (X,Y)
+  EmpMul, EmpBase: ext;
+
+  // The point is between 4 pixels. We shift center of each pixel towards
+  // its main point, then project back to source coordinates.
+  // This turns a simple (0,0)-(1,0)-(0,1)-(1,1) square into a quadrilateral.
+  // X and Y of each point get changed by up to 0.5, so it's not concave.
+  procedure Quadrilateral(src: PSrcRec; dx, dy: int; main: Boolean);
+  var
+    x, y, shift: ext;
+    ix, iy: int;
+  begin
+//    Assert(abs(dx) <= 1);
+//    Assert(abs(dy) <= 1);
+    for iy:= 0 to 1 do
+    begin
+      for ix:= 0 to 1 do
+      begin
+        x:= ix;
+        y:= iy;
+//        if UintPtr(src) > UintPtr(@SrcInfo[high(SrcInfo)]) then
+//          zD;
+//        Assert(UintPtr(src) >= UintPtr(@SrcInfo[0]));
+//        Assert(UintPtr(src) <= UintPtr(@SrcInfo[high(SrcInfo)]));
+//        Assert(UintPtr(@DestInfo[src^.DestP.Y*Width + src^.DestP.X]) >= UintPtr(@DestInfo[0]));
+//        Assert(UintPtr(@DestInfo[src^.DestP.Y*Width + src^.DestP.X]) <= UintPtr(@DestInfo[high(DestInfo)]));
+        if src^.Weight > 0 then // needs shifting
+          with src^, DestRec^ do
+          begin
+            shift:= MidShift;
+            if main and (x = 0) and (y = 0) then
+              shift:= MainShift;
+            x:= x + shift*(Mapped.X - SrcX)*dx;
+            y:= y + shift*(Mapped.Y - SrcY)*dy;
+          end;
+        MidPoints[ix, iy].X:= x;
+        MidPoints[ix, iy].Y:= y;
+        inc(src, dx);
+      end;
+      inc(src, dy*SrcW - dx*2);
+    end;
+  end;
+
+  procedure FindCoordinatesInQuadrilateral(var x, y: ext);
+  var
+    a1, a2: ext;
+  begin
+    // - First, straighten vertical lines:
+
+    // Find dx/dy of vertical lines
+    a1:= MidPoints[0,1].Y - MidPoints[0,0].Y;
+    if a1 <> 0 then
+      a1:= (MidPoints[0,1].X - MidPoints[0,0].X)/a1;
+
+    a2:= MidPoints[1,1].Y - MidPoints[1,0].Y;
+    if a2 <> 0 then
+      a2:= (MidPoints[1,1].X - MidPoints[1,0].X)/a2;
+
+    // Find left and right line intersections with Y = y
+    a1:= a1*(y - MidPoints[0,0].Y) + MidPoints[0,0].X;
+    a2:= a2*(y - MidPoints[1,0].Y) + MidPoints[1,0].X;
+
+    // Find where X = x lies within it
+    if a1 <> a2 then
+      x:= (x - a1)/(a2 - a1)
+    else
+      x:= 0;
+
+    // - After this we arrive at trapezoid (0,?)-(1,?)-(0,?)-(1,?).
+    // - Now we streighten horizontal lines:
+
+    // Find dy/dx of horizontal lines
+    a1:= MidPoints[1,0].Y - MidPoints[0,0].Y;
+    a2:= MidPoints[1,1].Y - MidPoints[0,1].Y;
+
+    // Find top and bottom line intersections with X = x
+    a1:= a1*x + MidPoints[0,0].Y;
+    a2:= a2*x + MidPoints[0,1].Y;
+
+    // Find where Y = y lies within it
+    if a1 <> a2 then
+      y:= (y - a1)/(a2 - a1)
+    else
+      y:= 0;
+
+    SetMax(x, 0);
+    SetMax(y, 0);
+  end;
+
+  function Emphasize(x: ext): ext;
+  var
+    x2: ext;
+  begin
+    Result:= x;
+    if ISigma <= 0 then  exit;
+    // use normalized sum of 2 gaussians at X = 0 and X = 1 
+    x2:= 1 - x;
+    x:= Exp(EmpMul*x*x) - EmpBase;
+    x2:= Exp(EmpMul*x2*x2) - EmpBase;
+    Result:= x2/(x + x2);
+  end;
+
+var
+  p: TPoint;
+  dest: ^TDestRec;
+  src: PSrcRec;
+  v, fx, fy: ext;
+  x, y, i, sx, sy, dx, dy: int;
+begin
+  Width:= BmpDest.Width;
+  Height:= BmpDest.Height;
+  SetLength(Points, Width*Height);
+  SetLength(DestInfo, Width*Height);
+  SrcW:= sr.Right - sr.Left;
+  SetLength(SrcInfo, SrcW*(sr.Bottom - sr.Top));
+  EmpMul:= -ISigma*ISigma/2;
+  EmpBase:= Exp(EmpMul);
+
+  // get all base points, find best match for each source pixel
+  i:= -1;
+  for y:= 0 to Height - 1 do
+  begin
+    p.Y:= y;
+    for x:= 0 to Width - 1 do
+    begin
+      p.X:= x;
+      inc(i);
+      with DestInfo[i] do
+      begin
+        Mapped:= Proc(p, BmpSrc, BmpDest);
+        sx:= Round(Mapped.X);
+        if (sx < sr.Left) or (sx >= sr.Right) then  continue;
+        sy:= Round(Mapped.Y);
+        if (sy < sr.Top) or (sy >= sr.Bottom) then  continue;
+        v:= (1 - abs(Mapped.X - sx))*(1 - abs(Mapped.Y - sy));
+        rec:= @SrcInfo[(sy - sr.Top)*SrcW + sx - sr.Left];
+        with rec^ do
+        begin
+          if v <= Weight then  continue;
+          Weight:= v;
+          DestRec:= @DestInfo[i];
+          SrcX:= sx;
+          SrcY:= sy;
+        end;
+      end;
+    end;
+  end;
+
+  // find new points
+  i:= -1;
+  for y:= 0 to Height - 1 do
+  begin
+    for x:= 0 to Width - 1 do
+    begin
+      inc(i);
+      with DestInfo[i] do
+      begin
+        src:= rec;
+        if src = nil then
+        begin
+          Points[i].X:= Mapped.X;
+          Points[i].Y:= Mapped.Y;
+          continue;
+        end;
+        sx:= src.SrcX;
+        sy:= src.SrcY;
+        // main point? Keep its full original color
+        if (src.DestRec = @DestInfo[i]) and (MainShift = 1) then
+        begin
+          Points[i].X:= sx;
+          Points[i].Y:= sy;
+          continue;
+        end;
+        fx:= abs(Mapped.X - sx);
+        fy:= abs(Mapped.Y - sy);
+        dx:= Sign(Mapped.X - sx);
+        dy:= Sign(Mapped.Y - sy);
+        Quadrilateral(src, IntoRange(dx, sr.Left - sx, sr.Right - sx - 1),
+                           IntoRange(dy, sr.Top - sy, sr.Bottom - sy - 1),
+                           src.DestRec = @DestInfo[i]);
+        FindCoordinatesInQuadrilateral(fx, fy);
+        Points[i].X:= sx + Emphasize(fx)*dx;
+        Points[i].Y:= sy + Emphasize(fy)*dy;
+      end;
+    end;
+  end;
+  Result:= Get();
+end;
+
+
+type
+  TRSTransformEnhancerGet = class
+  public
+    function Enhance(Src, Dest: TBitmap; const ClipRect: TRect;
+       Proc: TRSSmoothTransformProc): TRSSmoothTransformProc;
+  end;
+
+{ TRSTransformEnhancerGet }
+
+function TRSTransformEnhancerGet.Enhance(Src, Dest: TBitmap;
+  const ClipRect: TRect; Proc: TRSSmoothTransformProc): TRSSmoothTransformProc;
+begin
+  with PRSTransformEnhancer(self)^, Enhanced do
+  begin
+    if Reuse and (Width = Dest.Width) and (Height = Dest.Height) then
+      Result:= Enhanced.Get()
+    else
+      Result:= Enhanced.Init(Src, Dest, ClipRect, Proc, ISigma, MidShift, MainShift);
+  end;
+end;
+
+{ TRSTransformEnhancer }
+
+function TRSTransformEnhancer.Get: TRSTransformEnhanceProc;
+begin
+  Result:= TRSTransformEnhancerGet(@self).Enhance;
+end;
+
+
+{ functions }
 
 function RSLoadPic(const Path:string; APixelFormat:TPixelFormat=pfCustom; Pic:TBitmap=nil):TBitmap;
 var p:TPicture;
@@ -600,7 +1051,7 @@ begin
           BI_RGB:
             Result:=pf32bit;
           BI_BITFIELDS:
-            if dsBitFields[1] = $FF0000 then
+            if dsBitFields[0] = $FF0000 then
               Result:=pf32bit;
         end;
     end;
@@ -1419,7 +1870,7 @@ begin
   for i:= 255 downto 0 do
     Pal[i]:= RSMixColorsRGB(Light, Dark, i);
 
-  Bmp.TransparentMode:=tmFixed;
+//  Bmp.TransparentMode:=tmFixed;
   h:=Bmp.ReleaseMaskHandle;
   with Bmp do
   begin
@@ -1934,153 +2385,273 @@ begin
   Result:= RSSimpleRotate32(Source, DefRect, RSsrValue);
 end;
 
-function TransformProc(UserData:pptr; p:TPoint;
-                                Source,Dest:TBitmap):TRSFloatPoint;
-var r:PRect; Form:PRSXForm;
-begin
-  r:=UserData^;
-  inc(UserData);
-  Form:=UserData^;
-  p.X:= p.X + r.Left;
-  p.Y:= p.Y + r.Top;
-  Result.X:= (p.X+0.5)*Form.eM11 + (p.Y+0.5)*Form.eM12 - 0.5;
-  Result.Y:= (p.X+0.5)*Form.eM21 + (p.Y+0.5)*Form.eM22 - 0.5;
- // 0.5 - это поправка на то, что пиксели - это не точки, а квадраты.
-end;
 
-function RSTransform32(Source:TBitmap; Form:TRSXForm;
-           NoCl:TColor; PreserveNoCl:Boolean; Rect:TRect; CutRect:boolean;
-           ColorProc:TRSTransformColorProc=nil; ColorData:int=0;
-           FirstPoint:PPoint=nil; PointsCount:DWord=0):TBitmap; overload;
-var r:TRect;
-
-  procedure ChangeRect(x,y:integer);
-  var i,j:integer;
-  begin
-    i:=round(x*Form.eM11+y*Form.eM12);
-    j:=round(x*Form.eM21+y*Form.eM22);
-    if i<r.Left then r.Left:=i;
-    if j<r.Top then r.Top:=j;
-    if i>r.Right then r.Right:=i;
-    if j>r.Bottom then r.Bottom:=j;
+type
+  TRSColorTransforms = class
+  public
+    procedure Smooth(var per, col:TRSFourIntArray; AllP: Integer; a: PLongint);
+    procedure Smart(var per, col:TRSFourIntArray; AllP: Integer; a: PLongint);
+    procedure Smart2(var per, col:TRSFourIntArray; AllP: Integer; a: PLongint);
   end;
 
-var w,h,dy,x,y,x1,y1:integer; a,s:PInt;
-    sr:TRect; UD:array[0..1] of pointer;
+{ TMyColorTransforms }
+
+procedure TRSColorTransforms.Smart(var per, col: TRSFourIntArray; AllP: Integer;
+  a: PLongint);
+var
+  aa: int;
+begin
+  if AllP<255 then
+    aa:=RSMixColorsRGB(@col[0],@per[0],4)
+  else
+    aa:=RSMixColorsRGBNorm(@col[0],@per[0],4);
+
+  if per[0]<>0 then  per[0]:=SqDifference(aa,col[0])
+  else per[0]:=MaxInt;
+  if per[1]<>0 then  per[1]:=SqDifference(aa,col[1])
+  else per[1]:=MaxInt;
+  if per[2]<>0 then  per[2]:=SqDifference(aa,col[2])
+  else per[2]:=MaxInt;
+  if per[3]<>0 then  per[3]:=SqDifference(aa,col[3])
+  else per[3]:=MaxInt;
+  AllP:=0;
+   // »нтересный эффект: > вместо <
+  if per[1]<per[0] then  AllP:=1;
+  if per[2]<per[AllP] then  AllP:=2;
+  if per[3]<per[AllP] then  AllP:=3;
+
+  if self = nil then
+    a^:= col[AllP]
+  else
+    a^:= RSMixColorsRGB(aa, col[AllP], Integer(self));
+end;
+
+procedure TRSColorTransforms.Smart2(var per, col: TRSFourIntArray;
+  AllP: Integer; a: PLongint);
+var
+  aa, bb, i, k: int;
+begin
+  if AllP<255 then
+    aa:=RSMixColorsRGB(@col[0],@per[0],4)
+  else
+    aa:=RSMixColorsRGBNorm(@col[0],@per[0],4);
+  k:= 0;
+  bb:= 0;
+  for i:= 0 to high(per) do
+    if per[i] > k then
+    begin
+      k:= per[i];
+      bb:= col[i];
+    end;
+
+  a^:= RSMixColorsRGB(aa, bb, Integer(self));
+end;
+
+procedure TRSColorTransforms.Smooth(var per, col: TRSFourIntArray;
+  AllP: Integer; a: PLongint);
+begin
+  if AllP<255 then
+    a^:= RSMixColorsRGB(@col[0],@per[0],4)
+  else
+    a^:= RSMixColorsRGBNorm(@col[0],@per[0],4);
+end;
+
+// Bylinear
+function RSTransformSmoothProc: TRSTransformColorProc;
+begin
+  Result:= TRSColorTransforms(nil).Smooth;
+end;
+
+// Finds the color closest to bylinear among the 4 colors, then mixes in bylinear color with Mix parameter
+function RSTransformSmartProc(Mix: Integer = 0): TRSTransformColorProc;
+begin
+  Result:= TRSColorTransforms(Mix).Smart;
+end;
+
+// Mixes nearest neighbour with bylinear color with Mix parameter (0 - full nearest, 255 - full bylinear)
+function RSTransformSmartProc2(Mix: Integer = 0): TRSTransformColorProc;
+begin
+  Result:= TRSColorTransforms(Mix).Smart2;
+end;
+
+
+function RSXForm(scale: ext = 1): TRSXForm; overload;
+begin
+  Result.SetScale(scale, scale);
+end;
+
+function RSXForm(scaleX, scaleY: ext; rotate: ext = 0): TRSXForm; overload;
+begin
+  Result.SetScale(scaleX, scaleY);
+  if rotate <> 0 then
+    Result.Rotate(rotate);
+end;
+
+function RSTransformEnhancer(ISigma: Double = 1.9; MidShift: Double = 0.5;
+   MainShift: Double = 1): TRSTransformEnhancer;
+begin
+  Result.Enhanced.Width:= 0;
+  Result.Enhanced.Height:= 0;
+  Result.ISigma:= ISigma;
+  Result.MidShift:= MidShift;
+  Result.MainShift:= MainShift;
+end;
+
+
+type
+  TRSTransforms = class
+  public
+    function XForm(p:TPoint; Source,Dest:TBitmap):TRSFloatPoint;
+  end;
+
+{ TRSTransforms }
+
+function TRSTransforms.XForm(p: TPoint; Source, Dest: TBitmap): TRSFloatPoint;
+var
+  x, y: ext;
+begin
+  with PRSAreaTransform(self)^ do
+  begin
+    x:= p.X + Lo.X;
+    y:= p.Y + Lo.Y;
+    // 0.5 - это поправка на то, что пиксели - это не точки, а квадраты.
+    Result.X:= x*Form.eM11 + y*Form.eM12 - 0.5;
+    Result.Y:= x*Form.eM21 + y*Form.eM22 - 0.5;
+  end;
+end;
+
+function RSPrepareTransform32(var Area: TRSAreaTransform;
+   var wd, hd: int; ACenterInDest: Boolean = true): TRSSmoothTransformProc;
+begin
+  with Area do
+  begin
+    wd:= GetDestWidth;
+    hd:= GetDestHeight;
+    if ACenterInDest then
+      Area.CenterInDest(wd, hd);
+    // 0.5 - это поправка на то, что пиксели - это не точки, а квадраты.
+    // Delta - лекарство от ошибок округлени€ при увеличении на рациональный множитель
+    Lo.X:= Lo.X + Delta + 0.5;
+    Lo.Y:= Lo.Y + Delta + 0.5;
+    // ќбратна€ матрица
+    Form.Inverse;
+  end;
+  Result:= TRSTransforms(@Area).XForm;
+end;
+
+function RSTransform32(Source: TBitmap; Area: TRSAreaTransform;
+           NoCl: TColor; PreserveNoCl: Boolean; sr: TRect;
+           ColorProc: TRSTransformColorProc = nil;
+           CenterInDest: Boolean = true;
+           Enhance: TRSTransformEnhanceProc = nil): TBitmap; overload;
+var
+  proc: TRSSmoothTransformProc;
+  wd,hd, dy, x,y, x1,y1: integer;
+  vx, vy: ext;
+  a,s: PInt;
+begin
+  proc:= RSPrepareTransform32(Area, wd, hd, CenterInDest);
+
+  if Assigned(ColorProc) or Assigned(Enhance) then
+    Result:= RSAnyTransform32(Source, proc, wd, hd, NoCl, PreserveNoCl,
+       sr, ColorProc, Enhance)
+  else
+    with Area do
+    begin
+      // ћог бы быть заметный проигрыш в скорости при использовании AnyTransform
+
+      Source.HandleType:= bmDIB;
+      Source.PixelFormat:= pf32bit;
+
+      NoCl:=ColorToRGB(NoCl);
+      NoCl:=((Nocl and $ff0000) shr 16) or
+            ((Nocl and $0000ff) shl 16) or
+            (Nocl and int($ff00ff00)); //ѕеревернем NoCl
+
+      Result:=TBitmap.Create;
+      Result.HandleType:=bmDIB;
+      Result.PixelFormat:=pf32bit;
+      Result.Width:= wd;
+      Result.Height:= hd;
+
+      s:= Source.ScanLine[0];
+      dy:= -4*Source.Width;
+      a:= Result.ScanLine[Result.Height-1];
+      dec(wd);
+      dec(hd);
+      for y:= hd downto 0 do
+      begin
+        for x:= 0 to wd do
+        begin
+          vx:= x + Lo.X;
+          vy:= y + Lo.Y;
+          // 0.5 - это поправка на то, что пиксели - это не точки, а квадраты.
+          x1:= round(vx*Form.eM11 + vy*Form.eM12 - 0.5);
+          y1:= round(vx*Form.eM21 + vy*Form.eM22 - 0.5);
+          if (x1 >= sr.Left) and (x1 < sr.Right) and (y1 >= sr.Top) and (y1 < sr.Bottom) then
+            a^:= PInt(integer(s) + x1*4 + y1*dy)^
+          else
+            a^:= NoCl;
+          inc(a);
+        end;
+      end;
+    end;
+end;
+
+function RSTransform32(Source: TBitmap; const Area: TRSAreaTransform;
+           NoCl: TColor; PreserveNoCl: Boolean;
+           ColorProc: TRSTransformColorProc = nil;
+           CenterInDest: Boolean = true;
+           Enhance: TRSTransformEnhanceProc = nil): TBitmap; overload;
+begin
+  Result:= RSTransform32(Source, Area, NoCl, PreserveNoCl,
+    Rect(0, 0, Source.Width, Source.Height), ColorProc, CenterInDest,
+    Enhance);
+end;
+
+function RSTransform32(Source:TBitmap; const XForm: TRSXForm;
+           NoCl:TColor; PreserveNoCl:Boolean; sr:TRect; CutRect:boolean;
+           ColorProc: TRSTransformColorProc = nil;
+           Enhance: TRSTransformEnhanceProc = nil): TBitmap; overload;
+var
+  Area: TRSAreaTransform;
+  w,h: integer;
 begin
   w:=Source.Width;
   h:=Source.Height;
 
-  if Rect.Left<0 then  Rect.Left:=0;
-  if Rect.Top<0 then  Rect.Top:=0;
-  if Rect.Right>w then  Rect.Right:=w;
-  if Rect.Bottom>h then  Rect.Bottom:=h;
+  SetMax(sr.Left, 0);
+  SetMax(sr.Top, 0);
+  SetMin(sr.Right, w);
+  SetMin(sr.Bottom, h);
 
-  if (Rect.Left>=Rect.Right) or (Rect.Top>=Rect.Bottom) then
+  if (sr.Left>=sr.Right) or (sr.Top>=sr.Bottom) then
   begin
     Result:=TBitmap.Create;
     exit;
   end;
-  Source.HandleType:=bmDIB;
-  Source.PixelFormat:=pf32bit;
 
-  if CutRect then sr:=Rect
-  else begin
-    sr.Left:=0;
-    sr.Top:=0;
-    sr.Right:=Source.Width;
-    sr.Bottom:=Source.Height;
-  end;
+  Area.Form:= XForm;
+  Area.SetSourceRect(sr);
 
-  r.Left:=MaxInt;
-  r.Top:=MaxInt;
-  r.Right:=-MaxInt-1;
-  r.Bottom:=-MaxInt-1;
+  if not CutRect then
+    sr:= Rect(0, 0, w, h);
 
-  Form.eM12:=-Form.eM12; // ¬ математике ось y идет в другую сторону
-  Form.eM21:=-Form.eM21;
-
-  ChangeRect(Rect.Left, Rect.Top); // —читаем размеры результата
-  ChangeRect(Rect.Right, Rect.Top);
-  ChangeRect(Rect.Left, Rect.Bottom);
-  ChangeRect(Rect.Right, Rect.Bottom);
-
-
-  for x:=1 to PointsCount do // “очки прив€зки - дл€ удобства использовани€
-  begin
-    y:=FirstPoint.Y;
-    FirstPoint.Y:=round((FirstPoint.X+0.5)*Form.eM21+(y+0.5)*Form.eM22-0.5)-r.Top;
-    FirstPoint.X:=round((FirstPoint.X+0.5)*Form.eM11+(y+0.5)*Form.eM12-0.5)-r.Left;
-    inc(FirstPoint);
-   // 0.5 - это поправка на то, что пиксели - это не точки, а квадраты.
-  end;
-
-  Form.Inverse; // ќбратна€ матрица
-
-  if @ColorProc=nil then
-  begin
-
-   // ћог бы быть заметный проигрыш в скорости при использовании AnyTransform
-
-    NoCl:=ColorToRGB(NoCl);
-    NoCl:=((Nocl and $ff0000) shr 16) or
-          ((Nocl and $0000ff) shl 16) or
-          (Nocl and int($ff00ff00)); //ѕеревернем NoCl
-
-    Result:=TBitmap.Create;
-    Result.HandleType:=bmDIB;
-    Result.PixelFormat:=pf32bit;
-    Result.Width:=r.Right-r.Left;
-    Result.Height:=r.Bottom-r.Top;
-
-    s:=Source.ScanLine[0];
-    dy:=-4*w;
-    a:=Result.ScanLine[Result.Height-1];
-    dec(r.Right);
-    dec(r.Bottom);
-    for y:=r.Bottom downto r.Top do
-    begin
-      for x:=r.Left to r.Right do
-      begin
-        x1:=round((x+0.5)*Form.eM11+(y+0.5)*Form.eM12-0.5);
-        y1:=round((x+0.5)*Form.eM21+(y+0.5)*Form.eM22-0.5);
-          // 0.5 - это поправка на то, что пиксели - это не точки,
-          // а квадраты.
-        if (x1>=sr.Left) and (x1<sr.Right) and (y1>=sr.Top) and (y1<sr.Bottom) then
-        begin
-          a^:=PInt(integer(s)+x1*4+y1*dy)^;
-        end else
-          a^:=NoCl;
-        inc(a);
-      end;
-    end;
-  end else
-  begin
-    UD[0]:=@r;
-    UD[1]:=@Form;
-    Result:=RSAnyTransform32(Source, @TransformProc,
-     (r.Right-r.Left), (r.Bottom-r.Top), NoCl, PreserveNoCl, sr, ColorProc, ColorData, @UD);
-  end;
+  Result:= RSTransform32(Source, Area, NoCl, PreserveNoCl, sr,
+     ColorProc, true, Enhance);
 end;
 
-function RSTransform32(Source:TBitmap; Form:TRSXForm;
+function RSTransform32(Source:TBitmap; const XForm: TRSXForm;
            NoCl:TColor; PreserveNoCl:Boolean;
-           ColorProc:TRSTransformColorProc=nil; ColorData:int=0;
-           FirstPoint:PPoint=nil; PointsCount:DWord=0):TBitmap; overload;
+           ColorProc: TRSTransformColorProc = nil;
+           Enhance: TRSTransformEnhanceProc = nil): TBitmap; overload;
 begin
-  Result:= RSTransform32(Source, Form, NoCl, PreserveNoCl,
-     Rect(0,0,MaxInt,MaxInt), false, ColorProc, ColorData, FirstPoint, PointsCount);
-end;
-
-function Point(X, Y: Integer): TPoint;
-begin
-  Result.X := X;
-  Result.Y := Y;
+  Result:= RSTransform32(Source, XForm, NoCl, PreserveNoCl,
+     Rect(0,0,MaxInt,MaxInt), false, ColorProc, Enhance);
 end;
 
 function RSAnyTransform32(Source:TBitmap; proc:TRSTransformProc;
-           Width, Height:integer; NoCl:TColor; ClipRect:TRect;
-           UserData:pointer=nil):TBitmap; overload;
+           Width, Height:integer; NoCl:TColor; ClipRect:TRect):TBitmap; overload;
 var w,dy,x,y:integer; a,s:PInt;
     p:TPoint;
 begin
@@ -2128,7 +2699,7 @@ begin
   begin
     for x:=0 to Width do
     begin
-      p:=proc(UserData,point(x,y),Source,Result);
+      p:=proc(point(x,y),Source,Result);
       if (p.x>=ClipRect.Left) and (p.x<ClipRect.Right) and
          (p.y>=ClipRect.Top) and (p.y<ClipRect.Bottom) then
       begin
@@ -2140,84 +2711,24 @@ begin
 end;
 
 function RSAnyTransform32(Source:TBitmap; proc:TRSTransformProc;
-           Width, Height:integer; NoCl:TColor;
-           UserData:pointer=nil):TBitmap; overload;
+           Width, Height:integer; NoCl:TColor):TBitmap; overload;
 begin
-  Result:=RSAnyTransform32(Source, proc, Width, Height, NoCl,
-                               Rect(0,0,MaxInt,MaxInt), UserData);
+  Result:= RSAnyTransform32(Source, proc, Width, Height, NoCl, Rect(0,0,MaxInt,MaxInt));
 end;
 
-
-procedure RSTransformSmoothProc(var per, col:TRSFourIntArray; AllP:int; a:pint;
-   Data:int);
-begin
-  if AllP<255 then
-    a^:=RSMixColorsRGB(@col[0],@per[0],4)
-  else
-    a^:=RSMixColorsRGBNorm(@col[0],@per[0],4);
-end;
-
-procedure RSTransformSmartProc(var per, col:TRSFourIntArray; AllP:int; a:pint;
-   Mix:int);
-var aa:int;
-begin
-  if AllP<255 then
-    aa:=RSMixColorsRGB(@col[0],@per[0],4)
-  else
-    aa:=RSMixColorsRGBNorm(@col[0],@per[0],4);
-
-  if per[0]<>0 then  per[0]:=SqDifference(aa,col[0])
-  else per[0]:=MaxInt;
-  if per[1]<>0 then  per[1]:=SqDifference(aa,col[1])
-  else per[1]:=MaxInt;
-  if per[2]<>0 then  per[2]:=SqDifference(aa,col[2])
-  else per[2]:=MaxInt;
-  if per[3]<>0 then  per[3]:=SqDifference(aa,col[3])
-  else per[3]:=MaxInt;
-  AllP:=0;
-   // »нтересный эффект: > вместо <
-  if per[1]<per[0] then  AllP:=1;
-  if per[2]<per[AllP] then  AllP:=2;
-  if per[3]<per[AllP] then  AllP:=3;
-
-  if int(Mix)=0 then
-    a^:=col[AllP]
-  else
-    a^:=RSMixColorsRGB(aa,col[AllP],int(Mix));
-end;
-
-procedure RSTransformSmartProc2(var per, col:TRSFourIntArray; AllP:int; a:pint;
-            Mix:int);
-var
-  aa, bb, i, k:int;
-begin
-  if AllP<255 then
-    aa:=RSMixColorsRGB(@col[0],@per[0],4)
-  else
-    aa:=RSMixColorsRGBNorm(@col[0],@per[0],4);
-  k:= 0;
-  for i:= 0 to high(per) do
-    if per[i] > k then
-    begin
-      k:= per[i];
-      bb:= col[i];
-    end;
-
-  a^:=RSMixColorsRGB(aa,bb,int(Mix));
-end;
 
 function RSAnyTransform32(Source:TBitmap; proc:TRSSmoothTransformProc;
            Width, Height:integer; NoCl:TColor; PreserveNoCl:Boolean;
-           ClipRect:TRect; ColorProc:TRSTransformColorProc=nil;
-           ColorData:int=0; UserData:pointer=nil):TBitmap; overload;
+           ClipRect:TRect; ColorProc: TRSTransformColorProc = nil;
+           Enhance: TRSTransformEnhanceProc = nil):TBitmap; overload;
 const
   TranspMul = 7;
   TranspDiv = 10;
   Inf = 1E100;
-//{$DEFINE Lin}
+{$DEFINE Lin}
 {$IFDEF Lin}
   Multiplier = 100;
-  AbsCoeff = 0.1;
+  AbsCoeff = 0.0;
 {$ELSE}
   Multiplier = 250;
   function Inv(x: ext): ext; inline;
@@ -2231,28 +2742,26 @@ const
 
 var
   w,dy,x,y,x1,y1:integer;
-  a,s:PInt;
+  a,s: PLongint;
   xp,yp,r: ext;
   p:TRSFloatPoint;
   per, col: TRSFourIntArray;  perL, perT, perR, perB: ext;
   AllP, TransP:int;
 begin
-  if ClipRect.Left<0 then  ClipRect.Left:=0;
-  if ClipRect.Top<0 then  ClipRect.Top:=0;
-  if ClipRect.Right>Source.Width then  ClipRect.Right:=Source.Width;
-  if ClipRect.Bottom>Source.Height then  ClipRect.Bottom:=Source.Height;
+  SetMax(ClipRect.Left, 0);
+  SetMax(ClipRect.Top, 0);
+  SetMin(ClipRect.Right, Source.Width);
+  SetMin(ClipRect.Bottom, Source.Height);
 
-  if (ClipRect.Right<=ClipRect.Left) or (ClipRect.Bottom<=ClipRect.Top) then
+  if (ClipRect.Right <= ClipRect.Left) or (ClipRect.Bottom <= ClipRect.Top) then
   begin
-    Result:=TBitmap.Create;
+    Result:= TBitmap.Create;
     Result.Assign(Source);
     exit;
   end;
-  with Source do
-  begin
-    PixelFormat:= pf32bit;
-    HandleType:= bmDIB;
-  end;
+
+  Source.PixelFormat:= pf32bit;
+  Source.HandleType:= bmDIB;
 
   if Width<=0 then Width:= ClipRect.Right - ClipRect.Left;
   if Height<=0 then Height:= ClipRect.Bottom - ClipRect.Top;
@@ -2269,21 +2778,24 @@ begin
   Result.Width:=Width;
   Result.Height:=Height;
 
-  s:=Source.ScanLine[0];
-  dy:=-4*w;
-  a:=Result.ScanLine[Height-1];
+  if Assigned(Enhance) then
+    proc:= Enhance(Source, Result, ClipRect, proc);
+
+  s:= Source.ScanLine[0];
+  dy:= -4*w;
+  a:= Result.ScanLine[Height-1];
 
 //  dec(ClipRect.Right);
 //  dec(ClipRect.Bottom);
   dec(Width);
   dec(Height);
 
-  if @ColorProc=nil then
+  if not Assigned(ColorProc) then
     for y:=Height downto 0 do
     begin
       for x:=0 to Width do
       begin
-        p:=proc(UserData,point(x,y),Source,Result);
+        p:=proc(point(x,y),Source,Result);
         x1:=round(p.x);
         y1:=round(p.y);
         if (x1>=ClipRect.Left) and (x1<ClipRect.Right) and
@@ -2299,7 +2811,7 @@ begin
     begin
       for x:=0 to Width do
       begin
-        p:=proc(UserData,point(x,y),Source,Result);
+        p:=proc(point(x,y),Source,Result);
         x1:=round(p.x);
         y1:=round(p.y);
         if (x1>=ClipRect.Left) and (x1<ClipRect.Right) and
@@ -2411,7 +2923,7 @@ begin
             AllP:=per[0]+per[1]+per[2]+per[3];
 
           if AllP<>0 then
-            ColorProc(per, col, AllP, a, ColorData)
+            ColorProc(per, col, AllP, a)
           else
             a^:=NoCl;
         end else
@@ -2422,12 +2934,65 @@ begin
 end;
 
 function RSAnyTransform32(Source:TBitmap; proc:TRSSmoothTransformProc;
-  Width, Height:integer; NoCl:TColor; PreserveNoCl:Boolean;
-  ColorProc:TRSTransformColorProc=nil; ColorData:int=0;
-  UserData:pointer=nil):TBitmap; overload;
+           Width, Height:integer; NoCl:TColor; PreserveNoCl:Boolean;
+           ColorProc:TRSTransformColorProc = nil;
+           Enhance: TRSTransformEnhanceProc = nil):TBitmap; overload;
 begin
-  Result:=RSAnyTransform32(Source, proc, Width, Height, NoCl, PreserveNoCl,
-                  Rect(0,0,MaxInt,MaxInt), ColorProc, ColorData, UserData);
+  Result:= RSAnyTransform32(Source, proc, Width, Height, NoCl, PreserveNoCl,
+     Rect(0,0,MaxInt,MaxInt), ColorProc, Enhance);
+end;
+
+procedure RSDrawVectorGlyph(Canvas: TCanvas; const lines: array of TRSVectorGlyphLine;
+   AX, AY: ext; ScaleX: ext = 1; ScaleY: ext = Infinity);
+const
+  X1 = 0; Y1 = 1; X2 = 2; Y2 = 3;
+var
+  draw: Boolean;
+  x, y, top, bottom, i: int;
+  fy, v, ymin, ymax: ext;
+begin
+  if length(lines) = 0 then  exit;
+  if IsInfinite(ScaleY) then
+    ScaleY:= Sign(ScaleY)*abs(ScaleX);
+  ymin:= lines[low(lines)][Y1];
+  ymax:= lines[low(lines)][Y2];
+  for i:= low(lines) + 1 to high(lines) do
+  begin
+    SetMin(ymin, lines[i][Y1]);
+    SetMax(ymax, lines[i][Y2]);
+  end;
+  ymin:= ymin*ScaleY + AY;
+  ymax:= ymax*ScaleY + AY;
+  if ScaleY >= 0 then
+  begin
+    top:= Floor(ymin);
+    bottom:= Floor(ymax);
+  end else
+  begin
+    top:= Floor(ymax);
+    bottom:= Floor(ymin);
+  end;
+  if ScaleY <> 0 then
+    ScaleY:= 1/ScaleY;
+  for y:= top to bottom do
+  begin
+    draw:= false;
+    fy:= (y + 0.5 - AY)*ScaleY;
+    for i:= low(lines) to high(lines) do
+    begin
+      v:= fy - lines[i][Y1];
+      if (v >= 0) and (fy < lines[i][Y2]) then
+      begin
+        v:= v/(lines[i][Y2] - lines[i][Y1]);
+        x:= Round((lines[i][X1]*(1 - v) + lines[i][X2]*v)*ScaleX + AX);
+        if draw then
+          Canvas.LineTo(x, y)
+        else
+          Canvas.MoveTo(x, y);
+        draw:= not draw;
+      end;
+    end;
+  end;
 end;
 
 end.

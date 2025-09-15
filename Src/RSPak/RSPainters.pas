@@ -14,7 +14,7 @@ unit RSPainters;
 interface
 
 uses
-  Windows, Classes, Graphics, RSGraphics, RSQ;
+  Windows, Classes, Graphics, RSGraphics, RSQ, Math, Types;
 
 type
   TRSColorTheme = class(TComponent)
@@ -69,9 +69,11 @@ type
     procedure ColorsChanged;
     function CheckColors:boolean;
 
-    procedure DrawGlyph(Canvas:TCanvas; x,y:int; Glyph:TBitmap;
-       State:TOwnerDrawState; Back:TColor; TempGlyph:boolean=false);
-    procedure DrawCheck(Canvas:TCanvas; r:TRect; Enabled:Boolean; RectEl:int; GradientEdge:int=1);
+    procedure DrawGlyphSelectedEffect(ACanvas:TCanvas; x,y:int; Glyph:TBitmap; MaxWidth: int = 0);
+    procedure DrawGlyph(Canvas: TCanvas; x,y: int; Glyph: TBitmap;
+      State: TOwnerDrawState; Back: TColor; TempGlyph: Boolean=false);
+    procedure DrawCheck(Canvas:TCanvas; r:TRect; Enabled:Boolean; RectEl:int;
+      GradientEdge: int = 1; GradientLen: int = -1);
     procedure DrawHotTrackBackground(Canvas:TCanvas; const r:TRect);
 
 
@@ -370,8 +372,10 @@ begin
 end;
 
 procedure TRSColorTheme.DrawGlyph(Canvas:TCanvas; x,y:int; Glyph:TBitmap;
-   State:TOwnerDrawState; Back:TColor; TempGlyph:boolean=false);
-var Bmp:TBitmap; i,j:int;
+   State:TOwnerDrawState; Back:TColor; TempGlyph:boolean);
+var
+  Bmp: TBitmap;
+  i,j{,w,h}: int;
 begin
   if odDisabled in State then
   begin
@@ -414,46 +418,88 @@ begin
     end;
   end else
   begin
-     // Выпячивание
+    // Выпячивание
     if (State*[odSelected, odHotLight]<>[]) and FRaisedGlyphs then
-    begin
-      RSDrawMask(Canvas, Glyph, Raised1, x-1, y-1);
-      RSDrawMask(Canvas, Glyph, Raised2, x+1, y+1);
-    end;
+      DrawGlyphSelectedEffect(Canvas, x, y, Glyph);
 
-     // Картинка
+    // Draw of TBitmap is broken if the bitmap is DIB
+//    w:= Glyph.Width;
+//    h:= Glyph.Height;
+//    TransparentBlt(Canvas.Handle, x, y, w, h, Glyph.Canvas.Handle, 0, 0, w, h, Glyph.TransparentColor);
     Canvas.Draw(x, y, Glyph);
   end;
 end;
 
-procedure TRSColorTheme.DrawCheck(Canvas:TCanvas; r:TRect; Enabled:Boolean;
-   RectEl:int; GradientEdge:int=1);
+procedure TRSColorTheme.DrawGlyphSelectedEffect(ACanvas: TCanvas; x, y: int;
+  Glyph: TBitmap; MaxWidth: int);
+var MonoBmp:TBitmap;
 begin
+  MonoBmp:=TBitmap.Create;
+  with MonoBmp do
+    try
+      Handle:= CopyImage(Glyph.MaskHandle, IMAGE_BITMAP, 0, 0,
+        LR_COPYRETURNORG or LR_MONOCHROME);
+      if MaxWidth > 0 then
+        Width:= min(Width, MaxWidth);
+      RSDrawMonoBmp(ACanvas, MonoBmp, Raised1, x-1, y-1);
+      RSDrawMonoBmp(ACanvas, MonoBmp, Raised2, x+1, y+1);
+    finally
+      Free;
+    end;
+end;
+
+procedure TRSColorTheme.DrawCheck(Canvas: TCanvas; r: TRect; Enabled: Boolean;
+  RectEl, GradientEdge, GradientLen: int);
+var
+  Rad,Rad2,fy: ext;
+  y,x,y1,x0: Integer;
+begin
+  SetMin(RectEl, RectW(r));
+  SetMin(RectEl, RectH(r));
+  if GradientLen < 0 then
+    GradientLen:= 2 + GradientEdge; // backward compatibility
   with Canvas do
   begin
     Brush.Color := Check;
+    RoundRect(r.Left, r.Top, r.Right, r.Bottom, RectEl, RectEl);
+
+    if Enabled then
+      if RectEl <= 2 then
+      begin
+        RSGradientV(Canvas, Rect(r.Left+GradientEdge, r.Top+1,
+          r.Right-GradientEdge, r.Top+2+GradientLen), Light, Check);
+        RSGradientV(Canvas, Rect(r.Left+GradientEdge, r.Bottom-2-GradientLen,
+          r.Right-GradientEdge, r.Bottom-1), Check, Dark);
+      end else
+      begin
+        x0:= (r.Left + r.Right) div 2;
+        RSGradientV(Canvas, Rect(x0, r.Top+1, x0+1, r.Top+2+GradientLen), Light, Check);
+        RSGradientV(Canvas, Rect(x0, r.Bottom-2-GradientLen, x0+1, r.Bottom-1), Check, Dark);
+        Rad:= RectEl/2;
+        Rad2:= Rad*Rad;
+        for y:= 1 to GradientLen+1 do
+        begin
+          if y*2 < RectEl then
+          begin
+            fy:= Rad - (y + 0.5);
+            x:= Ceil(Rad - sqrt(Rad2 - fy*fy) + 0.45);
+          end else
+            x:= 1;
+          y1:= r.Top + y;
+          Pen.Color:= Pixels[x0, y1];
+          MoveTo(r.Left + x, y1);
+          LineTo(r.Right - x, y1);
+          y1:= r.Bottom - 1 - y;
+          Pen.Color:= Pixels[x0, y1];
+          MoveTo(r.Left + x, y1);
+          LineTo(r.Right - x, y1);
+        end;
+      end;
+
     if Enabled then
       Pen.Color := SelBorder
     else
       Pen.Color:=RSMixColors(SelBorder, Gutter, 160);
-
-    RoundRect(r.Left, r.Top, r.Right, r.Bottom, RectEl, RectEl);
-
-     // Не на всяких RectEl годится
-    if Enabled then
-    begin
-      RSGradientV(Canvas, Rect(r.Left+GradientEdge, r.Top+1,
-        r.Right-GradientEdge, r.Top+4+GradientEdge), Light, Check);
-      RSGradientV(Canvas, Rect(r.Left+GradientEdge, r.Bottom-4-GradientEdge,
-        r.Right-GradientEdge, r.Bottom-1), Check, Dark);
-      {
-      RSGradientV(Canvas, Rect(r.Left+GradientEdge, r.Top+1,
-        r.Right-GradientEdge, r.Top+5), Light, Check);
-      RSGradientV(Canvas, Rect(r.Left+GradientEdge, r.Bottom-5,
-        r.Right-GradientEdge, r.Bottom-1), Check, Dark);
-      }
-    end;
-
     Brush.Style := bsClear;
     RoundRect(r.Left, r.Top, r.Right, r.Bottom, RectEl, RectEl);
     Brush.Style := bsSolid;

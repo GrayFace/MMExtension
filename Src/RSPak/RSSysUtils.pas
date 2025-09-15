@@ -25,6 +25,8 @@ type
 
   PWMMoving = ^TWMMoving;
 
+  TRSFileStreamHandle = {$IFDEF D2007}int{$ELSE}THandle{$ENDIF};
+
   TRSArrayStream = class(TMemoryStream)
   protected
     FArr: PRSByteArray;
@@ -317,7 +319,7 @@ type
     FMMF: THandle;
     FSize: int;
   public
-    constructor Create(Name:string; Size:int); overload;
+    constructor Create(const Name:string; Size:int; open: Boolean = false); overload;
     constructor Create(MMF:THandle; Size:int); overload;
     destructor Destroy; override;
 
@@ -505,13 +507,17 @@ const
   ERROR_UNABLE_TO_MOVE_REPLACEMENT = 1176;
   ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 = 1177;
   ERROR_UNABLE_TO_REMOVE_REPLACED = 1175;
+  ABOVE_NORMAL_PRIORITY_CLASS = $8000;
+  BELOW_NORMAL_PRIORITY_CLASS = $4000;
+  PROCESS_MODE_BACKGROUND_BEGIN = $100000;
+  PROCESS_MODE_BACKGROUND_END = $200000;
 
 function RSReplaceFile(const Replaced, Replacement: string; const Backup: string = ''; Flags: int = REPLACEFILE_IGNORE_MERGE_ERRORS): Boolean;
 
 function RSLoadFile(FileName:string):TRSByteArray;
 procedure RSSaveFile(FileName:string; Data: ptr; L: int); overload;
 procedure RSSaveFile(FileName:string; Data:TRSByteArray); overload;
-procedure RSSaveFile(FileName:string; Data:TMemoryStream; RespectPosition: Boolean = false); overload;
+procedure RSSaveFile(FileName:string; Data:TCustomMemoryStream; RespectPosition: Boolean = false); overload;
 procedure RSAppendFile(FileName:string; Data: ptr; L: int); overload;
 procedure RSAppendFile(FileName:string; Data:TRSByteArray); overload;
 procedure RSAppendFile(FileName:string; Data:TMemoryStream; RespectPosition: Boolean = false); overload;
@@ -576,8 +582,8 @@ function RSEnableDebugPrivilege(Enable:boolean):boolean;
 
 {--------}
 
-function RSRunWait(Command:string; Dir:string;
-           Timeout:DWord=INFINITE; showCmd:Word=SW_NORMAL):boolean;
+function RSRunWait(const Command:string; const Dir:string;
+   Timeout:DWord=INFINITE; showCmd:Word=SW_NORMAL):boolean;
 
 // up to 3 parameters are accepted           
 function RSRunThread(Func: ptr; Param: array of ptr;
@@ -954,7 +960,7 @@ end;
 constructor TRSFileStreamProxy.Create(const AFileName: string; Mode: Word;
   Rights: Cardinal);
 begin
-  inherited Create(-1);
+  inherited Create(TRSFileStreamHandle(-1));
 {$IFDEF D2006}
   string((@FileName)^):= AFileName;
 {$ELSE}
@@ -966,14 +972,14 @@ end;
 
 procedure TRSFileStreamProxy.Check;
 begin
-  if (Handle < 0) and CreateDir then
+  if (Handle = TRSFileStreamHandle(-1)) and CreateDir then
     RSCreateDir(ExtractFilePath(FileName));
-  if Handle < 0 then
+  if Handle = TRSFileStreamHandle(-1) then
 {$IFDEF MSWINDOWS}
     if FMode = fmCreate then
     begin
       inherited Create(RSCreateFile(FileName));
-      if FHandle < 0 then
+      if FHandle = TRSFileStreamHandle(-1) then
         raise EFCreateError.CreateResFmt(@SFCreateErrorEx, [ExpandFileName(FileName), SysErrorMessage(GetLastError)]);
     end else
 {$ENDIF}
@@ -1931,13 +1937,21 @@ end;
 ******************************** TRSSharedData *********************************
 }
 
-constructor TRSSharedData.Create(Name:string; Size:int);
+constructor TRSSharedData.Create(const Name:string; Size:int; open: Boolean);
 begin
-  FSize:=Size;
-  FMMF:= RSWin32Check(CreateFileMapping(INVALID_HANDLE_VALUE, nil,
-                        PAGE_READWRITE, 0, max(1, Size), ptr(Name)));
-  FAlreadyExists:= GetLastError = ERROR_ALREADY_EXISTS;
-  FData:= RSWin32Check(MapViewOfFile(FMMF, FILE_MAP_ALL_ACCESS, 0, 0, 0));
+  FSize:= Size;
+  if open then
+  begin
+    FMMF:= OpenFileMapping(PAGE_READWRITE, false, ptr(Name));
+    FAlreadyExists:= (FMMF <> 0);
+  end else
+  begin
+    FMMF:= RSWin32Check(CreateFileMapping(INVALID_HANDLE_VALUE, nil,
+                          PAGE_READWRITE, 0, max(1, Size), ptr(Name)));
+    FAlreadyExists:= GetLastError = ERROR_ALREADY_EXISTS;
+  end;
+  if FMMF <> 0 then
+    FData:= RSWin32Check(MapViewOfFile(FMMF, FILE_MAP_ALL_ACCESS, 0, 0, Size));
 end;
 
 constructor TRSSharedData.Create(MMF:THandle; Size:int);
@@ -1945,7 +1959,7 @@ begin
   FSize:=Size;
   FMMF:=MMF;
   FAlreadyExists:= true;
-  FData:= RSWin32Check(MapViewOfFile(MMF, FILE_MAP_ALL_ACCESS, 0, 0, 0));
+  FData:= RSWin32Check(MapViewOfFile(MMF, FILE_MAP_ALL_ACCESS, 0, 0, Size));
 end;
 
 destructor TRSSharedData.Destroy;
@@ -2076,8 +2090,8 @@ var bits:DWord;
 begin
   bits:= Require or Exclude;
   while Found and (((Data.dwFileAttributes and bits) <> Require) or
-    (Data.cFileName[0] = '.') and ((Data.cFileName[1] = #0) or
-      (Data.cFileName[1] = '.') and (Data.cFileName[2] = #0))) do
+     FIgnoreDotFolders and (Data.cFileName[0] = '.') and
+     ((Data.cFileName[1] = #0) or (Data.cFileName[1] = '.') and (Data.cFileName[2] = #0))) do
     FindNext;
   Result:=Found;
 end;
@@ -2786,7 +2800,7 @@ begin
   RSSaveFile(FileName, @Data[0], length(Data));
 end;
 
-procedure RSSaveFile(FileName:string; Data:TMemoryStream; RespectPosition: Boolean = false);
+procedure RSSaveFile(FileName:string; Data:TCustomMemoryStream; RespectPosition: Boolean = false);
 var
   pos: Int64;
 begin
@@ -3024,7 +3038,7 @@ begin
 
   if Result <> 0 then
   begin
-    p:= GetProcAddress(Result, ProcName);
+    p:= GetProcAddress(Result, PChar(ProcName));
     if p = nil then
     begin
       if LoadLib then  FreeLibrary(Result);
@@ -3296,8 +3310,8 @@ end;
 
 {-----------------------  --------------------------}
 
-function RSRunWait(Command:string; Dir:string; Timeout:DWord;
-           showCmd:Word):boolean;
+function RSRunWait(const Command:string; const Dir:string; Timeout:DWord;
+   showCmd:Word):boolean;
 var
   SI: TStartupInfo; PI: TProcessInformation;
   i:integer;
@@ -3337,8 +3351,13 @@ begin
     rec.Func(rec.Param1, rec.Param2, rec.Param3); // would work for 1 or 2 param functions as well
     Result:= 0;
   except
-    RSShowException;
-    Result:= int(STATUS_NONCONTINUABLE_EXCEPTION);
+    on e: EAbort do
+      Result:= 0;
+    on e: Exception do
+    begin
+      RSShowException;
+      Result:= int(STATUS_NONCONTINUABLE_EXCEPTION);
+    end;
   end;
 end;
 
@@ -3355,7 +3374,7 @@ begin
   P.Func:= Func;
   if high(Param) >= 0 then  P.Param1:= Param[0];
   if high(Param) >= 1 then  P.Param2:= Param[1];
-  if high(Param) >= 2 then  P.Param2:= Param[2];
+  if high(Param) >= 2 then  P.Param3:= Param[2];
   Assert(high(Param) <= 2);
   id:= 0;
   handle:= BeginThread(SecurityAttributes, StackSize, @MyThreadFunc, P, CreationFlags, id);

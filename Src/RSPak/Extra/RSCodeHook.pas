@@ -19,7 +19,8 @@ uses
 type
   TRSHookType = (RShtNop, RSht1, RSht2, RSht4, RShtCall, RShtJmp, RShtJmp6,
     RShtJmp2, RShtBStr, RShtStr, RShtCallStore, RShtBefore, RShtAfter,
-    RShtFunctionStart, RShtCodePtrStore, RShtBeforeJmp6, RShtCallBefore);
+    RShtFunctionStart, RShtCodePtrStore, RShtBeforeJmp6, RShtCallBefore,
+    RShtCopyBites);
 {
   RShtBefore, RShtAfter - seemlessly "insert" new code before/after using JMP
    (note that RShtAfter can't be stacked)
@@ -43,6 +44,8 @@ type
   RShtFunctionStart:
     <code at @p>  ->  jmp @store
     (here @std is an allocated code block containing code from @p and jump to p + size)
+  RShtBeforeJmp6:
+    jz @std -> jz @store2
   RShtCallBefore:
     call @std  ->  call @store2
 }
@@ -94,10 +97,18 @@ begin
 end;
 
 procedure CopyCode(dest, p, n: int);
+var
+  c, dp: byte;
 begin
   CopyMemory(ptr(dest), ptr(p), n);
-  if (pbyte(p)^ in [$E8, $E9]) and (puint(p+1)^ + 5 > uint(n)) then
-    inc(pint(dest+1)^, p - dest);
+  c:= pbyte(p)^;
+  dp:= 1;
+  if (c = $F) and (pbyte(p + 1)^ or $F = $8F) then
+    dp:= 2
+  else if not (c in [$E8, $E9]) then
+    exit;
+  if puint(p + dp)^ + dp + 4 >= uint(n) then
+    inc(pint(dest + dp)^, p - dest);
 end;
 
 function RSGetHookValue(const hk: TRSHookInfo):int;
@@ -143,11 +154,12 @@ begin
     RShtJmp6, RShtBeforeJmp6:  sz0:= 6;
     RShtBStr:  sz0:= length(Hook.newstr);
     RShtStr:   sz0:= length(Hook.newstr) + 1;
+    RShtCopyBites:  sz0:= Hook.size;
     else       sz0:= 5;
   end;
   sz:= max(Hook.size, sz0);
   if Hook.t = RShtBStr then
-    sz:= max(sz, length(Hook.oldstr));
+    SetMax(sz, length(Hook.oldstr));
   p:= Hook.p;
   if Hook.pref then  p:= pint(p)^;
   new:= int(Hook.newp);
@@ -171,6 +183,8 @@ begin
     RShtJmp:  Jmp(p, new);
     RShtBStr, RShtStr:
       CopyMemory(ptr(p), PChar(Hook.newstr), sz0);
+    RShtCopyBites:
+      CopyMemory(ptr(p), ptr(new), sz0);
     RShtCallStore:
     begin
       p1:= RSAllocCode(10);      // p: call p1
@@ -199,8 +213,9 @@ begin
     RShtBeforeJmp6:
     begin
       p1:= RSAllocCode(10);               // p: jnz p1
-      Jmp(p1, new, true);                 // call @hook
-      Jmp(p1 + 5, RSGetHookValue(Hook));  // jmp @std
+      pbyte(p1)^:= $68;          // push @orig
+      pint(p1+1)^:= RSGetHookValue(Hook);
+      Jmp(p1 + 5, new);          // jmp @hook
       pint(p+2)^:= p1 - p - 6;
     end;
     RShtAfter:

@@ -17,12 +17,14 @@ uses
   RSQ, Math, RSStrUtils;
 
 type
-  TRSOpType = (RSotNone = 0, RSotPush, RSotNot, RSotNeg, RSotAdd, RSotMul,
-     RSotDiv, RSotMod, RSotIDIv, RSotPower, RSotEq, RSotMore, RSotLess, RSotOr,
-     RSotAnd);
+  TRSOpType = (RSotNone = 0, RSotPush, RSotLBracket, RSotRBracket, RSotNot,
+     RSotNeg, RSotAdd, RSotMul, RSotDiv, RSotMod, RSotIDIv, RSotPower, RSotEq,
+     RSotMore, RSotLess, RSotOr, RSotAnd, RSotMin, RSotMax, RSotCustom);
 
+  PRSOperator = ^TRSOperator;
   TRSOperator = record
     Name: string;
+    Custom: ptr;
     Val: ext;
     Priority: Byte;
     Op: TRSOpType;
@@ -31,48 +33,58 @@ type
   end;
   TRSOperatorArray = array of TRSOperator;
 
+  TRSExprStack = array of ext;
+
   TRSCustomOpKind = (RSokValue, RSokLeft, RSokBinary, RSokRight);
 
-  TRSCustomOpEvent = function(const s: string; var k: int; var op: TRSOperator; kind: TRSCustomOpKind): Boolean of object;
+  TRSCustomOpEvent = function(const s: string; var k: int; var op: TRSOperator; last: PRSOperator; kind: TRSCustomOpKind): Boolean of object;
   TRSGetVarEvent = function(const name: string; data: ptr): ext of object;
+  TRSCalculateCustomOpEvent = function(const op: TRSOperator; var stack: TRSExprStack; var k: int; data: ptr): ext of object;
 
 // Result = 0:           No error
 // Result <= length(s):  Syntax error
 // Result > length(s):   Unfinished expression
-function RSParseExpr(const s: string; var a: TRSOperatorArray; Custom: TRSCustomOpEvent = nil; AcceptEmpty: Boolean = false): int;
-function RSCalcExpr(const a: array of TRSOperator; const get: TRSGetVarEvent = nil; getData: ptr = nil): ext;
+function RSParseExpr(const s: string; var a: TRSOperatorArray;
+   Custom: TRSCustomOpEvent = nil; AcceptEmpty: Boolean = false; KeepBrackets: Boolean = false): int;
+function RSCalcExpr(const a: array of TRSOperator; const get: TRSGetVarEvent = nil;
+   CustomOp: TRSCalculateCustomOpEvent = nil; CustomData: ptr = nil): ext;
+// Helper function to check if str caontains the term
+function RSParseCheckTerm(str, term: PChar): Boolean;
 
 implementation
 
 const
-  Bracket = 0;
   BinOp: array[1..15] of TRSOperator = (
-    (Name: 'or'; Priority: 1; Op: RSotOr),
-    (Name: 'and'; Priority: 2; Op: RSotAnd),
+    (Name: 'or'; Priority: 10; Op: RSotOr),
+    (Name: 'and'; Priority: 20; Op: RSotAnd),
 
-    (Name: '<='; Priority: 3; Op: RSotMore; Op2: RSotNot),
-    (Name: '>='; Priority: 3; Op: RSotLess; Op2: RSotNot),
-    (Name: '<>'; Priority: 3; Op: RSotEq; Op2: RSotNot),
-    (Name: '>'; Priority: 3; Op: RSotMore),
-    (Name: '<'; Priority: 3; Op: RSotLess),
-    (Name: '='; Priority: 3; Op: RSotEq),
+    (Name: '<='; Priority: 30; Op: RSotMore; Op2: RSotNot),
+    (Name: '>='; Priority: 30; Op: RSotLess; Op2: RSotNot),
+    (Name: '<>'; Priority: 30; Op: RSotEq; Op2: RSotNot),
+    (Name: '>'; Priority: 30; Op: RSotMore),
+    (Name: '<'; Priority: 30; Op: RSotLess),
+    (Name: '='; Priority: 30; Op: RSotEq),
 
-    (Name: '+'; Priority: 4; Op: RSotAdd),
-    (Name: '-'; Priority: 4; Op: RSotNeg; Op2: RSotAdd),
+    // can be supplied via TRSCustomOpEvent
+//    (Name: ':min'; Priority: 40; Op: RSotMin),
+//    (Name: ':max'; Priority: 40; Op: RSotMax),
 
-    (Name: '*'; Priority: 5; Op: RSotMul),
-    (Name: '/'; Priority: 5; Op: RSotDiv),
-    (Name: 'mod'; Priority: 5; Op: RSotMod),
-    (Name: 'div'; Priority: 5; Op: RSotIDiv),
+    (Name: '+'; Priority: 50; Op: RSotAdd),
+    (Name: '-'; Priority: 50; Op: RSotNeg; Op2: RSotAdd),
 
-    (Name: '^'; Priority: 6; Op: RSotPower; RightHanded: true)
+    (Name: '*'; Priority: 60; Op: RSotMul),
+    (Name: '/'; Priority: 60; Op: RSotDiv),
+    (Name: 'mod'; Priority: 60; Op: RSotMod),
+    (Name: 'div'; Priority: 60; Op: RSotIDiv),
+
+    (Name: '^'; Priority: 70; Op: RSotPower; RightHanded: true)
   );
   LOp: array[1..2] of TRSOperator = (
     (Name: '-'; Priority: 126; Op: RSotNeg),
-    (Name: '('; Priority: Bracket)
+    (Name: '('; Priority: 0; Op: RSotLBracket)
   );
   ROp: array[1..1] of TRSOperator = (
-    (Name: ')'; Priority: Bracket; RightHanded: true)
+    (Name: ')'; Priority: 0; Op: RSotRBracket; RightHanded: true)
   );
   PushOp: TRSOperator = (Priority: 127; Op: RSotPush);
 
@@ -89,21 +101,27 @@ begin
   SetLength(a, high(a));
 end;
 
-function IsThere(p, p2: PChar): Boolean;
+function IsThere(p, p2: PChar): Boolean; inline;
 const
-  aset = ['0'..'9','a'..'z','A'..'Z','_'];
-var
-  AlphaNum: Boolean;
+  aset = [#0,'0'..'9','a'..'z','A'..'Z','_'];
 begin
-  Result:= false;
-  AlphaNum:= p2^ in aset;
-  while p2^ <> #0 do
+  if p2^ = #0 then
   begin
+    Result:= true;
+    exit;
+  end;
+  Result:= false;
+  repeat
     if p^ <> p2^ then  exit;
     inc(p);
     inc(p2);
-  end;
-  Result:= not AlphaNum or not (p^ in aset);
+  until p2^ = #0;
+  Result:= not ((p - 1)^ in aset) or not (p^ in aset);
+end;
+
+function RSParseCheckTerm(str, term: PChar): Boolean;
+begin
+  Result:= IsThere(str, term);
 end;
 
 function CheckOps(const s: string; var k: int; const a: array of TRSOperator; var op: TRSOperator): Boolean;
@@ -112,10 +130,10 @@ var
 begin
   Result:= true;
   for i:= low(a) to high(a) do
-    if IsThere(@s[k], PChar(a[i].Name)) then
+    if IsThere(@s[k], ptr(a[i].Name)) then
     begin
       op:= a[i];
-      inc(k, length(op.Name));
+      inc(k, length(a[i].Name));
       exit;
     end;
   Result:= false;
@@ -171,7 +189,9 @@ begin
   op.Name:= Copy(s, i, k - i);
 end;
 
-function RSParseExpr(const s: string; var a: TRSOperatorArray; Custom: TRSCustomOpEvent = nil; AcceptEmpty: Boolean = false): int;
+function RSParseExpr(const s: string; var a: TRSOperatorArray;
+   Custom: TRSCustomOpEvent = nil; AcceptEmpty: Boolean = false;
+   KeepBrackets: Boolean = false): int;
 var
   op: TRSOperator;
   left: Boolean;
@@ -189,7 +209,10 @@ var
   begin
     while (k <= length(s)) and (s[k] <= ' ') do
       inc(k);
-    Result:= Assigned(Custom) and Custom(s, k, op, kind);
+    if Idx > 0 then
+      Result:= Assigned(Custom) and Custom(s, k, op, @a[Idx], kind)
+    else
+      Result:= Assigned(Custom) and Custom(s, k, op, nil, kind);
   end;
 
 begin
@@ -221,15 +244,20 @@ begin
       while Cus(RSokRight) or CheckOps(s, k, ROp, op) do
       begin
         FindIdx;
-        if op.Priority <> Bracket then
+        if op.Op <> RSotRBracket then
         begin
           AInsert(a, Idx, op);
           inc(Idx);
         end
-        else if (Idx = length(a)) or (a[Idx].Priority <> Bracket) then
+        else if (Idx = length(a)) or (a[Idx].Op <> RSotLBracket) then
         begin
           Result:= k - 1;  // opening bracket not found
           exit;
+        end
+        else if KeepBrackets then
+        begin
+          a[Idx]:= op;  // replace with closing bracket
+          inc(Idx);
         end else
           ADel(a, Idx);
       end;
@@ -245,7 +273,7 @@ begin
     exit;
   // unclosed bracket?
   for Idx:= Idx to high(a) do
-    if a[Idx].Priority = Bracket then
+    if a[Idx].Op = RSotLBracket then
       exit;
   // ok
   Result:= 0;
@@ -254,14 +282,11 @@ end;
 
 { CalcExpr }
 
-
-type TMyArray = array of ext;
-
-procedure ExecOp(var stack: TMyArray; var k: int; op: TRSOpType); inline;
+procedure ExecOp(var stack: TRSExprStack; var k: int; op: TRSOpType); inline;
 var
   x, y: ext;
 begin
-  if op in [RSotNone, RSotPush] then
+  if op in [RSotNone, RSotPush, RSotLBracket, RSotRBracket, RSotCustom] then
     exit;
 
   y:= stack[k];
@@ -282,13 +307,16 @@ begin
     RSotLess:  x:= BoolToInt[x < y];
     RSotOr:    if x = 0 then  x:= y;
     RSotAnd:   if x <> 0 then  x:= y;
+    RSotMin:   if x > y then  x:= y;
+    RSotMax:   if x < y then  x:= y;
   end;
   stack[k]:= x;
 end;
 
-function RSCalcExpr(const a: array of TRSOperator; const get: TRSGetVarEvent = nil; getData: ptr = nil): ext;
+function RSCalcExpr(const a: array of TRSOperator; const get: TRSGetVarEvent = nil;
+   CustomOp: TRSCalculateCustomOpEvent = nil; CustomData: ptr = nil): ext;
 var
-  stack: TMyArray;
+  stack: TRSExprStack;
   i, k: int;
 begin
   SetLength(stack, 25);
@@ -296,18 +324,24 @@ begin
   for i:= 0 to high(a) do
     with a[i] do
     begin
-      if Op = RSotPush then
-      begin
-        inc(k);
-        if k >= length(stack) then
-          SetLength(stack, k*2);
-        if (Name <> '') and Assigned(get) then
-          stack[k]:= get(Name, getData)
-        else
-          stack[k]:= Val;
+      case Op of
+        RSotPush:
+        begin
+          inc(k);
+          if k >= length(stack) then
+            SetLength(stack, k*2);
+          if (Name <> '') and Assigned(get) then
+            stack[k]:= get(Name, CustomData)
+          else
+            stack[k]:= Val;
+        end;
+        RSotCustom:
+          CustomOp(a[i], stack, k, CustomData);
+        else begin
+          ExecOp(stack, k, Op);
+          ExecOp(stack, k, Op2);
+        end;
       end;
-      ExecOp(stack, k, Op);
-      ExecOp(stack, k, Op2);
     end;
   Result:= stack[max(k, 0)];
 end;

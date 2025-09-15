@@ -24,6 +24,8 @@ Lod format:
 *)
   ERSLodException = class(Exception)
   end;
+  ERSLodIOException = class(ERSLodException)
+  end;
   ERSLodWrongFileName = class(ERSLodException)
   end; // too long file name
   ERSLodBitmapException = class(ERSLodException)
@@ -176,6 +178,7 @@ type
     function FindFile(const Name: string; var Index: int): Boolean; overload;
     function FindFile(const Name: PChar; var Index: int): Boolean; overload;
     function GetAsIsFileStream(Index: int; IgnoreWrite: Boolean = false): TStream;
+    function GetAsIsModifyStream(Index: int): TStream;
     procedure FreeAsIsFileStream(Index: int; Stream: TStream);
     procedure RawExtract(i: int; a: TStream);
     procedure ReserveFilesCount(n: int);
@@ -321,13 +324,17 @@ type
     FOnNeedPalette: TRSLodNeedPaletteEvent;
     FOnConvertToPalette: TRSLodConvertPaletteEvent;
     FOnSpritePalette: TRSLodSpritePaletteEvent;
-    FLastPalette: int;
     function GetBitmapsLod: TRSLod;
     procedure SetBitmapsLod(v: TRSLod);
+    function GetIconBits(Index: int): int;
+    procedure SetIconBits(Index: int; const Value: int);
   protected
+    FLastPalette: int;
+    FLastBits: int;
     constructor CreateInternal(Files: TRSMMFiles); override;
 
-    function GetIntAt(i: int; o: int): int;
+    function GetIntAt(i, o: int): int;
+    procedure SetIntAt(i, o, v: int);
     procedure PackSprite(b: TBitmap; m: TMemoryStream; pal: int);
     procedure FindBitmapPalette(const name: string; b: TBitmap; var pal, Bits: int); virtual;
     procedure DoPackBitmap(b: TBitmap; var b1, b2: TBitmap; var hdr; m, buf: TMemoryStream; Keep: Boolean); virtual;
@@ -337,6 +344,7 @@ type
     procedure Zip(output:TMemoryStream; buf:TStream; size: int; pk, unp: int); overload;
     procedure Zip(output:TMemoryStream; buf:TStream; size: int;
        DataSize, UnpackedSize: ptr); overload;
+    procedure AssertIconsLod;
 
     procedure Unzip(input, output: TStream; size, unp: int; noless: Boolean);
     procedure UnpackPcx(data: TMemoryStream; b: TBitmap);
@@ -347,7 +355,7 @@ type
     function AddBitmap(const Name: string; b: TBitmap; pal: int; Keep: Boolean;
       Bits: int = -1): int;
     function DoExtract(i: int; Output: TStream = nil; Arr: PRSByteArray = nil;
-      FileName: PStr = nil; CheckNameKind: int = 0):TObject; overload;
+      FileName: PStr = nil; CheckNameKind: int = 0): TObject; overload; virtual;
     procedure DoBackupFile(Index: int; Overwrite: Boolean); override;
     function IsSamePalette(const PalEntries; i: int): Boolean;
     procedure StdNeedBitmapsLod(Sender: TObject);
@@ -366,9 +374,13 @@ type
     function CloneForProcessing(const NewFile: string; FilesCount: int): TRSMMArchive; override;
     function FindSamePalette(const PalEntries; var pal: int): Boolean;
     procedure LoadBitmapsLods(const dir: string);
+    function HasIconBits: Boolean;
+    function IsBitmap(Index: int): Boolean;
 
     property BitmapsLod: TRSLod read GetBitmapsLod write SetBitmapsLod;
     property LastPalette: int read FLastPalette;
+    property LastIconBits: int read FLastBits;
+    property IconBits[Index: int]: int read GetIconBits write SetIconBits;
     property OwnBitmapsLod: Boolean read FOwnBitmapsLod write FOwnBitmapsLod;
     property OnNeedBitmapsLod: TNotifyEvent read FOnNeedBitmapsLod write FOnNeedBitmapsLod;
     property OnNeedPalette: TRSLodNeedPaletteEvent read FOnNeedPalette write FOnNeedPalette;
@@ -385,16 +397,24 @@ type
   TRSLwd = class(TRSLod)
   private
     FOnFindDimentions: TRSLwdFindDimentionsEvent;
+    function GetBaseSize(i: int): TSmallPoint;
+    procedure SetBaseSize(i: int; const Value: TSmallPoint);
   protected
+    FLastBaseSize: TSmallPoint;
     constructor CreateInternal(Files: TRSMMFiles); override;
     procedure FindBitmapPalette(const name: string; b: TBitmap; var pal, Bits: int); override;
     function FindDimentions(p: PChar): TColor;
     function PackLwd(p: PChar; w, h: int; m: TMemoryStream): int;
     procedure DoPackBitmap(b: TBitmap; var b1, b2: TBitmap; var hdr; m, buf: TMemoryStream; Keep: Boolean); override;
-    procedure UnpackLwd(data: TStream; b: TBitmap; const FileHeader);
+    procedure UnpackLwd(data: TStream; b: TBitmap; const FileHeader); // really should be called UnpackLwdBitmap
     procedure UnpackBitmap(data: TStream; b: TBitmap; const FileHeader); override;
+    function DoExtract(i: int; Output: TStream = nil; Arr: PRSByteArray = nil;
+      FileName: PStr = nil; CheckNameKind: int = 0):TObject; overload; override;
   public
     TransparentColor: TColor;
+    function SetItemScale(Index: int; xpow, ypow: Smallint): Boolean;
+    property LastBaseSize: TSmallPoint read FLastBaseSize;
+    property BaseSize[Idx: int]: TSmallPoint read GetBaseSize write SetBaseSize;
     property OnFindDimentions: TRSLwdFindDimentionsEvent read FOnFindDimentions write FOnFindDimentions;
   end;
 
@@ -455,7 +475,12 @@ function RSMMPaletteToBitmap(const a: TRSByteArray): TBitmap;
 function RSLodCompareStr(s1, s2: PChar): int; overload;
 function RSLodCompareStr(s1, s2: PChar; var SameCount: int): int; overload;
 
+const
+  RSLodBitTransparent = $200;
+
 resourcestring
+  SRSLodReadFailed = 'Failed to read %d bytes at offset %d';
+  SRSLodReadFailedEx = 'Failed to read %d bytes at offset %d (file %d address %d)';
   SRSLodCorrupt = 'File invalid or corrupt';
   SRSLodLongName = 'File name (%s) length exceeds %d symbols';
   SRSLodUnknown = 'Unknown LOD version';
@@ -468,14 +493,13 @@ resourcestring
   SRSLodSpriteExtractNeedLods = 'BitmapsLod and TextsLod must be specified to extract images from sprites.lod';
   SRSLodPalNotFound = 'File "PAL%.3d" referenced by "%s" not found in BitmapsLods';
   SRSLodMustPowerOf2 = 'Bitmap %s must be a power of 2 and can''t be less than 4';
+  SRSLodNeedIconsLod = 'This operation is only allowed in icons.lod, events.lod, bitmaps.lod or a language LOD archive';
+  SRSLodBitmapCorrupt = 'Corrupt bitmap found inside the archive';
 
 implementation
 
 const
   HeroesId=#$C8; MM6Id='MMVI'; MM8Id='MMVIII';
-
-const
-  SReadFailed = 'Failed to read %d bytes at offset %d';
 
 // {3EB9C5C5-7947-48bd-913A-ACEB28EBE015}
 const VidSizeSigOld = #$3E#$B9#$C5#$C5#$79#$47#$48#$bd#$91#$3A#$AC#$EB#$28#$EB#$E0#$15;
@@ -805,7 +829,8 @@ begin
   if a is TMemoryStream then
     a.ReadBuffer(data, size) // don't mistake it for the lod file
   else
-    Assert(a.Read(data, size) = size, Format(SReadFailed, [size, a.Position]));
+    if a.Read(data, size) <> size then
+      raise ERSLodIOException.CreateFmt(SRSLodReadFailed, [size, a.Position]);
 end;
 
 function TRSMMFiles.Add(const Name: string; Data: TStream; Size: int = -1;
@@ -1136,7 +1161,8 @@ begin
     w:= BeginWrite;
     try
       w.Seek(Addr, 0);
-      Assert(Data.Size - Data.Position >= Size, Format(SReadFailed, [Size, Data.Position]));
+      if Data.Size - Data.Position < Size then
+        raise ERSLodIOException.CreateFmt(SRSLodReadFailed, [Size, Data.Position]);
       RSCopyStream(w, Data, Size);
     finally
       EndWrite;
@@ -1310,6 +1336,37 @@ begin
       Seek(0, 0);
     end;
     EndWrite;
+  end;
+end;
+
+function TRSMMFiles.GetAsIsModifyStream(Index: int): TStream;
+begin
+  if (Index < length(FFileBuffers)) and (FFileBuffers[Index] <> nil) then
+  begin
+    Result:= FFileBuffers[Index];
+    Result.Seek(0, 0);
+  end
+  else if WriteOnDemand then
+  begin
+    if Index >= length(FFileBuffers) then
+      SetLength(FFileBuffers, Index + 1);
+    Result:= FFileBuffers[Index];
+    if Result = nil then
+    begin
+      Result:= TMemoryStream.Create;
+      try
+        RawExtract(Index, Result);
+        FFileBuffers[Index]:= ptr(Result);
+      finally
+        if Result <> FFileBuffers[Index] then
+          Result.Free;
+      end;
+    end;
+    Result.Seek(0, 0);
+  end else
+  begin
+    Result:= BeginWrite;
+    Result.Seek(Address[Index], 0);
   end;
 end;
 
@@ -1661,7 +1718,8 @@ begin
     for i := 0 to FCount - 1 do
     begin
       f:= GetAsIsFileStream(i);
-      Assert(f.Size - f.Position >= Size[i], Format('Failed to read %d bytes at offset %d (file %d address %d)', [Size[i], f.Position, i, Address[i]]));
+      if f.Size - f.Position < Size[i] then
+        raise ERSLodIOException.CreateFmt(SRSLodReadFailedEx, [Size[i], f.Position, i, Address[i]]);
       try
         DoWriteFile(i, f, Size[i], FFileSize, true);
       finally
@@ -2133,37 +2191,45 @@ begin
   if not (FVersion in [RSLodBitmaps, RSLodIcons, RSLodMM8, RSLodSprites]) then
     exit;
 
-  // change file name inside the linked file structure 
+  // change file name inside the linked file structure
+  a:= FFiles.GetAsIsModifyStream(Index);
   with FFiles do
-    if not WriteOnDemand then
-    begin
-      a:= BeginWrite;
-      try
-        a.Seek(Address[Index], 0);
-        a.WriteBuffer(Name[Index]^, Options.NameSize);
-      finally
-        EndWrite;
-      end;
-    end else
-    begin
-      if Index >= length(FFileBuffers) then
-        SetLength(FFileBuffers, Index + 1);
-      a:= FFileBuffers[Index];
-      try
-        if a = nil then
-        begin
-          a:= TMemoryStream.Create;
-          RawExtract(Index, a);
-        end;
-        a.Seek(0, 0);
-        a.WriteBuffer(Name[Index]^, Options.NameSize);
-        a.Seek(0, 0);
-        zSwap(a, FFileBuffers[Index]);
-      finally
-        if a <> FFileBuffers[Index] then
-          a.Free;
-      end;
+    try
+      a.WriteBuffer(Name[Index]^, Options.NameSize);
+    finally
+      FreeAsIsFileStream(Index, a);
     end;
+
+//  with FFiles do
+//    if not WriteOnDemand then
+//    begin
+//      a:= BeginWrite;
+//      try
+//        a.Seek(Address[Index], 0);
+//        a.WriteBuffer(Name[Index]^, Options.NameSize);
+//      finally
+//        EndWrite;
+//      end;
+//    end else
+//    begin
+//      if Index >= length(FFileBuffers) then
+//        SetLength(FFileBuffers, Index + 1);
+//      a:= FFileBuffers[Index];
+//      try
+//        if a = nil then
+//        begin
+//          a:= TMemoryStream.Create;
+//          RawExtract(Index, a);
+//        end;
+//        a.Seek(0, 0);
+//        a.WriteBuffer(Name[Index]^, Options.NameSize);
+//        a.Seek(0, 0);
+//        zSwap(a, FFileBuffers[Index]);
+//      finally
+//        if a <> FFileBuffers[Index] then
+//          a.Free;
+//      end;
+//    end;
 end;
 
 function TRSLodBase.CloneForProcessing(const NewFile: string; FilesCount: int): TRSMMArchive;
@@ -2740,6 +2806,7 @@ var
   name, ext: string;
 begin
   FLastPalette:= 0;
+  FLastBits:= 0;
   Result:= nil;
   b:= nil;
   a:= nil;
@@ -2779,7 +2846,8 @@ begin
       RSLodBitmaps, RSLodIcons, RSLodMM8:
       begin
         a.Seek(FFiles.Options.NameSize, soCurrent);
-        a.ReadBuffer(regular, SizeOf(regular));
+        MyReadBuffer(a, regular, SizeOf(regular));
+        FLastBits:= regular.Bits;
         if regular.BmpSize <> 0 then
         begin
           if not SetName(FileName^ + '.bmp') then  exit;
@@ -2808,11 +2876,11 @@ begin
           if FVersion in [RSLodGames7, RSLodChapter7] then
           begin
             sz:= 16;
-            a.ReadBuffer(games, 16)
+            MyReadBuffer(a, games, 16);
           end else
           begin
             sz:= 8;
-            a.ReadBuffer(games.DataSize, 8);
+            MyReadBuffer(a, games.DataSize, 8);
           end;
           Unzip(a, Output, FFiles.Size[i] - sz, games.UnpackedSize, true);
         end else
@@ -3139,6 +3207,12 @@ begin
   DoExtract(Index, nil, nil, @Result, cnkGetName);
 end;
 
+function TRSLod.GetIconBits(Index: int): int;
+begin
+  AssertIconsLod;
+  Result:= GetIntAt(Index, int(@PMMLodFile(nil)^.Bits));
+end;
+
 function TRSLod.GetIntAt(i, o: int): int;
 var
   a: TStream;
@@ -3149,6 +3223,28 @@ begin
     MyReadBuffer(a, Result, 4);
   finally
     FFiles.FreeAsIsFileStream(i, a);
+  end;
+end;
+
+function TRSLod.HasIconBits: Boolean;
+begin
+  Result:= FVersion in [RSLodBitmaps, RSLodIcons, RSLodMM8];
+end;
+
+function TRSLod.IsBitmap(Index: int): Boolean;
+begin
+  case FVersion of
+    RSLodHeroes:
+      Result:= SameText(ExtractFileExt(Names[Index]), '.pcx');
+
+    RSLodSprites:
+      Result:= true;
+
+    RSLodBitmaps, RSLodIcons, RSLodMM8:
+      Result:= (GetIntAt(Index, 0) <> 0);
+
+    else
+      Result:= false;
   end;
 end;
 
@@ -3165,7 +3261,7 @@ begin
   a:= FFiles.GetAsIsFileStream(i);
   try
     a.Seek(ReadOff, soCurrent);
-    a.ReadBuffer(PalFile, SizeOf(PalFile));
+    MyReadBuffer(a, PalFile, SizeOf(PalFile));
   finally
     FFiles.FreeAsIsFileStream(i, a);
   end;
@@ -3289,6 +3385,12 @@ begin
     if not Keep then
       b.Free;
   end;
+end;
+
+procedure TRSLod.AssertIconsLod;
+begin
+  if not HasIconBits then
+    raise ERSLodException.Create(SRSLodNeedIconsLod);
 end;
 
 procedure TRSLod.DoBackupFile(Index: int; Overwrite: Boolean);
@@ -3545,6 +3647,25 @@ begin
     end;
 end;
 
+procedure TRSLod.SetIconBits(Index: int; const Value: int);
+begin
+  AssertIconsLod;
+  SetIntAt(Index, int(@PMMLodFile(nil)^.Bits), Value);
+end;
+
+procedure TRSLod.SetIntAt(i, o, v: int);
+var
+  a: TStream;
+begin
+  a:= FFiles.GetAsIsModifyStream(i);
+  try
+    a.Seek(o + FFiles.Options.NameSize, soCurrent);
+    a.WriteBuffer(v, 4);
+  finally
+    FFiles.FreeAsIsFileStream(i, a);
+  end;
+end;
+
 procedure TRSLod.StdNeedBitmapsLod(Sender: TObject);
 begin
   with Sender as TRSLod do
@@ -3562,7 +3683,7 @@ begin
     try
       m.Size:= 768;
       data.Seek(hdr.DataSize, soCurrent);
-      data.ReadBuffer(m.Memory^, 768);
+      MyReadBuffer(data, m.Memory^, 768);
       PixelFormat:= pf8bit;
       Palette:= RSMakePalette(m.Memory);
 
@@ -3671,7 +3792,7 @@ begin
     OnNeedBitmapsLod(self);
   if BitmapsLods = nil then
     raise ERSLodException.Create(SRSLodSpriteExtractNeedLods);
-  data.ReadBuffer(hdr, SizeOf(hdr));
+  MyReadBuffer(data, hdr, SizeOf(hdr));
   {
   if not FindSpritePal(name, pal) then
     pal:= hdr.Palette;
@@ -3688,7 +3809,7 @@ begin
 
   FLastPalette:= hdr.Palette;
   SetLength(Lines, hdr.h);
-  data.ReadBuffer(Lines[0], hdr.h*SizeOf(TSpriteLine));
+  MyReadBuffer(data, Lines[0], hdr.h*SizeOf(TSpriteLine));
   b.Width:= hdr.w;
   b.Height:= hdr.h;
 
@@ -3807,6 +3928,13 @@ begin
   TransparentColor:= Graphics.clDefault;
 end;
 
+function TRSLwd.DoExtract(i: int; Output: TStream; Arr: PRSByteArray;
+  FileName: PStr; CheckNameKind: int): TObject;
+begin
+  pint(@FLastBaseSize)^:= 0;
+  Result:= inherited DoExtract(i, Output, Arr, FileName, CheckNameKind);
+end;
+
 procedure TRSLwd.DoPackBitmap(b: TBitmap; var b1, b2: TBitmap; var hdr; m,
   buf: TMemoryStream; Keep: Boolean);
 var
@@ -3850,8 +3978,12 @@ begin
   Result:= Graphics.clDefault;
   if BitmapsLods = nil then
     StdNeedBitmapsLod(self);
-  if (BitmapsLods = nil) or not RSMMArchivesFind(BitmapsLods, PChar(p), lod, j) then
-    exit;
+  if (BitmapsLods = nil) or not RSMMArchivesFind(BitmapsLods, p, lod, j) then
+  begin
+    if not self.RawFiles.FindFile(p, j) then
+      exit;
+    lod:= self;
+  end;
   a:= lod.FFiles.GetAsIsFileStream(j, true);
   try
     a.Seek(16, soFromCurrent);
@@ -3873,13 +4005,32 @@ begin
   end;
 end;
 
+function TRSLwd.GetBaseSize(i: int): TSmallPoint;
+var
+  hdr: TMMLodFile;
+  a: TStream;
+begin
+  AssertIconsLod;
+  a:= FFiles.GetAsIsFileStream(i);
+  try
+    a.Seek(FFiles.Options.NameSize, soCurrent);
+    MyReadBuffer(a, hdr, SizeOf(hdr));
+  finally
+    FFiles.FreeAsIsFileStream(i, a);
+  end;
+  pint(@Result)^:= 0;
+  with hdr do
+    if (Palette = 0) and ((UnpSize > BmpSize*2) or (UnpSize = 0) and (DataSize > BmpSize*2)) then
+      pint(@Result)^:= pint(@BmpWidth)^;
+end;
+
 function TRSLwd.PackLwd(p: PChar; w, h: int; m: TMemoryStream): int;
 var
   i, c: int;
 begin
   Result:= FindDimentions(m.Memory);
-  if Assigned(OnFindDimentions) then
-    with PMMLodFile(PChar(m.Memory) + 16)^ do
+  with PMMLodFile(PChar(m.Memory) + 16)^ do
+    if Assigned(OnFindDimentions) then
       OnFindDimentions(self, PChar(m.Memory), BmpWidth, BmpHeight, w, h);
   if TransparentColor <> Graphics.clDefault then
     Result:= TransparentColor;
@@ -3903,13 +4054,67 @@ begin
   Result:= Graphics.clNone;
 end;
 
+procedure TRSLwd.SetBaseSize(i: int; const Value: TSmallPoint);
+var
+  hdr: TMMLodFile;
+  a: TStream;
+begin
+  AssertIconsLod;
+  a:= FFiles.GetAsIsModifyStream(i);
+  try
+    a.Seek(FFiles.Options.NameSize, soCurrent);
+    MyReadBuffer(a, hdr, SizeOf(hdr));
+    with hdr do
+      if (Palette = 0) and ((UnpSize > BmpSize*2) or (UnpSize = 0) and (DataSize > BmpSize*2)) then
+      begin
+        a.Seek(-SizeOf(hdr) + 8, soCurrent);
+        a.WriteBuffer(Value, 4);
+      end;
+  finally
+    FFiles.FreeAsIsFileStream(i, a);
+  end;
+end;
+
+function TRSLwd.SetItemScale(Index: int; xpow, ypow: Smallint): Boolean;
+var
+  hdr: TMMLodFile;
+  a: TStream;
+begin
+  AssertIconsLod;
+  a:= FFiles.GetAsIsModifyStream(Index);
+  try
+    a.Seek(FFiles.Options.NameSize, soCurrent);
+    MyReadBuffer(a, hdr, SizeOf(hdr));
+    with hdr do
+    begin
+      Result:= (Palette = 0) and ((UnpSize > BmpSize*2) or (UnpSize = 0) and (DataSize > BmpSize*2));
+      if not Result then  exit;
+      xpow:= BmpWidthLn2 - xpow;
+      ypow:= BmpHeightLn2 - ypow;
+      Result:= (xpow >= 2) and (xpow < 15) and (ypow >= 2) and (ypow < 15);
+      Result:= Result and ((xpow <> BmpWidthLn2) or (ypow <> BmpHeightLn2));
+      if not Result then
+        exit;
+      BmpWidth:= PowerOf2[xpow];
+      BmpHeight:= PowerOf2[ypow];
+      a.Seek(-SizeOf(hdr) + 8, soCurrent);
+      a.WriteBuffer(BmpWidth, 4);
+    end;
+  finally
+    FFiles.FreeAsIsFileStream(Index, a);
+  end;
+end;
+
 procedure TRSLwd.UnpackBitmap(data: TStream; b: TBitmap; const FileHeader);
 begin
   with TMMLodFile(FileHeader) do
+  begin
+    pint(@FLastBaseSize)^:= pint(@BmpWidth)^;
     if (Palette = 0) and ((UnpSize > BmpSize*2) or (UnpSize = 0) and (DataSize > BmpSize*2)) then
       UnpackLwd(data, b, FileHeader)
     else
       inherited;
+  end;
 end;
 
 procedure TRSLwd.UnpackLwd(data: TStream; b: TBitmap; const FileHeader);
@@ -3923,10 +4128,13 @@ begin
       Unzip(data, m, hdr.DataSize, hdr.UnpSize, true);
 
       PixelFormat:= pf24bit;
+      if (uint2(hdr.BmpWidthLn2) >= 15) or (uint2(hdr.BmpHeightLn2) >= 15) then
+        raise ERSLodBitmapException.Create(SRSLodBitmapCorrupt);
       Width:= PowerOf2[hdr.BmpWidthLn2];
       Height:= PowerOf2[hdr.BmpHeightLn2];
       RSBufferToBitmap(m.Memory, b);
       FLastPalette:= hdr.Palette;
+      FLastBits:= hdr.Bits;
     finally
       m.Free;
     end

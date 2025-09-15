@@ -49,7 +49,8 @@ function RSIntToStr(Value:LongInt; Base:byte = 10; ThousSep:char = #0; BigChars:
 function RSUIntToStr(Value:DWord; Base:byte = 10; ThousSep:char = #0; BigChars:boolean=true; Digits:int = 0):string;
 function RSInt64ToStr(Value:Int64; Base:DWord = 10; ThousSep:char = #0; BigChars:boolean=true; Digits:int = 0):string;
 
-function RSVal(const s:string; var i:integer):boolean; overload;
+function RSVal(const s:string; var i: int):boolean; overload;
+function RSVal(const s:string; var i: int8):boolean; overload;
 function RSVal(const s: string; var v: ext): Boolean; overload;
 function RSVal(const s: string; var v: Double): Boolean; overload;
 function RSVal(const s: string; var v: Single): Boolean; overload;
@@ -807,7 +808,14 @@ end;
 
 {-------------------------- Int <- Str -----------------------------}
 
-function RSVal(const s:string; var i:integer):boolean; overload;
+function RSVal(const s:string; var i: int):boolean; overload;
+var j:integer;
+begin
+  val(s, i, j);
+  Result:= j=0;
+end;
+
+function RSVal(const s:string; var i: int8):boolean; overload;
 var j:integer;
 begin
   val(s, i, j);

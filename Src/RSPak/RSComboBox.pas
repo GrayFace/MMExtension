@@ -53,9 +53,16 @@ type
     procedure FirstListBoxWndProc(var Msg: TMessage);
   protected
     FHintMan: TRSListBoxHints;
+    FItemHeight: Integer;
+    FItemHeightSet: Boolean;
+//    FControlHeightSet: Boolean;
+    FScaleItemHeight: Boolean;
     procedure CreateParams(var Params: TCreateParams); override;
-    procedure CNMeasureItem(var Msg: TWMMeasureItem); message CN_MEASUREITEM;
     procedure CreateWnd; override;
+    procedure ChangeScale(M, D: Integer); override;
+    procedure CNMeasureItem(var Msg: TWMMeasureItem); message CN_MEASUREITEM;
+    function GetItemHt: Integer; override;
+    procedure SetItemHeight(Value: Integer); override;
 {$IFDEF D2006}
       // Delphi 2006 bug
     procedure WMNCCalcSize(var Message: TWMNCCalcSize); message WM_NCCALCSIZE;
@@ -65,7 +72,7 @@ type
     procedure WMLButtonDown(var Msg: TWMLButtonDown); message WM_LBUTTONDOWN;
     procedure KeyPress(var Key:Char); override;
 
-    function GetItemHt: Integer; override;
+    procedure StyleChanged;
     procedure SetStyle(Value: TComboBoxStyle); override;
     procedure SetStyleOwnerDraw(v: TRSComboBoxOwnerDraw);
       // !! Если делать SetStyleOwnerDraw virtual'ным, SetStyle надо изменить
@@ -78,7 +85,7 @@ type
 {$ENDIF}
     procedure ListBoxWndProc(var Msg: TMessage); virtual;
   public
-    constructor Create(AOwner:TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure SetBounds(ALeft, ATop, AWidth, AHeight: Integer); override;
 
@@ -87,7 +94,8 @@ type
   published
     property AutoHint: Boolean read FAutoHint write FAutoHint default false;
     property ListBorderColor:TColor read FListBorderColor write FListBorderColor default clDefault;
-    property StyleOwnerDraw: TRSComboBoxOwnerDraw read FStyleOwnerDraw write SetStyleOwnerDraw default RScdsDefault;
+    property StyleOwnerDraw: TRSComboBoxOwnerDraw read FStyleOwnerDraw write SetStyleOwnerDraw default RScdsFixed;
+    property ScaleItemHeight: Boolean read FScaleItemHeight write FScaleItemHeight default true;
 
     property Align;
     property OnCanResize;
@@ -110,18 +118,21 @@ end;
 {
 ********************************* TRSComboBox **********************************
 }
-constructor TRSComboBox.Create(AOwner:TComponent);
+constructor TRSComboBox.Create(AOwner: TComponent);
 begin
   inherited;
-  WindowProc:=TranslateWndProc;
-  FListBorderColor:=clDefault;
+  ControlStyle:= ControlStyle - [csFixedHeight];
+  WindowProc:= TranslateWndProc;
+  FListBorderColor:= clDefault;
+  FStyleOwnerDraw:= RScdsFixed;
+  FScaleItemHeight:= true;
 
   FreeObjectInstance(FEditInstance);
-  FEditInstance:=MakeObjectInstance(TranslateEditWndProc);
-  FListBoxInstance:=MakeObjectInstance(TranslateListWndProc);
+  FEditInstance:= MakeObjectInstance(TranslateEditWndProc);
+  FListBoxInstance:= MakeObjectInstance(TranslateListWndProc);
 
-  FHintMan:=TRSListBoxHints.Create(Font);
-  ItemHeight:=13;
+  FHintMan:= TRSListBoxHints.Create(self);
+  FItemHeight:= 0; //13;
 end;
 
 destructor TRSComboBox.Destroy;
@@ -129,7 +140,6 @@ begin
   if HandleAllocated then
     DestroyWindowHandle;
   FreeObjectInstance(FListBoxInstance);
-  FHintMan.Free;
   inherited;
 end;
 
@@ -213,7 +223,7 @@ var DC:HDC; r:TRect;
 begin
   if AutoHint then
   begin
-    FHintMan.Handle:=FListHandle;
+    FHintMan.ListHandle:= FListHandle;
     FHintMan.BeforeWndProc(Msg);
     FirstListBoxWndProc(Msg);
     FHintMan.AfterWndProc(Msg);
@@ -238,15 +248,31 @@ begin
   end;
 end;
 
+procedure TRSComboBox.ChangeScale(M, D: Integer);
+begin
+  inherited;
+  if FScaleItemHeight and (M <> D) then
+  begin
+    FItemHeight:= MulDiv(FItemHeight, M, D);
+    if FItemHeightSet then
+      RecreateWnd;
+  end;
+end;
+
 procedure TRSComboBox.CNMeasureItem(var Msg: TWMMeasureItem);
 begin
   with Msg.MeasureItemStruct^ do
   begin
-    if (itemID=dword(-1)) and (Style<>csSimple) then
-      itemHeight:= Height - 6
-    else
+    if (itemID <> dword(-1)) or (Style = csSimple) then
+    begin
+      FItemHeightSet:= true;
       itemHeight:= GetItemHt;
-      
+    end else
+    begin
+//      FControlHeightSet:= true;
+      itemHeight:= Height - 6;
+    end;
+
     if FStyleOwnerDraw = RScdsVariable then
       MeasureItem(itemID, Integer(itemHeight));
   end;
@@ -256,12 +282,27 @@ procedure TRSComboBox.SetBounds(ALeft, ATop, AWidth, AHeight: Integer);
 begin
   inherited;
   if (AHeight<>0) and (AHeight<>Height) then
+  begin
+    Integer((@Height)^):= AHeight;
+    RecreateWnd;
+  end;
+end;
+
+procedure TRSComboBox.SetItemHeight(Value: Integer);
+begin
+  if Value <= 0 then  Value:= 0;
+  if FItemHeight = Value then  exit;
+  FItemHeight:= Value;
+  if FItemHeightSet then
     RecreateWnd;
 end;
 
 procedure TRSComboBox.CreateWnd;
 begin
+  FItemHeightSet:= false;
+//  FControlHeightSet:= false;
   inherited;
+  ControlStyle:= ControlStyle - [csFixedHeight];
   if FListHandle<>0 then
     FListBoxLastWndProc:=
          ptr(SetWindowLong(FListHandle, GWL_WNDPROC, int(FListBoxInstance)));
@@ -302,50 +343,56 @@ begin
 end;
 
 function TRSComboBox.GetItemHt: Integer;
-var OldStyle:TComboBoxStyle;
 begin
-  if StyleOwnerDraw<>RScdsDefault then
+  if (StyleOwnerDraw <> RScdsDefault) or (Style in [csOwnerDrawFixed, csOwnerDrawVariable]) then
   begin
-    OldStyle:=Style;
-    if StyleOwnerDraw=RScdsFixed then
-      TComboBoxStyle((@Style)^):=csOwnerDrawFixed
-    else
-      TComboBoxStyle((@Style)^):=csOwnerDrawVariable;
-      
-    try
-      Result:= inherited GetItemHt;
-    finally
-      TComboBoxStyle((@Style)^):=OldStyle;
+    if FItemHeight <= 0 then
+    begin
+      Canvas.Font:= Font;
+      FItemHeight:= Canvas.TextHeight('A');
     end;
+    Result:= FItemHeight;
   end else
-    Result:= inherited GetItemHt;
+    Result:= Perform(CB_GETITEMHEIGHT, 0, 0);
 end;
 
 procedure TRSComboBox.SetStyle(Value: TComboBoxStyle);
 var a:TRSComboBoxOwnerDraw;
 begin
-  a:=FStyleOwnerDraw;
+  if Style = Value then  exit;
   case Value of
     csOwnerDrawFixed:
-      FStyleOwnerDraw:=RScdsFixed;
+      a:= RScdsFixed;
     csOwnerDrawVariable:
-      FStyleOwnerDraw:=RScdsVariable;
+      a:= RScdsVariable;
     else
-    begin
-      inherited;
-      exit;
-    end;
+      a:= FStyleOwnerDraw;
   end;
-  if (Style = csDropDownList) and (a<>FStyleOwnerDraw) then
-    RecreateWnd
+  TComboBoxStyle((@Style)^):= Value;
+  if (a <> FStyleOwnerDraw) then
+    StyleOwnerDraw:= a
   else
-    inherited Style:= csDropDownList;
+    StyleChanged;
 end;
 
 procedure TRSComboBox.SetStyleOwnerDraw(v: TRSComboBoxOwnerDraw);
 begin
-  if FStyleOwnerDraw=v then exit;
-  FStyleOwnerDraw:=v;
+  if FStyleOwnerDraw = v then exit;
+  FStyleOwnerDraw:= v;
+  if (Style = csOwnerDrawFixed) and (v = RScdsVariable) then
+    Style:= csOwnerDrawVariable
+  else if (Style = csOwnerDrawVariable) and (v = RScdsFixed) then
+    Style:= csOwnerDrawFixed
+  else
+    StyleChanged;
+end;
+
+procedure TRSComboBox.StyleChanged;
+begin
+  if (FStyleOwnerDraw = RScdsDefault) and (Style in [csDropDown, csDropDownList]) then
+    ControlStyle:= ControlStyle + [csFixedHeight]
+  else
+    ControlStyle:= ControlStyle - [csFixedHeight];
   RecreateWnd;
 end;
 

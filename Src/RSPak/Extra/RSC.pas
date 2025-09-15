@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Windows, Classes, Controls, Graphics, Variants, RSQ, RSSpeedButton,
-  Menus, Messages, RSSysUtils;
+  Menus, Messages, RSSysUtils, Buttons, RSGraphics;
 
 procedure EnableArr(const Arr:array of TControl; v:boolean);
 procedure ShowArr(const Arr:array of TControl; v:boolean);
@@ -33,6 +33,8 @@ procedure RSThreadExec(AMethod:pointer; AParam1:int=0; AParam2:int=0); overload;
 var
   RSThreadProcsNum:integer;
 
+procedure UpscaleSpeedButtonGlyphs(form: TComponent; M, D: int);
+  
 implementation
 
 procedure EnableArr(const Arr:array of TControl; v:boolean);
@@ -290,6 +292,47 @@ const
         '============='#13#10#13#10;
 begin
   RSAppendTextFile(AppPath + 'ErrorLog.txt', s + Sep);
+end;
+
+procedure UpscaleBitmap(b: TBitmap; M, D: int);
+var
+  b0: TBitmap;
+  w, h, w2, h2: int;
+begin
+  w:= b.Width;
+  h:= b.Height;
+  w2:= MulDiv(w, M, D);
+  h2:= MulDiv(h, M, D);
+  if (w > 0) and (w2 mod w <> 0) or (h > 0) and (h2 mod h <> 0) then
+  begin
+    b0:= RSTransform32(b, RSXForm(w2/w, h2/h), b.TransparentColor and $ffffff,
+       true, RSTransformSmoothProc(), RSTransformEnhancer(50).Get());
+    b.Assign(b0);
+    b.Transparent:= true;
+    exit;
+  end;
+  b0:= TBitmap.Create;
+  try
+    b0.Assign(b);
+    b.Transparent:= false;
+    b.Height:= 0;
+    b.Width:= w2;
+    b.Height:= h2;
+    b.Canvas.CopyRect(Rect(0, 0, w2, h2), b0.Canvas, Rect(0, 0, w, h));
+    b.Transparent:= true;
+  finally
+    b0.Free;
+  end;
+end;
+
+procedure UpscaleSpeedButtonGlyphs(form: TComponent; M, D: int);
+var
+  i: int;
+begin
+  if M > D then
+    for i:= 0 to form.ComponentCount - 1 do
+      if form.Components[i] is TSpeedButton then
+        UpscaleBitmap(TSpeedButton(form.Components[i]).Glyph, M, D);
 end;
 
 end.

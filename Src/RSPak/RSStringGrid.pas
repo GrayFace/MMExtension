@@ -45,9 +45,7 @@ type
 
     function CreateEditor: TInplaceEdit; override;
     procedure SetEditText(ACol, ARow: Longint; const Value: string); override;
-    {$IFNDEF D2007} // D2006 has this bug, in newer versions it might be fixed
     procedure WMCommand(var Msg: TWMCommand); message WM_COMMAND;
-    {$ENDIF}
     procedure CalcSizingState(X, Y: Integer; var State: TGridState;
       var Index: Longint; var SizingPos, SizingOfs: Integer;
       var FixedInfo: TGridDrawInfo); override;

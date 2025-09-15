@@ -70,6 +70,7 @@ type
             TShiftState; X, Y: Integer);
     procedure BtnMouseUp(Sender: TObject; Button: TMouseButton; Shift:
             TShiftState; X, Y: Integer);
+    class procedure PrepareStandardGlyph(Bmp: TBitmap; h: int; up: Boolean);
     procedure ButtonPaint(Sender: TRSSpeedButton; DefaultPaint:TRSProcedure;
             var AState: TButtonState; var MouseInControl:boolean;
             MouseReallyInControl:boolean); dynamic;
@@ -342,8 +343,6 @@ type
     property Value: ext read GetValue write SetValue;
   end;
 
-{$R RSSpinEdit.res}
-
 implementation
 
 {
@@ -406,7 +405,7 @@ constructor TRSSpinButton.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   ControlStyle := ControlStyle + [csOpaque] -
-    [csAcceptsControls, csSetCaption, csReplicatable];
+    [csAcceptsControls, csFixedHeight, csSetCaption, csReplicatable];
   fTimer:=TRSTimer.Create(Self);
   fTimer.Interval:=0;
   fTimer.Enabled:=true;
@@ -472,89 +471,82 @@ procedure TRSSpinButton.ButtonPaint(Sender: TRSSpeedButton;
         MouseInControl:boolean; MouseReallyInControl:boolean);
 var
   a: TThemedElementDetails;
-  lastNG: Integer;
+  lastNG, w, h: Integer;
 begin
   with Sender do
   begin
-    if Glyph.Empty then
-    begin
-      BlockRepaint;
-      lastNG:=NumGlyphs;
-      if Sender=fUpButton then
-        Glyph.Handle := LoadBitmap(HInstance, 'RSUPGLYPH')
-      else
-        Glyph.Handle := LoadBitmap(HInstance, 'RSDOWNGLYPH');
-      Glyph.Transparent:=true;
-      Glyph.TransparentColor:=clWhite;
-      NumGlyphs := 1;
-    end else
-      lastNG:=-1;
-  
     if (fButton<>nil) and (GetKeyState(VK_LBUTTON)>=0) then
       BtnMouseUp(fButton,mbLeft,[],0,0);
     if (Sender=fButton) and (AState=bsUp) and (fSpinFactor>0) then
       AState:=bsDown;
 
-    if IsStyled then
+    if not IsStyled and ThemeServices.ThemesEnabled then
     begin
-      Canvas.Brush.Color:=clBtnFace;
-      Canvas.Fillrect(Bounds(0,0,Sender.Width,Sender.Height));
-      {
-      if AState=bsDisabled then
-      begin
-        DefaultPaint;
-      end
-        with Canvas do
-        begin
-          if AState<>bsDisabled then
-
-
-          Pen.Color:=RSMixColorsNorm(clBtnShadow, GetColorTheme.Button, 180);
-          if AState=bsDisabled then
-            Brush.Color:=GetColorTheme.Button
-          else
-            Brush.Style:=bsClear;
-          Rectangle(Rect(0, 0, Width, Height));
-          Pixels[0, 0]:=GetColorTheme.Button;
-          Pixels[Width-1, 0]:=GetColorTheme.Button;
-          Pixels[0, Height-1]:=GetColorTheme.Button;
-          Pixels[Width-1, Height-1]:=GetColorTheme.Button;
-          if AState=bsDisabled then
-            RSDrawDisabled(Canvas, Glyph, clBtnShadow,
-              (Width-Glyph.Width) div 2,
-              (Height-Glyph.Height) div 2);
-        end
+      a.Element:= teSpin;
+      if Sender = FUpButton then
+        a.Part:=1
       else
-      }
-        DefaultPaint;
-    end else
-      if ThemeServices.ThemesEnabled then
-      begin
-        a.Element:=teSpin;
-        if Sender=FUpButton then a.Part:=1
-        else a.Part:=2;
-        case AState of
-          bsUp:
-            if MouseReallyInControl then a.State:=UPS_HOT
-            else a.State:=UPS_NORMAL;
-          bsDisabled:
-            a.State:=UPS_DISABLED;
-          bsDown, bsExclusive:
-            a.State:=UPS_PRESSED;
-        end;
-        ThemeServices.DrawElement(Sender.Canvas.Handle,a,
-                                Bounds(0,0,Sender.Width,Sender.Height));
-      end else
-      begin
-        Canvas.Brush.Color:=clBtnFace;
-        Canvas.FillRect(Bounds(0,0,Sender.Width,Sender.Height));
-        DefaultPaint;
+        a.Part:=2;
+      case AState of
+        bsUp:
+          if MouseReallyInControl then
+            a.State:= UPS_HOT
+          else
+            a.State:= UPS_NORMAL;
+        bsDisabled:
+          a.State:= UPS_DISABLED;
+        bsDown, bsExclusive:
+          a.State:= UPS_PRESSED;
       end;
-  
+      ThemeServices.DrawElement(Sender.Canvas.Handle,a,
+                              Bounds(0,0,Sender.Width,Sender.Height));
+      exit;
+    end;
+
+    if Glyph.Empty then
+    begin
+      BlockRepaint;
+      lastNG:= NumGlyphs;
+      w:= max(4, MulDiv(8, Sender.DropDownWidth - 2, 33));
+      h:= min(UpButton.Height, DownButton.Height) - 2;
+      if (w > 3) and (h >= 7) then
+        dec(h, 2);
+      h:= max(min(h, w), 2);
+      PrepareStandardGlyph(Glyph, h, Sender = fUpButton);
+      NumGlyphs:= 1;
+    end else
+      lastNG:= -1;
+
+    Canvas.Brush.Color:= clBtnFace;
+    Canvas.FillRect(Sender.ClientRect);
+    {
+    if IsStyled and (AState<>bsDisabled) then
+      with Canvas do
+      begin
+
+
+        Pen.Color:=RSMixColorsNorm(clBtnShadow, GetColorTheme.Button, 180);
+        if AState=bsDisabled then
+          Brush.Color:=GetColorTheme.Button
+        else
+          Brush.Style:=bsClear;
+        Rectangle(Rect(0, 0, Width, Height));
+        Pixels[0, 0]:=GetColorTheme.Button;
+        Pixels[Width-1, 0]:=GetColorTheme.Button;
+        Pixels[0, Height-1]:=GetColorTheme.Button;
+        Pixels[Width-1, Height-1]:=GetColorTheme.Button;
+        if AState=bsDisabled then
+          RSDrawDisabled(Canvas, Glyph, clBtnShadow,
+            (Width-Glyph.Width) div 2,
+            (Height-Glyph.Height) div 2);
+      end
+    }
+    DefaultPaint;
+
     if lastNG<>-1 then
     begin
-      Glyph:=nil;
-      NumGlyphs := lastNG;
+      Glyph:= nil;
+      NumGlyphs:= lastNG;
     end;
   end;
 end;
@@ -666,6 +658,42 @@ begin
   inherited Notification(AComponent, Operation);
   if (Operation = opRemove) and (AComponent = FFocusControl) then
     FFocusControl := nil;
+end;
+
+class procedure TRSSpinButton.PrepareStandardGlyph(Bmp: TBitmap; h: int;
+  up: Boolean);
+var
+  w, y, y1, bump: int;
+begin
+  with Bmp, Canvas do
+  begin
+    Width:= 0;
+    Height:= h + 2;
+    w:= h*2 - 1;
+    Width:= w;
+    bump:= 0;
+    if h > 3 then
+      bump:= (h + 1) div 3;
+    Brush.Color:= clWhite;
+    FillRect(ClipRect);
+    Pen.Color:= clBlack;
+    for y:= 0 to h - 1 do
+    begin
+      if up then
+        y1:= h - y
+      else
+        y1:= y + 1;
+      MoveTo(y, y1);
+      if bump > 0 then
+      begin
+        LineTo(h - bump, y1);
+        MoveTo(h + bump - 1, y1);
+        dec(bump);
+      end;
+      LineTo(w - y, y1);
+    end;
+    Transparent:= true;
+  end;
 end;
 
 procedure TRSSpinButton.PressDownKey(v:boolean);
@@ -1054,6 +1082,7 @@ begin
   FButton.SetSubComponent(true);
 
   ControlStyle := ControlStyle - [csSetCaption];
+//  AutoSize:= false;
   FEditorEnabled := True;
   ParentBackground := false;
     //FFirstCreateWnd:=true;

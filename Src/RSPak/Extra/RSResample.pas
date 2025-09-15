@@ -11,7 +11,8 @@ type
     SrcX, SrcY, DestX, DestY: int;
     CmdX: TRSByteArray;
     CmdY: TRSByteArray;
-    procedure Init(sW, sH, dW, dH: int);
+    // dx and dy are from -0.5 to 0.5 and specify sub-pixel shift in terms of source pixels
+    procedure Init(sW, sH, dW, dH: int; dx: ext = 0; dy: ext = 0);
     function ScaleRect(const r: TRect): TRSResampleInfo;
   end;
 
@@ -22,10 +23,12 @@ procedure RSResample16(const info: TRSResampleInfo; Src, Dest: TBitmap); overloa
 procedure RSResample16(Src, Dest: TBitmap); overload;
 procedure RSResampleTrans16(const info: TRSResampleInfo; Src: ptr; SrcPitch: int; Dest: ptr; DestPitch: int; Trans: int);
 procedure RSResampleTrans16_NoAlpha(const info: TRSResampleInfo; Src: ptr; SrcPitch: int; Dest: ptr; DestPitch: int; Trans: int);
+procedure RSResample16Set15(bits15: Boolean);
 
 implementation
 
 {$I RSPak.inc}
+{ $DEFINE NoInline}
 
 const
   MaxMix = 8;  // 8 shades
@@ -71,16 +74,17 @@ begin
   x1:= (x1 - mid)*scale;
   x2:= (x2 - mid)*scale;
   // domain from -1 to +1
-  // Let's use gaussian with sigma = 2 at x = 1 (so sigma = 1/2)
+  // Let's use gaussian with sigma = 2 at x = 1 (so isigma = 1/2)
   // Graph: https://www.graphsketch.com/?eqn1_color=1&eqn1_eqn=8*(exp(-(2.0*x)%5E2)%20-%20exp(-(2.0)%5E2))%2F(exp(-(2.0*x)%5E2)%2Bexp(-(2.0*(x-1))%5E2)%20-%20exp(-(2.0)%5E2)*2)%2B0.5&eqn2_color=2&eqn2_eqn=&eqn3_color=3&eqn3_eqn=&eqn4_color=4&eqn4_eqn=&eqn5_color=5&eqn5_eqn=&eqn6_color=6&eqn6_eqn=&x_min=-0.5&x_max=1.5&y_min=0.5&y_max=8.5&x_tick=0.2&y_tick=1&x_label_freq=5&y_label_freq=1&do_grid=0&do_grid=1&bold_labeled_lines=0&bold_labeled_lines=1&line_width=4&image_w=850&image_h=525
   // x5 resample check: https://www.graphsketch.com/parametric.php?mode=para&eqn1_color=1&eqn1_x=t*6%2F5&eqn1_y=8*%28exp%28-%282.0*t%29%5E2%29+-+exp%28-%282.0%29%5E2%29%29%2F%28exp%28-%282.0*t%29%5E2%29%2Bexp%28-%282.0*%28t-1%29%29%5E2%29+-+exp%28-%282.0%29%5E2%29*2%29%2B0.5&eqn2_color=2&eqn2_x=&eqn2_y=&eqn3_color=3&eqn3_x=&eqn3_y=&x_min=-0.5&x_max=1.5&y_min=0.5&y_max=8.5&t_min=0&t_max=1&x_tick=0.2&y_tick=1&x_label_freq=6&y_label_freq=1&do_grid=0&do_grid=1&bold_labeled_lines=0&bold_labeled_lines=1&line_width=4&image_w=850&image_h=525
+  // Oops, I forgot 1/2 multiplier inside exp(), so isigma = sqrt(2)/sigma
   Result:= errf(x2*isigma) - errf(x1*isigma) - (x2 - x1)*exp(-isigma*isigma);
 end;
 
-function PrepareResampleArray(sw, dw: int): TRSByteArray;
+function DoPrepareResampleArray(sw, dw: int; shift: ext; shifted: Boolean): TRSByteArray; {$IFNDEF NoInline}inline;{$ENDIF}
 var
   a: array of int;
-  scale, v, mid, last: ext;
+  scale, v, v2, mid, last: ext;
   i, j, main: int;
 begin
   Assert(dw >= sw, 'Downsampling is not supported');
@@ -91,19 +95,38 @@ begin
   last:= 0;
   for i:= 0 to dw - 1 do
   begin
-    main:= (2*j + 1)*dw div (2*sw);  // = Floor((j + 0.5)*scale) - full color point, to reduce blurriness
+    if shifted then
+      main:= Floor((j + 0.5 + shift)*scale) // full color point, to reduce blurriness
+    else
+      main:= (2*j + 1)*dw div (2*sw);
     if main < i then
     begin
       last:= mid;
       inc(j);
-      main:= (2*j + 1)*dw div (2*sw);
+      if shifted then
+        main:= Floor((j + 0.5 + shift)*scale) // full color point, to reduce blurriness
+      else
+        main:= (2*j + 1)*dw div (2*sw);
+      if main >= dw then
+        main:= dw - 1;
     end;
-    mid:= mshift*(main + 0.5) + (1 - mshift)*(j + 0.5)*scale;;  // shift middle point towards the main point
-    a[i]:= min(j, sw - 1)*MaxMix + MaxMix;
+    // shift middle point towards the main point
+    mid:= mshift*(main + 0.5) + (1 - mshift)*(j + 0.5 + shift)*scale;
     if (i = main) or (j = 0) or (j >= sw) then
+    begin
+      a[i]:= min(j, sw - 1)*MaxMix + MaxMix;
       continue;
+    end;
     v:= ResampleCoreInt(mid, i, i + 1, 1/(mid - last));
-    v:= v/(v + ResampleCoreInt(last, i, i + 1, 1/(mid - last)));
+    if v > 0 then  // happens with parameters outside of normal bounds
+    begin
+      v2:= ResampleCoreInt(last, i, i + 1, 1/(mid - last));
+      if v2 > 0 then
+        v:= v/(v + v2)
+      else
+        v:= 1;
+    end else
+      v:= 0;
     a[i]:= j*MaxMix + Round(v*MaxMix);
   end;
   SetLength(Result, dw + 1);
@@ -114,6 +137,57 @@ begin
     j:= a[i];
   end;
   Result[dw]:= MaxMix + 1;
+end;
+
+procedure TestResampleArray(const a: TRSByteArray; sw, dw: int);
+var
+  v: byte;
+  i, sx, dx: int;
+begin
+  i:= 0;
+  sx:= 0;
+  dx:= 0;
+  v:= MaxMix + a[i];
+  inc(i);
+  while true do
+  begin
+    dec(v, MaxMix);
+    if v = MaxMix + 1 then  break;
+    inc(sx);
+    repeat
+      // mix colors
+      if v = MaxMix then
+      begin
+        inc(dx);
+      end else
+      begin
+        inc(dx);
+      end;
+      inc(v, a[i]);
+      inc(i);
+    until v > MaxMix;
+  end;
+//  if dx <> dw then  zD;
+//  if sx <> sw then  zD;
+//  if i <> length(a) then  zD;
+  Assert(dx = dw);
+  Assert(sx = sw);
+  Assert(i = length(a));
+end;
+
+function PrepareResampleArray(sw, dw: int; shift: ext): TRSByteArray;
+const
+  lim = 0.5 - 1e-5;
+begin
+  if shift <> 0 then
+  begin
+    if shift < -lim then
+      shift:= -lim
+    else if shift > lim then
+      shift:= lim;
+    Result:= DoPrepareResampleArray(sw, dw, shift, true);
+  end else
+    Result:= DoPrepareResampleArray(sw, dw, 0, false);
 end;
 
 function CutResampleArray(const a: TRSByteArray; x, w: int; out sx: int): TRSByteArray;
@@ -148,6 +222,13 @@ end;
 
 //----- 16 bit color
 
+function GetPixel15(c: uint): uint;
+begin
+  Result:= (c and $7C1F)*33 shr 2;  // r,b components - 5 bit: *(2^5 + 1) shr 2
+  Result:= byte(Result) + Result shr 10 shl 16;
+  inc(Result, (c and $3E0)*33 shr 7 shl 8);  // g component - 6 bit: *(2^6 + 1) shr 4
+end;
+
 function GetPixel16(c: uint): uint;
 begin
   Result:= (c and $F81F)*33 shr 2;  // r,b components - 5 bit: *(2^5 + 1) shr 2
@@ -160,19 +241,28 @@ var
   ToColor: array[0..$FFFF] of array[Boolean] of uint;
   TransMix: array[0..MaxMix*MaxMix*MaxMix*4 - 1] of uint;
 
-procedure Prepare16to32;
+procedure Prepare16to32(bits15: Boolean = false);
 var
   i: int;
   v: uint;
 begin
   for i:= 0 to $FFFF do
   begin
-    v:= GetPixel16(i);
+    if bits15 then
+      v:= GetPixel15(i)
+    else
+      v:= GetPixel16(i);
     ToBits[i][0]:= (v and MixMask) div MaxMix;
     ToBits[i][1]:= v and MixRemainder;
     ToColor[i][false]:= v;
     ToColor[i][true]:= v or $FF000000;
   end;
+end;
+
+procedure RSResample16Set15(bits15: Boolean);
+begin
+  if (ToBits[$FFFF][0] = 0) or (bits15 <> (ToBits[$8000][0] = 0)) then
+    Prepare16to32(bits15);
 end;
 
 procedure PrepareTransMix;
@@ -205,7 +295,7 @@ end;
 //----- 16 bit color resample
 
 procedure ResampleH16_Opaque(var cmd: PByte; var p: puint;
-   var v: uint; h, lh, lo: uint); inline;
+   var v: uint; h, lh, lo: uint); {$IFNDEF NoInline}inline;{$ENDIF}
 var
   c: uint;
 begin
@@ -231,7 +321,7 @@ begin
 end;
 
 function ResampleH16_Trans(var cmd: PByte; var p: puint;
-   var v, h, lh, lo: uint; var ps: PWord; trans: int): Boolean; inline;
+   var v, h, lh, lo: uint; var ps: PWord; trans: int): Boolean; {$IFNDEF NoInline}inline;{$ENDIF}
 label
   start, stop;
 const
@@ -325,7 +415,7 @@ stop:
     puint(PChar(p) - n*8)^:= AlphaFF + n;
 end;
 
-procedure ResampleH16_Any(cmd: PByte; ps: PWord; p: puint; trans: int; HasTrans: Boolean); inline;
+procedure ResampleH16_Any(cmd: PByte; ps: PWord; p: puint; trans: int; HasTrans: Boolean); {$IFNDEF NoInline}inline;{$ENDIF}
 var
   v: uint;
   h, lo, lh: uint;
@@ -482,7 +572,7 @@ begin
     end;
 end;
 
-procedure Simple16To32(ps: PWord; pd: pint; ds, dd, w, h: int; c0: Word; Opaque, Alpha: Boolean); inline;
+procedure Simple16To32(ps: PWord; pd: pint; ds, dd, w, h: int; c0: Word; Opaque, Alpha: Boolean); {$IFNDEF NoInline}inline;{$ENDIF}
 var
   x: int;
 begin
@@ -504,7 +594,7 @@ end;
 
 
 procedure RSResample16_Any(const info: TRSResampleInfo; Src: ptr; SrcPitch: int;
-   Dest: ptr; DestPitch: int; Trans: int; HasTrans: Boolean; NoAlpha: Boolean); inline;
+   Dest: ptr; DestPitch: int; Trans: int; HasTrans: Boolean; NoAlpha: Boolean); {$IFNDEF NoInline}inline;{$ENDIF}
 var
   buf: array of uint;
   pc, pl, p2: puint;
@@ -624,7 +714,7 @@ begin
   inc(Result.SrcY, SrcY);
 end;
 
-procedure TRSResampleInfo.Init(sW, sH, dW, dH: int);
+procedure TRSResampleInfo.Init(sW, sH, dW, dH: int; dx, dy: ext);
 begin
   SrcX:= 0; SrcY:= 0; DestX:= 0; DestY:= 0;
   SrcW:= sW;
@@ -633,8 +723,8 @@ begin
   DestH:= dH;
   if (sW <> dW) or (sH <> dH) then
   begin
-    CmdX:= PrepareResampleArray(sW, dW);
-    CmdY:= PrepareResampleArray(sH, dH);
+    CmdX:= PrepareResampleArray(sW, dW, dx);
+    CmdY:= PrepareResampleArray(sH, dH, dy);
   end else
   begin
     CmdX:= nil;

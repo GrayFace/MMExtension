@@ -29,14 +29,16 @@ type
     procedure SetAutoHint(v:Boolean);
   protected
     FHintMan: TRSListBoxHints;
+    FScaleItemHeight: Boolean;
     procedure CreateParams(var Params: TCreateParams); override;
     procedure TranslateWndProc(var Msg: TMessage);
     procedure WndProc(var Msg: TMessage); override;
+    procedure ChangeScale(M, D: Integer); override;
   public
     constructor Create(AOwner:TComponent); override;
-    destructor Destroy; override;
   published
     property AutoHint: Boolean read FAutoHint write SetAutoHint default false;
+    property ScaleItemHeight: Boolean read FScaleItemHeight write FScaleItemHeight default true;
     property BevelWidth;
     property OnCanResize;
     property OnDblClick;
@@ -56,18 +58,20 @@ end;
 {
 ********************************** TRSListBox ***********************************
 }
+procedure TRSListBox.ChangeScale(M, D: Integer);
+begin
+  inherited;
+  if FScaleItemHeight then
+    ItemHeight:= MulDiv(ItemHeight, M, D);
+end;
+
 constructor TRSListBox.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
-  WindowProc:=TranslateWndProc;
-  FHintMan:=TRSListBoxHints.Create(Font);
-  ItemHeight:=13;
-end;
-
-destructor TRSListBox.Destroy;
-begin
-  FHintMan.Free;
-  inherited;
+  WindowProc:= TranslateWndProc;
+  FHintMan:= TRSListBoxHints.Create(self);
+  ItemHeight:= 13;
+  FScaleItemHeight:= true;
 end;
 
 procedure TRSListBox.CreateParams(var Params: TCreateParams);
@@ -94,8 +98,8 @@ begin
 
   if AutoHint and HandleAllocated then
   begin
-    FHintMan.Handle:=Handle;
-    FHintMan.Columns:=Columns;
+    FHintMan.ListHandle:= Handle;
+    FHintMan.Columns:= Columns;
     FHintMan.BeforeWndProc(Msg);
     inherited;
     FHintMan.AfterWndProc(Msg);
@@ -105,8 +109,8 @@ end;
 
 procedure TRSListBox.SetAutoHint(v:Boolean);
 begin
-  if FAutoHint=v then exit;
-  FAutoHint:=v;
+  if FAutoHint= v then exit;
+  FAutoHint:= v;
   if v then
     FHintMan.UpdateHint
   else

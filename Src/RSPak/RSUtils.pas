@@ -42,7 +42,7 @@ function RSIsControlVisible(c:TControl):boolean;
 
 function RSPtInControl(const pt:TPoint; c:TControl):boolean;
 
-procedure RSSetFocus(c:TWinControl);
+procedure RSSetFocus(c: TWinControl);
 
 function RSIsChild(parent, c:TControl):boolean;
 
@@ -68,7 +68,8 @@ procedure RSShowHint(const Hint: string; const Pos: TPoint; Timeout:int=0;
   htTransparent:boolean=false; HideOnDeactivate:boolean=false; Data:ptr=nil;
   BiDi:TBiDiMode=bdLeftToRight); overload;
 procedure RSHideHint(Animate:boolean);
-function RSHelpHint(Sender: TObject; Hint:string=''):boolean;
+function RSHelpHint(Sender: TObject; Hint: string = '';
+  DefaultToHint: Boolean = false):boolean;
 procedure RSErrorHint(c:TControl; const s:string; Timeout:int=0;
   Focus:Boolean = true; Sound:int = MB_ICONWARNING);
 
@@ -92,6 +93,11 @@ function RSDisableVisibleControls(c: TWinControl): TRSControlArray;
 procedure RSEnableControls(List: TRSControlArray; Enable: Boolean = true);
 
 function SortedStringList(CaseSensitive: Boolean = false; Duplicates: TDuplicates = dupIgnore): TStringList;
+
+// Extremely dirty hack to modify form resources and make it scaled
+// Triggers some bad antiviruses like Windows Defender
+// Not needed anymore, I've solved this problem with RSFixDPIWizard 
+//procedure RSHackMakeFormScaled(const ClassName: string; BasePPI: byte = 96);
 
 {function RSMessageBox(AText:string; ACaption:string='';
                                         AType:integer=0); overload;
@@ -566,14 +572,16 @@ begin
   RSShowHint(Hint, r, Timeout, htTransparent, HideOnDeactivate, Data, BiDi);
 end;
 
-function RSHelpHint(Sender: TObject; Hint:string=''):boolean;
+function RSHelpHint(Sender: TObject; Hint: string = '';
+   DefaultToHint: Boolean = false):boolean;
 var r:TRect; p:TPoint; s:string;
 begin
   Result:=false;
   if Hint='' then
     Hint:=(Sender as TControl).Hint;
   s:= GetLongHint(Hint);
-  if (s = '') or (length(s) = length(Hint)) then exit;
+  if (s = '') or (length(s) = length(Hint)) and not DefaultToHint then
+    exit;
   Hint:= s;
   if ValidateHintWindow then
   begin
@@ -838,6 +846,36 @@ begin
   Result.Duplicates:= Duplicates;
   Result.Sorted:= true;
 end;
+
+//procedure RSHackMakeFormScaled(const ClassName: string; BasePPI: byte = 96);
+//var
+//  h: THandle;
+//  p: PChar;
+//
+//  function Find(const s: string): PChar;
+//  begin
+//    Result:= p;
+//    while not CompareMem(Result, ptr(s), length(s)) do
+//      inc(Result);
+//    inc(Result, length(s));
+//  end;
+//
+//  procedure Change(p: PChar; v: char);
+//  var
+//    OldProtect: DWord;
+//  begin
+//    VirtualProtect(ptr(p), 1, PAGE_READWRITE, @OldProtect);
+//    p^:= v;
+//    VirtualProtect(ptr(p), 1, OldProtect, @OldProtect);
+//  end;
+//
+//begin
+//  h:= RSWin32Check(FindResource(HInstance, PChar(UpperCase(ClassName)), RT_RCDATA));
+//  p:= LockResource(RSWin32Check(LoadResource(HInstance, h)));
+//  RSWin32Check(p <> nil);
+//  Change(Find(#6'Scaled'), chr(ord(vaTrue)));
+//  Change(Find(#13'PixelsPerInch') + 1, chr(BasePPI));
+//end;
 
 {
 function MakeDialog(AText, ACaption:string; var Buttons:array of TButton;

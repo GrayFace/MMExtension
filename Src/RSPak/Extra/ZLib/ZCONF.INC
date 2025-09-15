@@ -21,3 +21,6 @@
  {$UNDEF UNALIGNED_OK}  { requires SizeOf(ush) = 2 ! }
  {$UNDEF MAXSEG_64K}
 {$ENDIF}
+
+{ GrayFace: Somehow it's always defined, even in Release configuration. }
+{$UNDEF DEBUG}

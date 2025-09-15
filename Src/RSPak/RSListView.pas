@@ -19,7 +19,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Controls, ComCtrls, CommCtrl, RSCommon,
-  RSQ, Types;
+  RSQ, Types, Themes;
 
 { TODO :
 Fix cdPostPaint
@@ -40,10 +40,14 @@ type
     procedure SetBorderSelect(const Value: Boolean);
   protected
     {$IFDEF D2006}
-     // Delphi 2006 bug: ListView doesn't save state in case DestroyHandle is called
+     // Delphi 2006 and 2007 bug: ListView doesn't save state in case DestroyHandle is called
     procedure DestroyWnd; override;
     {$ENDIF}
 
+//    {$IFDEF D2007}
+//     // Delphi 2007 bug: ListView turns into a mess due to background not being cleared
+//    procedure CreateWnd; override;
+//    {$ENDIF}
     procedure CreateParams(var Params: TCreateParams); override;
     procedure TranslateWndProc(var Msg: TMessage);
     procedure WndProc(var Msg: TMessage); override;
@@ -97,11 +101,35 @@ begin
   if Assigned(FOnCreateParams) then FOnCreateParams(self, Params);
 end;
 
+//{$IFDEF D2007}
+//procedure TRSListView.CreateWnd;
+//var
+//  old: Boolean;
+//begin
+//  old:= ThemeServices.ThemesAvailable;
+//  if old then
+//    with ThemeServices do
+//    try
+//      Boolean((@ThemesAvailable)^):= false;
+//      inherited;
+//    finally
+//      Boolean((@ThemesAvailable)^):= old;
+//    end
+//  else
+//    inherited;
+//end;
+//{$ENDIF}
+
 {$IFDEF D2006}
 procedure TRSListView.DestroyWnd;
 var state: TControlState;
 begin
   state:= ControlState;
+  if (csRecreating in state) or (csReading in ComponentState) then
+  begin
+    inherited;
+    exit;
+  end;
   ControlState:= state + [csRecreating];
   inherited;
   ControlState:= state;

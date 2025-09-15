@@ -10,7 +10,7 @@ uses
 procedure RSHelpCreate(ClassName:string='');
   
 procedure RSHelpShow(HideForms:array of TControl;
-            w:integer=440; h:integer=463);
+            w: integer=440; h: integer=463; scale: Boolean = true);
 
 type
   TRSHelp = class(TForm)
@@ -50,14 +50,19 @@ begin
 end;
 
 procedure RSHelpShow(HideForms:array of TControl;
-            w, h:integer);
+            w, h:integer; scale: Boolean);
 var i:integer;
 begin
   if RSHelp.Visible then  exit;
-   
+
   SetLength(Hides, high(HideForms)-low(HideForms)+1);
   for i:=0 to length(Hides)-1 do
     Hides[i]:=HideForms[low(HideForms)+i];
+  if scale then
+  begin
+    w:= MulDiv(w, Screen.PixelsPerInch, 96);
+    h:= MulDiv(h, Screen.PixelsPerInch, 96);
+  end;
   with RSHelp do
   begin
     Width:=w;

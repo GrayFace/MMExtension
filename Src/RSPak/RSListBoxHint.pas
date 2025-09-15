@@ -26,18 +26,31 @@ uses
 type
   PHWnd = ^HWnd;
 
-  TRSListBoxHints = class(TObject)
+  TRSCustomListBoxHint = class(THintWindow)
   protected
-    LastIndex:int;
-    Font: TFont;
-    HintWindow: THintWindow;
+    FCompact: Boolean;
+    procedure CreateParams(var Params:TCreateParams); override;
+    procedure NCPaint(DC:HDC); override;
+    procedure Paint; override;
+  public
+    procedure ActivateHint(Rect:TRect; const AHint:string); override;
+    function CalcHintRect(MaxWidth: Integer; const AHint: string;
+      AData: Pointer): TRect; override;
+  end;
+
+  TRSListBoxHints = class(TRSCustomListBoxHint)
+  protected
+    FLastIndex: int;
+    FTimerID: int;
     function GetTextRight(const Text:string; r:TRect):int;
     procedure UpdateHint(const p:TPoint); overload;
+    procedure DoHideHint;
+    procedure WMTimer(var Msg: TWMTimer); message WM_TIMER;
   public
-    Handle: HWnd;
+    ListHandle: HWND;
     Columns: int;
-    constructor Create(AFont:TFont);
-    destructor Destroy; override;
+    OwnerFont: Boolean;
+    constructor Create(AOwner: TComponent); override;
     procedure BeforeWndProc(var Msg:TMessage);
     procedure AfterWndProc(var Msg:TMessage);
     procedure UpdateHint; overload;
@@ -46,20 +59,7 @@ type
 
 implementation
 
-type
-  TListBoxTip = class(THintWindow)
-  protected
-    procedure CreateParams(var Params:TCreateParams); override;
-    procedure NCPaint(DC:HDC); override;
-    procedure Paint; override;
-  public
-    Compact: Boolean;
-    procedure ActivateHint(Rect:TRect; const AHint:string); override;
-    function CalcHintRect(MaxWidth: Integer; const AHint: string;
-      AData: Pointer): TRect; override;
-  end;
-
-procedure TListBoxTip.CreateParams(var Params:TCreateParams);
+procedure TRSCustomListBoxHint.CreateParams(var Params:TCreateParams);
 begin
   inherited CreateParams(Params);
   with Params.WindowClass do
@@ -68,7 +68,7 @@ begin
     ExStyle:= ExStyle or WS_EX_TOPMOST;
 end;
 
-procedure TListBoxTip.NCPaint(DC:HDC);
+procedure TRSCustomListBoxHint.NCPaint(DC:HDC);
 begin
   with TBrush.Create do
   try
@@ -79,26 +79,27 @@ begin
   end;
 end;
 
-procedure TListBoxTip.Paint;
+procedure TRSCustomListBoxHint.Paint;
 var
   R: TRect;
 begin
   R := ClientRect;
-  if Compact then
-   inc(R.Left, 1)
+  if FCompact then
+    inc(R.Left, 1)
   else
-   inc(R.Left, 2);
+    inc(R.Left, 2);
   DrawText(Canvas.Handle, PChar(Caption), -1, R, DT_LEFT or DT_NOPREFIX or
     DT_WORDBREAK or DrawTextBiDiModeFlagsReadingOnly);
 end;
 
-procedure TListBoxTip.ActivateHint(Rect:TRect; const AHint:string);
-var a:TAnimateWindowProc;
+procedure TRSCustomListBoxHint.ActivateHint(Rect:TRect; const AHint:string);
+var
+  a:TAnimateWindowProc;
 begin
   Canvas.Font.Color:=Screen.HintFont.Color;
   dec(Rect.Bottom, 4); // Потом inherited ActivateHint делает inc на 4
 
-  if not Compact then
+  if not FCompact then
   begin
     dec(Rect.Left);
     inc(Rect.Right, 2);
@@ -114,7 +115,7 @@ begin
   @AnimateWindowProc:=@a;
 end;
 
-function TListBoxTip.CalcHintRect(MaxWidth: Integer; const AHint: string; AData: Pointer): TRect;
+function TRSCustomListBoxHint.CalcHintRect(MaxWidth: Integer; const AHint: string; AData: Pointer): TRect;
 begin
   Result:= inherited CalcHintRect(MaxWidth, AHint, AData);
   dec(Result.Right, 4);
@@ -124,19 +125,6 @@ end;
 {
 ******************************* TRSListBoxHints ********************************
 }
-constructor TRSListBoxHints.Create(AFont:TFont);
-begin
-  LastIndex:=-1;
-  Font:=AFont;
-  HintWindow:=TListBoxTip.Create(nil);
-  HintWindow.Color:=clInfoBk;
-end;
-
-destructor TRSListBoxHints.Destroy;
-begin
-  HintWindow.Free;
-  inherited;
-end;
 
 procedure TRSListBoxHints.BeforeWndProc(var Msg:TMessage);
 begin
@@ -154,6 +142,22 @@ begin
   end;
 end;
 
+constructor TRSListBoxHints.Create(AOwner: TComponent);
+begin
+  inherited;
+  OwnerFont:= AOwner is TControl;
+  FLastIndex:= -1;
+  Color:= clInfoBk;
+end;
+
+procedure TRSListBoxHints.DoHideHint;
+begin
+  if FTimerID <> 0 then
+    KillTimer(Handle, FTimerID);
+  FTimerID:= 0;
+  ReleaseHandle;
+end;
+
 procedure TRSListBoxHints.AfterWndProc(var Msg:TMessage);
 begin
   case Msg.Msg of
@@ -162,17 +166,10 @@ begin
   end;
 end;
 
-procedure TRSListBoxHints.UpdateHint;
-var p:TPoint;
-begin
-  if GetCursorPos(p) and Windows.ScreenToClient(Handle, p) then
-    UpdateHint(p);
-end;
-
 procedure TRSListBoxHints.HideHint;
 begin
-  HintWindow.ReleaseHandle;
-  LastIndex:=-1;
+  DoHideHint;
+  FLastIndex:= -1;
 end;
 
 function GetItemText(h:hwnd; i:int):string;
@@ -184,9 +181,13 @@ end;
 function TRSListBoxHints.GetTextRight(const Text:string; r:TRect):int;
 var DC:HDC; old:HFONT;
 begin
-  DC:= GetDC(Handle);
+  DC:= GetDC(ListHandle);
   try
-    old:=SelectObject(DC, Font.Handle);
+    if OwnerFont then
+      old:= SelectObject(DC, TRSListBoxHints(Owner as TControl).Font.Handle)
+    else
+      old:= SelectObject(DC, Font.Handle);
+
     if Columns<>0 then
       inc(r.Left)
     else
@@ -195,46 +196,70 @@ begin
     SelectObject(DC, old);
     Result:=r.Right;
   finally
-    ReleaseDC(Handle, DC);
+    ReleaseDC(ListHandle, DC);
   end;
 end;
 
-procedure TRSListBoxHints.UpdateHint(const p:TPoint);
-var i:int; r, r1:TRect; Text:string;
+procedure TRSListBoxHints.UpdateHint;
+var p:TPoint;
 begin
-  GetClientRect(Handle, r);
+  if GetCursorPos(p) and Windows.ScreenToClient(ListHandle, p) then
+    UpdateHint(p);
+end;
+
+procedure TRSListBoxHints.WMTimer(var Msg: TWMTimer);
+begin
+  inherited;
+  if (Msg.TimerID = FTimerID) and not IsWindowVisible(ListHandle) then
+    HideHint;
+end;
+
+procedure TRSListBoxHints.UpdateHint(const p:TPoint);
+var
+  i, dh: int; r, r1:TRect; Text:string;
+begin
+  Windows.GetClientRect(ListHandle, r);
   if PtInRect(r, p) then
   begin
-    i:=SendMessage(Handle, LB_ITEMFROMPOINT, 0, MakeLParam(p.x, p.y));
+    i:= SendMessage(ListHandle, LB_ITEMFROMPOINT, 0, MakeLParam(p.x, p.y));
     RSWin32Check(i<>LB_ERR);
     if i shr 16 <> 0 then
       i:=-1;
   end else
     i:=-1;
-  if i=LastIndex then exit;
-  LastIndex:=i;
+
+  if i=FLastIndex then exit;
+  FLastIndex:=i;
   if i>=0 then
   begin
-    Text:=GetItemText(Handle, i);
-    RSWin32Check(SendMessage(Handle, LB_GETITEMRECT, i, int(@r))<>LB_ERR);
-    if GetTextRight(Text, r)>r.Right then
-      with HintWindow do
+    Text:=GetItemText(ListHandle, i);
+    RSWin32Check(SendMessage(ListHandle, LB_GETITEMRECT, i, int(@r))<>LB_ERR);
+    if GetTextRight(Text, r) > r.Right then
+    begin
+      MapWindowPoints(ListHandle, 0, r, 2); // Client To Screen
+      if OwnerFont then
+        Canvas.Font:= TRSListBoxHints(Owner as TControl).Font
+      else
+        Canvas.Font:= Font;
+
+       // Calculate Hint Window rect
+      FCompact:= Columns<>0;
+      r1:= CalcHintRect(Screen.Width, Text, nil);
+      SetMax(r.Right, r.Left + r1.Right);
+      dh:= max(r.Bottom, r.Top + r1.Bottom) - r.Bottom;
+      dec(r.Top, (dh + 1) div 2);
+      inc(r.Bottom, dh div 2);
+
+      ActivateHint(r, Text);
+      if FTimerID = 0 then
       begin
-        MapWindowPoints(self.Handle, 0, r, 2); // Client To Screen
-        Canvas.Font:=self.Font;
-
-         // Calculate Hint Window rect
-        TListBoxTip(HintWindow).Compact:=Columns<>0;
-        r1:=CalcHintRect(Screen.Width, Text, nil);
-        if r.Right < r.Left + r1.Right then
-          r.Right:= r.Left + r1.Right;
-        r.Bottom:=max(r.Top + r1.Bottom, r.Bottom);
-
-        ActivateHint(r, Text);
-        exit; // Don't hide hint window
+        FTimerID:= 1;
+        RSWin32Check(SetTimer(Handle, FTimerID, 10, nil));
       end;
+      exit; // Don't hide hint window
+    end;
   end;
-  HintWindow.ReleaseHandle;
+  DoHideHint;
 end;
 
 end.

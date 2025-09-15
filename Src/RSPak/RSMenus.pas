@@ -20,7 +20,7 @@ unit RSMenus;
 interface
 
 uses Windows, SysUtils, Classes, Messages, Graphics, ImgList, Menus, Forms,
-  RSGraphics, RSPainters, RSQ, RSCommon, UxTheme, RSImgList;
+  RSGraphics, RSPainters, RSQ, RSCommon, UxTheme, RSImgList, Math;
 
 type
   TRSMenuGetTextEvent = procedure(Item: TMenuItem; var Result:string) of Object;
@@ -40,10 +40,20 @@ type
     procedure SetFont(const Value: TFont);
     function GetColors:TRSColorTheme;
     procedure SetColors(v: TRSColorTheme);
+    procedure SetCheckGlyph(const Value: TBitmap);
+    procedure SetRadioGlyph(const Value: TBitmap);
   protected
+    FStdCheckGlyph: TBitmap;
+    FCheckGlyph: array[Boolean] of TBitmap;
     FLastSel: TMenuItem;
     FCurrSel: TMenuItem;
     FColors: TRSColorTheme;
+    FMenuBarColor: TColor;
+    FTopLevelShadowBmp: TBitmap;
+    class procedure PrepareStdCheckGlyph(Bmp: TBitmap; h: int);
+    class function GetStdCheckGlyphHeight(Size: int): int;
+    function NeedStdCheckGlyph(ItemHeight: int): TBitmap;
+    procedure MakeShadow;
     procedure CheckColors;
     function GetHeight(IL:TCustomImageList; ACanvas:TCanvas):integer;
     function GetGutter(IL:TCustomImageList; Height:integer):integer;
@@ -70,20 +80,17 @@ type
     property MinHeight: int read FMinHeight write FMinHeight;
     property SeparatorsHints:Boolean read FSeparatorsHints write FSeparatorsHints;
     property SpaceAroundImages: int read FAroundImages write FAroundImages;
-    property SpaceAroundText: int read FAroundText write FAroundText;
+    property CheckGlyph: TBitmap read FCheckGlyph[false] write SetCheckGlyph;
+    property RadioGlyph: TBitmap read FCheckGlyph[true] write SetRadioGlyph;
     property OnGetText: TRSMenuGetTextEvent read FOnGetText write FOnGetText;
     property OnGetShortCut: TRSMenuGetTextEvent read FGetShortCut write FGetShortCut;
     property OnGetFontColor: TRSMenuGetFontColorEvent read FOnGetFontColor write FOnGetFontColor;
     property OnPrepareFont: TRSMenuGetFontColorEvent read FOnGetFontColor write FOnGetFontColor;
   end;
 
-var RSMenu:TRSMenu;
-
-{ TODO : Поддержка TMenuItem.Bitmap }
+function RSMenu: TRSMenu;
 
 implementation
-
-{$R RSMenus.res}
 
 const
   ShWidth = 4;
@@ -102,58 +109,7 @@ const
   CheckSize = 15;
 
 var
-  BmpCheck: array[Boolean] of TBitmap;
-  ShBmp: TBitmap=nil;
-  MenuBarColor: TColor;
-
-procedure MakeShadow;
-// Редко нужно, поэтому почти без оптимизации
-const
-  ShW = ShWidth;
-  ShH = ShHeight;
-  Width = ShWidth;
-  Height = ShHeight;// + ShY - 1;
-  ShArr : array[0..ShH-1, 0..ShW-1] of byte =
-          (
-            (242, 246, 250, 253),
-            (217, 227, 241, 250),
-            (180, 199, 227, 245),
-            (155, 180, 217, 242),
-            (144, 172, 213, 241)
-          );
-var
-  X, Y: Integer;
-  RGBArray: PIntegerArray;
-  Bmp: TBitmap;
-begin
-  ShBmp.Width:=Width;
-  ShBmp.Height:=Height;
-  Bmp := TBitmap.Create;
-  Bmp.HandleType := bmDIB;
-  Bmp.PixelFormat := pf32bit;
-  Bmp.Width:=Width;
-  Bmp.Height:=Height;
-  with Bmp.Canvas do
-  begin
-    Brush.Color:=MenuBarColor;
-    FillRect(ClipRect);
-  end;
-  try
-    //i:=0;
-    for Y := 0 to ShH-1 do
-    begin
-      RGBArray  := Bmp.Scanline[Y];
-      for X := 0 to Width - 1 do
-      begin
-        RGBArray[X]:=RSAdjustIntensity(RGBArray[X], ShArr[Y,x]-255);
-      end;
-      //if i < ShH-1 then inc(i);
-    end;
-    with ShBmp.Canvas do CopyRect(ClipRect, Bmp.Canvas, ClipRect);
-  finally
-    Bmp.Free;
-  end;
-end;
+  RSMenuPtr: TRSMenu;
 
 (*
 procedure DrawMonoBmp(ACanvas:TCanvas; AImgList: TCustomImageList;
@@ -218,11 +174,24 @@ begin
   FAroundImages:= 3;
   FAroundText:= 1;
   FMinHeight:= 20;
+  FCheckGlyph[false]:= TBitmap.Create;
+  FCheckGlyph[true]:= TBitmap.Create;
+  FMenuBarColor:= clDefault; // Чтобы не совпал ни с чем
+  FTopLevelShadowBmp:= TBitmap.Create;
+  FTopLevelShadowBmp.HandleType:= bmDDB;
+  FStdCheckGlyph:= TBitmap.Create;
+  FStdCheckGlyph.HandleType:= bmDDB;
 end;
 
 destructor TRSMenu.Destroy;
 begin
   FFont.Free;
+  FCheckGlyph[false].Free;
+  FCheckGlyph[true].Free;
+  FStdCheckGlyph.Free;
+  FTopLevelShadowBmp.Free;
+  if RSMenuPtr = self then
+    RSMenuPtr:= nil;
   inherited;
 end;
 
@@ -231,6 +200,11 @@ begin
   Result:=FColors;
   if Result=RSColorTheme then
     Result:=nil;
+end;
+
+procedure TRSMenu.SetCheckGlyph(const Value: TBitmap);
+begin
+  FCheckGlyph[false].Assign(Value);
 end;
 
 procedure TRSMenu.SetColors(v: TRSColorTheme);
@@ -306,14 +280,10 @@ begin
 end;
 
 function TRSMenu.GetGutter(IL:TCustomImageList; Height:integer):integer;
-var i:integer;
 begin
-  Result := Height + GutterAdd;
-  if IL<>nil then
-  begin
-    i := IL.Width + FAroundImages*2;
-    if Result<i then Result := i;
-  end;
+  Result:= Height + GutterAdd;
+  if IL <> nil then
+    SetMax(Result, IL.Width + FAroundImages*2);
 end;
 
 function TRSMenu.GetWidth(Text:string; Item:TMenuItem; ACanvas: TCanvas;
@@ -374,6 +344,13 @@ begin
   if Assigned(OnGetShortCut) then OnGetShortCut(Item, Result);
 end;
 
+class function TRSMenu.GetStdCheckGlyphHeight(Size: int): int;
+begin
+  Result:= RDiv(Size*14, 64);
+  if Result = 10 then  Result:= 9
+  else if Result < 6 then  Result:= 6;
+end;
+
 procedure TRSMenu.MeasureItem(Sender: TObject; ACanvas: TCanvas;
             var Width, Height: Integer);
 var
@@ -393,6 +370,43 @@ begin
         Height := ACanvas.TextHeight(Text) + FAroundText*2
       else
         Height := SepHeight;
+  end;
+end;
+
+function TRSMenu.NeedStdCheckGlyph(ItemHeight: int): TBitmap;
+begin
+  if FStdCheckGlyph.Height <> ItemHeight then
+    PrepareStdCheckGlyph(FStdCheckGlyph, GetStdCheckGlyphHeight(ItemHeight));
+  Result:= FStdCheckGlyph;
+end;
+
+class procedure TRSMenu.PrepareStdCheckGlyph(Bmp: TBitmap; h: int);
+const
+  d = 0.01;
+  I = 0.3;
+  Vec: array[0..5] of TRSVectorGlyphLine = (
+    (0, 1+I*2, 0, 3), // outer left
+    (0, 3,     3, 6), // outer left 2
+    (0, 1+I*2, 3-I, 4+I), // inner left
+    (7, 0,     3-I, 4+I), // inner right
+    (7, 0,     7, 2), // outer right
+    (7, 2,     3, 6) // outer right 2
+  );
+var
+  m: ext;
+begin
+  with Bmp, Canvas do
+  begin
+    HandleType:= bmDDB;
+    Width:= 0;
+    Height:= h;
+    Width:= (Height*7 + 4) div 6;
+    Brush.Color:= clWhite;
+    FillRect(ClipRect);
+    Pen.Color:= clBlack;
+    m:= (Height + 0.25)/6;
+    RSDrawVectorGlyph(Canvas, Vec, (Width - m*7)/2 - d, d/2, m);
+    Transparent:= true;
   end;
 end;
 
@@ -449,6 +463,52 @@ begin
   MakeBreaks(Menu.Items,RemoveOldBreaks);
 end;
 
+procedure TRSMenu.MakeShadow;
+const
+  ShW = ShWidth;
+  ShH = ShHeight;
+  Width = ShWidth;
+  Height = ShHeight;// + ShY - 1;
+  ShArr : array[0..ShH-1, 0..ShW-1] of byte =
+          (
+            (242, 246, 250, 253),
+            (217, 227, 241, 250),
+            (180, 199, 227, 245),
+            (155, 180, 217, 242),
+            (144, 172, 213, 241)
+          );
+var
+  X, Y: Integer;
+  RGBArray: PIntegerArray;
+  Bmp: TBitmap;
+begin
+  FTopLevelShadowBmp.Width:=Width;
+  FTopLevelShadowBmp.Height:=Height;
+  Bmp := TBitmap.Create;
+  try
+    Bmp.HandleType := bmDIB;
+    Bmp.PixelFormat := pf32bit;
+    Bmp.Width:=Width;
+    Bmp.Height:=Height;
+    with Bmp.Canvas do
+    begin
+      Brush.Color:= FMenuBarColor;
+      FillRect(ClipRect);
+    end;
+    //i:=0;
+    for Y := 0 to ShH-1 do
+    begin
+      RGBArray  := Bmp.Scanline[Y];
+      for X := 0 to Width - 1 do
+        RGBArray[X]:=RSAdjustIntensity(RGBArray[X], ShArr[Y,x]-255);
+      //if i < ShH-1 then inc(i);
+    end;
+    with FTopLevelShadowBmp.Canvas do CopyRect(ClipRect, Bmp.Canvas, ClipRect);
+  finally
+    Bmp.Free;
+  end;
+end;
+
 procedure TRSMenu.DrawTopSelected(ACanvas:TCanvas; ARect:TRect;
             AFlat, AShadow, AEmpty:boolean);
 var bs:TBrushStyle;
@@ -473,14 +533,12 @@ const
   Flags: LongInt = DT_NOCLIP or DT_VCENTER or DT_END_ELLIPSIS or DT_SINGLELINE;
   FlagsTopLevel: array[Boolean] of Longint = (DT_LEFT, DT_CENTER);
   FlagsShortCut: Longint = DT_RIGHT;
-  RectEl: array[Boolean] of Byte = (1, 6); //закругленный прямоугольник
-  CheckEl: array[Boolean] of Byte = (0, 100); //при отсутствии картинки
-  CheckEdge: array[Boolean] of Byte = (1, 2);
+  RectEl: array[Boolean] of Byte = (2, 6); //закругленный прямоугольник
 var
   TopLevel: Boolean;
   Gutter: Word;
   ImageList: TCustomImageList;
-  i, j: integer;
+  i, j, sz: integer;
   SysFlat, SysShadow: bool;
   Bmp: TBitmap;
   ImgLeft: int;
@@ -492,6 +550,7 @@ begin
   begin
     TopLevel := GetParentComponent is TMainMenu;
     ImageList := GetImageList;
+    Font:= FFont;
 
      // Для стирания тени.
 
@@ -541,11 +600,11 @@ begin
         if SysShadow and (Count>0) then
         begin
           BitBlt(ACanvas.Handle, ARect.Right, ARect.Top + ShTop,
-                 ShWidth, ShHeight, ShBmp.Canvas.Handle, 0, 0, SRCCOPY);
+                 ShWidth, ShHeight, FTopLevelShadowBmp.Canvas.Handle, 0, 0, SRCCOPY);
           ACanvas.CopyRect(
             Rect(ARect.Right, ARect.Top + ShTop + ShHeight,
                   ARect.Right + ShWidth, ARect.Bottom),
-            ShBmp.Canvas,
+            FTopLevelShadowBmp.Canvas,
             Rect(0, ShHeight - 1, ShWidth, ShHeight));
         end else
           FCurrSel:=nil;
@@ -556,7 +615,7 @@ begin
         if (FCurrSel=Sender) or (FLastSel=Sender) and (FCurrSel<>nil) and
            (FCurrSel.MenuIndex<>FLastSel.MenuIndex+1) then
         begin
-          Brush.Color:=MenuBarColor;
+          Brush.Color:= FMenuBarColor;
           FillRect(Rect(ARect.Right,ARect.Top,ARect.Right+ShWidth,ARect.Bottom));
         end;
 
@@ -568,13 +627,13 @@ begin
       else
         if State * [odSelected, odDisabled] = [odSelected, odDisabled] then
         begin
-          Pen.Color:=FColors.Disabled;
-          Brush.Color := MenuBarColor;
+          Pen.Color:= FColors.Disabled;
+          Brush.Color:= FMenuBarColor;
           Rectangle(ARect);
         end else
           if not (odHotLight in State) then
           begin
-            Brush.Color := MenuBarColor;
+            Brush.Color:= FMenuBarColor;
             FillRect(ARect);
           end else
             FColors.DrawHotTrackBackground(ACanvas, ARect)
@@ -608,54 +667,64 @@ begin
             not (odDisabled in State), RectEl[RadioItem]);
       end else
       begin
-        Bmp:=BmpCheck[RadioItem];
+        Bmp:= FCheckGlyph[RadioItem];
+        if Bmp.Empty then
+          Bmp:= NeedStdCheckGlyph(TextHeight('W'));
 
-        i:=ARect.Left+(Gutter-CheckSize) div 2;
-        j:=(ARect.Top+ARect.Bottom-CheckSize) div 2;
-        FColors.DrawCheck(ACanvas, Rect(i, j, i+CheckSize, j+CheckSize),
-          not (odDisabled in State), CheckEl[RadioItem],
-          CheckEdge[RadioItem]);
+        // Check border
+        sz:= (CheckSize*Bmp.Width) div 7;
+        i:= ARect.Left+(Gutter - sz) div 2;
+        j:= ARect.Top + (ARect.Bottom - ARect.Top - sz)*9 div 14;
+        FColors.DrawCheck(ACanvas, Rect(i, j, i + sz, j + sz),
+           not (odDisabled in State), BoolToInt[RadioItem]*sz, 1, 3 + BoolToInt[RadioItem]);
 
-        if RadioItem then
-          with ACanvas do
-          begin
-            Pixels[i+2, j+1]:=FColors.Gutter;
-            Pixels[i+2, j+CheckSize-2]:=FColors.Gutter;
-            Pixels[i+CheckSize-3, j+1]:=FColors.Gutter;
-            Pixels[i+CheckSize-3, j+CheckSize-2]:=FColors.Gutter;
-          end;
-
+        // Check glyph
+        inc(i, (sz - Bmp.Width) div 2);
+        inc(j, (sz - Bmp.Height) div 2);
         if Enabled then
-          Draw( i + (CheckSize - Bmp.Width) div 2,
-                j + (CheckSize - Bmp.Height) div 2, Bmp)
+          Draw(i, j, Bmp)
         else
-          RSDrawMask(ACanvas, Bmp, FColors.Disabled,
-                     i + (CheckSize - Bmp.Width) div 2,
-                     j + (CheckSize - Bmp.Height) div 2);
+          RSDrawMask(ACanvas, Bmp, FColors.Disabled, i, j);
       end;
 
      // Picture
 
     Bmp:=nil;
     if Assigned(ImageList) and (ImageIndex>=0) then
-    try
-      Bmp:=RSImgListToBmp(ImageList, ImageIndex);
-      if Checked and not (odDisabled in State) then
-        ACanvas.Draw(ARect.Left + ImgLeft,
-                     (ARect.Top + ARect.Bottom - ImageList.Height) div 2, Bmp)
-      else
-        FColors.DrawGlyph(ACanvas, ARect.Left + ImgLeft,
-           (ARect.Top + ARect.Bottom - ImageList.Height) div 2,
-           Bmp, State, FColors.Gutter, true);
-    finally
-      Bmp.Free;
+      try
+        if not Checked or (odDisabled in State) then
+        begin
+          Bmp:=RSImgListToBmp(ImageList, ImageIndex);
+          FColors.DrawGlyph(ACanvas, ARect.Left + ImgLeft,
+             (ARect.Top + ARect.Bottom - ImageList.Height) div 2,
+             Bmp, State, FColors.Gutter, true);
+        end else
+          ImageList.Draw(ACanvas, ARect.Left + ImgLeft,
+             (ARect.Top + ARect.Bottom - ImageList.Height) div 2, ImageIndex);
+//        Bmp:=RSImgListToBmp(ImageList, ImageIndex);
+//        if Checked and not (odDisabled in State) then
+//          ACanvas.Draw(ARect.Left + ImgLeft,
+//                       (ARect.Top + ARect.Bottom - ImageList.Height) div 2, Bmp)
+//        else
+//          FColors.DrawGlyph(ACanvas, ARect.Left + ImgLeft,
+//             (ARect.Top + ARect.Bottom - ImageList.Height) div 2,
+//             Bmp, State, FColors.Gutter, true);
+      finally
+        Bmp.Free;
+      end
+    else if not Bitmap.Empty then
+    begin
+      i:= min(Bitmap.Width, Gutter - FAroundImages*2);
+      j:= min(Bitmap.Height, RectH(ARect) - FAroundImages*2);
+      StretchDraw(Bounds(ARect.Left + (Gutter - i) div 2,
+         (ARect.Top + ARect.Bottom - j) div 2, i, j), Bitmap);
     end;
+
 
      // Text etc.
 
     Text:= GetText(ptr(Sender));
 
-    Font := FFont;
     i:=Font.Color;
     if (odDisabled in State) then  i:= FColors.Disabled;
     if (odDefault in State) then  Font.Style:= [fsBold];
@@ -710,6 +779,11 @@ begin
   FFont.Assign(Value);
 end;
 
+procedure TRSMenu.SetRadioGlyph(const Value: TBitmap);
+begin
+  FCheckGlyph[true].Assign(Value);
+end;
+
 procedure TRSMenu.CheckColors;
 var i:integer;
 begin
@@ -720,40 +794,22 @@ begin
   else
     i:=ColorToRGB(clBtnFace);
 
-  if i<>MenuBarColor then
+  if i <> FMenuBarColor then
   begin
-    MenuBarColor:=i;
+    FMenuBarColor:= i;
     MakeShadow;
   end;
 end;
 
-function InitBmp(var Bmp:TBitmap; Name:string; Transparent:boolean=true):boolean;
-var h:HBITMAP;
+function RSMenu: TRSMenu;
 begin
-  if Bmp=nil then Bmp:=TBitmap.Create;
-  h:=LoadBitmap(HInstance, PChar(Name));
-  Bmp.Handle:=h;
-  Bmp.HandleType:=bmDIB;
-  Bmp.Transparent:=Transparent;
-  Result:=h<>0;
+  if RSMenuPtr = nil then
+    RSMenuPtr:= TRSMenu.Create;
+  Result:= RSMenuPtr;
 end;
 
 initialization
-  InitBmp(BmpCheck[false], 'RSMENUSCHECK');
-  if not InitBmp(BmpCheck[true], 'RSMENUSRADIO') then
-    InitBmp(BmpCheck[true], 'RSMENUSCHECK');
-
-  MenuBarColor:=clDefault; // Чтобы не совпал ни с чем
-  ShBmp:=TBitmap.Create;
-  ShBmp.HandleType:=bmDDB;
-  //MakeShadow;
-
-  RSMenu:=TRSMenu.Create;
 
 finalization
-  BmpCheck[true].Free;
-  BmpCheck[false].Free;
-
-  ShBmp.Free;
-  RSMenu.Free;
+  RSMenuPtr.Free;
 end.

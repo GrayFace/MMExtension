@@ -1,5 +1,6 @@
 unit RSLodEdt;
 
+{$I RSPak.inc}
 interface
 
 uses
@@ -8,9 +9,9 @@ uses
   ComCtrls, RSUtils, RSTimer, Buttons, RSSpeedButton, RSLod, Themes, RSGraphics,
   CommCtrl, Menus, ImgList, RSTreeView, Math, RSClipboard, RSListView, RSMenus,
   RSDialogs, RSMemo, RSPopupMenu, RSLang, RSFileAssociation, RSComboBox,
-  RSJvPcx, ShellAPI, Types, RSDefLod, MMSystem, RSRadPlay, IniFiles, RSRecent,
+  RSJvPcx, ShellAPI, Types, RSDefLod, MMSystem, RSRadPlay, RSIni, RSRecent,
   RSQHelp1, dzlib, RSRegistry, GIFImage, RSStrUtils, DragDrop, DropSource,
-  DragDropFile;
+  DragDropFile, RSImgList, RSC, UxTheme;
 
 {
 Version 1.0.1:
@@ -77,18 +78,22 @@ Version 1.3:
 [+] After you create an archive from a selection of files, it's added to recent files list
 [-] Unpacking errors while dragging files onto other apps were leading to MMArchive hanging
 [-] "Ignore Unpacking Errors" option state wasn't preserved on program restart
-[-] When creating new archive default file type was misleading  
+[-] When creating new archive default file type was misleading
 
 Version 1.3.1:
 [+] When importing a texture or a sprite that isn't 8 bit, previous palette is used if the file exists in the archive
 [-] Mipmaps for transparent textures were generated with a blue border
 
-Version 1.3.2:
+Version 1.4:
+[+] Set Scale Factor for LWD archives
+[+] Make Transparent (in Spell Book) for icons.lod
+[+] Palettes -> Fourth Kind to Sixth Kind
 [-] Empty bitmaps in icons.lod were treated as palettes
-[-] Rename when access denied
+[-] Rename when access denied, rename when only changing case
 [-] Bits in icons.lod for spell icons weren't set correctly
 [-] "Compare To" wasn't able to detect changes between repacked files in MM lods
-[!!!] Compare was bad
+[-] DPI scaling problems
+
 [!!!] Choose custom transparent color?
 
 Генерация палитры для всех дропнутых кадров?
@@ -102,6 +107,7 @@ type
   TRSLodEdit = class;
   //TRSLodPreviewMode = set of (RSlpNoFavorites, RSlpNoPreview);
   TRSLodSelectFileEvent = procedure(Sender: TRSLodEdit; Index: Integer) of object;
+  TRSLodEditCustomFilter = function(Sender: TRSLodEdit; Index: int; var Str: string): Boolean of object;
 
   TRSLodEdit = class(TForm)
     OpenDialog1: TRSOpenSaveDialog;
@@ -235,6 +241,16 @@ type
     CompareTo1: TMenuItem;
     OpenDialogCompare: TRSOpenSaveDialog;
     Associate5: TMenuItem;
+    Lwd1: TMenuItem;
+    SetScaleFactor1: TMenuItem;
+    Icon1: TMenuItem;
+    MakeTransparentinSpellBook1: TMenuItem;
+    MakeTransparentinSpellBook2: TMenuItem;
+    FourthKind1: TMenuItem;
+    FifthKind1: TMenuItem;
+    SixthKind1: TMenuItem;
+    MakeTransparent1: TMenuItem;
+    MakeOpaque1: TMenuItem;
     procedure Associate5Click(Sender: TObject);
     procedure CompareTo1Click(Sender: TObject);
     procedure SaveSelectionAsArchive1Click(Sender: TObject);
@@ -366,21 +382,26 @@ type
     procedure PopupTreePopup(Sender: TObject);
     procedure PopupTreeAfterPopup(Sender: TObject);
     procedure DefaultPalette1Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure SetScaleFactor1Click(Sender: TObject);
+    procedure MakeTransparentinSpellBook1Click(Sender: TObject);
+    procedure MakeTransparentinSpellBook2Click(Sender: TObject);
   private
-    FLanguage: string;
-    FDefFilter: int;
-    FAppCaption: string;
     FOnSelectFile: TRSLodSelectFileEvent;
     procedure SetAppCaption(const v: string);
     procedure SetLanguage(const v: string);
     procedure SetDefFilter(v: int);
   protected
+    FLanguage: string;
+    FDefFilter: int;
+    FAppCaption: string;
     DragHWnd: HWND;
     OldDragWndProc: ptr;
     DragNodes: array of TTreeNode;
     DragTargetNode, DragNode : TTreeNode;
 
     PreviewBmp: TBitmap;
+    LwdLastSize: TSmallPoint;
     FLightLoad: Boolean;
     FavsAsText: Boolean;
     FEditing: Boolean;
@@ -405,7 +426,7 @@ type
     FCopyStr: WideString;
     FDragFilesList: TStringList;
     FDragException: string;
-    Ini: TIniFile;
+    Ini: TCustomIniFile;
     FilterItemVisible: array of Boolean;
     procedure CreateParams(var Params: TCreateParams); override;
     procedure WMActivate(var Msg:TWMActivate); message WM_Activate;
@@ -476,7 +497,9 @@ type
     procedure DoAdd(Files:TStrings);
     procedure DoDelete(Backup: Boolean = true);
     procedure DoRename(i: int; const Name: string);
+    procedure MakeIconsTransparent(b: Boolean);
     procedure LoadFile(Index: int);
+
     procedure NeedBitmapsLod(Sender: TObject);
     procedure NeedPalette(Sender: TRSLod; Bitmap: TBitmap; var Palette: int);
     function NormalizePalette(b: TBitmap; HPal: HPALETTE): HPALETTE;
@@ -493,7 +516,7 @@ type
     ExtractPath: string;
     EmulatePopupShortCuts: boolean;
     Archive: TRSMMArchive;
-    SpecFilter: function(Sender: TRSLodEdit; Index: int; var Str: string): Boolean of object;
+    SpecFilter: TRSLodEditCustomFilter;
     ShowOneGroup: Boolean;
     TrackBarMoveByTimer: Boolean;
     function LoadShowModal(Filter, DefSel:string; FileName:string=''):TModalResult;
@@ -549,12 +572,17 @@ var
   SEPaletteMustExist: string = 'Image must be in 256 colors mode and palette must be added to bitmaps.lod';
   SPalette: string = 'Palette: %d';
   SPaletteChanged: string = 'Palette: %d (shown: %d)';
+  SOpaque: string = 'Opaque';
   SFavorites: string = 'Favorites';
   SRenameOverwriteQuestion: string = 'A file with specified name (%s) already exists. Overwrite?';
   SExtractOverwriteFileQuestion: string = 'The following files already exist. Overwrite?%s';
   SExtractOverwriteDirQuestion: string = 'The following folders already exist. Overwrite?%s';
   SPleaseWait: string = 'Please wait...';
   SPleaseWaitRebuilding: string = 'Rebuilding the archive. Please wait...';
+  SSetLwdScaleCaption: string = 'Set scale of selected bitmaps';
+  SSetLwdScale: string = 'Specify one or two numbers.'#13#10'E.g. if your HD bitmaps are 4 times bigger in width and 2 times bigger in height than originals, write "4x2".';
+  STooManyNumbersSpecified: string = 'Too many numbers specified';
+  SScaleMustBePowerTwo: string = 'Scale must be a power of 2';
 
 type
   PPalFix = ^TPalFix;
@@ -1133,6 +1161,8 @@ var
   sl: TStringList;
 begin
   Def1.Visible:= (Archive is TRSLod) and (TRSLod(Archive).Version = RSLodHeroes) and FindDefs;
+  Lwd1.Visible:= (Archive is TRSLwd);
+  Icon1.Visible:= (Archive is TRSLod) and (TRSLod(Archive).Version in [RSLodIcons, RSLodMM8]);
   if DefFilter <> 0 then
     if Def1.Visible then
       SpecFilter:= DefFilterProc
@@ -1141,8 +1171,8 @@ begin
     else
       SpecFilter:= nil;
 
-  Add1.Enabled:=true;
-  TreeView1.Enabled:=true;
+  Add1.Enabled:= true;
+  TreeView1.Enabled:= true;
 
   if not SameFavs then
   begin
@@ -1386,7 +1416,7 @@ begin
     RSLanguage.LoadLanguage(RSLoadTextFile(s), true);
   except
   end;
-  //RSSaveTextFile(AppPath + LangDir + 'tmp.txt', RSLanguage.MakeLanguage);
+//  RSSaveTextFile(AppPath + LangDir + 'tmp.txt', RSLanguage.MakeLanguage);
 
   RSMenu.Font.Charset:= Font.Charset;
   TreeView1.Items[0].Text:= SFavorites;
@@ -1400,6 +1430,9 @@ begin
 
   with RSHelp.Memo1 do
     Text:= RSStringReplace(Text, '%VERSION%', RSGetModuleVersion);
+
+  if PreviewBmp <> nil then
+    LoadFile(LastSel);
 end;
 
 procedure TRSLodEdit.SetPreviewBmp(bmp: TBitmap);
@@ -1407,6 +1440,63 @@ begin
   PreviewBmp.Free;
   PreviewBmp:= bmp;
   UpdatePreviewBmp;
+end;
+
+function GetLn2(x: ext): int;
+begin
+  Result:= 0;
+  while x > 1.1 do
+  begin
+    x:= x/2;
+    inc(Result);
+  end;
+  while x < 0.9 do
+  begin
+    x:= x*2;
+    dec(Result);
+  end;
+  if abs(x - 1) > 0.01 then
+    raise Exception.Create(SScaleMustBePowerTwo);
+end;
+
+procedure TRSLodEdit.SetScaleFactor1Click(Sender: TObject);
+var
+  ps: TRSParsedString;
+  s: string;
+  upd: Boolean;
+  x, y: ext;
+  i, k, xmul, ymul: int;
+begin
+  if (PreviewBmp <> nil) and (LwdLastSize.x > 0) and (LwdLastSize.y > 0) then
+    if PreviewBmp.Width*LwdLastSize.y = PreviewBmp.Height*LwdLastSize.x then
+      s:= FloatToStr(PreviewBmp.Width/LwdLastSize.x)
+    else
+      s:= FloatToStr(PreviewBmp.Width/LwdLastSize.x) + 'x' + FloatToStr(PreviewBmp.Height/LwdLastSize.y)
+  else
+    s:= '2';
+  if not InputQuery(SSetLwdScaleCaption, SSetLwdScale, s) then  exit;
+  if RSGetTokensCount(ps) > 2 then
+    raise Exception.Create(STooManyNumbersSpecified);
+  ps:= RSParseString(s, ['x']);
+  x:= RSStrToFloat(RSGetToken(ps, 0));
+  y:= x;
+  if RSGetTokensCount(ps) > 1 then
+    y:= StrToInt(RSGetToken(ps, 1));
+  xmul:= GetLn2(x);
+  ymul:= GetLn2(y);
+  if ListView1.SelCount = 0 then  exit;
+  upd:= false;
+  with (Archive as TRSLwd), ListView1.Items do
+    for i:= 0 to Count-1 do
+      if Item[i].Selected then
+      begin
+        k:= ItemIndexes[i];
+        if SetItemScale(k, xmul, ymul) then
+          upd:= upd or (i = LastSel);
+      end;
+
+  if upd and (PreviewBmp <> nil) then
+    LoadFile(LastSel);
 end;
 
 procedure TRSLodEdit.ShowAll1Click(Sender: TObject);
@@ -1587,6 +1677,7 @@ end;
 procedure TRSLodEdit.LoadFile(Index: int);
 const
   DimStr: array[Boolean] of string = ('%dx%d', '%dx%d. %s');
+  LwdDimStr: array[Boolean] of string = ('%dx%d (%dx%d)', '%dx%d (%dx%d). %s');
 var
   ft: TMyFileType;
   s: string;
@@ -1595,6 +1686,7 @@ var
   j: int;
 begin
   ft:= aNone;
+  pint(@LwdLastSize)^:= 0;
   if (Index >= 0) and (Index < length(ItemIndexes)) then
     if Archive is TRSLod then
       with TRSLod(Archive) do
@@ -1629,16 +1721,17 @@ begin
     else
       Assert(false);
 
+  // Stop current sound
   if FileType = aWav then
     sndPlaySound(nil, SND_ASYNC or SND_MEMORY or SND_NODEFAULT);
   FreeAndNil(FileBitmap);
   WasPlayed:= VideoPlayer <> nil;
   FreeVideo;
-  // Stop current sound
-  if ft = aWav then
-    sndPlaySound(nil, 0);
+//  if ft = aWav then
+//    sndPlaySound(nil, 0);
   FileBuffer:= nil;
   LastPalString:= '';
+  s:= '';
   if (ft <> aNone) and (ft <> aVideo) then
   begin
     Index:= ItemIndexes[Index];
@@ -1651,7 +1744,6 @@ begin
         a.Seek(0, 0);
         FileBitmap:= TJvPcx.Create;
         FileBitmap.LoadFromStream(a);
-        ft:= aBmp;
       end else
       begin
         FileBitmap:= Archive.ExtractArrayOrBmp(Index, FileBuffer);
@@ -1663,16 +1755,24 @@ begin
       a.Free;
     end;
   end;
-  if ft = aBmp then
-  begin
-    if (LastPalString = '') and (Archive is TRSLod) and (TRSLod(Archive).LastPalette <> 0) then
-      s:= Format(SPalette, [TRSLod(Archive).LastPalette])
-    else
-      s:= LastPalString;
-  end else
-    s:= '';
+  s:= LastPalString;
   if FileBitmap <> nil then
-    s:= Format(DimStr[s <> ''], [FileBitmap.Width, FileBitmap.Height, s]);
+  begin
+    if Icon1.Visible and (((Archive as TRSLod).LastIconBits and RSLodBitTransparent) = 0) then
+      s:= SOpaque;
+    if (s = '') and (Archive is TRSLod) and (TRSLod(Archive).LastPalette <> 0) then
+      s:= Format(SPalette, [TRSLod(Archive).LastPalette]);
+    if Lwd1.Visible then
+    begin
+      LwdLastSize:= (Archive as TRSLwd).LastBaseSize;
+      with LwdLastSize do
+        if (x <> FileBitmap.Width) or (y <> FileBitmap.Height) then
+          s:= Format(LwdDimStr[s <> ''], [FileBitmap.Width, FileBitmap.Height, x, y, s])
+        else
+          s:= Format(DimStr[s <> ''], [x, y, s]);
+    end else
+      s:= Format(DimStr[s <> ''], [FileBitmap.Width, FileBitmap.Height, s]);
+  end;
   Label1.Caption:= s;
 
   Timer1.Interval:=0;
@@ -1701,12 +1801,6 @@ begin
               j:=Def.Groups[0].ItemsCount;
         // RSSpeedButton3.Show; // !!!
       end;
-      aBmp:
-      begin
-        j:=1;
-        SetPreviewBmp(FileBitmap);
-        FileBitmap:= nil;
-      end;
       aPal:
       begin
         j:=1;
@@ -1733,6 +1827,13 @@ begin
           if VideoPlayer <> nil then
             j:= 1;
         end;
+
+      else if FileBitmap <> nil then
+      begin
+        j:=1;
+        SetPreviewBmp(FileBitmap);
+        FileBitmap:= nil;
+      end;
     end;
   except
     j:=0;
@@ -1770,7 +1871,7 @@ end;
 procedure TRSLodEdit.LoadIni;
 begin
   //RSSaveTextFile(AppPath + 'Lang.txt', RSLanguage.MakeLanguage);
-  with TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini')) do
+  with TRSMemIni.Create(ChangeFileExt(Application.ExeName, '.ini')) do
     try
       Recent.AsString:= ReadString('General', 'Recent Files', '');
       Language:= ReadString('General', 'Language', 'English');
@@ -2190,6 +2291,15 @@ begin
   FreeAndNil(VideoPlayers[0]);
   FreeAndNil(VideoPlayers[1]);
   FreeAndNil(VideoPlayers[2]);
+end;
+
+procedure TRSLodEdit.FormShow(Sender: TObject);
+begin
+{$IFDEF D2007}
+  // for some reason item background doesn't get cleared in Explorer style
+  if ThemeServices.ThemesEnabled and (Win32MajorVersion >= 6) then
+    SetWindowTheme(ListView1.Handle, '', nil);
+{$ENDIF}
 end;
 
 procedure TRSLodEdit.FreeArchive;
@@ -2748,7 +2858,7 @@ var
 begin
   Archive.RawFiles.CheckName(Name);
   if Archive.RawFiles.FindFile(Name, j) then
-    if not ConfirmBox(Format(SRenameOverwriteQuestion, [Name])) then
+    if (ItemIndexes[i] <> j) and not ConfirmBox(Format(SRenameOverwriteQuestion, [Name])) then
       exit;
 
   Archive.RawFiles.Rename(ItemIndexes[i], Name);
@@ -2855,7 +2965,7 @@ end;
 
 procedure TRSLodEdit.SaveIni;
 begin
-  with TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini')) do
+  with TRSMemIni.Create(ChangeFileExt(Application.ExeName, '.ini')) do
     try
       WriteString('General', 'Recent Files', Recent.AsString);
       WriteString('General', 'Language', Language);
@@ -2986,6 +3096,7 @@ begin
   if SameText(s, 'EnglishT.lod') or SameText(s, 'EnglishD.lod') then
     s:= Copy(s, 8, 5);
   SaveDialogSaveSelectionAs.FileName:= ExtractFilePath(ArchiveFileName) + 'new.' + s;
+  SaveDialogSaveSelectionAs.InitialDir:= ExtractFilePath(SaveDialogSaveSelectionAs.FileName);
   if not SaveDialogSaveSelectionAs.Execute then  exit;
   a0:= nil;
   output:= Archive.CloneForProcessing(SaveDialogSaveSelectionAs.FileName, ListView1.SelCount);
@@ -3335,6 +3446,8 @@ begin
   TRSSpeedButton(Rebuild1.Tag).Enabled:= Archive <> nil;
   TRSSpeedButton(MergeWith1.Tag).Enabled:= Archive <> nil;
   TRSSpeedButton(CompareTo1.Tag).Enabled:= Archive <> nil;
+  Lwd1.Enabled:= b;
+  Icon1.Enabled:= b;
 end;
 
 procedure TRSLodEdit.Cut1Click(Sender: TObject);
@@ -3684,6 +3797,10 @@ begin
 end;
 
 procedure TRSLodEdit.Initialize(Editing:boolean=false; UseRSMenus:boolean=true);
+const
+  H0 = 24;
+var
+  i, ph, btnH: int;
 begin
   {
   self:=ptr(TRSLodEdit.NewInstance);
@@ -3713,14 +3830,29 @@ begin
     AddItem('SEPaletteMustExist', SEPaletteMustExist);
     AddItem('SPalette', SPalette);
     AddItem('SPaletteChanged', SPaletteChanged);
+    AddItem('SOpaque', SOpaque);
     AddItem('SFavorites', SFavorites);
     AddItem('SRenameOverwriteQuestion', SRenameOverwriteQuestion);
     AddItem('SExtractOverwriteFileQuestion', SExtractOverwriteFileQuestion);
     AddItem('SExtractOverwriteDirQuestion', SExtractOverwriteDirQuestion);
     AddItem('SPleaseWait', SPleaseWait);
     AddItem('SPleaseWaitRebuilding', SPleaseWaitRebuilding);
+    AddItem('SSetLwdScaleCaption', SSetLwdScaleCaption);
+    AddItem('SSetLwdScale', SSetLwdScale);
+    AddItem('STooManyNumbersSpecified', STooManyNumbersSpecified);
+    AddItem('SScaleMustBePowerTwo', SScaleMustBePowerTwo);
   end;
   FEditing:= Editing;
+
+
+  // DPI scaling
+  ph:= max(H0, Panel3.ClientHeight - 2*RDiv(2*Panel3.ClientHeight, H0));
+  btnH:= ph - 1;
+  i:= (btnH - 2)*2 div (ImageList1.Height + 2);
+  if i > 3 then
+    i:= i and not 1;
+  UpscaleSpeedButtonGlyphs(self, i, 2);
+
   if not Editing then
   begin
     Panel3.Hide;
@@ -3741,6 +3873,8 @@ begin
     Menu:=nil;
   end else
   begin
+    RSUpscaleImgList(ImageList1, (ImageList1.Width*i + 1) div 2, (ImageList1.Height*i + 1) div 2);
+
     Application.Title:= AppCaption;
     with PopupList.Items do
     begin
@@ -3748,10 +3882,12 @@ begin
       Delete(IndexOf(CopyName1));
     end;
     RSBindToolBar:= true;
-    ComboExtFilter.Left:= 1 + RSMakeToolBar(Panel3, [New1, Open1, RecentFiles1,
+    i:= RSMakeToolBar(Panel3, [New1, Open1, RecentFiles1,
       SaveSelectionAsArchive1, N3,
       Add1, Extract2, ExtractTo2, ExtractForDefTool2, N6,
-      Rebuild1, MergeWith1, CompareTo1, N6, Sortbyextension1], Toolbar, 1);
+      Rebuild1, MergeWith1, CompareTo1, N6, Sortbyextension1], Toolbar,
+      RDiv(2*ph, H0) - 1, RDiv(11*ph, H0), Panel3.ClientHeight - 2*RDiv(3*ph, H0), btnH + 1, btnH);
+    ComboExtFilter.Left:= i + RDiv(4*ph, H0) - 2;
     UpdateToolbarState;
     TmpRecent1.Free;
     Recent:= TRSRecent.Create(RecentClick, RecentFiles1, true);
@@ -3770,6 +3906,41 @@ procedure TRSLodEdit.Button2Click(Sender: TObject);
 begin
 //  Closing:=true;
   Close;
+end;
+
+procedure TRSLodEdit.MakeIconsTransparent(b: Boolean);
+var
+  upd: Boolean;
+  i, k, bits:int;
+begin
+  if ListView1.SelCount = 0 then  exit;
+  upd:= false;
+  with (Archive as TRSLod), ListView1.Items do
+  begin
+    for i:= 0 to Count-1 do
+      if Item[i].Selected then
+      begin
+        k:= ItemIndexes[i];
+        if not IsBitmap(k) then  continue;
+        bits:= IconBits[k];
+        if (bits and RSLodBitTransparent <> 0) = b then  continue;
+        IconBits[k]:= (bits xor RSLodBitTransparent);
+        upd:= upd or (i = LastSel);
+      end;
+  end;
+
+  if upd and (PreviewBmp <> nil) then
+    LoadFile(LastSel);
+end;
+
+procedure TRSLodEdit.MakeTransparentinSpellBook1Click(Sender: TObject);
+begin
+  MakeIconsTransparent(true);
+end;
+
+procedure TRSLodEdit.MakeTransparentinSpellBook2Click(Sender: TObject);
+begin
+  MakeIconsTransparent(false);
 end;
 
 procedure TRSLodEdit.MenuShortCut(Item: TMenuItem; var Result: string);
@@ -4030,6 +4201,8 @@ begin
   if ListView1.Selected<>nil then
     DefaultSel:= SelCaption;
   PrepareLoad;
+  if Archive <> nil then
+    OpenDialog1.InitialDir:= ExtractFilePath(Archive.RawFiles.FileName);
   if not OpenDialog1.Execute then exit;
 
   FilterExt:= AnyExt;
@@ -4093,7 +4266,7 @@ const
 
   function DoFindPal(const name: string): Boolean;
   var
-    Kinds: array[1..3] of int2;
+    Kinds: array[1..6] of int2;
     size, n, i, j: int;
     p, p1: PChar;
   begin
@@ -4107,13 +4280,13 @@ const
       p1:= PChar(FSFT.Memory) + 8 + OffPal6;
 
     Result:= true;
-    for i := 1 to 3 do
+    for i := 1 to high(Kinds) do
       Kinds[i]:= 0;
     for i := 0 to n - 1 do
     begin
       if (pint2(p1)^ <> 0) and (StrComp(p, ptr(name)) = 0) then
       begin
-        for j := 1 to 3 do
+        for j := 1 to high(Kinds) do
         begin
           if Kinds[j] = pint2(p1)^ then  break;
           if Kinds[j] = 0 then
@@ -4131,7 +4304,10 @@ const
       inc(p, size);
       inc(p1, size);
     end;
-    for i := Kind downto 1 do
+    i:= Kind;
+    while (i > 3) and (Kinds[i] = 0) do
+      dec(i, 3);
+    for i := i downto 1 do
       if Kinds[i] <> 0 then
       begin
         pal:= Kinds[i];
@@ -4262,6 +4438,8 @@ begin
   with TRSLod(Sender) do
   begin
     LoadBitmapsLods(ExtractFilePath(RawFiles.FileName));
+    if Archive <> nil then
+      OpenDialogBitmapsLod.InitialDir:= ExtractFilePath(Archive.RawFiles.FileName);
     if (BitmapsLods = nil) and OpenDialogBitmapsLod.Execute then
       LoadBitmapsLods(ExtractFilePath(OpenDialogBitmapsLod.FileName));
   end;
@@ -4315,7 +4493,10 @@ var
   ver: TRSLodVersion;
   s, dir: string;
 begin
-  SaveDialogNew.InitialDir:= DialogToFolder(OpenDialog1);
+  if Archive <> nil then
+    SaveDialogNew.InitialDir:= ExtractFilePath(Archive.RawFiles.FileName)
+  else
+    SaveDialogNew.InitialDir:= DialogToFolder(OpenDialog1);
   SaveDialogNew.FileName:= '';
   if not SaveDialogNew.Execute then exit;
   FreeArchive;
@@ -4446,6 +4627,7 @@ const
 begin
   if ListView_GetItemState(ListView1.Handle, LastSel, b) <> b then
     LoadFile(-1);
+  UpdateToolbarState;
   DeselectTimer.Enabled:= false;
 end;
 
@@ -4480,6 +4662,7 @@ begin
     end;
 
     SaveDialogExport.FileName:= s;
+    SaveDialogExport.InitialDir:= ExtractFilePath(s);
     if not SaveDialogExport.Execute then  exit;
     s:= SaveDialogExport.FileName;
     ExtractPath:= ExtractFilePath(s);
@@ -4895,8 +5078,10 @@ procedure TRSLodEdit.ListViewSelectItem(i: int; Chosen: Boolean);
 const
   b = LVIS_FOCUSED or LVIS_SELECTED;
 begin
-  UpdateToolbarState;
-  if i < 0 then  DeselectTimer.Enabled:= true;
+  if i < 0 then
+    DeselectTimer.Enabled:= true
+  else
+    UpdateToolbarState;
   if not Chosen and ((i <> LastSel) or (i < 0)) then  exit;
   LastSel:=i;
   if not Chosen and (ListView_GetItemState(ListView1.Handle, i, b) <> b) then
@@ -4958,16 +5143,12 @@ begin
 end;
 
 procedure TRSLodEdit.Default1Click(Sender: TObject);
+var
+  menu: TMenuItem;
 begin
   TMenuItem(Sender).Checked:= true;
-  if Sender = FirstKind1 then
-    FSFTKind:= 1
-  else if Sender = SecondKind1 then
-    FSFTKind:= 2
-  else if Sender = ThirdKind1 then
-    FSFTKind:= 3
-  else
-    FSFTKind:= 0;
+  menu:= TMenuItem(Sender).Parent;
+  FSFTKind:= menu.IndexOf(TMenuItem(Sender)) - menu.IndexOf(Default1);
 
   if PreviewBmp <> nil then
     LoadFile(LastSel);

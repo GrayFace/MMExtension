@@ -29,10 +29,11 @@ type
   private
     FLimit: int;
     FOnClick: TRSRecentEvent;
-    function GetAsString:string;
-    procedure SetAsString(const v:string);
-    procedure SetLimit(v:int);
-    procedure SetSpace(const v:string);
+    FOnChange: TNotifyEvent;
+    function GetAsString: string;
+    procedure SetAsString(const v: string);
+    procedure SetLimit(v: int);
+    procedure SetSpace(const v: string);
     function GetPath(Index: int): string;
   protected
     FCount: int;
@@ -62,6 +63,7 @@ type
     property AsString: string read GetAsString write SetAsString;
     property Space: string read FSpace write SetSpace;
     property OnClick: TRSRecentEvent read FOnClick write FOnClick;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
 implementation
@@ -106,7 +108,7 @@ begin
     FParent:=ATarget;
   FFullPath:=AFullPath;
   FSpace:='  ';
-  FLimit:=10;
+  FLimit:=15;
 end;
 
 destructor TRSRecent.Destroy;
@@ -142,6 +144,8 @@ begin
       for i:=0 to FCount-1 do
         Items[i+j].Caption:= IntToHex(i,0) + FSpace +
            ExtractFileName(TRSRecentMenuItem(Items[i+j]).Path);
+  if Assigned(OnChange) then
+    OnChange(self);
 end;
 
 procedure TRSRecent.DoStore(const AName: string);
@@ -190,13 +194,17 @@ begin
     DoStore(FileName);
   end;
   if b then
-    RefreshNames;
+    RefreshNames
+  else if Assigned(OnChange) then
+    OnChange(self);
 end;
 
 procedure TRSRecent.DoDelete(it:TMenuItem);
 begin
   it.Free;
   dec(FCount);
+  if Assigned(OnChange) then
+    OnChange(self);
 end;
 
 function TRSRecent.DoDelete(const FileName: string): Boolean;
@@ -231,28 +239,33 @@ begin
   i:=GetAfter;
   for i:=i+FCount downto i+1 do
     DoDelete(FParent[i]);
+  if Assigned(OnChange) then
+    OnChange(self);
 end;
 
-procedure TRSRecent.SetLimit(v:int);
+procedure TRSRecent.SetLimit(v: int);
 var i:int;
 begin
-  if v<FCount then
+  if v = FCount then  exit;
+  if v < FCount then
   begin
-    i:=GetAfter;
-    for i:=i+FCount downto i+v+1 do
+    i:= GetAfter;
+    for i:= i + FCount downto i + v + 1 do
       DoDelete(FParent[i]);
   end;
-  FLimit:=v;
+  FLimit:= v;
+  if Assigned(OnChange) then
+    OnChange(self);
 end;
 
-procedure TRSRecent.SetSpace(const v:string);
+procedure TRSRecent.SetSpace(const v: string);
 begin
-  if FSpace=v then exit;
-  FSpace:=v;
+  if FSpace= v then exit;
+  FSpace:= v;
   RefreshNames;
 end;
 
-function TRSRecent.GetAsString:string;
+function TRSRecent.GetAsString: string;
 var i,j:int;
 begin
   Result:=FLast;
@@ -268,7 +281,7 @@ begin
     Result:= Result + TRSRecentMenuItem(FParent[i]).Path + '|';
 end;
 
-procedure TRSRecent.SetAsString(const v:string);
+procedure TRSRecent.SetAsString(const v: string);
 var i:int; ps:TRSParsedString;
 begin
   Clear;

@@ -12,7 +12,6 @@ unit RSSpeedButton;
 {$I RSPak.inc}
 
 { TODO :
-NumGlyphs in Styled mode
 DropDown in non-Styled mode
 published DropDownGlyph
 }
@@ -22,7 +21,7 @@ interface
 uses
   SysUtils, Classes, Controls, Buttons, Themes, Messages, RSPainters,
   Windows, Graphics, RSCommon, RSQ, RSGraphics, Menus, ExtCtrls, ImgList,
-  RSImgList, RSUtils, Math, RSPopupMenu, Types, Forms;
+  RSImgList, RSUtils, Math, RSPopupMenu, Types, Forms, RSSysUtils;
 
 {$I RSControlImport.inc}
 
@@ -50,7 +49,9 @@ type
     procedure SetDropDownDisabled(v: Boolean);
     procedure SetDropDownMenu(v: TPopupMenu);
     procedure SetDropDown(v: Boolean);
+    function GetDropDownWidth: int;
     procedure SetDropDownWidth(v: int);
+    function IsDropDownWidthStored: Boolean;
     procedure SetForceDown(v: Boolean);
     procedure SetHighlightedMild(v: Boolean);
     procedure SetHighlighted(v: Boolean);
@@ -73,15 +74,22 @@ type
     FDropDown: Boolean;
     FDropDownWidth: int;
     FDropDownGlyph: TBitmap;
+    FStdDropDownGlyph: TBitmap;
     FDragging: Boolean;
     FDropped: Boolean;
     FDropDownMenu: TPopupMenu;
+    class procedure PrepareStdDropDownGlyph(Bmp: TBitmap; h: int; up: Boolean = false);
+    class function GetStdDropDownGlyphHeight(Size: int): int;
+    function NeedStdDropDownGlyph: TBitmap;
+    function GetDefaultDropDownWidth: int;
     procedure DefPaint;
     procedure GlyphTextPos(var gx, gy:int; var TextRect:TRect);
     procedure DrawBorder;
     procedure DrawDropDownGlyph;
+    procedure DrawGlyphStyled(x, y: int);
     procedure DoPaint; virtual;
     procedure Paint; override;
+    procedure ChangeScale(M, D: Integer); override;
     // down and up state changes must occur before corresponding event calls
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
       X, Y: Integer); override;
@@ -108,20 +116,20 @@ type
     {$I RSSpeedButton.inc}
     property GetColorTheme: TRSColorTheme read FColors;
     property PaintCount:ShortInt read FPaintCount;
-    property DropDownGlyph: TBitmap read FDropDownGlyph;
   published
     property ColorTheme: TRSColorTheme read GetColors write SetColors;
     property DrawFrame: Boolean read FDrawFrame write SetDrawFrame default false;
     property HighlightedMild: Boolean read FHighlightedMild write SetHighlightedMild default false;
     property Highlighted: Boolean read FHighlighted write SetHighlighted default false;
     property HighlightedXP: Boolean read FHighlightedXP write SetHighlightedXP default false;
-    property OnPaint: TRSSpeedButtonPaintEvent read FOnPaint write FOnPaint;
     property Styled: boolean read FStyled write SetStyled default false;
     property StyledOnXP: boolean read FStyledOnXP write SetStyledOnXP default false;
     property DropDown: Boolean read FDropDown write SetDropDown default false;
     property DropDownDisabled: Boolean read FDropDownDisabled write SetDropDownDisabled default false;
-    property DropDownWidth: int read FDropDownWidth write SetDropDownWidth default 13;
+    property DropDownWidth: int read GetDropDownWidth write SetDropDownWidth stored IsDropDownWidthStored;
     property DropDownMenu: TPopupMenu read FDropDownMenu write SetDropDownMenu;
+    property DropDownGlyph: TBitmap read FDropDownGlyph;
+    property OnPaint: TRSSpeedButtonPaintEvent read FOnPaint write FOnPaint;
     property OnDropDown: TNotifyEvent read FOnDropDown write FOnDropDown;
 
     property OnCanResize;
@@ -150,6 +158,9 @@ procedure RSToolBarEnable(MenuItem:TMenuItem; Enable:boolean);
 procedure RSToolBarReactCheck(Sender:TObject; MenuItem:TMenuItem); overload;
 procedure RSToolBarReactCheck(Sender:TObject); overload;
 
+
+//procedure RSScaleSpeedButtonGlyphs(form: TComponent; M, D: int);
+
 procedure Register;
 
 implementation
@@ -169,22 +180,8 @@ begin
   FNoPen:= TPen.Create;
   FColors:= RSColorTheme;
   WindowProc:= TranslateWndProc;
-  FDropDownWidth:= 13;
+  FDropDownWidth:= 0;
   FDropDownGlyph:= TBitmap.Create;
-  with FDropDownGlyph, Canvas do
-  begin
-    Width:= 5;
-    Height:= 4;
-    Brush.Color:= clWhite;
-    FillRect(Rect(0, 0, 5, 4));
-    Pen.Color:= clBlack;
-    MoveTo(0, 1);
-    LineTo(4, 1);
-    LineTo(2, 3);
-    LineTo(1, 2);
-    LineTo(3, 2);
-    Transparent:= true;
-  end;
 end;
 
 destructor TRSSpeedButton.Destroy;
@@ -192,6 +189,7 @@ begin
   FNoBrush.Free;
   FNoPen.Free;
   FDropDownGlyph.Free;
+  FStdDropDownGlyph.Free;
   inherited Destroy;
 end;
 
@@ -238,7 +236,7 @@ begin
   if (Button = mbLeft) and Enabled then
     FDragging:= true;
   drop:= not FDropped and (Button = mbLeft) and Enabled and FDropDown
-                                     and (X >= Width - FDropDownWidth - 1);
+                                     and (X >= Width - DropDownWidth - 1);
   FDropped:= drop or FDropped;
   if Assigned(old) then
     old(self, Button, Shift, X, Y);
@@ -300,6 +298,11 @@ begin
     Click;
 end;
 
+function TRSSpeedButton.IsDropDownWidthStored: Boolean;
+begin
+  Result:= (FDropDownWidth <> 0) and (DropDownWidth <> GetDefaultDropDownWidth);
+end;
+
 function TRSSpeedButton.IsHighlighted: Boolean;
 begin
   if not ThemeServices.ThemesEnabled then
@@ -348,15 +351,16 @@ begin
   w:= Width;
   h:= Height;
   if FDropDown then
-    dec(w, FDropDownWidth);
+    dec(w, DropDownWidth);
   if Layout in [blGlyphLeft, blGlyphRight] then
   begin
     gy:= (h - Glyph.Height + 1) div 2;
     ty:= (h - TextRect.Bottom + 1) div 2;
-    CountPos(gx, tx, w, Glyph.Width, TextRect.Right, Layout=blGlyphRight);
+    CountPos(gx, tx, w, Glyph.Width div NumGlyphs, TextRect.Right,
+       (Layout = blGlyphRight) xor (DrawTextBiDiModeFlags(0) and DT_RIGHT <> 0));
   end else
   begin
-    gx:= (w - Glyph.Width + 1) div 2;
+    gx:= (w - Glyph.Width div NumGlyphs + 1) div 2;
     tx:= (w - TextRect.Right + 1) div 2;
     CountPos(gy, ty, h, Glyph.Height, TextRect.Bottom, Layout=blGlyphBottom);
   end;
@@ -377,30 +381,92 @@ begin
     LineTo(Width-1, Height-1);
     if FDropDown then
     begin
-      MoveTo(Width - FDropDownWidth, 1);
-      LineTo(Width - FDropDownWidth, Height-1);
+      MoveTo(Width - DropDownWidth, 1);
+      LineTo(Width - DropDownWidth, Height-1);
     end;
   end;
 end;
 
 procedure TRSSpeedButton.DrawDropDownGlyph;
 var
+  Bmp: TBitmap;
   x, y: int;
 begin
   if not FDropDown then  exit;
-  x:= Width - (FDropDownWidth + FDropDownGlyph.Width + 1) div 2;
-  y:= (Height - FDropDownGlyph.Height + 1) div 2;
+  Bmp:= FDropDownGlyph;
+  if Bmp.Empty then
+    Bmp:= NeedStdDropDownGlyph;
+  x:= Width - (DropDownWidth + Bmp.Width + 1) div 2;
+  y:= (Height - Bmp.Height + 1) div 2;
   if not Enabled or FDropDownDisabled then
-    FColors.DrawGlyph(Canvas, x, y, FDropDownGlyph, [odDisabled], FColors.Button)
+    FColors.DrawGlyph(Canvas, x, y, Bmp, [odDisabled], FColors.Button)
   else
-    Canvas.Draw(x, y, FDropDownGlyph);  
+    Canvas.Draw(x, y, Bmp);
+end;
+
+procedure TRSSpeedButton.DrawGlyphStyled(x, y: int);
+var
+  i, w, h: int;
+  MaskDC: HDC;
+  Save: THandle;
+begin
+  if NumGlyphs <= 1 then
+  begin
+    if Enabled then
+      if MouseInControl or FHighlightedMild then
+        FColors.DrawGlyph(Canvas, x, y, Glyph, [odHotLight], FColors.Button)
+//      else begin
+//        // Draw of TBitmap is broken if bitmap is DIB
+//        w:= Glyph.Width;
+//        h:= Glyph.Height;
+//        TransparentBlt(Canvas.Handle, x, y, w, h, Glyph.Canvas.Handle, 0, 0, w, h, Glyph.TransparentColor);
+//      end
+      else
+        Canvas.Draw(x, y, Glyph)
+    else
+      FColors.DrawGlyph(Canvas, x, y, Glyph, [odDisabled], FColors.Button);
+    exit;
+  end;
+
+  // choose glyph index
+  i:= 0;
+  if Enabled then
+    case FState of
+      bsDown:
+        if NumGlyphs > 2 then
+          i:= 2;
+      bsExclusive:
+        if NumGlyphs > 2 then
+          i:= min(3, NumGlyphs);
+      else if (NumGlyphs > 4) and (MouseInControl or FHighlightedMild) then
+        i:= 4;
+    end
+  else
+    i:= 1;
+
+  // draw
+  w:= Glyph.Width div NumGlyphs;
+  h:= Glyph.Height;
+  if (i = 0) and (MouseInControl or FHighlightedMild) then
+    FColors.DrawGlyphSelectedEffect(Canvas, x, y, Glyph, w);
+//  TransparentBlt(Canvas.Handle, x, y, w, h, Glyph.Canvas.Handle, 0, 0, w, h, Glyph.TransparentColor);
+  Save := 0;
+  MaskDC := 0;
+  try
+    MaskDC:= RSWin32Check(CreateCompatibleDC(0));
+    Save:= SelectObject(MaskDC, Glyph.MaskHandle);
+    TransparentStretchBlt(Canvas.Handle, x, y, w, h,
+       Glyph.Canvas.Handle, w*i, 0, w, h, MaskDC, w*i, 0);
+  finally
+    if Save <> 0 then SelectObject(MaskDC, Save);
+    if MaskDC <> 0 then DeleteDC(MaskDC);
+  end;
 end;
 
 procedure TRSSpeedButton.DoPaint;
 var
-  x, y: int; moused, NoBorder:Boolean; r:TRect;
+  x, y: int; NoBorder:Boolean; r:TRect;
 begin
-  moused:= MouseInControl;
   NoBorder:= false;
 
   with Canvas do
@@ -426,7 +492,7 @@ begin
           FillRect(ClipRect);
         end;
 
-        FColors.DrawGlyph(Canvas, x, y, Glyph, [odDisabled], FColors.Button);
+        DrawGlyphStyled(x, y);
         DrawDropDownGlyph;
 
         if Down or IsHighlighted or FHighlightedMild then
@@ -436,7 +502,7 @@ begin
         end else
           NoBorder:= true;
       end else
-        if (FState = bsDown) or (FState = bsExclusive) then
+        if FState in [bsDown, bsExclusive] then
         begin
           Brush.Color:=FColors.CheckedButton;
           Pen.Color:=FColors.SelBorder;
@@ -463,41 +529,41 @@ begin
 {          // this will make sub-buttons behave as separate:
           if FDropped then
           begin
-            RSGradientV(Canvas, Rect(1,1,Width-FDropDownWidth-1,Height-1),
+            RSGradientV(Canvas, Rect(1,1,Width-DropDownWidth-1,Height-1),
                FColors.SelButton1, FColors.SelButton2);
 
             FColors.DrawGlyph(Canvas, x, y, Glyph, [odHotLight], FColors.Button);
           end else
           begin
-            RSGradientV(Canvas, Rect(Width-FDropDownWidth,1,Width-1,Height-1),
+            RSGradientV(Canvas, Rect(Width-DropDownWidth,1,Width-1,Height-1),
                FColors.SelButton1, FColors.SelButton2);
 
             Draw(x, y, Glyph);
           end;
 }
-          Draw(x, y, Glyph);
+          DrawGlyphStyled(x, y);
           DrawDropDownGlyph;
           DrawBorder;
         end else
-          if moused then
+          if MouseInControl then
           begin
             RSGradientV(Canvas, Rect(1,1,Width-1,Height-1),
                FColors.SelButton1, FColors.SelButton2);
 
-            FColors.DrawGlyph(Canvas, x, y, Glyph, [odHotLight], FColors.Button);
+            DrawGlyphStyled(x, y);
             DrawDropDownGlyph;
 
              // Frame
             Pen.Color:=FColors.SelBorder;
             DrawBorder;
-          end else
-          if FHighlightedMild then
+          end
+          else if FHighlightedMild then
           begin
             RSGradientV(Canvas, Rect(1,1,Width-1,Height-1),
                RSMixColors(FColors.SelButton1, FColors.Button, 128),
                RSMixColors(FColors.SelButton2, FColors.Button, 128));
 
-            FColors.DrawGlyph(Canvas, x, y, Glyph, [odHotLight], FColors.Button);
+            DrawGlyphStyled(x, y);
             DrawDropDownGlyph;
 
              // Frame
@@ -510,7 +576,7 @@ begin
               Brush.Style:=bsClear
             else
               FillRect(ClipRect);
-            Draw(x, y, Glyph);
+            DrawGlyphStyled(x, y);
             DrawDropDownGlyph;
             NoBorder:= true;
           end;
@@ -561,14 +627,12 @@ begin
 
   repeat
     FPaintCount:=1;
-    
+
     //FBlockRepaint:=true;
 
+    Glyph.HandleType:= bmDDB; // Drawing bug otherwise
     Glyph.Handle; // There's a bug in TBitmap
-
-    Glyph.Transparent:=true;
-     // Will also cause an additonal invalidate on start which is
-     // a workaround for a strange transparency bug
+    Glyph.Transparent:= true;
 
     //FBlockRepaint:=false;
 
@@ -627,6 +691,38 @@ begin
         FPaintCount:=-1; // Safe in case of exception
     end;
   until FPaintCount=0;
+end;
+
+class procedure TRSSpeedButton.PrepareStdDropDownGlyph(Bmp: TBitmap;
+  h: int; up: Boolean);
+const
+  Vec: array[0..1] of TRSVectorGlyphLine = (
+    (0, 0, 1, 1), // outer left
+    (2, 0, 1, 1) // outer right
+  );
+var
+  h1: int;
+begin
+  with Bmp, Canvas do
+  begin
+    h1:= h + 1;
+    if up then
+      inc(h1);
+    if Height = h1 then
+      exit;
+    HandleType:= bmDDB;
+    Width:= 0;
+    Height:= h1;
+    Width:= h*2 - 1;
+    Brush.Color:= clWhite;
+    FillRect(ClipRect);
+    Pen.Color:= clBlack;
+    if up then
+      RSDrawVectorGlyph(Canvas, Vec, -0.5, h + 0.49, h, -Infinity)
+    else
+      RSDrawVectorGlyph(Canvas, Vec, -0.5, 0.51, h);
+    Transparent:= true;
+  end;
 end;
 
 procedure TRSSpeedButton.SetForceDown(v: Boolean);
@@ -709,7 +805,8 @@ procedure TRSSpeedButton.SetDropDownWidth(v: int);
 begin
   if FDropDownWidth = v then  exit;
   FDropDownWidth:= v;
-  Invalidate;
+  if FDropDown then
+    Invalidate;
 end;
 
 function TRSSpeedButton.GetColors:TRSColorTheme;
@@ -717,6 +814,32 @@ begin
   Result:=FColors;
   if Result=RSColorTheme then
     Result:=nil;
+end;
+
+function TRSSpeedButton.GetDefaultDropDownWidth: int;
+var
+  form: TCustomForm;
+begin
+  form:= GetParentForm(self);
+  Result:= 96;
+  if form <> nil then
+    Result:= TForm(form).PixelsPerInch;
+  Result:= MulDiv(13, Result, 96);
+end;
+
+function TRSSpeedButton.GetDropDownWidth: int;
+begin
+  Result:= FDropDownWidth;
+  if Result = 0 then
+    Result:= GetDefaultDropDownWidth;
+end;
+
+class function TRSSpeedButton.GetStdDropDownGlyphHeight(Size: int): int;
+begin
+  if Size < 9 then
+    Result:= 2
+  else
+    Result:= max(3, MulDiv(5, Size - 2, 22));
 end;
 
 procedure TRSSpeedButton.SetColors(v: TRSColorTheme);
@@ -769,6 +892,17 @@ begin
   inherited;
 end;
 
+function TRSSpeedButton.NeedStdDropDownGlyph: TBitmap;
+var
+  h: int;
+begin
+  if FStdDropDownGlyph = nil then
+    FStdDropDownGlyph:= TBitmap.Create;
+  Result:= FStdDropDownGlyph;
+  h:= GetStdDropDownGlyphHeight(min(DropDownWidth, Height*2 - 1));
+  PrepareStdDropDownGlyph(Result, h);
+end;
+
 procedure TRSSpeedButton.Notification(AComponent: TComponent;
    Operation: TOperation);
 begin
@@ -778,6 +912,12 @@ begin
       FColors:= RSColorTheme
     else if AComponent = FDropDownMenu then
       FDropDownMenu:= nil;
+end;
+
+procedure TRSSpeedButton.ChangeScale(M, D: Integer);
+begin
+  inherited;
+  DropDownWidth:= MulDiv(FDropDownWidth, M, D)
 end;
 
 procedure TRSSpeedButton.Click;
@@ -881,7 +1021,7 @@ begin
             DropDownMenu:= popup;
             OnDropDown:= m.OnClick;
             if RSBindToolBar then
-              m.Tag:=int(Controls[i]);
+              m.Tag:= int(Controls[i]);
           end
       else
         if SepHeight>0 then
@@ -964,5 +1104,11 @@ begin
   else
     RSToolBarReactCheck(Sender, Sender as TMenuItem);
 end;
+
+
+//procedure RSScaleSpeedButtonGlyphs(form: TComponent; M, D: int);
+//begin
+//
+//end;
 
 end.

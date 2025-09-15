@@ -177,7 +177,7 @@ begin
                 end;
               32: case biCompression of
                   BI_RGB: SetBPP(32);
-                  BI_BITFIELDS: if dsBitFields[1] = $FF0000 then
+                  BI_BITFIELDS: if dsBitFields[0] = $FF0000 then
                       SetBPP(32);
                 end;
             end;

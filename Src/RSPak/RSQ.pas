@@ -47,8 +47,8 @@ type
   ppptr=^pptr;
   ppint=^pint;
 
-  IntPtr = int;
-  UintPtr = uint;
+  IntPtr = INT_PTR;
+  UintPtr = UINT_PTR;
 
   PStr=^string;
 
@@ -106,6 +106,7 @@ procedure zM(const s:string); overload;
 procedure zM(const s1, s2:string); overload;
 procedure zM(i:integer); overload;
 procedure zM(i,j:int); overload;
+procedure zM(i:int; const s:string); overload;
 procedure zM(a:ext); overload;
 procedure zM(a,b:ext); overload;
 procedure zM(b:Boolean); overload;
@@ -113,6 +114,7 @@ procedure zMH(a:pointer); overload;
 procedure zMH(a,b:pointer); overload;
 procedure zMH(i:int); overload;
 procedure zMH(i,j:int); overload;
+procedure zMH(i:int; const s:string); overload;
 function IfThen(b:boolean; const t: string; const f:string = ''):string; overload;
 function DecRect(const r:TRect):TRect;
 function SizeRect(const r:TRect):TRect;
@@ -132,6 +134,30 @@ function zSet(var a: Boolean; b: Boolean):Boolean; overload; {$IFDEF D2005}inlin
 function zSet(var a: ptr; b: ptr):ptr; overload; {$IFDEF D2005}inline;{$ENDIF}
 function zSet(var a: string; const b: string):string; overload; {$IFDEF D2005}inline;{$ENDIF}
 
+// returns 'b' rather than the maximum
+function SetMax(var a: int1; b: int1): int1; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMax(var a: int2; b: int2): int2; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMax(var a: int4; b: int4): int4; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMax(var a: int8; b: int8): int8; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMax(var a: uint1; b: uint1): uint1; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMax(var a: uint2; b: uint2): uint2; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMax(var a: uint4; b: uint4): uint4; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMax(var a: Single; b: Single): Single; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMax(var a: Double; b: Double): Double; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMax(var a: ext; b: ext): ext; overload; {$IFDEF D2005}inline;{$ENDIF}
+
+// returns 'b' rather than the minimum
+function SetMin(var a: int1; b: int1): int1; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMin(var a: int2; b: int2): int2; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMin(var a: int4; b: int4): int4; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMin(var a: int8; b: int8): int8; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMin(var a: uint1; b: uint1): uint1; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMin(var a: uint2; b: uint2): uint2; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMin(var a: uint4; b: uint4): uint4; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMin(var a: Single; b: Single): Single; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMin(var a: Double; b: Double): Double; overload; {$IFDEF D2005}inline;{$ENDIF}
+function SetMin(var a: ext; b: ext): ext; overload; {$IFDEF D2005}inline;{$ENDIF}
+
 function IntoRange(v, min, max:int):int; {$IFDEF D2005}inline;{$ENDIF}
 procedure CopyMemory(Destination: Pointer; Source: Pointer; Length: DWORD); {$IFDEF D2005}inline;{$ENDIF}
 // These two are only for elements' sizes less than 2048
@@ -144,6 +170,7 @@ function FileAge(const FileName: string): Integer;
 function RectW(const r: TRect): int; inline;
 function RectH(const r: TRect): int; inline;
 function RDiv(i, j: int): int; inline;  // round(i/j)
+function QRound(a: double): int; inline;
 {$IFDEF MSWINDOWS}
 // Borland's original routines bug: they don't consider '/' a path delimiter.
 function FileExists(const FileName: string): Boolean;
@@ -263,6 +290,11 @@ begin
   OutputDebugString(pchar(IntToStr(i)+' '+IntToStr(j)));
 end;
 
+procedure zM(i:int; const s:string); overload;
+begin
+  OutputDebugString(pchar(IntToStr(i) + ' ' + s));
+end;
+
 procedure zMH(a:pointer); overload;
 begin
   zMH(DWord(a));
@@ -281,6 +313,11 @@ end;
 procedure zMH(i,j:int); overload;
 begin
   OutputDebugString(pchar(IntToHex(i,8)+' '+IntToHex(j,8)));
+end;
+
+procedure zMH(i:int; const s:string); overload;
+begin
+  OutputDebugString(pchar(IntToHex(i,8)+' '+s));
 end;
 
 function WinLong(wnd:hWnd; add:integer; sub:integer=0):integer;
@@ -414,6 +451,149 @@ begin
   a:= Result;
 end;
 
+
+function SetMax(var a: int1; b: int1): int1; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+function SetMax(var a: int2; b: int2): int2; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+function SetMax(var a: int4; b: int4): int4; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+function SetMax(var a: int8; b: int8): int8; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+function SetMax(var a: uint1; b: uint1): uint1; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+function SetMax(var a: uint2; b: uint2): uint2; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+function SetMax(var a: uint4; b: uint4): uint4; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+function SetMax(var a: Single; b: Single): Single; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+function SetMax(var a: Double; b: Double): Double; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+function SetMax(var a: ext; b: ext): ext; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result > a then
+    a:= Result;
+end;
+
+
+function SetMin(var a: int1; b: int1): int1; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+function SetMin(var a: int2; b: int2): int2; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+function SetMin(var a: int4; b: int4): int4; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+function SetMin(var a: int8; b: int8): int8; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+function SetMin(var a: uint1; b: uint1): uint1; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+function SetMin(var a: uint2; b: uint2): uint2; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+function SetMin(var a: uint4; b: uint4): uint4; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+function SetMin(var a: Single; b: Single): Single; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+function SetMin(var a: Double; b: Double): Double; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+function SetMin(var a: ext; b: ext): ext; overload; {$IFDEF D2005}inline;{$ENDIF}
+begin
+  Result:= b;
+  if Result < a then
+    a:= Result;
+end;
+
+
 function IntoRange(v, min, max:int):int; {$IFDEF D2005}inline;{$ENDIF}
 begin
   Result:=v;
@@ -534,6 +714,14 @@ var
 begin
   jj:= j;
   Result:= (i + jj div 2) div jj;
+end;
+
+function QRound(a: double): int; inline;
+var
+  x: double;
+begin
+  x:= a + 6755399441055744;
+  Result:= pint(@x)^;
 end;
 
 // code mostly by DVM from delphimaster.ru forum

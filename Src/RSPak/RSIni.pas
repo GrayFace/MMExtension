@@ -17,13 +17,15 @@ uses
   SysUtils, IniFiles, RSQ, TypInfo, RSStrUtils, RSSysUtils, Classes;
 
 type
+  TCustomIniFile = IniFiles.TCustomIniFile;
+
    // Logic: Get key or section name from each added string, convert to unique
    //  number via list of all names (FNameIndex). Quickly walk the array
    //  whenever in need of key or section line.
-   // Full seamless control over ini is provided, through TStrings interface.
+   // Full seamless control over ini is provided through TStrings interface.
   TRSMemIniStrings = class(TStringList)
   protected
-    FNameIndex: TStringList;  // <= -5 = section, 0 = comment, >= 5 = key
+    FNameIndex: TStringList;  // <= -10 = section, 0 = comment, >= 10 = key
     procedure Changed; override;
     function DoGetKey(Line: int; var key: string): Boolean; 
     procedure LineChanged(Index: int);
@@ -241,7 +243,7 @@ function TRSMemIniStrings.GetKey(Line: int): string;
 begin
   if not DoGetKey(Line, Result) then
     Result:= ''
-  else if Result[1] = '[' then
+  else if (Result <> '') and (Result[1] = '[') then
     Result:= Copy(Result, 2, MaxInt);
 end;
 
@@ -336,14 +338,23 @@ begin
   try
     List.Clear;
     i:= FindSection(Section) + 1;
-    if i <= 0 then  exit;
-    SetLength(have, FNameIndex.Count);
+    if i <= 0 then
+      exit;
+    // ReadSection of TIniFile ini includes key duplicates, but ReadSectionValues
+    // writes the value of the first key occurance into all of them.
+    // There's no point in emulating this behavior, instead better just not
+    // add duplicated keys in ReadSectionValues.
+    if Values then
+      SetLength(have, FNameIndex.Count);
     for i := i to FindNextSection(i, true) - 1 do
       if not IsComment(i) then
       begin
-        v:= GetNameIndex(i) - MinIdx;
-        if have[v] then  continue;
-        have[v]:= true;
+        if Values then
+        begin
+          v:= GetNameIndex(i) - MinIdx;
+          if have[v] then  continue;
+          have[v]:= true;
+        end;
         if Values then
           List.Add(GetKey(i) + '=' + GetValue(i))
         else
@@ -356,20 +367,20 @@ end;
 
 procedure TRSMemIniStrings.ReadSections(List: TStrings);
 var
-  have: array of Boolean;
-  i, v: int;
+//  have: array of Boolean;
+  i{, v}: int;
 begin
-  SetLength(have, FNameIndex.Count);
+//  SetLength(have, FNameIndex.Count);
   List.BeginUpdate;
   try
     List.Clear;
     i:= FindNextSection(0);
     while i <> -1 do
     begin
-      v:= -MinIdx - GetNameIndex(i);
-      if not have[v] then
+//      v:= -MinIdx - GetNameIndex(i);
+//      if not have[v] then
         List.Add(GetKey(i));
-      have[v]:= true;
+//      have[v]:= true;
       i:= FindNextSection(i + 1);
     end;
   finally
@@ -593,7 +604,7 @@ end;
 
 procedure TRSIniOptions.Read(EnsureExist: Boolean);
 var
-  ini: TIniFile;
+  ini: TCustomIniFile;
 
   function ReadString(const Section, Ident, Default: string): string;
   begin
@@ -621,7 +632,7 @@ var
   pname: string;
   i: int;
 begin
-  ini:= TIniFile.Create(FileName);
+  ini:= TRSMemIni.Create(FileName);
   try
     for i := 0 to high(FOptions) do
       with FOptions[i] do
@@ -660,7 +671,7 @@ end;
 
 procedure TRSIniOptions.Write(WhenDifferent: Boolean = true);
 var
-  ini: TIniFile;
+  ini: TCustomIniFile;
 
   procedure WriteString(const Section, Ident, Value: string);
   begin
@@ -684,7 +695,7 @@ var
   pname: string;
   i: int;
 begin
-  ini:= TIniFile.Create(FileName);
+  ini:= TRSMemIni.Create(FileName);
   try
     for i := 0 to high(FOptions) do
       with FOptions[i] do

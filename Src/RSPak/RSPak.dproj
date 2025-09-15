@@ -1,0 +1,82 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{acb16075-b61d-4fa6-84b1-94a30032b1c9}</ProjectGuid>
+    <MainSource>RSPak.dpk</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\5.0\Bpl\RSPak.bpl</DCC_DependencyCheckOutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_Define>RELEASE</DCC_Define>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType>Package</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><Package_Options><Package_Options Name="PackageDescription">RSPak</Package_Options><Package_Options Name="ImplicitBuild">False</Package_Options><Package_Options Name="DesigntimeOnly">False</Package_Options><Package_Options Name="RuntimeOnly">False</Package_Options></Package_Options><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1049</VersionInfo><VersionInfo Name="CodePage">1251</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">RSPak.dpk</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="RSPak.dpk">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="C:\_Delphi\LODedit\TXTedit\rtl.dcp" />
+    <DCCReference Include="C:\_Delphi\LODedit\TXTedit\vcl.dcp" />
+    <DCCReference Include="QPix.pas" />
+    <DCCReference Include="RSButton.pas" />
+    <DCCReference Include="RSClipboard.pas" />
+    <DCCReference Include="RSComboBox.pas" />
+    <DCCReference Include="RSCommon.pas" />
+    <DCCReference Include="RSDebug.pas" />
+    <DCCReference Include="RSDesignerDPI.pas" />
+    <DCCReference Include="RSDialogs.pas" />
+    <DCCReference Include="RSEdit.pas" />
+    <DCCReference Include="RSFileAssociation.pas" />
+    <DCCReference Include="RSGlue.pas" />
+    <DCCReference Include="RSGraphics.pas" />
+    <DCCReference Include="RSImgList.pas" />
+    <DCCReference Include="RSIni.pas" />
+    <DCCReference Include="RSLabel.pas" />
+    <DCCReference Include="RSLang.pas" />
+    <DCCReference Include="RSListBox.pas" />
+    <DCCReference Include="RSListBoxHint.pas" />
+    <DCCReference Include="RSListView.pas" />
+    <DCCReference Include="RSMemo.pas" />
+    <DCCReference Include="RSMenus.pas" />
+    <DCCReference Include="RSMessages.pas" />
+    <DCCReference Include="RSPageControl.pas" />
+    <DCCReference Include="RSPainters.pas" />
+    <DCCReference Include="RSPanel.pas" />
+    <DCCReference Include="RSPopupMenu.pas" />
+    <DCCReference Include="RSQ.pas" />
+    <DCCReference Include="RSRecent.pas" />
+    <DCCReference Include="RSRegistry.pas" />
+    <DCCReference Include="RSShape.pas" />
+    <DCCReference Include="RSSpeedButton.pas" />
+    <DCCReference Include="RSSpinEdit.dcr" />
+    <DCCReference Include="RSSpinEdit.dcr" />
+    <DCCReference Include="RSSpinEdit.pas" />
+    <DCCReference Include="RSSplitter.pas" />
+    <DCCReference Include="RSStringGrid.pas" />
+    <DCCReference Include="RSStrUtils.pas" />
+    <DCCReference Include="RSSysUtils.pas" />
+    <DCCReference Include="RSTimer.dcr" />
+    <DCCReference Include="RSTimer.dcr" />
+    <DCCReference Include="RSTimer.pas" />
+    <DCCReference Include="RSTrackBar.pas" />
+    <DCCReference Include="RSTrayIcon.pas" />
+    <DCCReference Include="RSTreeView.pas" />
+    <DCCReference Include="RSUtils.pas" />
+    <DCCReference Include="RSValueListEditor.pas" />
+    <DCCReference Include="RSWinController.pas" />
+    <DCCReference Include="RSWindowProc.pas" />
+  </ItemGroup>
+</Project>
