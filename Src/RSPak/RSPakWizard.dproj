@@ -33,9 +33,9 @@
     <DelphiCompile Include="RSPakWizard.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="C:\_Delphi\LODedit\TXTedit\designide.dcp" />
-    <DCCReference Include="C:\_Delphi\LODedit\TXTedit\RSPak.dcp" />
-    <DCCReference Include="C:\_Delphi\LODedit\TXTedit\rtl.dcp" />
-    <DCCReference Include="RSFixDPIWizard.pas" />
+    <DCCReference Include="C:\_GitHub\MMExt\Src\MMEditorDlg\designide.dcp" />
+    <DCCReference Include="C:\_GitHub\MMExt\Src\MMEditorDlg\RSPak.dcp" />
+    <DCCReference Include="C:\_GitHub\MMExt\Src\MMEditorDlg\rtl.dcp" />
+    <DCCReference Include="RSDPIWizard.pas" />
   </ItemGroup>
 </Project>
