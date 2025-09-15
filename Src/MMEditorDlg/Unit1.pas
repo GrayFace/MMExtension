@@ -6,8 +6,9 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Buttons, RSSpeedButton, ExtCtrls, RSQ, RSSysUtils, RSStrUtils,
   StdCtrls, RSLabel, RSSpinEdit, RSListBox, UnitChooseKind, RSLod,
-  Types, Menus, RSGraphics, pngimage, Math, RSUtils;
+  Types, Menus, RSGraphics, pngimage, Math, RSUtils, RSDesignerDPI;
 
+{$I RSPak.inc}
 type
   TMyCallback = function(cmd: PChar; params: ptr = nil): int; stdcall;
   TMyCreateIndex = (ciSprite, ciLight, ciSpawn, ciItem, ciMonster);
@@ -124,6 +125,7 @@ type
     SaveBmpDialog: TSaveDialog;
     BtnSelectAll: TRSSpeedButton;
     BtnUpdateBSP: TRSSpeedButton;
+    RSDesignerDPI1: TRSDesignerDPI;
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListChestsWndProc(Sender: TObject; var m: TMessage;
@@ -201,6 +203,7 @@ type
     procedure LoadModel;
     procedure SimpleCommand(Sender: TObject; param: ptr);
 
+    procedure ReadState(Reader: TReader); override;
     procedure CNChar(var m: TWMChar); message CN_CHAR;
     procedure WMPaint(var m: TMessage); message WM_PAINT;
     procedure WNSysKeyDown(var m: TWMKeyDown); message WM_SYSKEYDOWN;
@@ -273,47 +276,12 @@ begin
   end;
 end;
 
-// hack through resources, because there is no other way
-procedure MakeScaled;
-var
-  h: THandle;
-  p: PChar;
-
-  function Find(const s: string): PChar;
-  begin
-    Result:= p;
-    while not CompareMem(Result, ptr(s), length(s)) do
-      inc(Result);
-    inc(Result, length(s));
-  end;
-
-  procedure Change(p: PChar; v: char);
-  var
-    OldProtect: DWord;
-  begin
-    VirtualProtect(ptr(p), 1, PAGE_READWRITE, @OldProtect);
-    p^:= v;
-    VirtualProtect(ptr(p), 1, OldProtect, @OldProtect);
-  end;
-
-begin
-  h:= FindResource(HInstance, 'TFORM1', RT_RCDATA);
-  p:= LockResource(LoadResource(HInstance, h));
-  Change(Find(#6'Scaled'), Find(#7'Visible')^); // requires Visible = true
-  Change(Find(#13'PixelsPerInch') + 1, #96);
-end;
-
 procedure StartEditor(wnd: HWND; callbak: TMyCallback; d3d: Bool; mmver: int); stdcall;
-var
-  r: TRect;
 begin
   MainWnd:= wnd;
   Callback:= callbak;
   if Form1 = nil then
   begin
-    GetClientRect(wnd, r);
-    if r.Bottom > 480 then
-      MakeScaled;
     Application.Initialize;
     Application.Handle:= wnd;
     Application.CreateForm(TForm1, Form1);
@@ -1485,6 +1453,18 @@ begin
   Callback('Pause', ptr(AOn));
 end;
 
+procedure TForm1.ReadState(Reader: TReader);
+var
+  r: TRect;
+  old: int;
+begin
+  Windows.GetClientRect(MainWnd, r);
+  old:= Screen.PixelsPerInch;
+  Integer((@Screen.PixelsPerInch)^):= max(96, min(old, (r.Bottom*96) div 480));
+  inherited;
+  Integer((@Screen.PixelsPerInch)^):= old;
+end;
+
 procedure TForm1.BtnSkyTextureClick(Sender: TObject);
 {const
   null: string = '0';
@@ -1628,6 +1608,7 @@ var
   s: string;
 begin
   s:= GetCurrentDir;
+  {$IFDEF D2007}UseLatestCommonDialogs:= false;{$ENDIF} // new ones hang
   Result:= dlg.Execute;
   SetCurrentDir(s);
 end;

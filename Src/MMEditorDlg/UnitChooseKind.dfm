@@ -54,8 +54,8 @@ object FormChooseKind: TFormChooseKind
         Height = 32
         Align = alRight
         Caption = 'Cancel'
+        ModalResult = 2
         TabOrder = 1
-        OnClick = Button2Click
       end
     end
   end

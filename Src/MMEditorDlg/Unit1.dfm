@@ -13,14 +13,13 @@ object Form1: TForm1
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
-  Scaled = False
   Visible = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnHide = FormHide
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  PixelsPerInch = 120
+  PixelsPerInch = 96
   TextHeight = 13
   object BtnImport: TRSSpeedButton
     Left = 48
@@ -847,8 +846,8 @@ object Form1: TForm1
         Caption = '2'
         OnClick = BtnTileset1Click
         HighlightedMild = True
-        OnPaint = BtnTileset1Paint
         Styled = True
+        OnPaint = BtnTileset1Paint
       end
       object BtnTileset3: TRSSpeedButton
         Tag = 3
@@ -860,8 +859,8 @@ object Form1: TForm1
         Caption = '3'
         OnClick = BtnTileset1Click
         HighlightedMild = True
-        OnPaint = BtnTileset1Paint
         Styled = True
+        OnPaint = BtnTileset1Paint
       end
       object BtnRoad: TRSSpeedButton
         Tag = 4
@@ -873,8 +872,8 @@ object Form1: TForm1
         Caption = 'Road'
         OnClick = BtnTileset1Click
         HighlightedMild = True
-        OnPaint = BtnTileset1Paint
         Styled = True
+        OnPaint = BtnTileset1Paint
       end
       object BtnRoadDiag: TRSSpeedButton
         Tag = 5
@@ -886,8 +885,8 @@ object Form1: TForm1
         Caption = 'D. Road'
         OnClick = BtnTileset1Click
         HighlightedMild = True
-        OnPaint = BtnTileset1Paint
         Styled = True
+        OnPaint = BtnTileset1Paint
       end
       object BtnChangeTilesFile: TRSSpeedButton
         Left = 0
@@ -920,8 +919,8 @@ object Form1: TForm1
         Caption = '0'
         OnClick = BtnTileset1Click
         HighlightedMild = True
-        OnPaint = BtnTileset1Paint
         Styled = True
+        OnPaint = BtnTileset1Paint
       end
       object BtnTileset1: TRSSpeedButton
         Tag = 1
@@ -933,8 +932,8 @@ object Form1: TForm1
         Caption = '1'
         OnClick = BtnTileset1Click
         HighlightedMild = True
-        OnPaint = BtnTileset1Paint
         Styled = True
+        OnPaint = BtnTileset1Paint
       end
     end
     object PanelHeight: TPanel
@@ -1055,9 +1054,9 @@ object Form1: TForm1
         Button.Width = 15
         Button.Height = 17
         Button.DownButton.Left = 0
-        Button.DownButton.Top = 8
+        Button.DownButton.Top = 9
         Button.DownButton.Width = 15
-        Button.DownButton.Height = 9
+        Button.DownButton.Height = 8
         Button.FocusControl = EditBrushSpeed
         Button.SpinFactor = 15
         Button.UpButton.Left = 0
@@ -1082,9 +1081,9 @@ object Form1: TForm1
       Button.Width = 15
       Button.Height = 17
       Button.DownButton.Left = 0
-      Button.DownButton.Top = 8
+      Button.DownButton.Top = 9
       Button.DownButton.Width = 15
-      Button.DownButton.Height = 9
+      Button.DownButton.Height = 8
       Button.FocusControl = EditBrushSize
       Button.SpinFactor = 15
       Button.UpButton.Left = 0
@@ -1191,5 +1190,9 @@ object Form1: TForm1
     OnTypeChange = SaveModelDialogTypeChange
     Left = 232
     Top = 96
+  end
+  object RSDesignerDPI1: TRSDesignerDPI
+    DPI = 96
+    Left = 300
   end
 end

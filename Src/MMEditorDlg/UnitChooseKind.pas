@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, RSListView, StdCtrls, ExtCtrls, RSPanel, ImgList,
-  RSSysUtils, RSLod, RSQ, CommCtrl, Math, RSGraphics, RSStrUtils, RSDefLod;
+  RSSysUtils, RSLod, RSQ, CommCtrl, Math, RSGraphics, RSStrUtils, RSDefLod,
+  Types;
 
 type
   TFormChooseKind = class(TForm)
@@ -25,7 +26,6 @@ type
       StartIndex: Integer; Direction: TSearchDirection; Wrap: Boolean;
       var Index: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Button2Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ListView1KeyDown(Sender: TObject; var Key: Word;
@@ -39,21 +39,23 @@ type
     FLods, FLods2: TRSMMArchivesArray;
     FPalIndex: int;
     FItemBmp: array of TBitmap;
-    FBmpResized: array of Boolean;
     FLastPath, FLastPath2: string;
     MaxW, MaxH: int;
-    WorkerHandle: int;
-    BitmapsLeft: int;
+    WorkerHandle, WorkerTask, WorkerIteration: int;
+    WorkerEvent: THandle;
     procedure LoadArchives(const ArchivePath: string; var FLastPath: string; var FLods: TRSMMArchivesArray; var NoTransparency: Boolean);
     procedure DrawBavel(Canvas: TCanvas; const r: TRect; c1, c2: TColor);
     procedure LodSpritePalette(Sender: TRSLod; Name: string; var pal: int2; var Data);
-    function NeedTransparent(Index: int; var Transparent: Boolean): TRSMMArchivesArray;
-    function NeedBitmap(Index: int; var Transparent: Boolean): TBitmap;
-    procedure ResizeBitmap(b: TBitmap; Transparent: Boolean);
+    function IsTransparent(Index: int): Boolean;
+    function GetLods(Index: int): TRSMMArchivesArray;
+    function ResizeBitmap(b: TBitmap; Transparent: Boolean): TBitmap;
     procedure LoadBitmap(Index: int);
     procedure Worker;
     procedure StartWorker;
     procedure StopWorker;
+    procedure SetWorkerTask(i: int);
+    function FeedWorker: Boolean;
+    procedure LVMRedrawItems(var m: TMessage); message LVM_REDRAWITEMS;
   public
     ItemCaptions: array of string;
     ItemBitmaps: array of string;
@@ -127,13 +129,7 @@ begin
   it:= ListView1.GetNextItem(nil, sdAll, [isFocused]);
   if it = nil then  exit;
   ModalResult:= mrOk;
-//  ListView1.
   SelectedItem:= it.Index;
-end;
-
-procedure TFormChooseKind.Button2Click(Sender: TObject);
-begin
-  Close;
 end;
 
 procedure TFormChooseKind.DrawBavel(Canvas: TCanvas; const r: TRect; c1,
@@ -149,6 +145,46 @@ begin
     LineTo(r.Right - 1, r.Bottom - 1);
     LineTo(r.Right - 1, r.Top);
   end;
+end;
+
+function TFormChooseKind.FeedWorker: Boolean;
+var
+  r: TRect;
+  k: int;
+
+  function Check(i: int; vis: Boolean = false): Boolean;
+  var
+    r1, r2: TRect;
+  begin
+    Result:= ItemBitmaps[i] <> '';
+    if Result and vis then
+    begin
+      ListView_GetItemRect(ListView1.Handle, i, r1, LVIR_ICON);
+      Result:= IntersectRect(r2, r1, r);
+    end;
+    if Result then
+      SetWorkerTask(i);
+  end;
+
+  function CheckAll(vis: Boolean): Boolean;
+  var
+    i: int;
+  begin
+    Result:= true;
+
+    for i:= 1 to max(k, high(ItemBitmaps) - k) do
+      if (k + i < length(ItemBitmaps)) and Check(k + i, vis) or
+         (k - i >= 0) and Check(k - i, vis) then
+        exit;
+    Result:= false;
+  end;
+
+begin
+  Result:= Visible;
+  if not Result then  exit;
+  ListView_GetViewRect(ListView1.Handle, r);
+  k:= max(ListView1.ItemIndex, 0);
+  Result:= Check(k) or CheckAll(true) or CheckAll(false);
 end;
 
 procedure TFormChooseKind.FormCreate(Sender: TObject);
@@ -190,6 +226,22 @@ begin
   FFirstPaint:= true;
 end;
 
+function TFormChooseKind.GetLods(Index: int): TRSMMArchivesArray;
+begin
+  if (ArchivePath2 <> '') and (ItemPalettes[Index] < 0) then
+    Result:= FLods2
+  else
+    Result:= FLods;
+end;
+
+function TFormChooseKind.IsTransparent(Index: int): Boolean;
+begin
+  if (ArchivePath2 <> '') and (ItemPalettes[Index] < 0) then
+    Result:= not NoTransparency2
+  else
+    Result:= not NoTransparency;
+end;
+
 procedure TFormChooseKind.ListView1AdvancedCustomDrawItem(
   Sender: TCustomListView; Item: TListItem; State: TCustomDrawState;
   Stage: TCustomDrawStage; var DefaultDraw: Boolean);
@@ -199,7 +251,6 @@ var
   r: TRect;
   bmp: TBitmap;
   c: TColor;
-  Transparent: Boolean;
   w, h: int;
 begin
   if Stage <> cdPostPaint then  exit;
@@ -210,7 +261,7 @@ begin
     MaxH:= r.Bottom - r.Top - 6;
     if SquareIcons then
       MaxH:= MaxW; // for Choose Map dialog
-    bmp:= NeedBitmap(Item.Index, Transparent);
+    bmp:= FItemBmp[Item.Index];
     c:= ColorToRGB(ListView1.Color);
     if ListView_GetItemState(Sender.Handle, Item.Index, bit) and bit <> 0 then
     begin
@@ -227,7 +278,7 @@ begin
     end;
     if bmp <> nil then
     begin
-      if Transparent then
+      if IsTransparent(Item.Index) then
         SetDIBColorTable(bmp.Canvas.Handle, 0, 1, c);
       w:= min(r.Right - r.Left, bmp.Width);
       h:= min(r.Bottom - r.Top, bmp.Height);
@@ -313,26 +364,26 @@ end;
 
 procedure TFormChooseKind.LoadBitmap(Index: int);
 var
-  Transparent: Boolean;
   Lod: TRSMMArchive;
   Lods: TRSMMArchivesArray;
   arr: TRSByteArray;
+  b: TBitmap;
   s: string;
   i: int;
 begin
   s:= ItemBitmaps[Index];
-  ItemBitmaps[Index]:= '';
-  Lods:= NeedTransparent(Index, Transparent);
+  Lods:= GetLods(Index);
   if (FItemBmp[Index] = nil) and (s <> '') then
     if RSMMArchivesFind(Lods, s, Lod, i) or (TRSLod(Lods[0]).Version = RSLodSprites) and
        RSMMArchivesFind(Lods, s + '0', Lod, i) then
-      try
-        FPalIndex:= ItemPalettes[Index];
-        FItemBmp[Index]:= Lod.ExtractArrayOrBmp(i, arr);
-        if FItemBmp[Index] <> nil then
-          ListView_RedrawItems(ListView1.Handle, Index, Index);
-      except
-      end;
+    begin
+      FPalIndex:= ItemPalettes[Index];
+      b:= Lod.ExtractArrayOrBmp(i, arr);
+      if b = nil then  exit;
+      FItemBmp[Index]:= ResizeBitmap(b, IsTransparent(Index));
+    end;
+  // LParam has special meaning here
+  PostMessage(Handle, LVM_REDRAWITEMS, Index, WorkerIteration);
 end;
 
 procedure TFormChooseKind.LodSpritePalette(Sender: TRSLod; Name: string;
@@ -341,26 +392,14 @@ begin
   pal:= FPalIndex;
 end;
 
-function TFormChooseKind.NeedBitmap(Index: int; var Transparent: Boolean): TBitmap;
+procedure TFormChooseKind.LVMRedrawItems(var m: TMessage);
 begin
-  NeedTransparent(Index, Transparent);
-  Result:= FItemBmp[Index];
-  if (Result <> nil) and not FBmpResized[Index] then
-    ResizeBitmap(FItemBmp[Index], Transparent);
-end;
-
-function TFormChooseKind.NeedTransparent(Index: int;
-  var Transparent: Boolean): TRSMMArchivesArray;
-begin
-  if (ArchivePath2 <> '') and (ItemPalettes[Index] < 0) then
-  begin
-    Result:= FLods2;
-    Transparent:= not NoTransparency2;
-  end else
-  begin
-    Result:= FLods;
-    Transparent:= not NoTransparency;
-  end;
+  if m.LParam <> WorkerIteration then  exit;  // leftover redraw message
+  ItemBitmaps[m.WParam]:= '';
+  if not FeedWorker then
+    SetWorkerTask(-1);
+  if Visible and (FItemBmp <> nil) then
+    ListView1.Perform(LVM_REDRAWITEMS, m.WParam, m.WParam);
 end;
 
 function TFormChooseKind.Open: Boolean;
@@ -374,15 +413,12 @@ begin
     FItemBmp[i].Free;
   FItemBmp:= nil;
   SetLength(FItemBmp, length(ItemCaptions));
-  FBmpResized:= nil;
-  SetLength(FBmpResized, length(ItemCaptions));
 
   ListView1.Items.Count:= 0;
   ListView1.Items.Clear;
   ListView1.Items.Count:= length(ItemCaptions);
 
-  Result:= ShowModal = mrOk;
-  InterlockedExchange(BitmapsLeft, 0);
+  Result:= (ShowModal = mrOk);
   ImageList1.Clear;
   NoTransparency:= false;
   NoTransparency2:= false;
@@ -390,108 +426,158 @@ begin
   ArchivePath2:= '';
 end;
 
-procedure TFormChooseKind.ResizeBitmap(b: TBitmap; Transparent: Boolean);
+procedure DoMyStretchBlt(dest, src: TBitmap; const r: TRect; sz: int); inline;
+var
+  p, pd, ps, ps0, dd, ds: IntPtr;
+  x, y, wd, hd, ws, hs: int;
+begin
+  wd:= dest.Width;
+  hd:= dest.Height;
+  ws:= RectW(r);
+  hs:= RectH(r);
+  pd:= IntPtr(dest.ScanLine[hd - 1]);
+  dd:= IntPtr(dest.ScanLine[max(0, hd - 2)]) - pd - wd*sz;
+  ps0:= IntPtr(src.ScanLine[r.Bottom - 1]);
+  ds:= IntPtr(src.ScanLine[max(0, r.Bottom - 2)]) - ps0;
+  inc(ps0, r.Left*sz);
+  for y:= 0 to hd - 1 do
+  begin
+    ps:= ps0 + ((1 + y*2)*hs div (hd*2))*ds;
+    for x:= 0 to wd - 1 do
+    begin
+      p:= ps + ((1 + x*2)*ws div (wd*2))*sz;
+      case sz of
+        1: pbyte(pd)^:= pbyte(p)^;
+        2: pword(pd)^:= pword(p)^;
+        4: pint(pd)^:= pint(p)^;
+        3:
+        begin
+          pword(pd)^:= pword(p)^;
+          pbyte(pd+2)^:= pbyte(p+2)^;
+        end;
+      end;
+      inc(pd, sz);
+    end;
+    inc(pd, dd);
+  end;
+end;
+
+procedure MyStretchBlt(dest, src: TBitmap; const SrcRect: TRect);
+begin
+  case RSGetPixelFormat(dest) of
+    pf8bit:
+      DoMyStretchBlt(dest, src, SrcRect, 1);
+    pf15bit, pf16bit:
+      DoMyStretchBlt(dest, src, SrcRect, 2);
+    pf24bit:
+      DoMyStretchBlt(dest, src, SrcRect, 3);
+    pf32bit:
+      DoMyStretchBlt(dest, src, SrcRect, 4);
+    else
+      Assert(false);
+  end;
+end;
+
+// always destroys 'b'
+function TFormChooseKind.ResizeBitmap(b: TBitmap; Transparent: Boolean): TBitmap;
 var
   r: TRect;
-  w, h: int;
+  w, h, w2, h2: int;
 begin
   w:= b.Width;
   h:= b.Height;
-  if (w <= MaxW) and (h <= MaxH) then  exit;
-  // crop
-  if Transparent then
-  begin
-    r:= RSGetNonZeroColorRect(b);
-    r.Bottom:= (3*r.Bottom + h + 2) div 4;  // always keep some vertical space
-    if w <= MaxW then
+  Result:= b;
+  if (w <= MaxW) and (h <= MaxH) or (w = 0) or (h = 0) then  exit;
+  Result:= nil;
+  try
+    // crop
+    if Transparent then
     begin
-      r.Left:= 0;
-      r.Right:= w;
+      r:= RSGetNonZeroColorRect(b);
+      r.Bottom:= (3*r.Bottom + h + 2) div 4;  // always keep some vertical space
+      if w <= MaxW then
+      begin
+        r.Left:= 0;
+        r.Right:= w;
+      end else
+      if h <= MaxH then
+      begin
+        r.Top:= 0;
+        r.Bottom:= h;
+      end;
+      w:= RectW(r);
+      if max(w, MaxW)*MaxH > (r.Bottom - r.Top)*MaxW then
+        r.Bottom:= min(r.Top + max(w, MaxW)*MaxH div MaxW, h);
+      h:= RectH(r);
     end else
-    if h <= MaxH then
+      r:= Rect(0, 0, w, h);
+    // scale
+    if (w <= MaxW) and (h <= MaxH) then
     begin
-      r.Top:= 0;
-      r.Bottom:= h;
-    end;
-    w:= r.Right - r.Left;
-    if max(w, MaxW)*MaxH > (r.Bottom - r.Top)*MaxW then
-      r.Bottom:= min(r.Top + max(w, MaxW)*MaxH div MaxW, h);
-    h:= r.Bottom - r.Top;
-    if (w < b.Width) or (h < b.Height) then
+      w2:= w;
+      h2:= h;
+    end
+    else if w*MaxH > h*MaxW then
     begin
-      b.Canvas.CopyRect(Rect(0, 0, w, h), b.Canvas, r);
-      b.Height:= h;
-      b.Width:= w;
+      w2:= MaxW;
+      h2:= (h*MaxW + w div 2) div w;
+    end else
+    begin
+      w2:= (w*MaxH + h div 2) div h;
+      h2:= MaxH;
     end;
-    if (w <= MaxW) and (h <= MaxH) then  exit;
-  end;
-  // scale
-  if w*MaxH > h*MaxW then
-    r:= Rect(0, 0, MaxW, (h*MaxW + w div 2) div w)
-  else
-    r:= Rect(0, 0, (w*MaxH + h div 2) div h, MaxH);
 
-  SetStretchBltMode(b.Canvas.Handle, BLACKONWHITE);
-  b.Canvas.StretchDraw(r, b);
-  b.Height:= r.Bottom;
-  b.Width:= r.Right;
+    Result:= TBitmap.Create;
+    Result.HandleType:= bmDIB;
+    Result.PixelFormat:= RSGetPixelFormat(b);
+    Result.Palette:= b.ReleasePalette;
+    Result.Width:= w2;
+    Result.Height:= h2;
+    // has to be done manually, because GDI drawing doesn't work in worker thread
+    MyStretchBlt(Result, b, r);
+  except
+    FreeAndNil(Result);
+  end;
+  b.Free;
+end;
+
+procedure TFormChooseKind.SetWorkerTask(i: int);
+begin
+  InterlockedExchange(WorkerTask, i);
+  SetEvent(WorkerEvent);
 end;
 
 procedure TFormChooseKind.StartWorker;
 begin
-  InterlockedExchange(BitmapsLeft, length(ItemBitmaps));
-  RSRunThread(@TFormChooseKind.Worker, [self, nil], @WorkerHandle);
+  if WorkerEvent = 0 then
+    WorkerEvent:= RSWin32Check(CreateEvent(nil, false, false, nil))
+  else if WorkerHandle <> 0 then
+    StopWorker;
+  if FeedWorker then
+    RSRunThread(@TFormChooseKind.Worker, [self, nil], @WorkerHandle);
 end;
 
 procedure TFormChooseKind.StopWorker;
 begin
   if WorkerHandle <> 0 then
   begin
+    SetWorkerTask(-1);
     WaitForSingleObject(WorkerHandle, INFINITE);
     CloseHandle(WorkerHandle);
     WorkerHandle:= 0;
+    inc(WorkerIteration);
   end;
 end;
 
 procedure TFormChooseKind.Worker;
 var
-  h: HWND;
-  r: TRect;
-  k: int;
-
-  function Check(i: int; vis: Boolean = false): Boolean;
-  var
-    r1, r2: TRect;
-  begin
-    Result:= ItemBitmaps[i] <> '';
-    if Result and vis then
-    begin
-      ListView_GetItemRect(h, i, r1, LVIR_ICON);
-      Result:= IntersectRect(r2, r1, r);
-    end;
-    if Result then
-      LoadBitmap(i);
-  end;
-
-  function CheckAll(vis: Boolean): Boolean;
-  var
-    i: int;
-  begin
-    Result:= true;
-    for i:= 1 to max(k, high(ItemBitmaps) - k) do
-      if (k + i < length(ItemBitmaps)) and Check(k + i, vis) or
-         (k - i >= 0) and Check(k - i, vis) then
-        exit;
-    Result:= false;
-  end;
-
+  i: int;
 begin
-  h:= ListView1.Handle;
-  while InterlockedDecrement(BitmapsLeft) >= 0 do
+  while WaitForSingleObject(WorkerEvent, INFINITE) = WAIT_OBJECT_0 do
   begin
-    ListView_GetViewRect(h, r);
-    k:= max(ListView1.ItemIndex, 0);
-    if Check(k) or CheckAll(true) or CheckAll(false) then;
+    i:= WorkerTask;
+    if i < 0 then  break;
+    LoadBitmap(i);
   end;
 end;
 
