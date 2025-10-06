@@ -204,6 +204,7 @@ function io.save(path, s, translate)
 	local f = assert(io_open(path, translate and "wt" or "wb"))
 	f:setvbuf("no")
 	f:write(s)
+	f:flush()
 	f:close()
 end
 
