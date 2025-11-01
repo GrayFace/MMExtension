@@ -650,11 +650,41 @@ _G.os.CreateDirectory = CreateDirectory
 --!- backwards compatibility
 _G.path.CreateDirectory = CreateDirectory
 
-local oldSave = _G.io.save
+
+local CreateFileA = kernel32.CreateFileA
+local WriteFile = kernel32.WriteFile
+local CloseHandle = kernel32.CloseHandle
+local io_save_buf = mem.StaticAlloc(4)
+
+-- hopefully this will be more reliable in terms of file being actually written to hard drive and not filled with zeroes in case of power outage
+local function io_save_raw(name, s)
+	local h = CreateFileA(name,
+		0x40000000, -- GENERIC_WRITE
+		1 + 4, -- FILE_SHARE_READ + FILE_SHARE_DELETE
+		0, 2, -- CREATE_ALWAYS
+		0x80 + 0x80000000, -- FILE_ATTRIBUTE_NORMAL + FILE_FLAG_WRITE_THROUGH
+		0)
+	
+	if h == -1 then
+		return APIReturn(nil, name)
+	end
+	if s ~= '' and (WriteFile(h, s, #s, io_save_buf, 0) == 0 or u4[io_save_buf] ~= #s) then
+		local r, r2 = APIReturn(nil, name)
+		CloseHandle(h);
+		return r, r2
+	end
+	CloseHandle(h);
+	return true
+end
+
+local io_save_old = _G.io.save
 --!-
-function _G.io.save(path, ...)
-	CreateDirectory(path_dir(path))
-	return oldSave(path, ...)
+function _G.io.save(name, s, translate)
+	CreateDirectory(path_dir(name))
+	if translate then
+		return io_save_old(name, s, translate)
+	end
+	assert(io_save_raw(name, s))
 end
 --!- backwards compatibility
 _G.io.SaveString = _G.io.save
@@ -789,41 +819,6 @@ function _G.path.GetRelativePath(from, to, isDir)
 	end
 	return nil, GetErrorText()
 end
-
--- local CreateFileA = kernel32.CreateFileA
--- local WriteFile = kernel32.WriteFile
--- local CloseHandle = kernel32.CloseHandle
--- local io_save_buf = mem.StaticAlloc(4)
-
--- -- hopefully this will be more reliable in terms of file being actually written to hard drive and not filled with zeroes in case of power outage
--- local function io_save_raw(name, s)
--- 	local h = CreateFileA(name,
--- 		0x40000000, -- GENERIC_WRITE
--- 		1 + 4, -- FILE_SHARE_READ + FILE_SHARE_DELETE
--- 		0, 2, -- CREATE_ALWAYS
--- 		0x80 + 0x80000000, -- FILE_ATTRIBUTE_NORMAL + FILE_FLAG_WRITE_THROUGH
--- 		0)
-	
--- 	if h == -1 then
--- 		return APIReturn(nil, name)
--- 	end
--- 	if s ~= '' and (WriteFile(h, s, #s, io_save_buf, 0) == 0 or u4[io_save_buf] ~= #s) then
--- 		local r, r2 = APIReturn(nil, name)
--- 		CloseHandle(h);
--- 		return r, r2
--- 	end
--- 	CloseHandle(h);
--- 	return true
--- end
-
--- local io_save_old = _G.io.save
--- --!-
--- function _G.io.save(name, s, translate)
--- 	if translate then
--- 		return io_save_old(name, s, translate)
--- 	end
--- 	assert(io_save_raw(name, s))
--- end
 
 -- os.execute
 
