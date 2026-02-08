@@ -2382,7 +2382,7 @@ if mmver > 6 then
 	@std:
 	]])
 	
-	local ItemAdditionalDamage_ret = table.invert(mm78({0x439930, 0x4399C1}, {0x437336, 0x437449}))
+	-- local ItemAdditionalDamage_ret = table.invert(mm78({0x439930, 0x4399C1}, {0x437336, 0x437449}))
 	
 	-- ItemAdditionalDamage
 	mem.hookfunction(mm78(0x439E16, 0x4378CD), 2, 1, function(d, def, item, kind, vampiric)

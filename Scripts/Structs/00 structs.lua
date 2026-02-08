@@ -445,6 +445,7 @@ function structs.f.GameStructure(define)
 	end
 	define
 	[mmv(0x9DE364, 0xF8B9B0, 0xFFDDA8)].i4  'SmackVideo'
+	[mmv(0x9DE394, 0xF8BA90, 0xFFDE88)].i4  'DontResumeMusicAfterVideo'
 	[mmv(0x4BF8A0, 0x4E8348, 0x4F7F4C)].array(20).u1  'EquipStat2ItemSlot'  -- (24) ?
 	if mmver == 6 then
 		define.array(1, 180).b1  'MonsterSex'
@@ -708,6 +709,14 @@ end]=]
 		[0x6F330C].struct(structs.LanguageLod)  'EnglishDLod'
 	end
 	define
+	[0].CustomType('RandSeed', 0, function(o, obj, name, val)
+		local p = (mmver > 6 and call(mmv(0, 0x4CECD2, 0x4DDD52), 0) + 5*4 or 0x4C5354)
+		if val then
+			i4[p] = val
+		else
+			return i4[p]
+		end
+	end)
 	[mmv(0x6296EC, 0x6BDEFC, 0x6F3004)].i4  'dist_mist'
 	.Info{Name = "IsD3D", new = true}
 	if mmver > 6 then
@@ -724,14 +733,11 @@ end]=]
 		end)
 		 .Info "Minimum required Z coordinate of the normal to climb a building surface. MM6 default is 1 (any non-vertical surface), MM7+ default is 46378, which corresponds to Lua[[46378/0x10000 = 0.7]]."
 	end
-	define[0].CustomType('RandSeed', 0, function(o, obj, name, val)
-		local p = (mmver > 6 and call(mmv(0, 0x4CECD2, 0x4DDD52), 0) + 5*4 or 0x4C5354)
-		if val then
-			i4[p] = val
-		else
-			return i4[p]
-		end
-	end)
+	define
+	[mmv(0x9CF5A0, 0xF791FC, 0xFEB604)].pstruct(structs.Music)  'Music'  -- redbook
+	-- .pstruct(structs.MSS)  'MSS'  -- MSS32.dll
+	
+	define
 	.func{name = "Rand", p = mmv(0x4AE22B, 0x4CAAC2, 0x4D99F2), cc = 0}
 	local function Pauses(s, time, info, infoR, info2)
 		local var, bool, pause, resume = "PauseCount"..s, "Paused"..s, "DoPause"..s, "DoResume"..s
@@ -2147,4 +2153,28 @@ function structs.f.LodRecord(define)
 	.u4  'NamePtr'
 	 .Info "Pointer passed to Load* function"
 	.string(0x40)  'Name'
+end
+
+
+local MusicBuf
+
+function structs.f.Music(define)
+	define
+	.method{pp = mmv(0x4B928C, 0x4D832C, 0x4E8330), cc = 0, name = "Play", must = 2}       -- _AIL_redbook_play@12
+	 .Info{Sig = "StartMSec, EndMSec"}
+	.method{pp = mmv(0x4B92A0, 0x4D8324, 0x4E8328), cc = 0, name = "Stop"}                 -- _AIL_redbook_stop@4
+	.method{pp = mmv(0x4B9238, 0x4D8340, 0x4E8308), cc = 0, name = "Close"}                -- _AIL_redbook_close@4
+	.method{pp = mmv(0x4B923C, 0x4D8320, 0x4E8324), cc = 0, name = "Pause"}                -- _AIL_redbook_pause@4
+	.method{pp = mmv(0x4B925C, 0x4D831C, 0x4E8320), cc = 0, name = "Resume"}               -- _AIL_redbook_resume@4
+	.method{pp = mmv(0x4B9284, 0x4D8308, 0x4E82F4), cc = 0, name = "SetVolume", must = 1}  -- _AIL_redbook_set_volume@8
+	if mmver > 6 then
+		define
+		.method{pp = mm78(0x4D83B4, 0x4E8364), cc = 0, name = "GetVolume"}                   -- _AIL_redbook_volume@4
+	end
+	function define.m:GetTrackInfo(track)
+		MusicBuf = MusicBuf or mem.StaticAlloc(8)
+		call(mmv(0x4B9288, 0x4D8328, 0x4E832C), 0, self, track, MusicBuf, MusicBuf + 4)      -- _AIL_redbook_track_info@16
+		return i4[MusicBuf], i4[MusicBuf + 4]
+	end
+	define.Info{Sig = "track, pStartMSec, pEndMSec"}
 end

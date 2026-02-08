@@ -172,8 +172,12 @@ local function ParseBasicTextTable(s, SkipLinesCount, StartingIndex)
 end
 _G.ParseBasicTextTable = ParseBasicTextTable
 
-function _G.LoadBasicTextTable(s, SkipLinesCount, StartingIndex)
-	return ParseBasicTextTable(io_load(s), SkipLinesCount, StartingIndex)
+function _G.LoadBasicTextTable(s, SkipLinesCount, StartingIndex, ReturnErrors)
+	local t, err = io_load(s, false, ReturnErrors)
+	if t then
+		return ParseBasicTextTable(io_load(s), SkipLinesCount, StartingIndex)
+	end
+	return t, err
 end
 
 local function WriteBasicTextTable(t, fname)

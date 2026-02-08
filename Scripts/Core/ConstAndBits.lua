@@ -1552,6 +1552,22 @@ if mmver == 6 then
 		Child = 77,
 	}
 	
+	const.NPCPersonality = {
+		Adventurer = 0,
+		EvilFanatic = 1,
+		Guard = 2,
+		Merchant = 3,
+		Noble = 4,
+		Official = 5,
+		Paladin = 6,
+		Peasant = 7,
+		Priest = 8,
+		Scholar = 9,
+		Sorcerer = 10,
+		Thief = 11,
+		Monster = 12,
+	}
+	
 elseif mmver == 7 then
 
 	const.NPCProfession = {

@@ -772,7 +772,7 @@ function _G.os.remove(fname, NoRecycle)
 		u2[p + SHOff.fFlags] = SHDeleteFlags + (NoRecycle and 0 or FOF.ALLOWUNDO)
 		local code = SHFileOperation(p)
 		if code ~= 0 then
-			return nil, fname..": "..(SHErrors[code] or GetErrorText(code)), code
+			return nil, format('%s: %s (code %d)', fname, SHErrors[code] or GetErrorText(code), code), code
 		end
 		return true
 	-- end

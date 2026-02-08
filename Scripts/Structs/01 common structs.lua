@@ -2573,7 +2573,7 @@ function structs.f.TFTItem(define)
 	.i2  'Index'
 	 .Info "index in bitmaps.lod"
 	.i2  'Time'
-	 .Info "time for this frame in 1/32 of a second"
+	 .Info "time for this frame in 1/16 of a second. Multiply this value by 8 to get in-game time value"
 	.i2  'TotalTime'
 	 .Info "total time for this group"
 	.bit('NotGroupEnd', 1)
