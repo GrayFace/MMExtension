@@ -622,7 +622,8 @@ end
 
 local function mem_function(def)
 	local p = def.p
-	if not p then
+	local pp = def.pp
+	if not p and not pp then
 		error("function address not specified", 3)
 	end
 	local pfunc = type(p) == "function"
@@ -669,7 +670,7 @@ local function mem_function(def)
 		if pfunc then
 			return retconv(p(cc, unpack(par)), rettype)
 		else
-			return retconv(call(p, cc, unpack(par)), rettype)
+			return retconv(call(pp and u4[pp] or p, cc, unpack(par)), rettype)
 		end
 	end
 end
