@@ -65,6 +65,7 @@ Advices:
 -- numbers: 1 - 56
 local type_str = 57
 
+local assert = assert
 local concat = table.concat
 local insert = table.insert
 local type = type
@@ -98,7 +99,9 @@ local function dopersist(t, perm)
 	local tables, tablesN = {}, 0
 	local funcs, funcsN = {}, 0
 	local firsterror
-	local nanId
+	local nanId, minusZeroId
+	-- Minus zero support for backward compatibility:
+	-- Write second zero to the list of values. Modern RSPersist would read it a -0, old one would read it as 0.
 	
 	-- First construct objects lists
 	
@@ -157,6 +160,23 @@ local function dopersist(t, perm)
 	
 	local upvals = setmetatable({}, {__index = newupval})
 	
+	local function addval(v)
+		if v == nil then
+			-- do nothing
+		elseif rawequal(v, v) or type(v) ~= "number" then
+			vals[v] = 0
+			if v == 0 and not minusZeroId and tostring(v) == '-0' then
+				listN = listN + 1
+				list[listN] = v
+				minusZeroId = listN
+			end
+		elseif nanId == nil then  -- NAN
+			listN = listN + 1
+			list[listN] = v
+			nanId = listN
+		end
+	end
+	
 	-- traverse tables and functions
 	if t then
 		vals[t] = true
@@ -173,15 +193,7 @@ local function dopersist(t, perm)
 			end
 			for k, v in next, t do
 				vals[k] = 0
-				if v == nil then
-					-- do nothing
-				elseif rawequal(v, v) or type(v) ~= "number" then
-					vals[v] = 0
-				elseif nanId == nil then  -- NAN
-					listN = listN + 1
-					list[listN] = v
-					nanId = listN
-				end
+				addval(v)
 			end
 			n = n + 1
 		elseif m <= funcsN then
@@ -200,15 +212,7 @@ local function dopersist(t, perm)
 					firsterror = firsterror or "cannot persist a function with upvalues due to absense of debug.upvalueid"
 				else
 					repeat
-						if v == nil then
-							-- do nothing
-						elseif rawequal(v, v) or type(v) ~= "number" then
-							vals[v] = 0
-						elseif nanId == nil then  -- NAN
-							listN = listN + 1
-							list[listN] = v
-							nanId = listN
-						end
+						addval(v)
 						uplist[upvals[upvalueid(f, i)]] = v
 						i = i + 1
 						a, v = getupvalue(f, i)
@@ -225,7 +229,7 @@ local function dopersist(t, perm)
 	setmetatable(vals, nil)
 	
 	for i = 1, listN do
-		if i ~= nanId then
+		if i ~= nanId and i ~= minusZeroId then
 			vals[list[i]] = i
 		end
 	end
@@ -236,8 +240,8 @@ local function dopersist(t, perm)
 		vals[tables[i]] = i + listN + funcsN
 	end
 
-	-- Now 'vals' table maps object to its place in the objects list
-	-- 'list' and 'tables' are lists of objects to persist
+	-- Now 'vals' table maps an object to its place in the objects list
+	-- 'list', 'tables' and 'funcs' are lists of objects to persist
 	
 	-- Prepare to persist everything
 	
@@ -294,15 +298,16 @@ local function dopersist(t, perm)
 	end
 
 	local function WriteObjIdx(v)
+		local i = 0
 		if v ~= nil then
-			v = vals[v]
-			if v == nil then
-				v = nanId
+			i = vals[v]
+			if i == nil then
+				i = assert(nanId)
+			elseif v == 0 and tostring(v) == '-0' then
+				i = assert(minusZeroId)
 			end
-		else
-			v = 0
 		end
-		WriteUint(v)
+		WriteUint(i)
 	end
 	
 	local function WriteBasicType(tp)
@@ -510,6 +515,7 @@ function unpersist(buf, perm, data)
 	if version ~= 0 or specN ~= 0 then  insert(errors, "data was saved with a newer version of RSPersist")  end
 
 	local firstTable = listN + funcsN + 1
+	local hasZeroId
 
 	local function vals_index(t, a)
 		if a >= firstTable then
@@ -524,7 +530,12 @@ function unpersist(buf, perm, data)
 	local function ReadBasicType()
 		local v = ReadUint(1)
 		if v == 0 then
-			return 0
+			if hasZeroId then  -- read second zero as -0
+				return -0
+			else
+				hasZeroId = true
+				return 0
+			end
 		elseif v == 1 then
 			return false
 		elseif v == 2 then
